@@ -1,0 +1,888 @@
+import { useState, useEffect } from "react";
+
+const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
+
+const sb = async (path, opts = {}) => {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=representation", ...opts.headers },
+    ...opts
+  });
+  const text = await r.text();
+  try { return JSON.parse(text); } catch { return text; }
+};
+
+const authFetch = async (path, body) => {
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
+    method: "POST",
+    headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  return r.json();
+};
+
+const ESTILOS = [
+  { key: "moderno", label: "Moderno", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80", desc: "Lineas limpias, colores neutros, sin ornamentos" },
+  { key: "minimalista", label: "Minimalista", img: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80", desc: "Lo esencial, espacios abiertos, funcionalidad maxima" },
+  { key: "contemporaneo", label: "Contemporaneo", img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=80", desc: "Mezcla de estilos actuales, versatil y elegante" },
+  { key: "industrial", label: "Industrial", img: "https://images.unsplash.com/photo-1565538810643-b5bdb974b832?w=400&q=80", desc: "Metal, madera cruda, estilo urbano" },
+  { key: "clasico", label: "Clasico", img: "https://images.unsplash.com/photo-1556909172-89cf0b2f3b7d?w=400&q=80", desc: "Molduras, detalles ornamentales, calidez" },
+  { key: "rustico", label: "Rustico", img: "https://images.unsplash.com/photo-1588854337221-4cf9fa96059c?w=400&q=80", desc: "Madera natural, texturas organicas, campo" },
+  { key: "nordico", label: "Nordico", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80", desc: "Blanco, madera clara, funcional y acogedor" },
+  { key: "lujo", label: "Lujo / Premium", img: "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=400&q=80", desc: "Materiales nobles, acabados premium, exclusividad" },
+];
+
+const FORM_INIT = {
+  // Datos cliente
+  nombre: "", telefono: "", direccion: "", correo: "", fecha: new Date().toISOString().split("T")[0],
+  atencion_por: "Felipe Santiago",
+  // Tipo cocina
+  tipo_cocina: [],
+  tipo_cocina_otro: "",
+  // Medidas
+  largo: "", altura: "", profundidad: "", medidas_isla: "", medidas_alacena: "",
+  altura_superiores: "", area: "",
+  // Estilo
+  estilo: [],
+  estilo_otro: "",
+  // Material estructura
+  material: [],
+  material_otro: "",
+  grosor: "",
+  // Acabado
+  color_principal: "", color_secundario: "", tipo_acabado: [], acabado_otro: "", textura: "",
+  // Puertas
+  tipo_puertas: [], puertas_otro: "",
+  jaladeras: [], jaladeras_otro: "",
+  // Herrajes
+  bisagras: "", correderas: "",
+  accesorios: [], accesorios_otro: "",
+  // Cubierta
+  material_cubierta: [], cubierta_otro: "", color_cubierta: "",
+  // Tarja
+  tarja: [], griferia: [],
+  // Electrodomesticos
+  electrodomesticos: [], medidas_electro: "",
+  // Iluminacion
+  iluminacion: [],
+  // Observaciones
+  observaciones: "",
+  // Solo taller
+  materiales_solicitados: "", herrajes_solicitados: "",
+  nivel_calidad: "",
+  comentarios_tecnicos: "",
+  // Presupuesto
+  precio_fabricacion: "", precio_instalacion: "", precio_cubierta: "",
+  precio_herrajes: "", precio_otros: "",
+  incluye: "", no_incluye: "",
+  tiempo_entrega: "20 a 30 dias habiles",
+  anticipo: "60", pago_entrega: "30", pago_final: "10",
+  garantia: "6 meses en instalacion y herrajes",
+  foto_espacio: null,
+};
+
+const CHECK = ({ label, checked, onChange }) => (
+  <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", padding: "4px 0", fontSize: 13, color: checked ? "#d4af37" : "#aaa", fontFamily: "DM Sans, Arial, sans-serif" }}>
+    <div style={{ width: 16, height: 16, borderRadius: 4, border: `2px solid ${checked ? "#d4af37" : "#444"}`, background: checked ? "#d4af37" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all .15s" }}>
+      {checked && <div style={{ width: 8, height: 6, borderLeft: "2px solid #000", borderBottom: "2px solid #000", transform: "rotate(-45deg) translateY(-1px)" }} />}
+    </div>
+    {label}
+  </label>
+);
+
+const toggle = (arr, val) => arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
+
+const INPUT = ({ label, value, onChange, placeholder, type = "text", style = {} }) => (
+  <div style={{ marginBottom: 14, ...style }}>
+    {label && <label style={{ fontSize: 10, color: "#666", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif" }}>{label}</label>}
+    <input value={value} onChange={onChange} placeholder={placeholder} type={type}
+      style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", outline: "none" }} />
+  </div>
+);
+
+const SECTION = ({ title, children, icon }) => (
+  <div style={{ marginBottom: 28 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #d4af3720" }}>
+      {icon && <span style={{ fontSize: 16 }}>{icon}</span>}
+      <h3 style={{ margin: 0, fontSize: 14, color: "#d4af37", fontFamily: "DM Sans, sans-serif", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>{title}</h3>
+    </div>
+    {children}
+  </div>
+);
+
+export default function App() {
+  const [screen, setScreen] = useState("login");
+  const [role, setRole] = useState(null);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loginForm, setLoginForm] = useState({ email: "", password: "", nombre: "", role: "cliente" });
+  const [loginMode, setLoginMode] = useState("login");
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [tab, setTab] = useState("formulario");
+  const [form, setForm] = useState(FORM_INIT);
+  const [proyectos, setProyectos] = useState([]);
+  const [proyectoSel, setProyectoSel] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResult, setAiResult] = useState("");
+  const [savedMsg, setSavedMsg] = useState("");
+  const [presupuestoView, setPresupuestoView] = useState(null);
+
+  const setF = (key, val) => setForm(p => ({ ...p, [key]: val }));
+
+  async function login() {
+    setLoginLoading(true);
+    setLoginError("");
+    const data = await authFetch("token?grant_type=password", { email: loginForm.email, password: loginForm.password });
+    if (data.access_token) {
+      setToken(data.access_token);
+      setUser(data.user);
+      // Get role from metadata
+      const meta = data.user?.user_metadata;
+      const r = meta?.role || "cliente";
+      setRole(r);
+      setScreen("app");
+      if (r === "admin") setTab("dashboard");
+      else if (r === "taller") setTab("leads");
+      else setTab("formulario");
+    } else {
+      setLoginError(data.error_description || data.message || "Error al iniciar sesion");
+    }
+    setLoginLoading(false);
+  }
+
+  async function register() {
+    setLoginLoading(true);
+    setLoginError("");
+    const data = await authFetch("signup", {
+      email: loginForm.email,
+      password: loginForm.password,
+      data: { nombre: loginForm.nombre, role: loginForm.role }
+    });
+    if (data.user) {
+      setLoginError("Cuenta creada. Revisa tu correo para confirmar y luego inicia sesion.");
+    } else {
+      setLoginError(data.error_description || data.message || "Error al registrar");
+    }
+    setLoginLoading(false);
+  }
+
+  async function guardarFormulario() {
+    setSavedMsg("Guardando...");
+    try {
+      const payload = { ...form, user_id: user?.id, user_email: user?.email, estado: "nuevo", created_at: new Date().toISOString() };
+      await sb("proyectos", { method: "POST", body: JSON.stringify(payload) });
+      setSavedMsg("Guardado correctamente");
+      setTimeout(() => setSavedMsg(""), 3000);
+    } catch (e) {
+      setSavedMsg("Error al guardar");
+    }
+  }
+
+  async function cargarProyectos() {
+    let url = "proyectos?order=created_at.desc";
+    if (role === "cliente") url += `&user_email=eq.${user?.email}`;
+    const data = await sb(url, { headers: { "Authorization": `Bearer ${token}` } });
+    if (Array.isArray(data)) setProyectos(data);
+  }
+
+  useEffect(() => {
+    if (screen === "app" && (tab === "dashboard" || tab === "leads" || tab === "mis-proyectos")) {
+      cargarProyectos();
+    }
+  }, [tab, screen]);
+
+  async function analizarConIA() {
+    if (!form.estilo.length && !form.observaciones) return;
+    setAiLoading(true);
+    setAiResult("");
+    try {
+      const prompt = `Eres un experto disenador de cocinas integrales en Monterrey, Mexico. 
+Un cliente tiene las siguientes especificaciones:
+- Tipo de cocina: ${form.tipo_cocina.join(", ") || "No especificado"}
+- Estilo deseado: ${form.estilo.join(", ") || "No especificado"}
+- Medidas: Largo ${form.largo || "?"}, Altura ${form.altura || "?"}, Profundidad ${form.profundidad || "?"}
+- Material estructura: ${form.material.join(", ") || "No especificado"}
+- Acabado: ${form.tipo_acabado.join(", ") || "No especificado"}, Color principal: ${form.color_principal || "?"}, Color secundario: ${form.color_secundario || "?"}
+- Cubierta: ${form.material_cubierta.join(", ") || "No especificado"}
+- Herrajes: Bisagras ${form.bisagras || "?"}, Correderas ${form.correderas || "?"}
+- Accesorios: ${form.accesorios.join(", ") || "Ninguno"}
+- Presupuesto aproximado: ${form.observaciones || "No especificado"}
+
+Proporciona:
+1. Recomendacion de combinacion de colores y materiales ideal para el estilo elegido
+2. Que accesorios adicionales sugeririas segun el estilo
+3. Estimado de rango de precio para este tipo de cocina en Monterrey
+4. 3 tips profesionales para este proyecto especifico
+5. Que materiales NO recomiendas para este estilo y por que
+
+Responde en espanol, usa emojis, se especifico y practico. Maximo 300 palabras.`;
+
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "anthropic-dangerous-direct-browser-calls": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
+      });
+      const data = await res.json();
+      setAiResult(data.content?.[0]?.text || "Configura tu API key de Anthropic para usar esta funcion.");
+    } catch (e) {
+      setAiResult("Configura tu API key en Vercel > Settings > Environment Variables > VITE_ANTHROPIC_KEY");
+    }
+    setAiLoading(false);
+  }
+
+  const totalPresupuesto = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
+    .reduce((a, v) => a + (parseFloat(v) || 0), 0);
+
+  function imprimirPresupuesto() {
+    const w = window.open("", "_blank");
+    w.document.write(`<html><head><title>Presupuesto EnKaje Pro</title>
+    <style>
+      body { font-family: Georgia, serif; max-width: 750px; margin: 40px auto; color: #222; line-height: 1.7; }
+      h1 { text-align: center; color: #8B6914; font-size: 24px; border-bottom: 3px solid #d4af37; padding-bottom: 12px; }
+      h2 { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-top: 24px; border-left: 4px solid #d4af37; padding-left: 10px; }
+      table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+      th { background: #f5f0e0; text-align: left; padding: 8px 12px; font-size: 12px; }
+      td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+      .total { font-size: 18px; font-weight: 900; color: #8B6914; text-align: right; padding: 12px; background: #f5f0e0; }
+      .box { background: #f9f6ed; border: 1px solid #d4af3740; border-radius: 8px; padding: 14px; margin: 12px 0; }
+      .disclaimer { background: #fff3f3; border: 1px solid #f4433640; border-radius: 8px; padding: 14px; margin-top: 20px; font-size: 12px; color: #666; }
+      .firma { display: flex; justify-content: space-between; margin-top: 60px; }
+      .firma div { text-align: center; border-top: 1px solid #333; padding-top: 8px; width: 45%; font-size: 12px; }
+      .logo { text-align: center; margin-bottom: 8px; font-size: 28px; font-weight: 900; color: #d4af37; letter-spacing: 3px; }
+      .sub { text-align: center; font-size: 11px; color: #888; letter-spacing: 3px; margin-bottom: 20px; }
+    </style></head><body>
+    <div class="logo">EnKaje Pro</div>
+    <div class="sub">INTERMEDIACION - CARPINTERIA - MONTERREY</div>
+    <h1>PRESUPUESTO PROFESIONAL</h1>
+    <p><b>Fecha:</b> ${form.fecha} &nbsp;&nbsp; <b>Atencion por:</b> ${form.atencion_por}</p>
+    
+    <h2>Datos del Cliente</h2>
+    <div class="box">
+      <b>Nombre:</b> ${form.nombre}<br>
+      <b>Telefono:</b> ${form.telefono}<br>
+      <b>Direccion:</b> ${form.direccion}<br>
+      <b>Correo:</b> ${form.correo}
+    </div>
+
+    <h2>Descripcion del Proyecto</h2>
+    <div class="box">
+      Fabricacion e instalacion de cocina integral estilo <b>${form.estilo.join(", ") || "por definir"}</b>. 
+      Tipo: ${form.tipo_cocina.join(", ") || "por definir"}.
+      ${form.observaciones ? `<br><br><b>Observaciones:</b> ${form.observaciones}` : ""}
+    </div>
+
+    <h2>Medidas</h2>
+    <div class="box">
+      Largo total: <b>${form.largo || "---"}</b> &nbsp;|&nbsp;
+      Altura: <b>${form.altura || "---"}</b> &nbsp;|&nbsp;
+      Profundidad: <b>${form.profundidad || "---"}</b><br>
+      ${form.medidas_isla ? `Isla: <b>${form.medidas_isla}</b>` : ""}
+      ${form.area ? `&nbsp;|&nbsp; Area aproximada: <b>${form.area}</b>` : ""}
+    </div>
+
+    <h2>Materiales y Acabados</h2>
+    <div class="box">
+      <b>Estructura:</b> ${form.material.join(", ") || "---"} ${form.grosor ? `- Grosor ${form.grosor}` : ""}<br>
+      <b>Acabado:</b> ${form.tipo_acabado.join(", ") || "---"}<br>
+      <b>Color principal:</b> ${form.color_principal || "---"} &nbsp;|&nbsp; <b>Color secundario:</b> ${form.color_secundario || "---"}<br>
+      <b>Cubierta:</b> ${form.material_cubierta.join(", ") || "---"} ${form.color_cubierta ? `- ${form.color_cubierta}` : ""}<br>
+      <b>Puertas:</b> ${form.tipo_puertas.join(", ") || "---"}<br>
+      <b>Jaladeras:</b> ${form.jaladeras.join(", ") || "---"}<br>
+      <b>Bisagras:</b> ${form.bisagras || "---"} &nbsp;|&nbsp; <b>Correderas:</b> ${form.correderas || "---"}<br>
+      ${form.accesorios.length ? `<b>Accesorios:</b> ${form.accesorios.join(", ")}` : ""}
+    </div>
+
+    <h2>Que Incluye</h2>
+    <div class="box">${form.incluye || "Diseno, fabricacion, transporte, instalacion, ajustes y limpieza final"}</div>
+
+    <h2>Que NO Incluye</h2>
+    <div class="box">${form.no_incluye || "Plomeria, electricidad, albanileria, electrodomesticos, iluminacion, cambios despues de aprobado el diseno"}</div>
+
+    <h2>Desglose de Precios</h2>
+    <table>
+      <tr><th>Concepto</th><th style="text-align:right">Precio</th></tr>
+      ${form.precio_fabricacion ? `<tr><td>Fabricacion</td><td style="text-align:right">$${parseFloat(form.precio_fabricacion).toLocaleString("es-MX")} MXN</td></tr>` : ""}
+      ${form.precio_instalacion ? `<tr><td>Instalacion</td><td style="text-align:right">$${parseFloat(form.precio_instalacion).toLocaleString("es-MX")} MXN</td></tr>` : ""}
+      ${form.precio_cubierta ? `<tr><td>Cubierta</td><td style="text-align:right">$${parseFloat(form.precio_cubierta).toLocaleString("es-MX")} MXN</td></tr>` : ""}
+      ${form.precio_herrajes ? `<tr><td>Herrajes</td><td style="text-align:right">$${parseFloat(form.precio_herrajes).toLocaleString("es-MX")} MXN</td></tr>` : ""}
+      ${form.precio_otros ? `<tr><td>Otros</td><td style="text-align:right">$${parseFloat(form.precio_otros).toLocaleString("es-MX")} MXN</td></tr>` : ""}
+    </table>
+    <div class="total">TOTAL: $${totalPresupuesto.toLocaleString("es-MX")} MXN</div>
+
+    <h2>Forma de Pago</h2>
+    <div class="box">
+      ${form.anticipo}% anticipo para iniciar: <b>$${(totalPresupuesto * parseFloat(form.anticipo) / 100).toLocaleString("es-MX")} MXN</b><br>
+      ${form.pago_entrega}% antes de instalacion: <b>$${(totalPresupuesto * parseFloat(form.pago_entrega) / 100).toLocaleString("es-MX")} MXN</b><br>
+      ${form.pago_final}% contra entrega: <b>$${(totalPresupuesto * parseFloat(form.pago_final) / 100).toLocaleString("es-MX")} MXN</b>
+    </div>
+
+    <h2>Tiempo de Entrega</h2>
+    <div class="box">${form.tiempo_entrega}</div>
+
+    <h2>Garantia</h2>
+    <div class="box">${form.garantia}</div>
+
+    <div class="disclaimer">
+      <b>NOTA IMPORTANTE:</b> EnKaje Pro actua como intermediario entre el cliente y el taller de carpinteria. 
+      La ejecucion del trabajo es responsabilidad del taller seleccionado. EnKaje Pro no se hace responsable 
+      por la calidad, tiempos o garantias del trabajo de carpinteria.
+    </div>
+
+    <div class="firma">
+      <div>Felipe Santiago<br>EnKaje Pro<br>Intermediario / Asesor</div>
+      <div>${form.nombre || "Cliente"}<br>Firma de aceptacion</div>
+    </div>
+    </body></html>`);
+    w.document.close();
+    w.print();
+  }
+
+  // ===================== SCREENS =====================
+
+  if (screen === "login") return (
+    <div style={{ minHeight: "100vh", background: "#070708", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "Georgia, serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div style={{ fontSize: 36, fontWeight: 900, color: "#d4af37", letterSpacing: 4, marginBottom: 4 }}>EnKaje Pro</div>
+          <div style={{ fontSize: 11, color: "#555", letterSpacing: 4, fontFamily: "DM Sans, sans-serif" }}>PLATAFORMA DE CARPINTERIA</div>
+        </div>
+
+        <div style={{ background: "#0f0f0a", border: "1px solid #d4af3725", borderRadius: 20, padding: 28 }}>
+          <div style={{ display: "flex", gap: 4, marginBottom: 24, background: "#070708", borderRadius: 10, padding: 4 }}>
+            {[["login","Iniciar Sesion"],["register","Crear Cuenta"]].map(([k,l]) => (
+              <button key={k} onClick={() => setLoginMode(k)} style={{ flex: 1, padding: "9px", borderRadius: 8, border: "none", background: loginMode===k?"#d4af37":"transparent", color: loginMode===k?"#000":"#555", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all .2s" }}>{l}</button>
+            ))}
+          </div>
+
+          {loginMode === "register" && (
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 10, color: "#555", display: "block", marginBottom: 5, letterSpacing: 2, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Nombre completo</label>
+              <input value={loginForm.nombre} onChange={e => setLoginForm(p => ({...p, nombre: e.target.value}))} placeholder="Tu nombre"
+                style={{ width: "100%", background: "#070708", border: "1px solid #2a2a20", borderRadius: 8, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif" }} />
+            </div>
+          )}
+
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ fontSize: 10, color: "#555", display: "block", marginBottom: 5, letterSpacing: 2, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Correo electronico</label>
+            <input value={loginForm.email} onChange={e => setLoginForm(p => ({...p, email: e.target.value}))} placeholder="correo@ejemplo.com" type="email"
+              style={{ width: "100%", background: "#070708", border: "1px solid #2a2a20", borderRadius: 8, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif" }} />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ fontSize: 10, color: "#555", display: "block", marginBottom: 5, letterSpacing: 2, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Contrasena</label>
+            <input value={loginForm.password} onChange={e => setLoginForm(p => ({...p, password: e.target.value}))} placeholder="••••••••" type="password"
+              style={{ width: "100%", background: "#070708", border: "1px solid #2a2a20", borderRadius: 8, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif" }} />
+          </div>
+
+          {loginMode === "register" && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 10, color: "#555", display: "block", marginBottom: 8, letterSpacing: 2, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Tipo de cuenta</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[["cliente","Cliente"],["taller","Taller"],["admin","Admin"]].map(([k,l]) => (
+                  <button key={k} onClick={() => setLoginForm(p => ({...p, role: k}))} style={{ flex: 1, padding: "9px 4px", borderRadius: 8, border: `1px solid ${loginForm.role===k?"#d4af37":"#2a2a20"}`, background: loginForm.role===k?"#d4af3715":"transparent", color: loginForm.role===k?"#d4af37":"#555", fontFamily: "DM Sans, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>{l}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {loginError && <div style={{ background: loginError.includes("creada") ? "#0a2a0a" : "#1a0a0a", border: `1px solid ${loginError.includes("creada") ? "#4caf5040" : "#f4433640"}`, borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 12, color: loginError.includes("creada") ? "#4caf50" : "#f44336", fontFamily: "DM Sans, sans-serif" }}>{loginError}</div>}
+
+          <button onClick={loginMode === "login" ? login : register} disabled={loginLoading}
+            style={{ width: "100%", background: "#d4af37", color: "#000", border: "none", borderRadius: 10, padding: "13px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 14, cursor: "pointer", letterSpacing: 1 }}>
+            {loginLoading ? "..." : loginMode === "login" ? "ENTRAR" : "CREAR CUENTA"}
+          </button>
+
+          <div style={{ marginTop: 20, padding: "14px", background: "#070708", borderRadius: 10, fontSize: 11, color: "#444", fontFamily: "DM Sans, sans-serif", lineHeight: 1.6 }}>
+            <b style={{ color: "#d4af37" }}>Admin:</b> felipe@enkajepro.com<br />
+            <b style={{ color: "#00bcd4" }}>Taller:</b> Se registra como "Taller"<br />
+            <b style={{ color: "#4caf50" }}>Cliente:</b> Se registra como "Cliente"
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ===================== APP =====================
+  const tabs = role === "admin"
+    ? [["dashboard","Dashboard"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["ia","IA Asesor"]]
+    : role === "taller"
+    ? [["leads","Proyectos"],["ia","IA Asesor"]]
+    : [["formulario","Mi Cocina"],["estilos","Estilos"],["presupuesto","Presupuesto"],["ia","IA Asesor"]];
+
+  return (
+    <div style={{ fontFamily: "Georgia, serif", background: "#070708", minHeight: "100vh", color: "#e8e0d0" }}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+      {/* HEADER */}
+      <div style={{ background: "linear-gradient(135deg,#12100a,#070708)", borderBottom: "1px solid #d4af3720", padding: "0 20px", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 0" }}>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: "#d4af37", letterSpacing: 3 }}>EnKaje Pro</div>
+            <div style={{ fontSize: 9, color: "#444", letterSpacing: 3, fontFamily: "DM Sans, sans-serif" }}>
+              {role === "admin" ? "ADMINISTRADOR" : role === "taller" ? "PANEL DE TALLER" : "PORTAL DE CLIENTE"}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {role === "admin" && totalPresupuesto > 0 && (
+              <button onClick={imprimirPresupuesto} style={{ background: "#1a1208", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 8, padding: "7px 14px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
+                Imprimir PDF
+              </button>
+            )}
+            <div style={{ fontSize: 12, color: "#555", fontFamily: "DM Sans, sans-serif" }}>{user?.email}</div>
+            <button onClick={() => { setScreen("login"); setRole(null); setUser(null); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "6px 12px", fontFamily: "DM Sans, sans-serif", fontSize: 11, cursor: "pointer" }}>Salir</button>
+          </div>
+        </div>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 2, overflowX: "auto" }}>
+          {tabs.map(([k, l]) => (
+            <button key={k} onClick={() => setTab(k)} style={{ background: "transparent", border: "none", borderBottom: tab===k?"2px solid #d4af37":"2px solid transparent", color: tab===k?"#d4af37":"#555", padding: "10px 16px", cursor: "pointer", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap", fontFamily: "DM Sans, sans-serif", letterSpacing: 0.5 }}>{l}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
+
+        {/* DASHBOARD ADMIN */}
+        {tab === "dashboard" && role === "admin" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 24px", fontSize: 26 }}>Panel Administrativo</h1>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 28 }}>
+              {[["Proyectos", proyectos.length, "#d4af37"],["Nuevos", proyectos.filter(p=>p.estado==="nuevo").length, "#00bcd4"],["En proceso", proyectos.filter(p=>p.estado==="proceso").length, "#f0a500"],["Cerrados", proyectos.filter(p=>p.estado==="cerrado").length, "#4caf50"]].map(([l,v,c],i) => (
+                <div key={i} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: 18 }}>
+                  <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, fontFamily: "DM Sans, sans-serif" }}>{l}</div>
+                  <div style={{ fontSize: 32, fontWeight: 900, color: c }}>{v}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 16, padding: 20 }}>
+              <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontFamily: "DM Sans, sans-serif", fontSize: 14, letterSpacing: 1 }}>PROYECTOS RECIENTES</h3>
+              {proyectos.length === 0 && <div style={{ color: "#444", fontFamily: "DM Sans, sans-serif", fontSize: 13 }}>No hay proyectos aun</div>}
+              {proyectos.slice(0,8).map((p, i) => (
+                <div key={i} onClick={() => { setProyectoSel(p); setTab("proyectos"); }} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #ffffff06", cursor: "pointer" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{p.nombre || p.user_email}</div>
+                    <div style={{ fontSize: 11, color: "#555", fontFamily: "DM Sans, sans-serif" }}>{p.tipo_cocina?.join(", ") || "Cocina"} - {p.estilo?.join(", ") || "Sin estilo"}</div>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#00bcd4", fontFamily: "DM Sans, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{p.estado}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* PROYECTOS ADMIN */}
+        {tab === "proyectos" && role === "admin" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px" }}>Todos los Proyectos</h1>
+            {proyectos.map((p, i) => (
+              <div key={i} onClick={() => setProyectoSel(proyectoSel?.created_at===p.created_at?null:p)}
+                style={{ background: "#0f0f0a", border: `1px solid ${proyectoSel?.created_at===p.created_at?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: "16px 20px", marginBottom: 10, cursor: "pointer" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                  <div>
+                    <div style={{ fontWeight: 700 }}>{p.nombre || p.user_email}</div>
+                    <div style={{ fontSize: 12, color: "#555", fontFamily: "DM Sans, sans-serif" }}>{p.tipo_cocina?.join(", ")} - {p.estilo?.join(", ")} - {p.created_at?.split("T")[0]}</div>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#00bcd4", fontWeight: 700, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>{p.estado}</div>
+                </div>
+                {proyectoSel?.created_at === p.created_at && (
+                  <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #ffffff08" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, fontSize: 12, fontFamily: "DM Sans, sans-serif", color: "#aaa" }}>
+                      {[["Tel",p.telefono],["Email",p.correo],["Direccion",p.direccion],["Largo",p.largo],["Material",p.material?.join(", ")],["Cubierta",p.material_cubierta?.join(", ")],["Presupuesto total",p.precio_fabricacion?"$"+(parseFloat(p.precio_fabricacion||0)+parseFloat(p.precio_instalacion||0)+parseFloat(p.precio_cubierta||0)+parseFloat(p.precio_herrajes||0)).toLocaleString()+" MXN":"---"],["Observaciones",p.observaciones]].map(([l,v],j) => v ? (
+                        <div key={j}><b style={{ color: "#d4af37" }}>{l}:</b> {v}</div>
+                      ) : null)}
+                    </div>
+                    <button onClick={e => { e.stopPropagation(); setForm({...FORM_INIT,...p}); setTab("presupuesto"); }}
+                      style={{ marginTop: 12, background: "#d4af37", color: "#000", border: "none", borderRadius: 8, padding: "8px 18px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                      Abrir en Presupuesto
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* FORMULARIO LEVANTAMIENTO */}
+        {tab === "formulario" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
+              <div>
+                <h1 style={{ color: "#d4af37", margin: 0, fontSize: 24 }}>Formulario de Levantamiento</h1>
+                <p style={{ color: "#555", margin: "4px 0 0", fontSize: 13, fontFamily: "DM Sans, sans-serif" }}>Cocina Integral - Especificaciones Completas</p>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                {savedMsg && <div style={{ background: "#0a2a0a", border: "1px solid #4caf5040", color: "#4caf50", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontFamily: "DM Sans, sans-serif" }}>{savedMsg}</div>}
+                <button onClick={guardarFormulario} style={{ background: "#d4af37", color: "#000", border: "none", borderRadius: 8, padding: "9px 18px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Guardar</button>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div>
+                <SECTION title="Datos del Cliente" icon="👤">
+                  <INPUT label="Nombre completo" value={form.nombre} onChange={e=>setF("nombre",e.target.value)} placeholder="Maria Gonzalez" />
+                  <INPUT label="Telefono" value={form.telefono} onChange={e=>setF("telefono",e.target.value)} placeholder="81-1234-5678" />
+                  <INPUT label="Correo electronico" value={form.correo} onChange={e=>setF("correo",e.target.value)} placeholder="correo@ejemplo.com" />
+                  <INPUT label="Direccion" value={form.direccion} onChange={e=>setF("direccion",e.target.value)} placeholder="Calle, Colonia, Ciudad" />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
+                    <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+                  </div>
+                </SECTION>
+
+                <SECTION title="Tipo de Cocina" icon="🏠">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+                    {["Lineal","En L","En U","Con isla","Con peninsula","Departamento","Residencial premium"].map(op => (
+                      <CHECK key={op} label={op} checked={form.tipo_cocina.includes(op)} onChange={() => setF("tipo_cocina", toggle(form.tipo_cocina, op))} />
+                    ))}
+                  </div>
+                  <INPUT label="Otra" value={form.tipo_cocina_otro} onChange={e=>setF("tipo_cocina_otro",e.target.value)} placeholder="Especifica..." style={{marginTop:8}} />
+                </SECTION>
+
+                <SECTION title="Medidas Generales" icon="📐">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <INPUT label="Largo total" value={form.largo} onChange={e=>setF("largo",e.target.value)} placeholder="3.20 m" />
+                    <INPUT label="Altura" value={form.altura} onChange={e=>setF("altura",e.target.value)} placeholder="2.40 m" />
+                    <INPUT label="Profundidad" value={form.profundidad} onChange={e=>setF("profundidad",e.target.value)} placeholder="0.60 m" />
+                    <INPUT label="Area aproximada" value={form.area} onChange={e=>setF("area",e.target.value)} placeholder="8 m2" />
+                    <INPUT label="Medidas isla" value={form.medidas_isla} onChange={e=>setF("medidas_isla",e.target.value)} placeholder="1.80 x 0.90 m" />
+                    <INPUT label="Altura muebles sup." value={form.altura_superiores} onChange={e=>setF("altura_superiores",e.target.value)} placeholder="70 cm" />
+                  </div>
+                </SECTION>
+
+                <SECTION title="Material Estructura" icon="🪵">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+                    {["MDF","MDF RH antihumedad","Melamina","Triplay","Madera solida","PVC"].map(op => (
+                      <CHECK key={op} label={op} checked={form.material.includes(op)} onChange={() => setF("material", toggle(form.material, op))} />
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Grosor</div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {["15 mm","18 mm"].map(op => (
+                        <CHECK key={op} label={op} checked={form.grosor===op} onChange={() => setF("grosor", form.grosor===op?"":op)} />
+                      ))}
+                      <INPUT value={form.grosor && !["15 mm","18 mm"].includes(form.grosor)?form.grosor:""} onChange={e=>setF("grosor",e.target.value)} placeholder="Otro mm" style={{marginBottom:0,flex:1}} />
+                    </div>
+                  </div>
+                </SECTION>
+
+                <SECTION title="Acabado / Color / Textura" icon="🎨">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <INPUT label="Color principal" value={form.color_principal} onChange={e=>setF("color_principal",e.target.value)} placeholder="Blanco, Gris, Madera..." />
+                    <INPUT label="Color secundario" value={form.color_secundario} onChange={e=>setF("color_secundario",e.target.value)} placeholder="Negro, Dorado..." />
+                  </div>
+                  <div style={{ fontSize: 10, color: "#555", marginBottom: 8, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Tipo de acabado</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+                    {["Mate","Alto brillo","Satinado","Texturizado","Tipo madera","Liso"].map(op => (
+                      <CHECK key={op} label={op} checked={form.tipo_acabado.includes(op)} onChange={() => setF("tipo_acabado", toggle(form.tipo_acabado, op))} />
+                    ))}
+                  </div>
+                  <INPUT label="Textura o diseno deseado" value={form.textura} onChange={e=>setF("textura",e.target.value)} placeholder="Describe la textura..." style={{marginTop:10}} />
+                </SECTION>
+              </div>
+
+              <div>
+                <SECTION title="Puertas y Frentes" icon="🚪">
+                  <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Tipo de puertas</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginBottom: 14 }}>
+                    {["Lisas","Ranuradas","Con marco","Alto brillo","Tipo madera"].map(op => (
+                      <CHECK key={op} label={op} checked={form.tipo_puertas.includes(op)} onChange={() => setF("tipo_puertas", toggle(form.tipo_puertas, op))} />
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Jaladeras</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+                    {["Ocultas","Perfil Gola","Metalicas","Negras","Doradas","Integradas","Sin jaladera push"].map(op => (
+                      <CHECK key={op} label={op} checked={form.jaladeras.includes(op)} onChange={() => setF("jaladeras", toggle(form.jaladeras, op))} />
+                    ))}
+                  </div>
+                </SECTION>
+
+                <SECTION title="Herrajes" icon="🔧">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Bisagras</div>
+                      {["Normales","Cierre lento","Premium"].map(op => (
+                        <Check key={op} label={op} checked={form.bisagras===op} onChange={() => setF("bisagras", form.bisagras===op?"":op)} />
+                      ))}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Correderas</div>
+                      {["Normales","Telescopicas","Cierre lento"].map(op => (
+                        <Check key={op} label={op} checked={form.correderas===op} onChange={() => setF("correderas", form.correderas===op?"":op)} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Accesorios</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+                    {["Especiero","Organizador cajones","Basurero oculto","Porta cubiertos","Esquinero magico","Canastillas","Despensero extraible","Push open","Pistones hidraulicos","Iluminacion LED"].map(op => (
+                      <CHECK key={op} label={op} checked={form.accesorios.includes(op)} onChange={() => setF("accesorios", toggle(form.accesorios, op))} />
+                    ))}
+                  </div>
+                </SECTION>
+
+                <SECTION title="Cubierta" icon="⬜">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginBottom: 10 }}>
+                    {["Granito","Cuarzo","Marmol","Melamina","Acero inoxidable","Porcelanato"].map(op => (
+                      <CHECK key={op} label={op} checked={form.material_cubierta.includes(op)} onChange={() => setF("material_cubierta", toggle(form.material_cubierta, op))} />
+                    ))}
+                  </div>
+                  <INPUT label="Color de cubierta" value={form.color_cubierta} onChange={e=>setF("color_cubierta",e.target.value)} placeholder="Blanco Calacatta, Negro..." />
+                </SECTION>
+
+                <SECTION title="Tarja y Griferia" icon="🚿">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Tarja</div>
+                      {["Sencilla","Doble","Submontada","Sobrepuesta"].map(op => (
+                        <CHECK key={op} label={op} checked={form.tarja.includes(op)} onChange={() => setF("tarja", toggle(form.tarja, op))} />
+                      ))}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Griferia</div>
+                      {["Negra","Cromada","Dorada","Flexible","Premium"].map(op => (
+                        <CHECK key={op} label={op} checked={form.griferia.includes(op)} onChange={() => setF("griferia", toggle(form.griferia, op))} />
+                      ))}
+                    </div>
+                  </div>
+                </SECTION>
+
+                <SECTION title="Electrodomesticos" icon="⚡">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, marginBottom: 10 }}>
+                    {["Parrilla","Campana","Horno","Microondas","Refrigerador panelable","Lavavajillas"].map(op => (
+                      <CHECK key={op} label={op} checked={form.electrodomesticos.includes(op)} onChange={() => setF("electrodomesticos", toggle(form.electrodomesticos, op))} />
+                    ))}
+                  </div>
+                  <INPUT label="Medidas o modelos" value={form.medidas_electro} onChange={e=>setF("medidas_electro",e.target.value)} placeholder="Modelo o medidas de cada uno..." />
+                </SECTION>
+
+                <SECTION title="Iluminacion" icon="💡">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+                    {["LED inferior","LED interior","Luz calida","Luz fria","Sensores"].map(op => (
+                      <CHECK key={op} label={op} checked={form.iluminacion.includes(op)} onChange={() => setF("iluminacion", toggle(form.iluminacion, op))} />
+                    ))}
+                  </div>
+                </SECTION>
+
+                <SECTION title="Observaciones del Cliente" icon="📝">
+                  <textarea value={form.observaciones} onChange={e=>setF("observaciones",e.target.value)} placeholder="Notas adicionales, preferencias especiales, presupuesto aproximado..."
+                    style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", minHeight: 80, resize: "vertical" }} />
+                </SECTION>
+
+                {(role === "admin" || role === "taller") && (
+                  <SECTION title="Solo para Taller / Cotizacion" icon="🏭">
+                    <textarea value={form.materiales_solicitados} onChange={e=>setF("materiales_solicitados",e.target.value)} placeholder="Materiales solicitados..."
+                      style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", minHeight: 60, resize: "vertical", marginBottom: 10 }} />
+                    <textarea value={form.herrajes_solicitados} onChange={e=>setF("herrajes_solicitados",e.target.value)} placeholder="Herrajes solicitados..."
+                      style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", minHeight: 60, resize: "vertical", marginBottom: 10 }} />
+                    <div style={{ fontSize: 10, color: "#555", marginBottom: 6, letterSpacing: 1.5, fontFamily: "DM Sans, sans-serif", textTransform: "uppercase" }}>Nivel de calidad</div>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                      {["Economico","Medio","Premium"].map(op => (
+                        <button key={op} onClick={() => setF("nivel_calidad", op)} style={{ flex: 1, padding: "8px", borderRadius: 8, border: `1px solid ${form.nivel_calidad===op?"#d4af37":"#2a2a20"}`, background: form.nivel_calidad===op?"#d4af3715":"transparent", color: form.nivel_calidad===op?"#d4af37":"#555", fontFamily: "DM Sans, sans-serif", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>{op}</button>
+                      ))}
+                    </div>
+                    <textarea value={form.comentarios_tecnicos} onChange={e=>setF("comentarios_tecnicos",e.target.value)} placeholder="Comentarios tecnicos del taller..."
+                      style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", minHeight: 60, resize: "vertical" }} />
+                  </SECTION>
+                )}
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+              <button onClick={guardarFormulario} style={{ background: "#d4af37", color: "#000", border: "none", borderRadius: 10, padding: "14px 40px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 14, cursor: "pointer", letterSpacing: 1 }}>
+                GUARDAR LEVANTAMIENTO
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ESTILOS VISUALES */}
+        {tab === "estilos" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 24 }}>Estilos de Cocina</h1>
+            <p style={{ color: "#555", margin: "0 0 24px", fontSize: 13, fontFamily: "DM Sans, sans-serif" }}>Selecciona el estilo que mas te gusta para tu cocina</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 16 }}>
+              {ESTILOS.map(e => {
+                const sel = form.estilo.includes(e.label);
+                return (
+                  <div key={e.key} onClick={() => setF("estilo", toggle(form.estilo, e.label))}
+                    style={{ background: "#0f0f0a", border: `2px solid ${sel?"#d4af37":"#ffffff08"}`, borderRadius: 16, overflow: "hidden", cursor: "pointer", transition: "all .2s", transform: sel?"scale(1.02)":"none" }}>
+                    <div style={{ position: "relative", height: 160, overflow: "hidden" }}>
+                      <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1)":"brightness(0.6)", transition: "all .3s" }} />
+                      {sel && <div style={{ position: "absolute", top: 10, right: 10, background: "#d4af37", color: "#000", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14 }}>✓</div>}
+                    </div>
+                    <div style={{ padding: "14px 16px" }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: sel?"#d4af37":"#e8e0d0", marginBottom: 4 }}>{e.label}</div>
+                      <div style={{ fontSize: 12, color: "#555", fontFamily: "DM Sans, sans-serif" }}>{e.desc}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {form.estilo.length > 0 && (
+              <div style={{ marginTop: 20, background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 12, padding: 16 }}>
+                <div style={{ fontFamily: "DM Sans, sans-serif", fontSize: 13, color: "#aaa" }}>
+                  Estilos seleccionados: <b style={{ color: "#d4af37" }}>{form.estilo.join(", ")}</b>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* PRESUPUESTO */}
+        {tab === "presupuesto" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
+              <div>
+                <h1 style={{ color: "#d4af37", margin: 0, fontSize: 24 }}>Presupuesto Profesional</h1>
+                <p style={{ color: "#555", margin: "4px 0 0", fontSize: 13, fontFamily: "DM Sans, sans-serif" }}>Completa los campos para generar el presupuesto</p>
+              </div>
+              {totalPresupuesto > 0 && (
+                <button onClick={imprimirPresupuesto} style={{ background: "#d4af37", color: "#000", border: "none", borderRadius: 8, padding: "10px 20px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  Imprimir / PDF
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div>
+                <SECTION title="Que Incluye" icon="✅">
+                  <textarea value={form.incluye} onChange={e=>setF("incluye",e.target.value)}
+                    placeholder={"Diseno\nFabricacion\nTransporte\nInstalacion\nAjustes\nLimpieza final"}
+                    style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", minHeight: 120, resize: "vertical" }} />
+                </SECTION>
+
+                <SECTION title="Que NO Incluye" icon="❌">
+                  <textarea value={form.no_incluye} onChange={e=>setF("no_incluye",e.target.value)}
+                    placeholder={"Plomeria\nElectricidad\nAlbanileria\nElectrodomesticos\nIluminacion\nCambios despues de aprobado diseno"}
+                    style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "10px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", minHeight: 120, resize: "vertical" }} />
+                </SECTION>
+
+                <SECTION title="Forma de Pago" icon="💰">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                    <INPUT label="% Anticipo" value={form.anticipo} onChange={e=>setF("anticipo",e.target.value)} placeholder="60" type="number" />
+                    <INPUT label="% Antes instalacion" value={form.pago_entrega} onChange={e=>setF("pago_entrega",e.target.value)} placeholder="30" type="number" />
+                    <INPUT label="% Contra entrega" value={form.pago_final} onChange={e=>setF("pago_final",e.target.value)} placeholder="10" type="number" />
+                  </div>
+                </SECTION>
+
+                <SECTION title="Tiempo y Garantia" icon="⏱️">
+                  <INPUT label="Tiempo de entrega" value={form.tiempo_entrega} onChange={e=>setF("tiempo_entrega",e.target.value)} placeholder="20 a 30 dias habiles" />
+                  <INPUT label="Garantia" value={form.garantia} onChange={e=>setF("garantia",e.target.value)} placeholder="6 meses en instalacion y herrajes" />
+                </SECTION>
+              </div>
+
+              <div>
+                <SECTION title="Desglose de Precios" icon="📊">
+                  <INPUT label="Fabricacion (MXN)" value={form.precio_fabricacion} onChange={e=>setF("precio_fabricacion",e.target.value)} placeholder="35000" type="number" />
+                  <INPUT label="Instalacion (MXN)" value={form.precio_instalacion} onChange={e=>setF("precio_instalacion",e.target.value)} placeholder="8000" type="number" />
+                  <INPUT label="Cubierta (MXN)" value={form.precio_cubierta} onChange={e=>setF("precio_cubierta",e.target.value)} placeholder="12000" type="number" />
+                  <INPUT label="Herrajes (MXN)" value={form.precio_herrajes} onChange={e=>setF("precio_herrajes",e.target.value)} placeholder="5000" type="number" />
+                  <INPUT label="Otros (MXN)" value={form.precio_otros} onChange={e=>setF("precio_otros",e.target.value)} placeholder="0" type="number" />
+
+                  <div style={{ background: "#1a1208", border: "1px solid #d4af3730", borderRadius: 12, padding: 16, marginTop: 8 }}>
+                    {[["Fabricacion",form.precio_fabricacion],["Instalacion",form.precio_instalacion],["Cubierta",form.precio_cubierta],["Herrajes",form.precio_herrajes],["Otros",form.precio_otros]].filter(([,v])=>v).map(([l,v],i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#aaa", marginBottom: 6, fontFamily: "DM Sans, sans-serif" }}>
+                        <span>{l}</span><span>${parseFloat(v).toLocaleString("es-MX")} MXN</span>
+                      </div>
+                    ))}
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, fontWeight: 900, color: "#d4af37", paddingTop: 10, borderTop: "1px solid #d4af3730", marginTop: 6 }}>
+                      <span>TOTAL</span><span>${totalPresupuesto.toLocaleString("es-MX")} MXN</span>
+                    </div>
+                    {totalPresupuesto > 0 && (
+                      <div style={{ marginTop: 12, fontSize: 12, color: "#555", fontFamily: "DM Sans, sans-serif", lineHeight: 1.8 }}>
+                        Anticipo {form.anticipo}%: <b style={{color:"#d4af37"}}>${(totalPresupuesto*parseFloat(form.anticipo||0)/100).toLocaleString("es-MX")} MXN</b><br/>
+                        Antes instalacion {form.pago_entrega}%: <b style={{color:"#d4af37"}}>${(totalPresupuesto*parseFloat(form.pago_entrega||0)/100).toLocaleString("es-MX")} MXN</b><br/>
+                        Contra entrega {form.pago_final}%: <b style={{color:"#d4af37"}}>${(totalPresupuesto*parseFloat(form.pago_final||0)/100).toLocaleString("es-MX")} MXN</b>
+                      </div>
+                    )}
+                  </div>
+                </SECTION>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* LEADS TALLER */}
+        {tab === "leads" && role === "taller" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px" }}>Proyectos Disponibles</h1>
+            {proyectos.length === 0 && <div style={{ color: "#555", fontFamily: "DM Sans, sans-serif", fontSize: 13, padding: 20 }}>No hay proyectos asignados aun</div>}
+            {proyectos.map((p, i) => (
+              <div key={i} onClick={() => setProyectoSel(proyectoSel?.created_at===p.created_at?null:p)}
+                style={{ background: "#0f0f0a", border: `1px solid ${proyectoSel?.created_at===p.created_at?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: "16px 20px", marginBottom: 10, cursor: "pointer" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                  <div>
+                    <div style={{ fontWeight: 700 }}>Proyecto #{i+1} - {p.tipo_cocina?.join(", ") || "Cocina"}</div>
+                    <div style={{ fontSize: 12, color: "#555", fontFamily: "DM Sans, sans-serif" }}>{p.estilo?.join(", ")} - {p.created_at?.split("T")[0]}</div>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#00bcd4", fontWeight: 700, fontFamily: "DM Sans, sans-serif" }}>{p.nivel_calidad || "Sin clasificar"}</div>
+                </div>
+                {proyectoSel?.created_at === p.created_at && (
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08", fontFamily: "DM Sans, sans-serif", fontSize: 13 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, color: "#aaa" }}>
+                      {[["Tipo",p.tipo_cocina?.join(", ")],["Estilo",p.estilo?.join(", ")],["Material",p.material?.join(", ")],["Largo",p.largo],["Altura",p.altura],["Cubierta",p.material_cubierta?.join(", ")],["Bisagras",p.bisagras],["Correderas",p.correderas],["Accesorios",p.accesorios?.join(", ")],["Nivel",p.nivel_calidad],["Materiales taller",p.materiales_solicitados],["Herrajes taller",p.herrajes_solicitados]].filter(([,v])=>v).map(([l,v],j) => (
+                        <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
+                      ))}
+                    </div>
+                    {p.comentarios_tecnicos && <div style={{ marginTop: 10, color: "#aaa" }}><b style={{color:"#d4af37"}}>Comentarios tecnicos:</b> {p.comentarios_tecnicos}</div>}
+                    <button onClick={e => { e.stopPropagation(); setForm({...FORM_INIT,...p}); setTab("presupuesto"); }}
+                      style={{ marginTop: 14, background: "#d4af37", color: "#000", border: "none", borderRadius: 8, padding: "9px 20px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                      Hacer Cotizacion
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* IA ASESOR */}
+        {tab === "ia" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 24 }}>IA Asesora de Diseno</h1>
+            <p style={{ color: "#555", margin: "0 0 24px", fontSize: 13, fontFamily: "DM Sans, sans-serif" }}>Basandose en tu formulario, la IA recomienda materiales, colores y accesorios</p>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20 }}>
+                <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontFamily: "DM Sans, sans-serif", fontSize: 14, letterSpacing: 1 }}>RESUMEN DEL PROYECTO</h3>
+                {[["Tipo de cocina",form.tipo_cocina?.join(", ")],["Estilo",form.estilo?.join(", ")],["Material",form.material?.join(", ")],["Acabado",form.tipo_acabado?.join(", ")],["Color principal",form.color_principal],["Cubierta",form.material_cubierta?.join(", ")],["Accesorios",form.accesorios?.join(", ")]].map(([l,v],i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 13, fontFamily: "DM Sans, sans-serif" }}>
+                    <span style={{ color: "#555", minWidth: 110 }}>{l}:</span>
+                    <span style={{ color: v?"#e8e0d0":"#2a2a20" }}>{v || "Sin especificar"}</span>
+                  </div>
+                ))}
+                <button onClick={analizarConIA} disabled={aiLoading}
+                  style={{ width: "100%", marginTop: 16, background: aiLoading?"#1a1a10":"#d4af37", color: aiLoading?"#555":"#000", border: "none", borderRadius: 10, padding: "13px", fontFamily: "DM Sans, sans-serif", fontWeight: 700, fontSize: 13, cursor: aiLoading?"not-allowed":"pointer", letterSpacing: 1 }}>
+                  {aiLoading ? "Analizando proyecto..." : "ANALIZAR CON IA"}
+                </button>
+              </div>
+
+              <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 16, padding: 20, minHeight: 300 }}>
+                <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontFamily: "DM Sans, sans-serif", fontSize: 14, letterSpacing: 1 }}>RECOMENDACION DE LA IA</h3>
+                {!aiResult && !aiLoading && (
+                  <div style={{ textAlign: "center", padding: "40px 20px", color: "#2a2a20", fontFamily: "DM Sans, sans-serif", fontSize: 13 }}>
+                    Llena el formulario y presiona Analizar con IA
+                  </div>
+                )}
+                {aiLoading && <div style={{ color: "#d4af37", fontFamily: "DM Sans, sans-serif", fontSize: 13, padding: "20px 0" }}>Analizando especificaciones...</div>}
+                {aiResult && <div style={{ fontSize: 13, color: "#e8e0d0", lineHeight: 1.9, whiteSpace: "pre-wrap", fontFamily: "DM Sans, sans-serif" }}>{aiResult}</div>}
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+// Fix: missing Check component (used in herrajes section)
+function Check({ label, checked, onChange }) {
+  return (
+    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", padding: "4px 0", fontSize: 13, color: checked ? "#d4af37" : "#aaa", fontFamily: "DM Sans, Arial, sans-serif" }}>
+      <div style={{ width: 16, height: 16, borderRadius: "50%", border: `2px solid ${checked ? "#d4af37" : "#444"}`, background: checked ? "#d4af37" : "transparent", flexShrink: 0, transition: "all .15s" }} />
+      {label}
+    </label>
+  );
+}
