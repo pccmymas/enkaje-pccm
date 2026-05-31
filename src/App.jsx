@@ -2322,7 +2322,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #4caf5040", background: "#4caf5010", color: "#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Cierre</button>
                         {t.slug && (
                           <button onClick={e => { e.stopPropagation(); const link = `https://enkajepro.com/taller/${t.slug}`; navigator.clipboard.writeText(link); alert("Link copiado: " + link); }}
-                            style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${GOLD}40`, background: `${GOLD}10`, color: GOLD, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>🔗 Copiar link</button>
+                            style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>🔗 Copiar link</button>
                         )}
                         <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?enkaje=eq.${t.enkaje}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #f4433640", background: "#f443360a", color: "#f44336", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Eliminar</button>
