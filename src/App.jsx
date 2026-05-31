@@ -2537,6 +2537,81 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           <button onClick={e => { e.stopPropagation(); const link = `https://enkajepro.com/taller/${t.slug}`; navigator.clipboard.writeText(link); alert("Link copiado: " + link); }}
                             style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>🔗 Copiar link</button>
                         )}
+                        {t.email && (
+                          <button onClick={e => {
+                            e.stopPropagation();
+                            const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+                            const pass = Array.from({length:10}, () => chars[Math.floor(Math.random()*chars.length)]).join("") + "!";
+                            const planLabel = t.plan==="premium"?"Premium $2,999/mes":t.plan==="pro"?"Pro $1,499/mes":"Básico $699/mes";
+                            const body = [
+                              `╔════════════════════════════╗`,
+                              `║      E n K a j e  P R O   ║`,
+                              `║   Plataforma de Carpintería║`,
+                              `╚════════════════════════════╝`,
+                              ``,
+                              `🎉 ¡BIENVENIDO, ${t.nombre.toUpperCase()}!`,
+                              ``,
+                              `Este es el momento en que tu taller da el salto al siguiente nivel.`,
+                              `Acabas de unirte a la plataforma que está transformando la carpintería`,
+                              `en Monterrey — y tú eres parte de los primeros en hacerlo.`,
+                              ``,
+                              `Con EnKaje Pro vas a:`,
+                              `✅ Recibir leads directo a tu WhatsApp`,
+                              `✅ Generar presupuestos profesionales en minutos`,
+                              `✅ Crear contratos digitales con tu logo`,
+                              `✅ Darle seguimiento a cada proyecto`,
+                              `✅ Construir tu reputación con reseñas verificadas`,
+                              ``,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              `   TUS CREDENCIALES DE ACCESO`,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              `🌐 Plataforma: https://enkajepro.com/app`,
+                              `📧 Correo: ${t.email}`,
+                              `🔑 Contraseña temporal: ${pass}`,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              ``,
+                              `CÓMO ENTRAR:`,
+                              `1. Ve a enkajepro.com/app`,
+                              `2. Click en "Crear cuenta"`,
+                              `3. Regístrate con este correo y contraseña`,
+                              `4. ¡Ya estás dentro!`,
+                              ``,
+                              `⚠️ Guarda esta contraseña, cámbiala después de entrar.`,
+                              ``,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              `   TU LINK PERSONAL`,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              `🔗 enkajepro.com/taller/${t.slug || "tu-slug"}`,
+                              ``,
+                              `Compártelo en Facebook, Instagram, TikTok y WhatsApp.`,
+                              `Cada cliente que lo visite puede solicitarte cotización directo a tu teléfono.`,
+                              ``,
+                              `Tu plan: ${planLabel}`,
+                              ``,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              `   🚀 PRÓXIMAS FUNCIONES`,
+                              `━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+                              `⭐ Reseñas verificadas de tus clientes`,
+                              `📸 Portafolio de fotos de tus proyectos`,
+                              `🤖 IA que genera renders para tus clientes`,
+                              `📊 Dashboard de métricas y ventas`,
+                              `🗺️ Directorio público de talleres verificados`,
+                              `💳 Pagos en línea y anticipo digital`,
+                              ``,
+                              `Tú y los talleres fundadores tendrán acceso prioritario a cada nueva función.`,
+                              ``,
+                              `Gracias por confiar en EnKaje Pro. 🙏`,
+                              ``,
+                              `Con gusto,`,
+                              `Felipe Santiago`,
+                              `Fundador · EnKaje Pro`,
+                              `Monterrey, Nuevo León · enkajepro.com`,
+                            ].join("\n");
+                            window.open(`mailto:${t.email}?subject=Bienvenido a EnKaje Pro - Tus credenciales de acceso&body=${encodeURIComponent(body)}`, "_blank");
+                            alert(`📧 Email listo para enviar\nContraseña generada: ${pass}\n\nCopia esta contraseña y créala en Supabase → Authentication → Users`);
+                          }}
+                            style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #00bcd440", background: "#00bcd410", color: "#00bcd4", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>📧 Enviar credenciales</button>
+                        )}
                         <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?id=eq.${t.id}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #f4433640", background: "#f443360a", color: "#f44336", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Eliminar</button>
                       </div>
