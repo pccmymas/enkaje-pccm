@@ -28,14 +28,14 @@ const authFetch = async (path, body) => {
 };
 
 const ESTILOS = [
-  { key: "moderno",       label: "Moderno",       img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop", desc: "Lineas limpias, colores neutros" },
-  { key: "minimalista",   label: "Minimalista",   img: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600&q=80&fit=crop", desc: "Lo esencial, espacios abiertos" },
-  { key: "contemporaneo", label: "Contemporaneo", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop", desc: "Mezcla de estilos actuales" },
-  { key: "industrial",    label: "Industrial",    img: "https://images.unsplash.com/photo-1604709177225-055f99402ea3?w=600&q=80&fit=crop", desc: "Metal, madera cruda, urbano" },
-  { key: "clasico",       label: "Clasico",       img: "https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=600&q=80&fit=crop", desc: "Molduras, detalles ornamentales" },
-  { key: "rustico",       label: "Rustico",       img: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&fit=crop", desc: "Madera natural, texturas organicas" },
-  { key: "nordico",       label: "Nordico",       img: "https://images.unsplash.com/photo-1583845112203-29329902332e?w=600&q=80&fit=crop", desc: "Blanco, madera clara, acogedor" },
-  { key: "lujo",          label: "Lujo / Premium",img: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=600&q=80&fit=crop", desc: "Materiales nobles, exclusividad" },
+  { key: "moderno",       label: "Moderno",       img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop&crop=center", desc: "Lineas limpias, colores neutros" },
+  { key: "minimalista",   label: "Minimalista",   img: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?w=600&q=80&fit=crop&crop=center", desc: "Lo esencial, espacios abiertos" },
+  { key: "contemporaneo", label: "Contemporaneo", img: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&fit=crop&crop=center", desc: "Mezcla de estilos actuales" },
+  { key: "industrial",    label: "Industrial",    img: "https://images.unsplash.com/photo-1588854337236-6a0e4de27897?w=600&q=80&fit=crop&crop=center", desc: "Metal, madera cruda, urbano" },
+  { key: "clasico",       label: "Clasico",       img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&fit=crop&crop=center", desc: "Molduras, detalles ornamentales" },
+  { key: "rustico",       label: "Rustico",       img: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=600&q=80&fit=crop&crop=center", desc: "Madera natural, texturas organicas" },
+  { key: "nordico",       label: "Nordico",       img: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=600&q=80&fit=crop&crop=center", desc: "Blanco, madera clara, acogedor" },
+  { key: "lujo",          label: "Lujo / Premium",img: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=600&q=80&fit=crop&crop=center", desc: "Materiales nobles, exclusividad" },
 ];
 
 const FORM_INIT = {
@@ -234,7 +234,7 @@ function FormularioCocina({ form, setF, role, isMobile }) {
               <div key={e.key} onClick={() => setF("estilo", sel ? form.estilo.filter(x=>x!==e.label) : [...form.estilo, e.label])}
                 style={{ borderRadius: 12, overflow: "hidden", cursor: "pointer", border: `2px solid ${sel?"#d4af37":"transparent"}`, transition: "all .2s", boxShadow: sel?"0 0 16px #d4af3830":"none" }}>
                 <div style={{ position: "relative", height: isMobile ? 90 : 110, background: "#1a1a10" }}>
-                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1)":"brightness(0.6)", transition: "all .3s" }} onError={ev=>ev.target.style.display="none"} />
+                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1)":"brightness(0.6)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background=`linear-gradient(135deg,#1a1208,#2a1f0a)`;}} />
                   {sel && <div style={{ position: "absolute", top: 6, right: 6, background: "#d4af37", color: "#000", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 12 }}>✓</div>}
                   <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.85))", padding: "14px 8px 6px" }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: sel?"#d4af37":"#fff" }}>{e.label}</div>
@@ -908,59 +908,80 @@ export default function App() {
     setSavedMsg("Guardando...");
     try {
       const f = getForm();
-      const arr = v => Array.isArray(v) ? v.join(", ") : (v || "");
-      // Solo columnas base que siempre existen en cualquier tabla proyectos
-      // Todo lo demás va en datos_json para evitar errores de columna faltante
-      const payload = {
-        user_id:       user?.id    || null,
-        user_email:    user?.email || null,
-        estado:        "nuevo",
-        created_at:    new Date().toISOString(),
-        tipo_proyecto: f.tipo_proyecto || "cocina",
-        nombre:        f.nombre        || null,
-        telefono:      f.telefono      || null,
-        correo:        f.correo        || null,
-        direccion:     f.direccion     || null,
-        observaciones: f.observaciones || null,
-        nivel_calidad: f.nivel_calidad || null,
-        // Campos de precio
-        precio_fabricacion: f.precio_fabricacion || null,
-        precio_instalacion: f.precio_instalacion || null,
-        precio_cubierta:    f.precio_cubierta    || null,
-        precio_herrajes:    f.precio_herrajes     || null,
-        precio_otros:       f.precio_otros        || null,
-        tiempo_entrega:     f.tiempo_entrega      || null,
-        garantia:           f.garantia            || null,
-        // Resumen de selecciones como texto (para búsquedas)
-        estilo:    arr(f.estilo),
-        material:  arr(f.material),
-        // Todos los datos completos del formulario en un campo JSON
-        datos_json: JSON.stringify(f),
+      const arr = v => Array.isArray(v) && v.length ? v.join(", ") : "";
+      const val = v => (v && String(v).trim()) ? String(v).trim() : null;
+      // Construir payload solo con valores que tienen contenido
+      const raw = {
+        user_id:            user?.id || null,
+        user_email:         user?.email || null,
+        estado:             "nuevo",
+        created_at:         new Date().toISOString(),
+        tipo_proyecto:      val(f.tipo_proyecto) || "cocina",
+        nombre:             val(f.nombre),
+        telefono:           val(f.telefono),
+        correo:             val(f.correo),
+        direccion:          val(f.direccion),
+        fecha:              val(f.fecha),
+        atencion_por:       val(f.atencion_por),
+        largo:              val(f.largo),
+        altura:             val(f.altura),
+        profundidad:        val(f.profundidad),
+        area:               val(f.area),
+        ancho:              val(f.ancho),
+        alto:               val(f.alto),
+        grosor_puerta:      val(f.grosor_puerta),
+        cantidad:           val(f.cantidad),
+        medidas_isla:       val(f.medidas_isla),
+        altura_superiores:  val(f.altura_superiores),
+        color_principal:    val(f.color_principal),
+        color_secundario:   val(f.color_secundario),
+        color_cubierta:     val(f.color_cubierta),
+        textura:            val(f.textura),
+        medidas_electro:    val(f.medidas_electro),
+        observaciones:      val(f.observaciones),
+        materiales_solicitados: val(f.materiales_solicitados),
+        comentarios_tecnicos:   val(f.comentarios_tecnicos),
+        nivel_calidad:      val(f.nivel_calidad),
+        precio_fabricacion: val(f.precio_fabricacion),
+        precio_instalacion: val(f.precio_instalacion),
+        precio_cubierta:    val(f.precio_cubierta),
+        precio_herrajes:    val(f.precio_herrajes),
+        precio_otros:       val(f.precio_otros),
+        incluye:            val(f.incluye),
+        no_incluye:         val(f.no_incluye),
+        tiempo_entrega:     val(f.tiempo_entrega),
+        anticipo:           val(f.anticipo),
+        pago_entrega:       val(f.pago_entrega),
+        pago_final:         val(f.pago_final),
+        garantia:           val(f.garantia),
+        tipo_cocina:        arr(f.tipo_cocina)  || null,
+        tipo_closet:        arr(f.tipo_closet)  || null,
+        tipo_puerta:        arr(f.tipo_puerta)  || null,
+        tipo_mueble:        arr(f.tipo_mueble)  || null,
+        estilo:             arr(f.estilo)        || null,
+        material:           arr(f.material)      || null,
+        grosor:             arr(f.grosor)         || null,
+        tipo_acabado:       arr(f.tipo_acabado)  || null,
+        tipo_puertas:       arr(f.tipo_puertas)  || null,
+        jaladeras:          arr(f.jaladeras)     || null,
+        bisagras:           arr(f.bisagras)      || null,
+        correderas:         arr(f.correderas)    || null,
+        accesorios:         arr(f.accesorios)    || null,
+        accesorios_closet:  arr(f.accesorios_closet)  || null,
+        accesorios_mueble:  arr(f.accesorios_mueble)  || null,
+        material_cubierta:  arr(f.material_cubierta)  || null,
+        tarja:              arr(f.tarja)         || null,
+        griferia:           arr(f.griferia)      || null,
+        electrodomesticos:  arr(f.electrodomesticos)  || null,
+        iluminacion:        arr(f.iluminacion)   || null,
+        tipo_marco:         arr(f.tipo_marco)    || null,
+        herrajes_puerta:    arr(f.herrajes_puerta) || null,
       };
-      // Quitar nulls
-      Object.keys(payload).forEach(k => { if (payload[k] === null || payload[k] === undefined) delete payload[k]; });
+      // Eliminar nulls — Supabase ignora columnas que no existen si no las mandamos
+      const payload = Object.fromEntries(Object.entries(raw).filter(([,v]) => v !== null && v !== undefined && v !== ""));
       const res = await sb("proyectos", { method: "POST", token, body: JSON.stringify(payload) });
       if (res && !Array.isArray(res) && (res.code || res.error || res.hint)) {
-        // Si falla por columna faltante, intentar con payload mínimo
-        const minPayload = {
-          user_id: user?.id || null,
-          user_email: user?.email || null,
-          estado: "nuevo",
-          created_at: new Date().toISOString(),
-          tipo_proyecto: f.tipo_proyecto || "cocina",
-          nombre: f.nombre || null,
-          telefono: f.telefono || null,
-          observaciones: f.observaciones || null,
-          datos_json: JSON.stringify(f),
-        };
-        Object.keys(minPayload).forEach(k => { if (minPayload[k] === null || minPayload[k] === undefined) delete minPayload[k]; });
-        const res2 = await sb("proyectos", { method: "POST", token, body: JSON.stringify(minPayload) });
-        if (res2 && !Array.isArray(res2) && (res2.code || res2.error)) {
-          setSavedMsg("❌ " + (res2.message || res2.error));
-        } else {
-          setSavedMsg("✅ Guardado en Mis Proyectos");
-          cargarProyectos();
-        }
+        setSavedMsg("❌ " + (res.message || res.hint || res.error || JSON.stringify(res)));
       } else {
         setSavedMsg("✅ Guardado en Mis Proyectos");
         cargarProyectos();
@@ -1007,128 +1028,180 @@ export default function App() {
     if (screen === "app" && tab === "membresias") cargarTalleres();
   }, [tab, screen]);
 
+  function compartirFormulario(canal) {
+    const f = getForm();
+    const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v || "");
+    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
+    const sep = "━".repeat(26);
+    const lineas = [
+      `LEVANTAMIENTO ${tipo.toUpperCase()} - EnKaje Pro`,
+      sep,
+      `Cliente: ${f.nombre||"---"}`,
+      `Tel: ${f.telefono||"---"}`,
+      `Fecha: ${f.fecha||"---"}`,
+      sep,
+    ];
+    if (tipoForm==="cocina" && arr(f.tipo_cocina)) lineas.push(`Tipo: ${arr(f.tipo_cocina)}`);
+    if (tipoForm==="closet" && arr(f.tipo_closet)) lineas.push(`Tipo: ${arr(f.tipo_closet)}`);
+    if (tipoForm==="puerta" && arr(f.tipo_puerta)) lineas.push(`Tipo: ${arr(f.tipo_puerta)}`);
+    if (tipoForm==="mueble" && arr(f.tipo_mueble)) lineas.push(`Tipo: ${arr(f.tipo_mueble)}`);
+    if (arr(f.estilo))    lineas.push(`Estilo: ${arr(f.estilo)}`);
+    if (arr(f.material))  lineas.push(`Material: ${arr(f.material)}`);
+    if (f.color_principal) lineas.push(`Color: ${f.color_principal}`);
+    if (arr(f.tipo_acabado)) lineas.push(`Acabado: ${arr(f.tipo_acabado)}`);
+    if (f.largo||f.altura||f.ancho||f.alto) lineas.push(`Medidas: ${[f.largo,f.altura,f.profundidad,f.ancho,f.alto].filter(Boolean).join(" x ")}`);
+    if (f.observaciones) lineas.push(sep, `Obs: ${f.observaciones}`);
+    lineas.push(sep, "enkajepro.com · Monterrey");
+    const txt = lineas.join("\n");
+    const titulo = `Levantamiento ${tipo} - EnKaje Pro`;
+    const msg = encodeURIComponent(txt);
+    if (canal==="whatsapp")  window.open(`https://wa.me/?text=${msg}`, "_blank");
+    if (canal==="email")     window.open(`mailto:?subject=${encodeURIComponent(titulo)}&body=${msg}`, "_blank");
+    if (canal==="facebook")  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://enkajepro.com")}&quote=${msg}`, "_blank");
+    if (canal==="messenger") window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent("https://enkajepro.com")}&app_id=1401488693436528&redirect_uri=${encodeURIComponent("https://enkajepro.com")}`, "_blank");
+    if (canal==="instagram") { navigator.clipboard.writeText(txt); alert("Texto copiado. Pégalo en Instagram."); }
+    if (canal==="tiktok")    { navigator.clipboard.writeText(txt); alert("Texto copiado. Pégalo en TikTok."); }
+    if (canal==="copiar")    { navigator.clipboard.writeText(txt); alert("Copiado al portapapeles"); }
+  }
+
   function imprimirFormulario() {
     const f = getForm();
-    const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v || "---");
-    const tipoLabel = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
-    const tipoIcon  = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
+    const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v||"");
+    const has  = v => Array.isArray(v) ? v.length > 0 : (v && String(v).trim() !== "");
+    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
+    const icon = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
     const folio = `LV-${Date.now().toString().slice(-6)}`;
 
-    // Filas según tipo de proyecto
-    const filasCocina = [
-      ["Tipo de cocina", arr(f.tipo_cocina)],
-      ["Largo total", f.largo], ["Altura", f.altura], ["Profundidad", f.profundidad],
-      ["Área aprox.", f.area], ["Medidas isla", f.medidas_isla], ["Alt. superiores", f.altura_superiores],
-      ["Cubierta", arr(f.material_cubierta)], ["Color cubierta", f.color_cubierta],
-      ["Tarja", arr(f.tarja)], ["Grifería", arr(f.griferia)],
-      ["Electrodomésticos", arr(f.electrodomesticos)], ["Medidas electro", f.medidas_electro],
-      ["Accesorios", arr(f.accesorios)],
-    ];
-    const filasCloset = [
-      ["Tipo de closet", arr(f.tipo_closet)],
-      ["Largo / Ancho", f.largo], ["Altura", f.altura], ["Profundidad", f.profundidad], ["Área", f.area],
-      ["Accesorios", arr(f.accesorios_closet)],
-    ];
-    const filasPuerta = [
-      ["Tipo de puerta", arr(f.tipo_puerta)],
-      ["Ancho", f.ancho], ["Alto", f.alto], ["Grosor", f.grosor_puerta], ["Cantidad", f.cantidad],
-      ["Marco", arr(f.tipo_marco)], ["Herrajes", arr(f.herrajes_puerta)],
-    ];
-    const filasMueble = [
-      ["Tipo de mueble", arr(f.tipo_mueble)],
-      ["Largo / Ancho", f.largo], ["Alto", f.alto], ["Profundidad", f.profundidad], ["Cantidad", f.cantidad],
-      ["Accesorios", arr(f.accesorios_mueble)],
-    ];
-    const filasEspecificas = tipoForm==="cocina"?filasCocina:tipoForm==="closet"?filasCloset:tipoForm==="puerta"?filasPuerta:filasMueble;
-    const filasComunes = [
-      ["Estilo", arr(f.estilo)], ["Material", arr(f.material)], ["Grosor", arr(f.grosor)],
-      ["Color principal", f.color_principal], ["Color secundario", f.color_secundario],
-      ["Acabado", arr(f.tipo_acabado)], ["Textura", f.textura],
-      ["Tipo puertas", arr(f.tipo_puertas)], ["Jaladeras", arr(f.jaladeras)],
-      ["Bisagras", arr(f.bisagras)], ["Correderas", arr(f.correderas)],
-      ["Iluminación", arr(f.iluminacion)],
-    ];
-    const todasFilas = [...filasEspecificas, ...filasComunes].filter(([,v])=>v&&v!=="---");
-    const filasHTML = todasFilas.map(([l,v],i)=>`<tr style="background:${i%2===0?'#fff':'#f9f7f3'}"><td style="padding:8px 14px;color:#666;font-size:12px;border-bottom:1px solid #ede9e0;width:40%">${l}</td><td style="padding:8px 14px;color:#1a1a1a;font-size:13px;font-weight:500;border-bottom:1px solid #ede9e0">${v}</td></tr>`).join("");
+    // Solo filas con valor
+    const filas = [];
+    const add = (l,v) => { if(has(v)) filas.push([l, Array.isArray(v)?v.join(", "):v]); };
+
+    // Específicas por tipo
+    if(tipoForm==="cocina"){
+      add("Tipo de cocina",f.tipo_cocina); add("Largo total",f.largo); add("Altura",f.altura);
+      add("Profundidad",f.profundidad); add("Área aprox.",f.area); add("Medidas isla",f.medidas_isla);
+      add("Alt. superiores",f.altura_superiores); add("Cubierta",f.material_cubierta);
+      add("Color cubierta",f.color_cubierta); add("Tarja",f.tarja); add("Grifería",f.griferia);
+      add("Electrodomésticos",f.electrodomesticos); add("Medidas electro",f.medidas_electro); add("Accesorios",f.accesorios);
+    } else if(tipoForm==="closet"){
+      add("Tipo de closet",f.tipo_closet); add("Largo / Ancho",f.largo); add("Altura",f.altura);
+      add("Profundidad",f.profundidad); add("Área",f.area); add("Accesorios",f.accesorios_closet);
+    } else if(tipoForm==="puerta"){
+      add("Tipo de puerta",f.tipo_puerta); add("Ancho",f.ancho); add("Alto",f.alto);
+      add("Grosor",f.grosor_puerta); add("Cantidad",f.cantidad); add("Marco",f.tipo_marco); add("Herrajes",f.herrajes_puerta);
+    } else {
+      add("Tipo de mueble",f.tipo_mueble); add("Largo / Ancho",f.largo); add("Alto",f.alto);
+      add("Profundidad",f.profundidad); add("Cantidad",f.cantidad); add("Accesorios",f.accesorios_mueble);
+    }
+    // Comunes
+    add("Estilo",f.estilo); add("Material",f.material); add("Grosor",f.grosor);
+    add("Color principal",f.color_principal); add("Color secundario",f.color_secundario);
+    add("Acabado",f.tipo_acabado); add("Textura",f.textura);
+    add("Tipo puertas",f.tipo_puertas); add("Jaladeras",f.jaladeras);
+    add("Bisagras",f.bisagras); add("Correderas",f.correderas); add("Iluminación",f.iluminacion);
+
+    const filasHTML = filas.map(([l,v],i) =>
+      `<tr><td class="td-l">${l}</td><td class="td-v">${v}</td></tr>`
+    ).join("");
+
     const tallerHTML = (f.materiales_solicitados||f.nivel_calidad||f.comentarios_tecnicos) ? `
-      <div style="margin-top:24px;border:1px solid #00bcd430;border-radius:10px;overflow:hidden">
-        <div style="background:#001a20;padding:10px 16px;font-size:10px;font-weight:700;color:#00bcd4;letter-spacing:3px;text-transform:uppercase">🏭 Notas del Taller</div>
-        <div style="padding:14px 16px">
-          ${f.nivel_calidad?`<p style="font-size:12px;margin:0 0 8px"><b style="color:#00bcd4">Nivel:</b> ${f.nivel_calidad}</p>`:""}
-          ${f.materiales_solicitados?`<p style="font-size:12px;margin:0 0 8px"><b>Materiales:</b> ${f.materiales_solicitados}</p>`:""}
-          ${f.comentarios_tecnicos?`<p style="font-size:12px;margin:0"><b>Técnico:</b> ${f.comentarios_tecnicos}</p>`:""}
+      <div class="card" style="margin-top:18px;border-color:#00bcd430">
+        <div class="ch" style="background:#0a1a20;color:#00bcd4">🏭 NOTAS DEL TALLER</div>
+        <div class="cb">
+          ${f.nivel_calidad?`<p class="row"><b>Nivel:</b> ${f.nivel_calidad}</p>`:""}
+          ${f.materiales_solicitados?`<p class="row"><b>Materiales:</b> ${f.materiales_solicitados}</p>`:""}
+          ${f.comentarios_tecnicos?`<p class="row"><b>Técnico:</b> ${f.comentarios_tecnicos}</p>`:""}
         </div>
       </div>` : "";
 
     const w = window.open("","_blank");
     w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-<title>Levantamiento ${tipoLabel} - EnKaje Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Levantamiento ${tipo} · EnKaje Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a}
+body{font-family:'Inter',sans-serif;background:#070708;color:#e8e0d0;line-height:1.6}
 .page{max-width:780px;margin:0 auto;padding:40px}
-.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #d4af37;margin-bottom:24px}
-.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#d4af37;letter-spacing:3px}
-.logo-s{font-size:9px;color:#999;letter-spacing:4px;text-transform:uppercase;margin-top:4px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:2px solid #d4af37;margin-bottom:24px}
+.logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#d4af37;letter-spacing:3px}
+.logo-s{font-size:9px;color:#555;letter-spacing:5px;text-transform:uppercase;margin-top:4px}
 .doc-r{text-align:right}
 .doc-t{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#8B6914;text-transform:uppercase;letter-spacing:2px}
-.folio{font-size:11px;color:#999;margin-top:3px}
-.banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid #d4af37;border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:20px}
-.bt{font-size:10px;color:#d4af3799;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
-.bn{font-family:'Playfair Display',serif;font-size:20px;color:#d4af37;font-weight:700}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.card{border:1px solid #e8e0d0;border-radius:8px;overflow:hidden}
-.ch{background:#f8f4ed;border-bottom:1px solid #e8e0d0;padding:8px 14px;font-size:10px;font-weight:700;color:#8B6914;letter-spacing:2px;text-transform:uppercase}
-.cb{padding:12px 14px}
-.ir{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f5f0ea;font-size:12px}
-.ir:last-child{border-bottom:none}
-.il{color:#999;font-weight:500}.iv{color:#1a1a1a;font-weight:600;text-align:right}
-table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;border:1px solid #e8e0d0}
-.obs{background:#f8f8f8;border:1px solid #e8e0d0;border-radius:8px;padding:12px 16px;font-size:12px;color:#444;font-style:italic;margin-top:20px;line-height:1.7}
-.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;padding-top:20px;border-top:1px solid #e8e0d0}
-.fi{text-align:center}.fl{height:1px;background:#333;margin-bottom:6px}
-.fn{font-size:12px;font-weight:700}.fc{font-size:10px;color:#999;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.ftr{margin-top:24px;padding-top:14px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between;align-items:center}
-.flogo{font-family:'Playfair Display',serif;font-size:13px;color:#d4af37;font-weight:700;letter-spacing:2px}
-.finfo{font-size:10px;color:#bbb;text-align:right;line-height:1.5}
-@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:28px}}
+.folio{font-size:11px;color:#555;margin-top:3px}
+.banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid #d4af37;border-radius:0 12px 12px 0;padding:16px 22px;margin-bottom:20px}
+.bt{font-size:10px;color:#d4af3780;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
+.bn{font-family:'Playfair Display',serif;font-size:22px;color:#d4af37;font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.card{border:1px solid #1a1a12;border-radius:12px;overflow:hidden;margin-bottom:18px}
+.ch{background:#0f0f0a;border-bottom:1px solid #1a1a12;padding:10px 16px;font-size:10px;font-weight:700;color:#d4af37;letter-spacing:3px;text-transform:uppercase}
+.cb{padding:14px 16px}
+.row{font-size:12px;color:#aaa;padding:3px 0;line-height:1.6}
+.row b{color:#e8e0d0}
+table{width:100%;border-collapse:collapse}
+.td-l{padding:8px 14px;color:#666;font-size:12px;border-bottom:1px solid #1a1a12;width:42%;font-weight:500}
+.td-r-head{background:#0f0f0a}
+.td-v{padding:8px 14px;color:#e8e0d0;font-size:12px;border-bottom:1px solid #1a1a12;font-weight:600}
+tr:last-child .td-l, tr:last-child .td-v{border-bottom:none}
+tr:nth-child(even){background:#0a0a08}
+.obs{background:#0f0f0a;border:1px solid #1a1a12;border-radius:10px;padding:12px 16px;font-size:12px;color:#888;font-style:italic;margin-top:16px;line-height:1.7}
+.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;padding-top:20px;border-top:1px solid #1a1a12}
+.fi{text-align:center}
+.fl{height:1px;background:#d4af3740;margin-bottom:8px}
+.fn{font-size:13px;font-weight:700;color:#e8e0d0}
+.fc{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.ftr{margin-top:24px;padding-top:14px;border-top:1px solid #1a1a12;display:flex;justify-content:space-between;align-items:center}
+.flogo{font-family:'Playfair Display',serif;font-size:14px;color:#d4af37;font-weight:700;letter-spacing:2px}
+.finfo{font-size:10px;color:#333;text-align:right;line-height:1.6}
+@media print{
+  body{background:#fff;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{padding:28px}
+  .banner{background:#1a1208!important}
+  .ch{background:#f8f4ed!important;color:#8B6914!important;border-color:#e8e0d0!important}
+  .card{border-color:#e8e0d0!important}
+  .td-l{color:#666!important;border-color:#e8e0d0!important}
+  .td-v{color:#1a1a1a!important;border-color:#e8e0d0!important}
+  tr:nth-child(even){background:#f9f7f3!important}
+  .obs{background:#f8f8f8!important;border-color:#e8e0d0!important;color:#444!important}
+  .ftr{border-color:#e8e0d0!important}
+  .fl{background:#333!important}
+  .fn{color:#1a1a1a!important}
+}
 </style></head><body><div class="page">
 <div class="hdr">
   <div><div class="logo">EnKaje Pro</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
-  <div class="doc-r"><div class="doc-t">Levantamiento de Proyecto</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Asesor: ${f.atencion_por||"Felipe Santiago"}</div></div>
+  <div class="doc-r"><div class="doc-t">Levantamiento</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Asesor: ${f.atencion_por||"Felipe Santiago"}</div></div>
 </div>
 <div class="banner">
-  <div class="bt">${tipoIcon} Tipo de proyecto</div>
-  <div class="bn">${tipoLabel.toUpperCase()}</div>
+  <div class="bt">${icon} Tipo de proyecto</div>
+  <div class="bn">${tipo.toUpperCase()}</div>
 </div>
 <div class="g2">
-  <div class="card">
-    <div class="ch">👤 Datos del Cliente</div>
+  <div class="card" style="margin-bottom:0">
+    <div class="ch">👤 CLIENTE</div>
     <div class="cb">
-      ${[["Nombre",f.nombre],["Teléfono",f.telefono],["Correo",f.correo],["Dirección",f.direccion]].map(([l,v])=>`<div class="ir"><span class="il">${l}</span><span class="iv">${v||"---"}</span></div>`).join("")}
+      ${[["Nombre",f.nombre],["Teléfono",f.telefono],["Correo",f.correo],["Dirección",f.direccion]].filter(([,v])=>v).map(([l,v])=>`<p class="row"><b>${l}:</b> ${v}</p>`).join("")}
     </div>
   </div>
-  <div class="card">
-    <div class="ch">📋 Resumen</div>
+  <div class="card" style="margin-bottom:0">
+    <div class="ch">📋 RESUMEN</div>
     <div class="cb">
-      ${[["Tipo",tipoLabel],["Estilo",arr(f.estilo)],["Material",arr(f.material)],["Color",f.color_principal]].map(([l,v])=>`<div class="ir"><span class="il">${l}</span><span class="iv">${v||"---"}</span></div>`).join("")}
+      ${[["Tipo",tipo],["Estilo",arr(f.estilo)],["Material",arr(f.material)],["Color",f.color_principal]].filter(([,v])=>v).map(([l,v])=>`<p class="row"><b>${l}:</b> ${v}</p>`).join("")}
     </div>
   </div>
 </div>
-<div class="card" style="margin-bottom:0">
-  <div class="ch">📐 Especificaciones Completas</div>
-  <table>${filasHTML}</table>
+<div class="card">
+  <div class="ch">📐 ESPECIFICACIONES SELECCIONADAS</div>
+  <div class="cb" style="padding:0"><table>${filasHTML}</table></div>
 </div>
 ${f.observaciones?`<div class="obs"><b>Observaciones:</b> ${f.observaciones}</div>`:""}
 ${tallerHTML}
 <div class="fir">
-  <div class="fi"><div style="height:44px"></div><div class="fl"></div><div class="fn">${f.atencion_por||"Felipe Santiago"}</div><div class="fc">EnKaje Pro · Asesor</div></div>
-  <div class="fi"><div style="height:44px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Conformidad</div></div>
+  <div class="fi"><div style="height:48px"></div><div class="fl"></div><div class="fn">${f.atencion_por||"Felipe Santiago"}</div><div class="fc">EnKaje Pro · Asesor</div></div>
+  <div class="fi"><div style="height:48px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Conformidad</div></div>
 </div>
 <div class="ftr">
   <div class="flogo">EnKaje Pro</div>
-  <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México<br>Levantamiento generado digitalmente</div>
+  <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México</div>
 </div>
 </div><script>window.onload=function(){window.print()}</script></body></html>`);
     w.document.close();
@@ -1321,10 +1394,27 @@ ${tallerHTML}
             {tipoForm === "closet" && <FormularioCloset form={formCloset} setF={(k,v) => setFormCloset(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "puerta" && <FormularioPuerta form={formPuerta} setF={(k,v) => setFormPuerta(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "mueble" && <FormularioMueble form={formMueble} setF={(k,v) => setFormMueble(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
-            <div style={{ marginTop: 24, display: "flex", justifyContent: "center", marginBottom: 8 }}>
-              <div style={{ display:"flex", gap:12, width:isMobile?"100%":"auto", flexDirection:isMobile?"column":"row" }}>
-                <BTN onClick={guardarFormulario} style={{ flex:1, padding:"15px 32px", fontSize:15, letterSpacing:1 }}>💾 GUARDAR LEVANTAMIENTO</BTN>
-                <button onClick={imprimirFormulario} style={{ flex:1, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"15px 32px", fontWeight:900, fontSize:14, cursor:"pointer", letterSpacing:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>🖨️ IMPRIMIR FORMULARIO</button>
+            <div style={{ marginTop: 28, background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 20 }}>
+              {savedMsg && <div style={{ background: savedMsg.includes("❌")?"#1a0a0a":"#0a2a0a", border: `1px solid ${savedMsg.includes("❌")?"#f4433640":"#4caf5040"}`, color: savedMsg.includes("❌")?"#f44336":"#4caf50", borderRadius: 8, padding: "10px 14px", fontSize: 13, marginBottom: 14, textAlign: "center" }}>{savedMsg}</div>}
+              <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom: 14 }}>
+                <BTN onClick={guardarFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, padding:"13px 20px", fontSize:14, letterSpacing:.5 }}>💾 Guardar Levantamiento</BTN>
+                <button onClick={imprimirFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"13px 20px", fontWeight:900, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>🖨️ Imprimir / PDF Formulario</button>
+              </div>
+              <div style={{ fontSize: 10, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>Compartir levantamiento</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {[
+                  {k:"whatsapp",  l:"WhatsApp",  i:"💬", c:"#25D366", t:"#fff"},
+                  {k:"facebook",  l:"Facebook",  i:"📘", c:"#1877F2", t:"#fff"},
+                  {k:"messenger", l:"Messenger", i:"💙", c:"#0084FF", t:"#fff"},
+                  {k:"email",     l:"Email",     i:"📧", c:"#d4af37", t:"#000", o:true},
+                  {k:"instagram", l:"Instagram", i:"📸", c:"#E1306C", t:"#fff"},
+                  {k:"tiktok",    l:"TikTok",    i:"🎵", c:"#555",    t:"#fff"},
+                  {k:"copiar",    l:"Copiar",    i:"📋", c:"#555",    t:"#fff", o:true},
+                ].map(({k,l,i,c,t,o})=>(
+                  <button key={k} onClick={()=>compartirFormulario(k)} style={{ background:o?"transparent":c, color:o?c:t, border:`1.5px solid ${c}`, borderRadius:10, padding:"9px 14px", fontWeight:700, fontSize:12, cursor:"pointer", display:"flex", alignItems:"center", gap:6, whiteSpace:"nowrap" }}>
+                    <span style={{fontSize:14}}>{i}</span>{!isMobile&&l}
+                  </button>
+                ))}
               </div>
             </div>
             <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
@@ -1350,7 +1440,7 @@ ${tallerHTML}
                   <div key={e.key} onClick={() => setFormCocina(p => ({...p, estilo: p.estilo.includes(e.label)?p.estilo.filter(x=>x!==e.label):[...p.estilo,e.label]}))}
                     style={{ background: "#0f0f0a", border: `2px solid ${sel?"#d4af37":"transparent"}`, borderRadius: 14, overflow: "hidden", cursor: "pointer", transition: "all .2s", boxShadow: sel?"0 0 20px #d4af3830":"none" }}>
                     <div style={{ position: "relative", height: isMobile?120:160 }}>
-                      <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1.05)":"brightness(0.65)", transition: "all .3s" }} onError={ev=>ev.target.style.display="none"} />
+                      <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1.05)":"brightness(0.65)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background=`linear-gradient(135deg,#1a1208,#2a1f0a)`;}} />
                       {sel && <div style={{ position: "absolute", top: 8, right: 8, background: "#d4af37", color: "#000", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14 }}>✓</div>}
                       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.85))", padding: "16px 12px 8px" }}>
                         <div style={{ fontWeight: 700, fontSize: isMobile?13:15, color: sel?"#d4af37":"#fff" }}>{e.label}</div>
