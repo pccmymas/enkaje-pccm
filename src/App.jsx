@@ -977,6 +977,7 @@ export default function App() {
   const [talleresMem, setTalleresMem] = useState([]);
   const [tallerSel, setTallerSel] = useState(null);
   const [showNuevoTaller, setShowNuevoTaller] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(null); // { msg, onOk }
   const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "" });
   const [tallerMsg, setTallerMsg] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -1655,11 +1656,10 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         <BTN
                           onClick={async e => {
                             e.stopPropagation();
-                            if(window.confirm("¿Eliminar este proyecto? Esta acción no se puede deshacer.")) {
-                              const res = await sb(`proyectos?id=eq.${p.id}`, { method: "DELETE", token });
-                              setProyectoSel(null);
-                              cargarProyectos();
-                            }
+                            setConfirmModal({ msg: "¿Eliminar este proyecto? No se puede deshacer.", onOk: async () => {
+                              await sb(`proyectos?id=eq.${p.id}`, { method: "DELETE", token });
+                              setProyectoSel(null); cargarProyectos();
+                            }});
                           }}
                           outline color="#f44336" style={{ fontSize: 12 }}>🗑️ Eliminar</BTN>
                       </div>
@@ -1740,7 +1740,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); if(window.confirm("Eliminar este proyecto?")) { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); cargarProyectos(); }}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
                       </div>
                     </div>
                   )}
@@ -1864,7 +1864,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Lead</button>
                         <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {proyectos_cerrados: (t.proyectos_cerrados||0)+1}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #4caf5040", background: "#4caf5010", color: "#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Cierre</button>
-                        <button onClick={async e => { e.stopPropagation(); if(window.confirm(`Eliminar ${t.nombre}?`)) { await sb(`talleres_membresia?id=eq.${t.id}`, {method:"DELETE"}); cargarTalleres(); setTallerSel(null); }}}
+                        <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?id=eq.${t.id}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #f4433640", background: "#f443360a", color: "#f44336", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Eliminar</button>
                       </div>
                     </div>
@@ -1952,6 +1952,28 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
         )}
 
       </div>
+
+      {/* MODAL CONFIRMACIÓN */}
+      {confirmModal && (
+        <div style={{ position: "fixed", inset: 0, background: "#000000cc", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999, padding: 20 }}
+          onClick={() => setConfirmModal(null)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#0f0f0a", border: "1px solid #f4433640", borderRadius: 16, padding: 28, maxWidth: 360, width: "100%", textAlign: "center" }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🗑️</div>
+            <div style={{ fontSize: 15, color: "#e8e0d0", fontWeight: 600, marginBottom: 8 }}>{confirmModal.msg}</div>
+            <div style={{ fontSize: 12, color: "#555", marginBottom: 24 }}>Esta acción no se puede deshacer.</div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setConfirmModal(null)}
+                style={{ flex: 1, background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                Cancelar
+              </button>
+              <button onClick={async () => { await confirmModal.onOk(); setConfirmModal(null); }}
+                style={{ flex: 1, background: "#f44336", border: "none", color: "#fff", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
