@@ -2296,12 +2296,18 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                               <INPUT label="Municipio" value={editInfo?.municipio||""} onChange={e=>setEditInfo(p=>({...p,municipio:e.target.value}))} placeholder="San Pedro Garza Garcia" />
                               <INPUT label="Slug (URL)" value={editInfo?.slug||""} onChange={e=>setEditInfo(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
                               <INPUT label="URL del logo (imagen)" value={editInfo?.logo_url||""} onChange={e=>setEditInfo(p=>({...p,logo_url:e.target.value}))} placeholder="/logo-sonorense.jpg" />
+                              <INPUT label="Facebook (URL)" value={editInfo?.facebook||""} onChange={e=>setEditInfo(p=>({...p,facebook:e.target.value}))} placeholder="https://facebook.com/tu-pagina" />
+                              <INPUT label="Instagram (usuario)" value={editInfo?.instagram||""} onChange={e=>setEditInfo(p=>({...p,instagram:e.target.value}))} placeholder="@carpinteria_regia" />
+                              <INPUT label="TikTok (usuario)" value={editInfo?.tiktok||""} onChange={e=>setEditInfo(p=>({...p,tiktok:e.target.value}))} placeholder="@carpinteria_regia" />
+                              <INPUT label="Google Maps (URL)" value={editInfo?.google_maps||""} onChange={e=>setEditInfo(p=>({...p,google_maps:e.target.value}))} placeholder="https://maps.google.com/..." />
+                              <INPUT label="Años de experiencia" value={editInfo?.anos_experiencia||""} onChange={e=>setEditInfo(p=>({...p,anos_experiencia:e.target.value}))} placeholder="15" />
+                              <INPUT label="Horario" value={editInfo?.horario||""} onChange={e=>setEditInfo(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm, Sáb 9am-3pm" />
                               <INPUT label="Fecha vencimiento" value={editInfo?.fecha_vencimiento||""} onChange={e=>setEditInfo(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
                             </div>
                             <TEXTAREA label="Notas internas" value={editInfo?.notas||""} onChange={e=>setEditInfo(p=>({...p,notas:e.target.value}))} placeholder="Notas sobre el taller..." rows={2} />
                             <button onClick={async e => {
                               e.stopPropagation();
-                              await actualizarTaller(editInfo.id, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas, logo_url: editInfo.logo_url });
+                              await actualizarTaller(editInfo.id, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas, logo_url: editInfo.logo_url, facebook: editInfo.facebook, instagram: editInfo.instagram, tiktok: editInfo.tiktok, google_maps: editInfo.google_maps, anos_experiencia: editInfo.anos_experiencia, horario: editInfo.horario });
                               setEditInfo(null);
                               setTallerMsg("✅ Información actualizada");
                               setTimeout(()=>setTallerMsg(""), 3000);
