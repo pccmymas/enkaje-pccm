@@ -719,7 +719,7 @@ function FormularioMueble({ form, setF, role, isMobile }) {
   );
 }
 // ============ PRESUPUESTO — hoja profesional + todos los canales ============
-function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg }) {
+function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg, generarContrato, tallerData }) {
   const total = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
     .reduce((a, v) => a + (parseFloat(v) || 0), 0);
 
@@ -930,6 +930,14 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
             display:"flex", alignItems:"center", gap:8,
             boxShadow:"0 4px 20px #d4af3740"
           }}>🖨️ Imprimir / PDF Profesional</button>
+          {(role === "admin" || role === "taller") && (
+            <button onClick={() => generarContrato(tallerData)} style={{
+              background:"transparent", color:"#d4af37",
+              border:"1.5px solid #d4af37", borderRadius:12, padding:"12px 22px",
+              fontWeight:900, fontSize:13, cursor:"pointer",
+              display:"flex", alignItems:"center", gap:8
+            }}>📄 Generar Contrato</button>
+          )}
         </div>
         <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:14, padding:"14px 16px" }}>
           <div style={{ fontSize:10, color:"#444", letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>Compartir presupuesto</div>
@@ -1160,6 +1168,7 @@ export default function App() {
   const [confirmModal, setConfirmModal] = useState(null); // { msg, onOk }
   const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "" });
   const [tallerMsg, setTallerMsg] = useState("");
+  const [editTaller, setEditTaller] = useState(null); // datos legales del taller en edición
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
@@ -1543,6 +1552,193 @@ ${tallerHTML}
   }
 
 
+  function generarContrato(tallerData) {
+    const f = getForm();
+    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
+    const icon = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
+    const folio = `CT-${Date.now().toString().slice(-6)}`;
+    const fecha = new Date().toLocaleDateString("es-MX", {day:"2-digit", month:"long", year:"numeric"});
+    const arr = v => Array.isArray(v)&&v.length ? v.join(", ") : (v||"");
+    const total = [f.precio_fabricacion,f.precio_instalacion,f.precio_cubierta,f.precio_herrajes,f.precio_otros].reduce((a,v)=>a+(parseFloat(v)||0),0);
+    const anticipo = total * parseFloat(f.anticipo||60) / 100;
+    const antesInst = total * parseFloat(f.pago_entrega||30) / 100;
+    const contraEntrega = total * parseFloat(f.pago_final||10) / 100;
+
+    // Datos del taller según plan
+    const planBasico = !tallerData || tallerData?.plan === "basico";
+    const tallerNombre = tallerData?.nombre_legal || tallerData?.nombre || "Taller de Carpintería";
+    const tallerRep = tallerData?.representante || tallerData?.atencion_por || f.atencion_por || "Felipe Santiago";
+    const tallerRFC = tallerData?.rfc || "";
+    const tallerDir = tallerData?.direccion_fiscal || tallerData?.zona || "Monterrey, Nuevo León";
+    const tallerTel = tallerData?.telefono_legal || tallerData?.telefono || "";
+    const tallerCorreo = tallerData?.correo_legal || tallerData?.email || "";
+    const garantia = tallerData?.garantia_default || f.garantia || "6 meses en instalación y herrajes";
+    const termExtra = tallerData?.terminos_extra || "";
+    const colorTaller = (tallerData?.plan==="premium" && tallerData?.color_marca) ? tallerData.color_marca : "#d4af37";
+
+    const especificaciones = [];
+    const addE = (l,v) => { if(v&&String(v).trim()) especificaciones.push([l,Array.isArray(v)?v.join(", "):v]); };
+    if(tipoForm==="cocina"){ addE("Tipo de cocina",f.tipo_cocina); addE("Largo",f.largo); addE("Altura",f.altura); addE("Profundidad",f.profundidad); addE("Cubierta",f.material_cubierta); addE("Tarja",f.tarja); addE("Electrodomésticos",f.electrodomesticos); addE("Accesorios",f.accesorios); }
+    else if(tipoForm==="closet"){ addE("Tipo de closet",f.tipo_closet); addE("Largo",f.largo); addE("Altura",f.altura); addE("Profundidad",f.profundidad); addE("Accesorios",f.accesorios_closet); }
+    else if(tipoForm==="puerta"){ addE("Tipo de puerta",f.tipo_puerta); addE("Medidas",`${f.ancho||"?"} x ${f.alto||"?"}`); addE("Cantidad",f.cantidad); addE("Marco",f.tipo_marco); addE("Herrajes",f.herrajes_puerta); }
+    else { addE("Tipo de mueble",f.tipo_mueble); addE("Medidas",`${f.largo||"?"} x ${f.alto||"?"} x ${f.profundidad||"?"}`); addE("Cantidad",f.cantidad); addE("Accesorios",f.accesorios_mueble); }
+    addE("Estilo",f.estilo); addE("Material",f.material); addE("Grosor",f.grosor);
+    addE("Color principal",f.color_principal); addE("Color secundario",f.color_secundario);
+    addE("Acabado",f.tipo_acabado); addE("Jaladeras",f.jaladeras); addE("Bisagras",f.bisagras);
+    addE("Iluminación",f.iluminacion);
+
+    const especHTML = especificaciones.map(([l,v],i)=>`<tr style="background:${i%2===0?"#fff":"#f9f7f3"}"><td style="padding:7px 14px;font-size:12px;color:#666;border-bottom:1px solid #ede9e0;width:38%">${l}</td><td style="padding:7px 14px;font-size:12px;font-weight:600;border-bottom:1px solid #ede9e0">${v}</td></tr>`).join("");
+
+    const w = window.open("","_blank");
+    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Contrato ${tipo} · ${folio}</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:13px;line-height:1.6}
+.page{max-width:800px;margin:0 auto;padding:44px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid ${colorTaller};margin-bottom:24px}
+.logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:${colorTaller};letter-spacing:3px}
+.logo-s{font-size:9px;color:#999;letter-spacing:5px;text-transform:uppercase;margin-top:4px}
+.doc-r{text-align:right}
+.doc-t{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:2px}
+.folio{font-size:11px;color:#999;margin-top:3px}
+.banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid ${colorTaller};border-radius:0 12px 12px 0;padding:16px 22px;margin-bottom:22px}
+.bt{font-size:10px;color:${colorTaller}99;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
+.bn{font-family:'Playfair Display',serif;font-size:20px;color:${colorTaller};font-weight:700}
+.partes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{border:1px solid #e8e0d0;border-radius:10px;overflow:hidden;margin-bottom:16px}
+.ch{background:#f8f4ed;border-bottom:1px solid #e8e0d0;padding:8px 14px;font-size:10px;font-weight:700;color:#8B6914;letter-spacing:3px;text-transform:uppercase}
+.cb{padding:12px 14px}
+.row{font-size:12px;padding:3px 0;border-bottom:1px solid #f5f0ea}
+.row:last-child{border-bottom:none}
+.row b{color:#555;display:inline-block;min-width:110px}
+table{width:100%;border-collapse:collapse;border:1px solid #e8e0d0;border-radius:8px;overflow:hidden}
+.total-row{background:#1a1208!important}
+.total-row td{color:${colorTaller}!important;font-size:15px!important;font-weight:900!important;padding:12px 14px!important;border-bottom:none!important}
+.pagos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.pago{background:#f8f4ed;border-radius:8px;padding:12px;text-align:center}
+.pago-p{font-size:20px;font-weight:900;color:#8B6914;line-height:1}
+.pago-l{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.pago-m{font-size:12px;font-weight:700;color:#1a1a1a;margin-top:3px}
+.clausulas{counter-reset:cl}
+.clausula{counter-increment:cl;margin-bottom:14px;padding-left:24px;position:relative}
+.clausula::before{content:counter(cl)".";position:absolute;left:0;color:${colorTaller};font-weight:700;font-size:13px}
+.clausula-t{font-weight:700;color:#1a1a1a;margin-bottom:3px;font-size:13px}
+.clausula-b{color:#555;font-size:12px;line-height:1.7}
+.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;padding-top:20px;border-top:1px solid #e8e0d0}
+.fi{text-align:center}
+.fl{height:1px;background:#333;margin-bottom:8px}
+.fn{font-size:13px;font-weight:700}
+.fc{font-size:10px;color:#999;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.ftr{margin-top:24px;padding-top:14px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between;align-items:center}
+.flogo{font-family:'Playfair Display',serif;font-size:13px;color:${colorTaller};font-weight:700;letter-spacing:2px}
+.finfo{font-size:10px;color:#bbb;text-align:right;line-height:1.5}
+.badge-enkaje{font-size:9px;color:#bbb;background:#f8f8f8;border:1px solid #e8e0d0;border-radius:4px;padding:2px 6px}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:32px}}
+</style></head><body><div class="page">
+
+<div class="hdr">
+  <div>
+    ${planBasico ? `<div class="logo">EnKaje Pro</div><div class="logo-s">Intermediación · Carpintería</div>` : `<div class="logo">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`}
+  </div>
+  <div class="doc-r">
+    <div class="doc-t">Contrato de Fabricación</div>
+    <div class="folio">Folio: ${folio}</div>
+    <div class="folio">Fecha: ${fecha}</div>
+    ${planBasico ? "" : `<div class="folio" style="margin-top:4px"><span class="badge-enkaje">via EnKaje Pro</span></div>`}
+  </div>
+</div>
+
+<div class="banner">
+  <div class="bt">${icon} Objeto del contrato</div>
+  <div class="bn">Fabricación e Instalación de ${tipo.toUpperCase()}</div>
+</div>
+
+<div class="partes">
+  <div class="card" style="margin-bottom:0">
+    <div class="ch">🏭 PRESTADOR DE SERVICIOS</div>
+    <div class="cb">
+      <div class="row"><b>Nombre:</b> ${tallerNombre}</div>
+      ${tallerRFC?`<div class="row"><b>RFC:</b> ${tallerRFC}</div>`:""}
+      ${tallerRep?`<div class="row"><b>Representante:</b> ${tallerRep}</div>`:""}
+      ${tallerTel?`<div class="row"><b>Teléfono:</b> ${tallerTel}</div>`:""}
+      ${tallerCorreo?`<div class="row"><b>Correo:</b> ${tallerCorreo}</div>`:""}
+      <div class="row"><b>Domicilio:</b> ${tallerDir}</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:0">
+    <div class="ch">👤 CLIENTE</div>
+    <div class="cb">
+      <div class="row"><b>Nombre:</b> ${f.nombre||"---"}</div>
+      <div class="row"><b>Teléfono:</b> ${f.telefono||"---"}</div>
+      ${f.correo?`<div class="row"><b>Correo:</b> ${f.correo}</div>`:""}
+      <div class="row"><b>Domicilio obra:</b> ${f.direccion||"---"}</div>
+    </div>
+  </div>
+</div>
+
+${especificaciones.length>0 ? `
+<div class="card">
+  <div class="ch">📐 ESPECIFICACIONES DEL PROYECTO</div>
+  <div class="cb" style="padding:0"><table>${especHTML}</table></div>
+</div>` : ""}
+
+${total>0 ? `
+<div class="card">
+  <div class="ch">💰 PRECIO TOTAL Y FORMA DE PAGO</div>
+  <div class="cb" style="padding:0">
+    <table>
+      ${[["Fabricación",f.precio_fabricacion],["Instalación",f.precio_instalacion],["Acabados / Cubierta",f.precio_cubierta],["Herrajes",f.precio_herrajes],["Otros",f.precio_otros]].filter(([,v])=>v&&parseFloat(v)>0).map(([l,v])=>`<tr><td style="padding:7px 14px;color:#666;border-bottom:1px solid #ede9e0">${l}</td><td style="padding:7px 14px;font-weight:600;text-align:right;border-bottom:1px solid #ede9e0">$${parseFloat(v).toLocaleString("es-MX")} MXN</td></tr>`).join("")}
+      <tr class="total-row"><td style="padding:12px 14px">TOTAL</td><td style="padding:12px 14px;text-align:right">$${total.toLocaleString("es-MX")} MXN</td></tr>
+    </table>
+  </div>
+</div>
+<div class="pagos">
+  <div class="pago"><div class="pago-p">${f.anticipo||60}%</div><div class="pago-l">Anticipo al firmar</div><div class="pago-m">$${anticipo.toLocaleString("es-MX")} MXN</div></div>
+  <div class="pago"><div class="pago-p">${f.pago_entrega||30}%</div><div class="pago-l">Antes de instalación</div><div class="pago-m">$${antesInst.toLocaleString("es-MX")} MXN</div></div>
+  <div class="pago"><div class="pago-p">${f.pago_final||10}%</div><div class="pago-l">Contra entrega</div><div class="pago-m">$${contraEntrega.toLocaleString("es-MX")} MXN</div></div>
+</div>` : ""}
+
+<div class="card">
+  <div class="ch">📋 CLÁUSULAS Y CONDICIONES</div>
+  <div class="cb">
+    <div class="clausulas">
+      <div class="clausula"><div class="clausula-t">Tiempo de entrega</div><div class="clausula-b">El prestador se compromete a entregar el proyecto terminado en un plazo de <strong>${f.tiempo_entrega||"---"}</strong>, contados a partir de la recepción del anticipo.</div></div>
+      <div class="clausula"><div class="clausula-t">Garantía</div><div class="clausula-b">${garantia}. La garantía cubre defectos de fabricación e instalación bajo uso normal. No cubre daños por mal uso, humedad excesiva o modificaciones no autorizadas.</div></div>
+      <div class="clausula"><div class="clausula-t">Materiales</div><div class="clausula-b">Los materiales especificados en este contrato son los acordados por ambas partes. Cualquier cambio de materiales deberá ser acordado por escrito y podrá generar ajuste en el precio.</div></div>
+      <div class="clausula"><div class="clausula-t">Modificaciones</div><div class="clausula-b">Cualquier modificación al proyecto original solicitada por el cliente después de aprobado este contrato podrá generar cargos adicionales a convenir entre las partes.</div></div>
+      <div class="clausula"><div class="clausula-t">Condiciones del lugar</div><div class="clausula-b">El cliente deberá tener el lugar de instalación listo (pintura, pisos, electricidad y plomería terminados) al momento de la instalación. Retrasos por estas causas no son responsabilidad del prestador.</div></div>
+      <div class="clausula"><div class="clausula-t">Intermediación</div><div class="clausula-b">EnKaje Pro actúa como intermediario digital en esta operación. La responsabilidad de la ejecución del proyecto recae íntegramente en el prestador de servicios.</div></div>
+      ${termExtra?`<div class="clausula"><div class="clausula-t">Condiciones adicionales</div><div class="clausula-b">${termExtra}</div></div>`:""}
+    </div>
+  </div>
+</div>
+
+<div class="fir">
+  <div class="fi">
+    <div style="height:52px"></div>
+    <div class="fl"></div>
+    <div class="fn">${tallerRep}</div>
+    <div class="fc">${tallerNombre} · Prestador</div>
+  </div>
+  <div class="fi">
+    <div style="height:52px"></div>
+    <div class="fl"></div>
+    <div class="fn">${f.nombre||"Cliente"}</div>
+    <div class="fc">Cliente · Acepta condiciones</div>
+  </div>
+</div>
+
+<div class="ftr">
+  <div class="flogo">${planBasico?"EnKaje Pro":tallerNombre}</div>
+  <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México<br>Contrato generado digitalmente · ${folio}</div>
+</div>
+
+</div><script>window.onload=function(){window.print()}</script></body></html>`);
+    w.document.close();
+  }
+
   async function generarMateriales() {
     const f = getForm();
     setMaterialesLoading(true);
@@ -1809,7 +2005,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                 <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
                 <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
               </div>
-              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} />
+              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} />
             </div>
           </div>
         )}
@@ -1908,7 +2104,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
         {tab === "presupuesto" && (
           <div>
             <TIPO_SELECTOR />
-            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} />
+            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} />
           </div>
         )}
 
@@ -2047,6 +2243,50 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         ))}
                       </div>
                       {t.notas && <div style={{ fontSize: 12, color: "#888", marginBottom: 14, background: "#0a0a0a", borderRadius: 8, padding: 10 }}>📝 {t.notas}</div>}
+
+                      {/* DATOS LEGALES */}
+                      <div style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📄 Datos para Contratos</div>
+                          <button onClick={e => { e.stopPropagation(); setEditTaller(editTaller?.enkaje===t.enkaje ? null : {...t}); }}
+                            style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
+                            {editTaller?.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
+                          </button>
+                        </div>
+                        {editTaller?.enkaje === t.enkaje ? (
+                          <div>
+                            <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 12 }}>
+                              <INPUT label="Nombre legal" value={editTaller.nombre_legal||""} onChange={e=>setEditTaller(p=>({...p,nombre_legal:e.target.value}))} placeholder="Razón social o nombre completo" />
+                              <INPUT label="RFC" value={editTaller.rfc||""} onChange={e=>setEditTaller(p=>({...p,rfc:e.target.value}))} placeholder="XXXX123456XXX" />
+                              <INPUT label="Representante legal" value={editTaller.representante||""} onChange={e=>setEditTaller(p=>({...p,representante:e.target.value}))} placeholder="Nombre del representante" />
+                              <INPUT label="Teléfono legal" value={editTaller.telefono_legal||""} onChange={e=>setEditTaller(p=>({...p,telefono_legal:e.target.value}))} placeholder="81-1234-5678" />
+                              <INPUT label="Correo legal" value={editTaller.correo_legal||""} onChange={e=>setEditTaller(p=>({...p,correo_legal:e.target.value}))} placeholder="legal@taller.com" />
+                              <INPUT label="Código Postal" value={editTaller.cp||""} onChange={e=>setEditTaller(p=>({...p,cp:e.target.value}))} placeholder="64000" />
+                            </div>
+                            <INPUT label="Dirección fiscal" value={editTaller.direccion_fiscal||""} onChange={e=>setEditTaller(p=>({...p,direccion_fiscal:e.target.value}))} placeholder="Calle, Colonia, Ciudad, Estado" />
+                            <INPUT label="Garantía por defecto" value={editTaller.garantia_default||""} onChange={e=>setEditTaller(p=>({...p,garantia_default:e.target.value}))} placeholder="6 meses en instalación y herrajes" />
+                            <TEXTAREA label="Términos adicionales (opcional)" value={editTaller.terminos_extra||""} onChange={e=>setEditTaller(p=>({...p,terminos_extra:e.target.value}))} placeholder="Condiciones especiales del taller..." rows={2} />
+                            <button onClick={async e => {
+                              e.stopPropagation();
+                              const { enkaje, ...datos } = editTaller;
+                              await actualizarTaller(enkaje, { nombre_legal: datos.nombre_legal, rfc: datos.rfc, representante: datos.representante, telefono_legal: datos.telefono_legal, correo_legal: datos.correo_legal, cp: datos.cp, direccion_fiscal: datos.direccion_fiscal, garantia_default: datos.garantia_default, terminos_extra: datos.terminos_extra });
+                              setEditTaller(null);
+                              setTallerMsg("✅ Datos legales guardados");
+                              setTimeout(()=>setTallerMsg(""), 3000);
+                            }} style={{ background: "#d4af37", border: "none", color: "#000", borderRadius: 8, padding: "9px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer", marginTop: 4 }}>
+                              Guardar datos legales
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa" }}>
+                            {[["Nombre legal", t.nombre_legal],["RFC", t.rfc],["Representante", t.representante],["Tel. legal", t.telefono_legal],["Dirección", t.direccion_fiscal],["Garantía", t.garantia_default]].filter(([,v])=>v).map(([l,v],j) => (
+                              <div key={j}><b style={{color:"#555"}}>{l}:</b> {v}</div>
+                            ))}
+                            {!t.nombre_legal && <div style={{ fontSize: 11, color: "#333", gridColumn: "1/-1" }}>Sin datos legales — presiona Editar para agregar</div>}
+                          </div>
+                        )}
+                      </div>
+
                       <div style={{ marginBottom: 12 }}>
                         <div style={{ fontSize: 11, color: "#555", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Cambiar Plan</div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
