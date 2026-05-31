@@ -1,6 +1,185 @@
 import { useState, useEffect } from "react";
 import { LogoInline } from "./Logo.jsx";
 
+// ============ PÁGINAS LEGALES ============
+const LEGAL_S = {
+  page: { minHeight:"100vh", background:"#070708", color:"#e8e0d0", fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" },
+  hdr:  { borderBottom:"1px solid #d4af3720", padding:"16px 24px", display:"flex", justifyContent:"space-between", alignItems:"center", position:"sticky", top:0, background:"#070708", zIndex:10 },
+  back: { background:"transparent", border:"1px solid #2a2a20", color:"#888", borderRadius:8, padding:"7px 14px", fontSize:12, cursor:"pointer", fontWeight:600 },
+  wrap: { maxWidth:780, margin:"0 auto", padding:"40px 24px 80px" },
+  badge:{ display:"inline-block", background:"#d4af3715", border:"1px solid #d4af3740", color:"#d4af37", borderRadius:20, padding:"4px 14px", fontSize:11, fontWeight:700, letterSpacing:2, marginBottom:12 },
+  h1:   { fontSize:28, fontWeight:900, color:"#e8e0d0", margin:"0 0 6px", lineHeight:1.2 },
+  meta: { fontSize:12, color:"#555", marginBottom:36 },
+  h2:   { fontSize:13, fontWeight:700, color:"#d4af37", margin:"32px 0 10px", letterSpacing:1, textTransform:"uppercase" },
+  p:    { fontSize:14, color:"#aaa", lineHeight:1.8, margin:"0 0 12px" },
+  li:   { fontSize:14, color:"#aaa", lineHeight:1.8, marginBottom:5 },
+  box:  { background:"#0f0f0a", border:"1px solid #d4af3725", borderRadius:12, padding:"16px 20px", margin:"20px 0" },
+  warn: { background:"#1a0a0a", border:"1px solid #f4433630", borderRadius:12, padding:"14px 18px", margin:"16px 0" },
+  div:  { height:1, background:"#1a1a12", margin:"28px 0" },
+  foot: { background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:12, padding:"18px 22px", marginTop:36 },
+};
+const LegalHdr = ({ onBack }) => (
+  <div style={LEGAL_S.hdr}>
+    <LogoInline size="nav" />
+    <button style={LEGAL_S.back} onClick={onBack}>← Volver</button>
+  </div>
+);
+const LegalUL = ({ items }) => (
+  <ul style={{ paddingLeft:20, margin:"0 0 12px" }}>
+    {items.map((item,i) => <li key={i} style={LEGAL_S.li}>{item}</li>)}
+  </ul>
+);
+
+function PaginaPrivacidad({ onBack }) {
+  useEffect(() => window.scrollTo(0,0), []);
+  return (
+    <div style={LEGAL_S.page}>
+      <LegalHdr onBack={onBack} />
+      <div style={LEGAL_S.wrap}>
+        <div style={LEGAL_S.badge}>LEGAL</div>
+        <h1 style={LEGAL_S.h1}>Aviso de Privacidad</h1>
+        <p style={LEGAL_S.meta}>Última actualización: enero 2025 · Monterrey, Nuevo León, México</p>
+        <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>En cumplimiento con la LFPDPPP, EnKaje Pro pone a disposición el presente Aviso de Privacidad.</p></div>
+        <h2 style={LEGAL_S.h2}>1. Responsable del Tratamiento</h2>
+        <p style={LEGAL_S.p}><strong style={{color:"#e8e0d0"}}>EnKaje Pro</strong> · Monterrey, Nuevo León, México · <span style={{color:"#d4af37"}}>hola@enkajepro.com</span></p>
+        <h2 style={LEGAL_S.h2}>2. Datos que Recabamos</h2>
+        <LegalUL items={["Nombre completo","Correo electrónico","Teléfono","Dirección del proyecto","Especificaciones del proyecto de carpintería","Datos de navegación y uso de la plataforma"]} />
+        <p style={LEGAL_S.p}>No recabamos datos sensibles como información financiera completa, biométricos ni salud.</p>
+        <h2 style={LEGAL_S.h2}>3. Finalidad del Tratamiento</h2>
+        <LegalUL items={["Conectar clientes con talleres de carpintería en Monterrey","Generar presupuestos y levantamientos de proyectos","Enviar comunicaciones relacionadas con su proyecto","Mejorar los servicios de la plataforma","Cumplir con obligaciones legales"]} />
+        <div style={LEGAL_S.div}/>
+        <h2 style={LEGAL_S.h2}>4. Transferencia de Datos</h2>
+        <p style={LEGAL_S.p}>Sus datos podrán ser compartidos con los talleres registrados únicamente para la gestión de su proyecto. No vendemos ni comercializamos sus datos personales a terceros.</p>
+        <h2 style={LEGAL_S.h2}>5. Derechos ARCO</h2>
+        <p style={LEGAL_S.p}>Tiene derecho a <strong style={{color:"#e8e0d0"}}>Acceder, Rectificar, Cancelar u Oponerse</strong> al tratamiento de sus datos. Envíe su solicitud a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span> con nombre completo, descripción del derecho y copia de ID. Respuesta en máximo 20 días hábiles.</p>
+        <h2 style={LEGAL_S.h2}>6. Seguridad</h2>
+        <p style={LEGAL_S.p}>Implementamos medidas técnicas y administrativas para proteger sus datos, incluyendo cifrado en tránsito y en reposo mediante Supabase.</p>
+        <h2 style={LEGAL_S.h2}>7. Cambios al Aviso</h2>
+        <p style={LEGAL_S.p}>Nos reservamos el derecho de modificar este Aviso. Los cambios se notificarán con al menos 30 días de anticipación.</p>
+        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Preguntas sobre tu privacidad?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span></p></div>
+      </div>
+    </div>
+  );
+}
+
+function PaginaTerminos({ onBack }) {
+  useEffect(() => window.scrollTo(0,0), []);
+  return (
+    <div style={LEGAL_S.page}>
+      <LegalHdr onBack={onBack} />
+      <div style={LEGAL_S.wrap}>
+        <div style={LEGAL_S.badge}>LEGAL</div>
+        <h1 style={LEGAL_S.h1}>Términos y Condiciones</h1>
+        <p style={LEGAL_S.meta}>Última actualización: enero 2025 · Monterrey, Nuevo León, México</p>
+        <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>Al usar EnKaje Pro, aceptas estos términos en su totalidad.</p></div>
+        <h2 style={LEGAL_S.h2}>1. Descripción del Servicio</h2>
+        <p style={LEGAL_S.p}><strong style={{color:"#e8e0d0"}}>EnKaje Pro actúa exclusivamente como intermediario</strong> digital que conecta clientes con talleres de carpintería en Monterrey. No es responsable de la ejecución, calidad ni entrega de los trabajos contratados.</p>
+        <h2 style={LEGAL_S.h2}>2. Registro y Cuentas</h2>
+        <LegalUL items={["Debes ser mayor de 18 años para registrarte","Eres responsable de mantener la confidencialidad de tu contraseña","Debes proporcionar información verídica al registrarte","Las cuentas de taller son activadas exclusivamente por el equipo EnKaje Pro","Nos reservamos el derecho de suspender cuentas que violen estos términos"]} />
+        <h2 style={LEGAL_S.h2}>3. Uso Prohibido</h2>
+        <LegalUL items={["Usar la plataforma para fines ilegales o fraudulentos","Publicar información falsa sobre proyectos o presupuestos","Contactar directamente a talleres para evadir la intermediación de EnKaje Pro","Copiar o redistribuir contenido de la plataforma sin autorización","Interferir con el funcionamiento técnico de la plataforma"]} />
+        <div style={LEGAL_S.div}/>
+        <h2 style={LEGAL_S.h2}>4. Responsabilidad de los Talleres</h2>
+        <p style={LEGAL_S.p}>Los talleres son empresas o personas físicas independientes. EnKaje Pro no garantiza calidad, tiempos ni resultados de sus trabajos.</p>
+        <div style={LEGAL_S.warn}><p style={{...LEGAL_S.p,margin:0,color:"#f44336",fontWeight:600}}>Limitación de Responsabilidad</p><p style={{...LEGAL_S.p,margin:"6px 0 0"}}>La responsabilidad máxima de EnKaje Pro se limita al monto de la suscripción mensual pagada.</p></div>
+        <h2 style={LEGAL_S.h2}>5. Suscripciones y Pagos</h2>
+        <LegalUL items={["Planes: Básico $699, Pro $1,499 y Premium $2,999 MXN/mes","Pagos mensuales anticipados","Sin reembolsos por períodos parciales","Puedes cancelar en cualquier momento desde tu panel","Los precios pueden cambiar con 30 días de aviso"]} />
+        <h2 style={LEGAL_S.h2}>6. Propiedad Intelectual</h2>
+        <p style={LEGAL_S.p}>Todo el contenido de EnKaje Pro es propiedad de EnKaje Pro y está protegido por leyes de propiedad intelectual mexicanas.</p>
+        <h2 style={LEGAL_S.h2}>7. Ley Aplicable</h2>
+        <p style={LEGAL_S.p}>Estos Términos se rigen por las leyes de México. Cualquier controversia se somete a los tribunales de Monterrey, Nuevo León.</p>
+        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Dudas sobre los términos?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>hola@enkajepro.com</span></p></div>
+      </div>
+    </div>
+  );
+}
+
+function PaginaCookies({ onBack }) {
+  useEffect(() => window.scrollTo(0,0), []);
+  const tipos = [
+    { label:"Cookies Esenciales", icon:"🔒", color:"#4caf50", desc:"Indispensables para que la plataforma funcione. Sin ellas no puedes iniciar sesión.", ej:"Sesión de usuario, token de autenticación", fija:true },
+    { label:"Cookies de Rendimiento", icon:"📊", color:"#d4af37", desc:"Recopilan información anónima para ayudarnos a mejorar la plataforma.", ej:"Páginas visitadas, tiempo en cada sección, errores técnicos", fija:false },
+    { label:"Cookies Funcionales", icon:"⚙️", color:"#00bcd4", desc:"Recuerdan tus preferencias para una experiencia personalizada.", ej:"Tipo de proyecto preferido, configuración de formularios", fija:false },
+    { label:"Cookies de Marketing", icon:"📢", color:"#f0a500", desc:"Publicidad relevante en otras plataformas. Solo con tu consentimiento.", ej:"Meta Pixel, Google Ads (cuando estén activos)", fija:false },
+  ];
+  return (
+    <div style={LEGAL_S.page}>
+      <LegalHdr onBack={onBack} />
+      <div style={LEGAL_S.wrap}>
+        <div style={LEGAL_S.badge}>LEGAL</div>
+        <h1 style={LEGAL_S.h1}>Política de Cookies</h1>
+        <p style={LEGAL_S.meta}>Última actualización: enero 2025 · Monterrey, Nuevo León, México</p>
+        <h2 style={LEGAL_S.h2}>¿Qué son las Cookies?</h2>
+        <p style={LEGAL_S.p}>Pequeños archivos de texto que se almacenan en tu dispositivo para que la plataforma funcione correctamente, recuerde tus preferencias y mejore continuamente.</p>
+        <h2 style={LEGAL_S.h2}>Tipos de Cookies que Usamos</h2>
+        {tipos.map((t,i) => (
+          <div key={i} style={{background:"#0f0f0a", border:`1px solid ${t.color}30`, borderRadius:12, padding:"16px 18px", marginBottom:10}}>
+            <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6}}>
+              <span style={{fontWeight:700, color:"#e8e0d0", fontSize:13}}>{t.icon} {t.label}</span>
+              <span style={{background: t.fija?"#0a2a0a":"#1a1208", border:`1px solid ${t.fija?"#4caf5040":"#d4af3740"}`, color: t.fija?"#4caf50":"#d4af37", borderRadius:20, padding:"2px 10px", fontSize:11, fontWeight:700}}>{t.fija?"Necesaria":"Opcional"}</span>
+            </div>
+            <p style={{fontSize:13, color:"#888", margin:"0 0 4px", lineHeight:1.6}}>{t.desc}</p>
+            <p style={{fontSize:11, color:"#555", margin:0}}>Ejemplos: {t.ej}</p>
+          </div>
+        ))}
+        <h2 style={LEGAL_S.h2}>Cookies de Terceros</h2>
+        <LegalUL items={["Supabase — autenticación y base de datos","Vercel — hosting y rendimiento","Google Fonts — tipografías"]} />
+        <h2 style={LEGAL_S.h2}>Cómo Controlar las Cookies</h2>
+        <LegalUL items={["Chrome: Configuración → Privacidad → Cookies","Safari: Preferencias → Privacidad","Firefox: Opciones → Privacidad y Seguridad","Edge: Configuración → Privacidad, búsqueda y servicios"]} />
+        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Preguntas sobre cookies?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span></p></div>
+      </div>
+    </div>
+  );
+}
+
+function CookieBanner({ onVerCookies }) {
+  const [visible, setVisible] = useState(false);
+  const [detalle, setDetalle] = useState(false);
+  const [prefs, setPrefs] = useState({ rendimiento:true, funcionales:true, marketing:false });
+  useEffect(() => { if(!localStorage.getItem("enkaje_cookies")) setTimeout(()=>setVisible(true),1500); }, []);
+  const aceptar = () => { localStorage.setItem("enkaje_cookies", JSON.stringify({all:true,ts:Date.now()})); setVisible(false); };
+  const soloEsencial = () => { localStorage.setItem("enkaje_cookies", JSON.stringify({essential:true,ts:Date.now()})); setVisible(false); };
+  const guardar = () => { localStorage.setItem("enkaje_cookies", JSON.stringify({...prefs,essential:true,ts:Date.now()})); setVisible(false); };
+  if(!visible) return null;
+  return (
+    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:9999,background:"#0f0f0a",borderTop:"2px solid #d4af3730",padding:"18px 24px",boxShadow:"0 -8px 40px #00000080"}}>
+      {!detalle ? (
+        <div style={{maxWidth:900,margin:"0 auto",display:"flex",gap:20,alignItems:"center",flexWrap:"wrap"}}>
+          <div style={{flex:1,minWidth:240}}>
+            <p style={{fontSize:13,color:"#e8e0d0",fontWeight:700,margin:"0 0 4px"}}>🍪 Usamos cookies</p>
+            <p style={{fontSize:12,color:"#666",margin:0,lineHeight:1.6}}>
+              Usamos cookies esenciales para que la plataforma funcione y opcionales para mejorar tu experiencia.{" "}
+              <button onClick={onVerCookies} style={{background:"none",border:"none",color:"#d4af37",cursor:"pointer",fontSize:12,padding:0,textDecoration:"underline"}}>Ver política</button>
+            </p>
+          </div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",flexShrink:0}}>
+            <button onClick={()=>setDetalle(true)} style={{background:"transparent",border:"1px solid #333",color:"#666",borderRadius:8,padding:"8px 14px",fontSize:12,cursor:"pointer"}}>Personalizar</button>
+            <button onClick={soloEsencial} style={{background:"transparent",border:"1px solid #d4af3750",color:"#aaa",borderRadius:8,padding:"8px 14px",fontSize:12,cursor:"pointer"}}>Solo esenciales</button>
+            <button onClick={aceptar} style={{background:"#d4af37",border:"none",color:"#000",borderRadius:8,padding:"8px 20px",fontSize:13,cursor:"pointer",fontWeight:900}}>Aceptar todo</button>
+          </div>
+        </div>
+      ) : (
+        <div style={{maxWidth:900,margin:"0 auto"}}>
+          <p style={{fontSize:13,fontWeight:700,color:"#e8e0d0",margin:"0 0 14px"}}>Personaliza tus cookies</p>
+          {[{k:"esencial",l:"Esenciales",fija:true},{k:"rendimiento",l:"Rendimiento",fija:false},{k:"funcionales",l:"Funcionales",fija:false},{k:"marketing",l:"Marketing",fija:false}].map(({k,l,fija})=>(
+            <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #1a1a12"}}>
+              <span style={{fontSize:13,color:"#e8e0d0"}}>{l}</span>
+              {fija ? <span style={{fontSize:11,color:"#4caf50",fontWeight:700}}>Siempre activa</span> :
+                <button onClick={()=>setPrefs(p=>({...p,[k]:!p[k]}))} style={{width:40,height:22,borderRadius:11,border:"none",cursor:"pointer",background:prefs[k]?"#d4af37":"#333",position:"relative",transition:"background .2s",flexShrink:0}}>
+                  <span style={{position:"absolute",top:2,left:prefs[k]?20:2,width:18,height:18,borderRadius:"50%",background:"#fff",transition:"left .2s"}}/>
+                </button>}
+            </div>
+          ))}
+          <div style={{display:"flex",gap:8,marginTop:14,justifyContent:"flex-end"}}>
+            <button onClick={()=>setDetalle(false)} style={{background:"transparent",border:"1px solid #333",color:"#666",borderRadius:8,padding:"8px 14px",fontSize:12,cursor:"pointer"}}>Cancelar</button>
+            <button onClick={guardar} style={{background:"#d4af37",border:"none",color:"#000",borderRadius:8,padding:"8px 18px",fontSize:13,cursor:"pointer",fontWeight:900}}>Guardar</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
 
@@ -959,6 +1138,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
 export default function App() {
   const isMobile = useIsMobile();
   const [screen, setScreen] = useState("login");
+  const [legalPage, setLegalPage] = useState(null);
   const [role, setRole] = useState(null);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -1441,6 +1621,11 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
   const pad = isMobile ? "16px" : "28px 20px";
 
   // ─── WELCOME ───────────────────────────────────────────────────────────────
+  // ─── PÁGINAS LEGALES ───────────────────────────────────────────────────────
+  if (legalPage === "privacidad") return <PaginaPrivacidad onBack={() => setLegalPage(null)} />;
+  if (legalPage === "terminos")   return <PaginaTerminos   onBack={() => setLegalPage(null)} />;
+  if (legalPage === "cookies")    return <PaginaCookies    onBack={() => setLegalPage(null)} />;
+
   // ─── LOGIN ─────────────────────────────────────────────────────────────────
   if (screen === "login") return (
     <div style={{ minHeight: "100vh", background: "#070708", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
@@ -1472,6 +1657,11 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
               ¿Eres un taller? Escríbenos a <span style={{ color: "#d4af37" }}>hola@enkajepro.com</span>
             </div>
           )}
+        </div>
+        <div style={{ marginTop: 20, textAlign: "center", display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+          {[["privacidad","Privacidad"],["terminos","Términos"],["cookies","Cookies"]].map(([k,l]) => (
+            <button key={k} onClick={() => setLegalPage(k)} style={{ background: "transparent", border: "none", color: "#444", fontSize: 11, cursor: "pointer", letterSpacing: 1, textDecoration: "underline" }}>{l}</button>
+          ))}
         </div>
       </div>
     </div>
@@ -1951,6 +2141,17 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
           </div>
         )}
 
+      </div>
+
+      {/* COOKIE BANNER */}
+      <CookieBanner onVerCookies={() => setLegalPage("cookies")} />
+
+      {/* FOOTER LEGAL — visible en todas las tabs */}
+      <div style={{ borderTop: "1px solid #1a1a12", padding: "16px 20px", textAlign: "center", display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+        {[["privacidad","Privacidad"],["terminos","Términos"],["cookies","Cookies"]].map(([k,l]) => (
+          <button key={k} onClick={() => setLegalPage(k)} style={{ background: "transparent", border: "none", color: "#444", fontSize: 11, cursor: "pointer", letterSpacing: 1, textDecoration: "underline" }}>{l}</button>
+        ))}
+        <span style={{ color: "#2a2a20", fontSize: 11 }}>· © 2025 EnKaje Pro · Monterrey, México</span>
       </div>
 
       {/* MODAL CONFIRMACIÓN */}
