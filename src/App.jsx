@@ -1471,7 +1471,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
       <style>{GLOBAL_CSS}</style>
       <div style={{ width: "100%", maxWidth: 420 }} className="fade-up">
         <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <button onClick={() => setScreen("welcome")} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, marginBottom: 16, padding: "8px 0" }}>← Volver</button>
+          <button onClick={() => setScreen("login")} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, marginBottom: 16, padding: "8px 0" }}>← Volver</button>
           <LogoInline size="md" />
           <div style={{ fontSize: 10, color: "#444", letterSpacing: 3, marginTop: 6 }}>PLATAFORMA DE CARPINTERIA</div>
         </div>
