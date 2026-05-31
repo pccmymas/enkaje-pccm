@@ -1966,7 +1966,10 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                 style={{ flex: 1, background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={async () => { await confirmModal.onOk(); setConfirmModal(null); }}
+              <button onClick={async () => {
+                try { await confirmModal.onOk(); } catch(e) { alert("Error: " + e.message); }
+                setConfirmModal(null);
+              }}
                 style={{ flex: 1, background: "#f44336", border: "none", color: "#fff", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
                 Eliminar
               </button>
