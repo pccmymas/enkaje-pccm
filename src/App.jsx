@@ -7,9 +7,10 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = async (path, opts = {}) => {
   const sep = path.includes("?") ? "&" : "?";
   const url = `${SUPABASE_URL}/rest/v1/${path}${sep}apikey=${SUPABASE_KEY}`;
+  const authToken = opts.token || SUPABASE_KEY;
   const fetchOpts = {
     method: opts.method || "GET",
-    headers: { "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=representation" }
+    headers: { "Authorization": `Bearer ${authToken}`, "Content-Type": "application/json", "Prefer": "return=representation" }
   };
   if (opts.body) fetchOpts.body = opts.body;
   const r = await fetch(url, fetchOpts);
@@ -878,38 +879,65 @@ export default function App() {
 
   async function register() {
     setLoginLoading(true); setLoginError("");
+    if (!loginForm.nombre.trim()) { setLoginError("Escribe tu nombre."); setLoginLoading(false); return; }
+    if (!loginForm.email.includes("@")) { setLoginError("Correo invalido."); setLoginLoading(false); return; }
+    if (loginForm.password.length < 6) { setLoginError("La contrasena debe tener al menos 6 caracteres."); setLoginLoading(false); return; }
     const data = await authFetch("signup", { email: loginForm.email, password: loginForm.password, data: { nombre: loginForm.nombre, role: loginForm.role } });
-    if (data.user) setLoginError("Cuenta creada exitosamente. Ya puedes iniciar sesion.");
-    else setLoginError(data.error_description || data.message || "Error al registrar");
+    if (data.user && data.session) {
+      // Registro exitoso Y sesion activa (confirmacion de email desactivada en Supabase)
+      setToken(data.session.access_token);
+      setUser(data.user);
+      const r = data.user?.user_metadata?.role || loginForm.role || "cliente";
+      setRole(r);
+      setScreen("app");
+      setTab("bienvenida");
+    } else if (data.user && !data.session) {
+      // Registro exitoso PERO requiere confirmar email
+      setLoginError("✅ Cuenta creada. Revisa tu correo para confirmar tu cuenta y luego inicia sesion.");
+    } else {
+      const msg = data.error_description || data.message || "Error al registrar";
+      const msgFriendly = msg.includes("already registered") ? "Este correo ya tiene una cuenta. Inicia sesion." : msg.includes("password") ? "La contrasena debe tener al menos 6 caracteres." : msg;
+      setLoginError(msgFriendly);
+    }
     setLoginLoading(false);
   }
 
   async function guardarFormulario() {
     setSavedMsg("Guardando...");
     try {
-      const form = getForm();
-      await sb("proyectos", { method: "POST", body: JSON.stringify({ ...form, user_id: user?.id, user_email: user?.email, estado: "nuevo", created_at: new Date().toISOString() }) });
-      setSavedMsg("✅ Guardado en Mis Proyectos");
-      setTimeout(() => setSavedMsg(""), 4000);
-    } catch { setSavedMsg("❌ Error al guardar"); }
+      const f = getForm();
+      const res = await sb("proyectos", {
+        method: "POST",
+        token: token,
+        body: JSON.stringify({ ...f, user_id: user?.id, user_email: user?.email, estado: "nuevo", created_at: new Date().toISOString() })
+      });
+      if (res && !Array.isArray(res) && (res.code || res.error)) {
+        setSavedMsg("❌ " + (res.message || res.error || "Error al guardar"));
+      } else {
+        setSavedMsg("✅ Guardado en Mis Proyectos");
+        cargarProyectos();
+      }
+      setTimeout(() => setSavedMsg(""), 5000);
+    } catch(e) { setSavedMsg("❌ " + e.message); }
   }
 
   async function cargarProyectos() {
     let url = "proyectos?order=created_at.desc";
     if (role === "cliente") url += `&user_email=eq.${user?.email}`;
-    const data = await sb(url);
+    const data = await sb(url, { token });
     if (Array.isArray(data)) setProyectos(data);
+    else console.warn("cargarProyectos:", data);
   }
 
   async function cargarTalleres() {
-    const data = await sb("talleres_membresia?order=created_at.desc");
+    const data = await sb("talleres_membresia?order=created_at.desc", { token });
     if (Array.isArray(data)) setTalleresMem(data);
   }
 
   async function guardarNuevoTaller() {
     setTallerMsg("Guardando...");
     try {
-      await sb("talleres_membresia", { method: "POST", body: JSON.stringify({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, created_at: new Date().toISOString() }) });
+      await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, created_at: new Date().toISOString() }) });
       setTallerMsg("Taller agregado");
       const planLabel = nuevoTaller.plan === "premium" ? "Premium $2,999/mes" : nuevoTaller.plan === "pro" ? "Pro $1,499/mes" : "Basico $699/mes";
       const emailBody = `Bienvenido a EnKaje Pro, ${nuevoTaller.nombre}.\n\nTu cuenta ha sido activada con el Plan ${planLabel}.\n\nAccede en: https://enkajepro.com\nCorreo de acceso: ${nuevoTaller.email}\n\nFelipe Santiago\nEnKaje Pro`;
@@ -922,7 +950,7 @@ export default function App() {
   }
 
   async function actualizarTaller(id, cambios) {
-    await sb(`talleres_membresia?id=eq.${id}`, { method: "PATCH", body: JSON.stringify(cambios) });
+    await sb(`talleres_membresia?id=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
     cargarTalleres();
   }
 
@@ -1047,7 +1075,7 @@ export default function App() {
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {!isMobile && <div style={{ fontSize: 12, color: "#555" }}>Hola, {nombreUsuario}</div>}
-            <button onClick={() => { setScreen("welcome"); setRole(null); setUser(null); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 12px", fontSize: 12, cursor: "pointer" }}>Salir</button>
+            <button onClick={() => { setScreen("login"); setRole(null); setUser(null); setToken(null); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 12px", fontSize: 12, cursor: "pointer" }}>Salir</button>
           </div>
         </div>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 2, overflowX: "auto", paddingBottom: 1 }}>
@@ -1117,8 +1145,56 @@ export default function App() {
             {tipoForm === "closet" && <FormularioCloset form={formCloset} setF={(k,v) => setFormCloset(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "puerta" && <FormularioPuerta form={formPuerta} setF={(k,v) => setFormPuerta(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "mueble" && <FormularioMueble form={formMueble} setF={(k,v) => setFormMueble(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 24, gap: 12 }}>
-              <BTN onClick={guardarFormulario} style={{ width: isMobile?"100%":"auto", padding: "15px 48px", fontSize: 15, letterSpacing: 1 }}>GUARDAR LEVANTAMIENTO</BTN>
+            <div style={{ marginTop: 24 }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+                <BTN onClick={guardarFormulario} style={{ width: isMobile?"100%":"auto", padding: "15px 48px", fontSize: 15, letterSpacing: 1 }}>GUARDAR LEVANTAMIENTO</BTN>
+              </div>
+              <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 14, padding: "14px 16px" }}>
+                <div style={{ fontSize: 10, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>Acciones rapidas</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                  <button onClick={() => setTab("presupuesto")} style={{ background: "linear-gradient(135deg,#d4af37,#f0c84a)", color: "#000", border: "none", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                    🖨️ Ir a Presupuesto / PDF
+                  </button>
+                  <button onClick={() => setTab("ia")} style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                    ✨ Analizar con IA
+                  </button>
+                  <button
+                    onClick={() => {
+                      const f = getForm();
+                      const tipo = tipoForm === "cocina" ? "Cocina Integral" : tipoForm === "closet" ? "Closet" : tipoForm === "puerta" ? "Puerta" : "Mueble";
+                      const txt = tipo.toUpperCase() + " - EnKaje Pro
+" + "━".repeat(26) + "
+Cliente: " + (f.nombre||"---") + "
+Tel: " + (f.telefono||"---") + "
+Estilo: " + (Array.isArray(f.estilo)?f.estilo.join(", "):"---") + "
+Material: " + (Array.isArray(f.material)?f.material.join(", "):"---") + "
+
+Ver presupuesto en enkajepro.com";
+                      window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
+                    }}
+                    style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                    💬 Compartir por WhatsApp
+                  </button>
+                  <button
+                    onClick={() => {
+                      const f = getForm();
+                      const tipo = tipoForm === "cocina" ? "Cocina Integral" : tipoForm === "closet" ? "Closet" : tipoForm === "puerta" ? "Puerta" : "Mueble";
+                      const txt = tipo.toUpperCase() + " - EnKaje Pro
+" + "━".repeat(26) + "
+Cliente: " + (f.nombre||"---") + "
+Tel: " + (f.telefono||"---") + "
+Estilo: " + (Array.isArray(f.estilo)?f.estilo.join(", "):"---") + "
+Material: " + (Array.isArray(f.material)?f.material.join(", "):"---") + "
+
+Ver presupuesto en enkajepro.com";
+                      navigator.clipboard.writeText(txt);
+                      alert("Copiado al portapapeles");
+                    }}
+                    style={{ background: "transparent", color: "#555", border: "1.5px solid #2a2a20", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                    📋 Copiar resumen
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
