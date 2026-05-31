@@ -1167,6 +1167,15 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
     </div>
   );
 }
+
+const ESTADOS_PROYECTO = [
+  { key: "nuevo",      label: "Nuevo",              color: "#00bcd4", emoji: "🆕" },
+  { key: "proceso",    label: "En proceso",          color: "#f0a500", emoji: "🔨" },
+  { key: "listo",      label: "Listo para instalar", color: "#9c27b0", emoji: "📦" },
+  { key: "instalando", label: "Instalando",          color: "#ff5722", emoji: "🔧" },
+  { key: "entregado",  label: "Entregado",           color: "#4caf50", emoji: "✅" },
+];
+
 // ============ MAIN APP ============
 export default function App() {
   const isMobile = useIsMobile();
@@ -2057,7 +2066,10 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <span style={{ background: "#d4af3720", color: "#d4af37", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{p.estado||"nuevo"}</span>
+                      {(() => {
+                      const est = ESTADOS_PROYECTO.find(e => e.key === (p.estado||"nuevo")) || ESTADOS_PROYECTO[0];
+                      return <span style={{ background: `${est.color}20`, border: `1px solid ${est.color}50`, color: est.color, borderRadius: 20, padding: "3px 10px", fontSize: 11, fontWeight: 700 }}>{est.emoji} {est.label}</span>;
+                    })()}
                     </div>
                   </div>
                   {sel && (
@@ -2155,9 +2167,21 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
+                      <div style={{ marginBottom: 10 }}>
+                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Estado</div>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {ESTADOS_PROYECTO.map(est => (
+                            <button key={est.key}
+                              onClick={async e => { e.stopPropagation(); await sb(`proyectos?id=eq.${p.id}`, {method:"PATCH", token, body:JSON.stringify({estado:est.key})}); cargarProyectos(); }}
+                              style={{ padding:"5px 10px", borderRadius:20, border:`1px solid ${(p.estado||"nuevo")===est.key?est.color:"#333"}`, background:(p.estado||"nuevo")===est.key?`${est.color}25`:"transparent", color:(p.estado||"nuevo")===est.key?est.color:"#666", fontSize:11, cursor:"pointer", fontWeight:(p.estado||"nuevo")===est.key?700:400, whiteSpace:"nowrap" }}>
+                              {est.emoji} {est.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { const r = await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); console.log("DELETE result:", r, "enkaje:", p.enkaje, "keys:", Object.keys(p)); if(r && r.message) alert("Error Supabase: " + r.message); else cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
                       </div>
                     </div>
                   )}
@@ -2190,6 +2214,28 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         {[["Tipo",p.tipo_proyecto],["Estilo",Array.isArray(p.estilo)?p.estilo.join(", "):p.estilo],["Material",Array.isArray(p.material)?p.material.join(", "):p.material],["Nivel",p.nivel_calidad]].filter(([,v])=>v).map(([l,v],j) => (
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
+                      </div>
+                      <div style={{ marginBottom: 12 }}>
+                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Estado del proyecto</div>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {ESTADOS_PROYECTO.map(est => (
+                            <button key={est.key}
+                              onClick={async e => {
+                                e.stopPropagation();
+                                await sb(`proyectos?id=eq.${p.id}`, { method: "PATCH", token, body: JSON.stringify({ estado: est.key }) });
+                                cargarProyectos();
+                                // Notificar al cliente por WhatsApp si tiene teléfono
+                                if (p.telefono) {
+                                  const tel = p.telefono.replace(/\D/g,"");
+                                  const msg = `${est.emoji} *EnKaje Pro — Actualización de tu proyecto*\n\nHola ${p.nombre||""}! Tu proyecto de ${(p.tipo_proyecto||"cocina").toUpperCase()} ha cambiado de estado:\n\n*${est.label.toUpperCase()}*\n\nCualquier duda escríbenos.\nenkajepro.com`;
+                                  window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(msg)}`, "_blank");
+                                }
+                              }}
+                              style={{ padding: "6px 12px", borderRadius: 20, border: `1px solid ${(p.estado||"nuevo")===est.key ? est.color : "#333"}`, background: (p.estado||"nuevo")===est.key ? `${est.color}25` : "transparent", color: (p.estado||"nuevo")===est.key ? est.color : "#666", fontSize: 11, cursor: "pointer", fontWeight: (p.estado||"nuevo")===est.key ? 700 : 400, whiteSpace: "nowrap" }}>
+                              {est.emoji} {est.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                       <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Hacer Cotizacion</BTN>
                     </div>
