@@ -1191,7 +1191,7 @@ export default function App() {
   const [tallerSel, setTallerSel] = useState(null);
   const [showNuevoTaller, setShowNuevoTaller] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null); // { msg, onOk }
-  const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "" });
+  const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "", slug: "" });
   const [tallerMsg, setTallerMsg] = useState("");
   const [editTaller, setEditTaller] = useState(null); // datos legales del taller en edición
   const [aiLoading, setAiLoading] = useState(false);
@@ -1364,7 +1364,7 @@ export default function App() {
   async function guardarNuevoTaller() {
     setTallerMsg("Guardando...");
     try {
-      await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, created_at: new Date().toISOString() }) });
+      await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0, created_at: new Date().toISOString() }) });
       setTallerMsg("Taller agregado");
       const planLabel = nuevoTaller.plan === "premium" ? "Premium $2,999/mes" : nuevoTaller.plan === "pro" ? "Pro $1,499/mes" : "Basico $699/mes";
       const emailBody = `Bienvenido a EnKaje Pro, ${nuevoTaller.nombre}.\n\nTu cuenta ha sido activada con el Plan ${planLabel}.\n\nAccede en: https://enkajepro.com\nCorreo de acceso: ${nuevoTaller.email}\n\nFelipe Santiago\nEnKaje Pro`;
@@ -2253,7 +2253,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                   {sel && (
                     <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #ffffff08" }}>
                       <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr 1fr":"repeat(3,1fr)", gap: 10, marginBottom: 16, fontSize: 12, color: "#aaa" }}>
-                        {[["Email",t.email],["Tel",t.telefono],["Especialidad",t.especialidad],["Zona",t.zona],["Municipio",t.municipio],["Vencimiento",t.fecha_vencimiento],["Leads",t.leads_recibidos],["Cierres",t.proyectos_cerrados]].filter(([,v])=>v!=null&&v!=="").map(([l,v],j) => (
+                        {[["Email",t.email],["Tel",t.telefono],["Especialidad",t.especialidad],["Zona",t.zona],["Municipio",t.municipio],["Vencimiento",t.fecha_vencimiento],["Leads",t.leads_recibidos],["Cierres",t.proyectos_cerrados],["Visitas",t.visitas],["Slug",t.slug?`/taller/${t.slug}`:null]].filter(([,v])=>v!=null&&v!=="").map(([l,v],j) => (
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
@@ -2320,6 +2320,10 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Lead</button>
                         <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {proyectos_cerrados: (t.proyectos_cerrados||0)+1}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #4caf5040", background: "#4caf5010", color: "#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Cierre</button>
+                        {t.slug && (
+                          <button onClick={e => { e.stopPropagation(); const link = `https://enkajepro.com/taller/${t.slug}`; navigator.clipboard.writeText(link); alert("Link copiado: " + link); }}
+                            style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${GOLD}40`, background: `${GOLD}10`, color: GOLD, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>🔗 Copiar link</button>
+                        )}
                         <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?enkaje=eq.${t.enkaje}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #f4433640", background: "#f443360a", color: "#f44336", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Eliminar</button>
                       </div>
@@ -2342,6 +2346,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                     <INPUT label="Zona / Colonia"    value={nuevoTaller.zona}             onChange={e=>setNuevoTaller(p=>({...p,zona:e.target.value}))}             placeholder="San Pedro, Valle..." />
                     <INPUT label="Municipio"         value={nuevoTaller.municipio}        onChange={e=>setNuevoTaller(p=>({...p,municipio:e.target.value}))}        placeholder="San Pedro Garza Garcia" />
                     <INPUT label="Fecha vencimiento" value={nuevoTaller.fecha_vencimiento} onChange={e=>setNuevoTaller(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
+                    <INPUT label="Slug (URL del taller)" value={nuevoTaller.slug} onChange={e=>setNuevoTaller(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
                   </div>
                   <div style={{ marginBottom: 14 }}>
                     <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
