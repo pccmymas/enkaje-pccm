@@ -28,14 +28,14 @@ const authFetch = async (path, body) => {
 };
 
 const ESTILOS = [
-  { key: "moderno",       label: "Moderno",       img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop", desc: "Lineas limpias, colores neutros" },
-  { key: "minimalista",   label: "Minimalista",   img: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&fit=crop", desc: "Lo esencial, espacios abiertos" },
-  { key: "contemporaneo", label: "Contemporaneo", img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&fit=crop", desc: "Mezcla de estilos actuales" },
-  { key: "industrial",    label: "Industrial",    img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&q=80&fit=crop", desc: "Metal, madera cruda, urbano" },
-  { key: "clasico",       label: "Clasico",       img: "https://images.unsplash.com/photo-1556909212-d5b604d0c90d?w=600&q=80&fit=crop", desc: "Molduras, detalles ornamentales" },
-  { key: "rustico",       label: "Rustico",       img: "https://images.unsplash.com/photo-1588854337236-6a0e4de27897?w=600&q=80&fit=crop", desc: "Madera natural, texturas organicas" },
-  { key: "nordico",       label: "Nordico",       img: "https://images.unsplash.com/photo-1565538810643-b5bdb974b832?w=600&q=80&fit=crop", desc: "Blanco, madera clara, acogedor" },
-  { key: "lujo",          label: "Lujo / Premium",img: "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=600&q=80&fit=crop", desc: "Materiales nobles, exclusividad" },
+  { key: "moderno",       label: "Moderno",       img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop", desc: "Lineas limpias, colores neutros" },
+  { key: "minimalista",   label: "Minimalista",   img: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600&q=80&fit=crop", desc: "Lo esencial, espacios abiertos" },
+  { key: "contemporaneo", label: "Contemporaneo", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop", desc: "Mezcla de estilos actuales" },
+  { key: "industrial",    label: "Industrial",    img: "https://images.unsplash.com/photo-1604709177225-055f99402ea3?w=600&q=80&fit=crop", desc: "Metal, madera cruda, urbano" },
+  { key: "clasico",       label: "Clasico",       img: "https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=600&q=80&fit=crop", desc: "Molduras, detalles ornamentales" },
+  { key: "rustico",       label: "Rustico",       img: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&fit=crop", desc: "Madera natural, texturas organicas" },
+  { key: "nordico",       label: "Nordico",       img: "https://images.unsplash.com/photo-1583845112203-29329902332e?w=600&q=80&fit=crop", desc: "Blanco, madera clara, acogedor" },
+  { key: "lujo",          label: "Lujo / Premium",img: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=600&q=80&fit=crop", desc: "Materiales nobles, exclusividad" },
 ];
 
 const FORM_INIT = {
@@ -908,82 +908,59 @@ export default function App() {
     setSavedMsg("Guardando...");
     try {
       const f = getForm();
-      // Solo los campos que existen en la tabla proyectos de Supabase
-      // Arrays se serializan a texto separado por comas
       const arr = v => Array.isArray(v) ? v.join(", ") : (v || "");
+      // Solo columnas base que siempre existen en cualquier tabla proyectos
+      // Todo lo demás va en datos_json para evitar errores de columna faltante
       const payload = {
-        user_id:             user?.id,
-        user_email:          user?.email,
-        estado:              "nuevo",
-        created_at:          new Date().toISOString(),
-        tipo_proyecto:       f.tipo_proyecto,
-        nombre:              f.nombre,
-        telefono:            f.telefono,
-        direccion:           f.direccion,
-        correo:              f.correo,
-        fecha:               f.fecha,
-        atencion_por:        f.atencion_por,
-        largo:               f.largo,
-        altura:              f.altura,
-        profundidad:         f.profundidad,
-        area:                f.area,
-        cantidad:            f.cantidad,
-        ancho:               f.ancho,
-        alto:                f.alto,
-        grosor_puerta:       f.grosor_puerta,
-        medidas_isla:        f.medidas_isla,
-        altura_superiores:   f.altura_superiores,
-        color_principal:     f.color_principal,
-        color_secundario:    f.color_secundario,
-        color_cubierta:      f.color_cubierta,
-        textura:             f.textura,
-        medidas_electro:     f.medidas_electro,
-        observaciones:       f.observaciones,
-        materiales_solicitados: f.materiales_solicitados,
-        herrajes_solicitados:   f.herrajes_solicitados,
-        nivel_calidad:       f.nivel_calidad,
-        comentarios_tecnicos: f.comentarios_tecnicos,
-        precio_fabricacion:  f.precio_fabricacion,
-        precio_instalacion:  f.precio_instalacion,
-        precio_cubierta:     f.precio_cubierta,
-        precio_herrajes:     f.precio_herrajes,
-        precio_otros:        f.precio_otros,
-        incluye:             f.incluye,
-        no_incluye:          f.no_incluye,
-        tiempo_entrega:      f.tiempo_entrega,
-        anticipo:            f.anticipo,
-        pago_entrega:        f.pago_entrega,
-        pago_final:          f.pago_final,
-        garantia:            f.garantia,
-        // Arrays → texto
-        tipo_cocina:         arr(f.tipo_cocina),
-        tipo_closet:         arr(f.tipo_closet),
-        tipo_puerta:         arr(f.tipo_puerta),
-        tipo_mueble:         arr(f.tipo_mueble),
-        estilo:              arr(f.estilo),
-        material:            arr(f.material),
-        grosor:              arr(f.grosor),
-        tipo_acabado:        arr(f.tipo_acabado),
-        tipo_puertas:        arr(f.tipo_puertas),
-        jaladeras:           arr(f.jaladeras),
-        bisagras:            arr(f.bisagras),
-        correderas:          arr(f.correderas),
-        accesorios:          arr(f.accesorios),
-        accesorios_closet:   arr(f.accesorios_closet),
-        accesorios_mueble:   arr(f.accesorios_mueble),
-        material_cubierta:   arr(f.material_cubierta),
-        tarja:               arr(f.tarja),
-        griferia:            arr(f.griferia),
-        electrodomesticos:   arr(f.electrodomesticos),
-        iluminacion:         arr(f.iluminacion),
-        tipo_marco:          arr(f.tipo_marco),
-        herrajes_puerta:     arr(f.herrajes_puerta),
+        user_id:       user?.id    || null,
+        user_email:    user?.email || null,
+        estado:        "nuevo",
+        created_at:    new Date().toISOString(),
+        tipo_proyecto: f.tipo_proyecto || "cocina",
+        nombre:        f.nombre        || null,
+        telefono:      f.telefono      || null,
+        correo:        f.correo        || null,
+        direccion:     f.direccion     || null,
+        observaciones: f.observaciones || null,
+        nivel_calidad: f.nivel_calidad || null,
+        // Campos de precio
+        precio_fabricacion: f.precio_fabricacion || null,
+        precio_instalacion: f.precio_instalacion || null,
+        precio_cubierta:    f.precio_cubierta    || null,
+        precio_herrajes:    f.precio_herrajes     || null,
+        precio_otros:       f.precio_otros        || null,
+        tiempo_entrega:     f.tiempo_entrega      || null,
+        garantia:           f.garantia            || null,
+        // Resumen de selecciones como texto (para búsquedas)
+        estilo:    arr(f.estilo),
+        material:  arr(f.material),
+        // Todos los datos completos del formulario en un campo JSON
+        datos_json: JSON.stringify(f),
       };
-      // Eliminar claves con valor undefined o null para no mandar columnas inexistentes
-      Object.keys(payload).forEach(k => { if (payload[k] === undefined || payload[k] === null) delete payload[k]; });
+      // Quitar nulls
+      Object.keys(payload).forEach(k => { if (payload[k] === null || payload[k] === undefined) delete payload[k]; });
       const res = await sb("proyectos", { method: "POST", token, body: JSON.stringify(payload) });
-      if (res && !Array.isArray(res) && (res.code || res.error)) {
-        setSavedMsg("❌ " + (res.message || res.error || "Error al guardar"));
+      if (res && !Array.isArray(res) && (res.code || res.error || res.hint)) {
+        // Si falla por columna faltante, intentar con payload mínimo
+        const minPayload = {
+          user_id: user?.id || null,
+          user_email: user?.email || null,
+          estado: "nuevo",
+          created_at: new Date().toISOString(),
+          tipo_proyecto: f.tipo_proyecto || "cocina",
+          nombre: f.nombre || null,
+          telefono: f.telefono || null,
+          observaciones: f.observaciones || null,
+          datos_json: JSON.stringify(f),
+        };
+        Object.keys(minPayload).forEach(k => { if (minPayload[k] === null || minPayload[k] === undefined) delete minPayload[k]; });
+        const res2 = await sb("proyectos", { method: "POST", token, body: JSON.stringify(minPayload) });
+        if (res2 && !Array.isArray(res2) && (res2.code || res2.error)) {
+          setSavedMsg("❌ " + (res2.message || res2.error));
+        } else {
+          setSavedMsg("✅ Guardado en Mis Proyectos");
+          cargarProyectos();
+        }
       } else {
         setSavedMsg("✅ Guardado en Mis Proyectos");
         cargarProyectos();
@@ -1029,6 +1006,134 @@ export default function App() {
     if (screen === "app" && (tab === "bienvenida" || tab === "proyectos" || tab === "leads")) cargarProyectos();
     if (screen === "app" && tab === "membresias") cargarTalleres();
   }, [tab, screen]);
+
+  function imprimirFormulario() {
+    const f = getForm();
+    const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v || "---");
+    const tipoLabel = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
+    const tipoIcon  = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
+    const folio = `LV-${Date.now().toString().slice(-6)}`;
+
+    // Filas según tipo de proyecto
+    const filasCocina = [
+      ["Tipo de cocina", arr(f.tipo_cocina)],
+      ["Largo total", f.largo], ["Altura", f.altura], ["Profundidad", f.profundidad],
+      ["Área aprox.", f.area], ["Medidas isla", f.medidas_isla], ["Alt. superiores", f.altura_superiores],
+      ["Cubierta", arr(f.material_cubierta)], ["Color cubierta", f.color_cubierta],
+      ["Tarja", arr(f.tarja)], ["Grifería", arr(f.griferia)],
+      ["Electrodomésticos", arr(f.electrodomesticos)], ["Medidas electro", f.medidas_electro],
+      ["Accesorios", arr(f.accesorios)],
+    ];
+    const filasCloset = [
+      ["Tipo de closet", arr(f.tipo_closet)],
+      ["Largo / Ancho", f.largo], ["Altura", f.altura], ["Profundidad", f.profundidad], ["Área", f.area],
+      ["Accesorios", arr(f.accesorios_closet)],
+    ];
+    const filasPuerta = [
+      ["Tipo de puerta", arr(f.tipo_puerta)],
+      ["Ancho", f.ancho], ["Alto", f.alto], ["Grosor", f.grosor_puerta], ["Cantidad", f.cantidad],
+      ["Marco", arr(f.tipo_marco)], ["Herrajes", arr(f.herrajes_puerta)],
+    ];
+    const filasMueble = [
+      ["Tipo de mueble", arr(f.tipo_mueble)],
+      ["Largo / Ancho", f.largo], ["Alto", f.alto], ["Profundidad", f.profundidad], ["Cantidad", f.cantidad],
+      ["Accesorios", arr(f.accesorios_mueble)],
+    ];
+    const filasEspecificas = tipoForm==="cocina"?filasCocina:tipoForm==="closet"?filasCloset:tipoForm==="puerta"?filasPuerta:filasMueble;
+    const filasComunes = [
+      ["Estilo", arr(f.estilo)], ["Material", arr(f.material)], ["Grosor", arr(f.grosor)],
+      ["Color principal", f.color_principal], ["Color secundario", f.color_secundario],
+      ["Acabado", arr(f.tipo_acabado)], ["Textura", f.textura],
+      ["Tipo puertas", arr(f.tipo_puertas)], ["Jaladeras", arr(f.jaladeras)],
+      ["Bisagras", arr(f.bisagras)], ["Correderas", arr(f.correderas)],
+      ["Iluminación", arr(f.iluminacion)],
+    ];
+    const todasFilas = [...filasEspecificas, ...filasComunes].filter(([,v])=>v&&v!=="---");
+    const filasHTML = todasFilas.map(([l,v],i)=>`<tr style="background:${i%2===0?'#fff':'#f9f7f3'}"><td style="padding:8px 14px;color:#666;font-size:12px;border-bottom:1px solid #ede9e0;width:40%">${l}</td><td style="padding:8px 14px;color:#1a1a1a;font-size:13px;font-weight:500;border-bottom:1px solid #ede9e0">${v}</td></tr>`).join("");
+    const tallerHTML = (f.materiales_solicitados||f.nivel_calidad||f.comentarios_tecnicos) ? `
+      <div style="margin-top:24px;border:1px solid #00bcd430;border-radius:10px;overflow:hidden">
+        <div style="background:#001a20;padding:10px 16px;font-size:10px;font-weight:700;color:#00bcd4;letter-spacing:3px;text-transform:uppercase">🏭 Notas del Taller</div>
+        <div style="padding:14px 16px">
+          ${f.nivel_calidad?`<p style="font-size:12px;margin:0 0 8px"><b style="color:#00bcd4">Nivel:</b> ${f.nivel_calidad}</p>`:""}
+          ${f.materiales_solicitados?`<p style="font-size:12px;margin:0 0 8px"><b>Materiales:</b> ${f.materiales_solicitados}</p>`:""}
+          ${f.comentarios_tecnicos?`<p style="font-size:12px;margin:0"><b>Técnico:</b> ${f.comentarios_tecnicos}</p>`:""}
+        </div>
+      </div>` : "";
+
+    const w = window.open("","_blank");
+    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Levantamiento ${tipoLabel} - EnKaje Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a}
+.page{max-width:780px;margin:0 auto;padding:40px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #d4af37;margin-bottom:24px}
+.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#d4af37;letter-spacing:3px}
+.logo-s{font-size:9px;color:#999;letter-spacing:4px;text-transform:uppercase;margin-top:4px}
+.doc-r{text-align:right}
+.doc-t{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#8B6914;text-transform:uppercase;letter-spacing:2px}
+.folio{font-size:11px;color:#999;margin-top:3px}
+.banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid #d4af37;border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:20px}
+.bt{font-size:10px;color:#d4af3799;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
+.bn{font-family:'Playfair Display',serif;font-size:20px;color:#d4af37;font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{border:1px solid #e8e0d0;border-radius:8px;overflow:hidden}
+.ch{background:#f8f4ed;border-bottom:1px solid #e8e0d0;padding:8px 14px;font-size:10px;font-weight:700;color:#8B6914;letter-spacing:2px;text-transform:uppercase}
+.cb{padding:12px 14px}
+.ir{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f5f0ea;font-size:12px}
+.ir:last-child{border-bottom:none}
+.il{color:#999;font-weight:500}.iv{color:#1a1a1a;font-weight:600;text-align:right}
+table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;border:1px solid #e8e0d0}
+.obs{background:#f8f8f8;border:1px solid #e8e0d0;border-radius:8px;padding:12px 16px;font-size:12px;color:#444;font-style:italic;margin-top:20px;line-height:1.7}
+.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;padding-top:20px;border-top:1px solid #e8e0d0}
+.fi{text-align:center}.fl{height:1px;background:#333;margin-bottom:6px}
+.fn{font-size:12px;font-weight:700}.fc{font-size:10px;color:#999;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.ftr{margin-top:24px;padding-top:14px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between;align-items:center}
+.flogo{font-family:'Playfair Display',serif;font-size:13px;color:#d4af37;font-weight:700;letter-spacing:2px}
+.finfo{font-size:10px;color:#bbb;text-align:right;line-height:1.5}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:28px}}
+</style></head><body><div class="page">
+<div class="hdr">
+  <div><div class="logo">EnKaje Pro</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
+  <div class="doc-r"><div class="doc-t">Levantamiento de Proyecto</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Asesor: ${f.atencion_por||"Felipe Santiago"}</div></div>
+</div>
+<div class="banner">
+  <div class="bt">${tipoIcon} Tipo de proyecto</div>
+  <div class="bn">${tipoLabel.toUpperCase()}</div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="ch">👤 Datos del Cliente</div>
+    <div class="cb">
+      ${[["Nombre",f.nombre],["Teléfono",f.telefono],["Correo",f.correo],["Dirección",f.direccion]].map(([l,v])=>`<div class="ir"><span class="il">${l}</span><span class="iv">${v||"---"}</span></div>`).join("")}
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch">📋 Resumen</div>
+    <div class="cb">
+      ${[["Tipo",tipoLabel],["Estilo",arr(f.estilo)],["Material",arr(f.material)],["Color",f.color_principal]].map(([l,v])=>`<div class="ir"><span class="il">${l}</span><span class="iv">${v||"---"}</span></div>`).join("")}
+    </div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:0">
+  <div class="ch">📐 Especificaciones Completas</div>
+  <table>${filasHTML}</table>
+</div>
+${f.observaciones?`<div class="obs"><b>Observaciones:</b> ${f.observaciones}</div>`:""}
+${tallerHTML}
+<div class="fir">
+  <div class="fi"><div style="height:44px"></div><div class="fl"></div><div class="fn">${f.atencion_por||"Felipe Santiago"}</div><div class="fc">EnKaje Pro · Asesor</div></div>
+  <div class="fi"><div style="height:44px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Conformidad</div></div>
+</div>
+<div class="ftr">
+  <div class="flogo">EnKaje Pro</div>
+  <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México<br>Levantamiento generado digitalmente</div>
+</div>
+</div><script>window.onload=function(){window.print()}</script></body></html>`);
+    w.document.close();
+  }
+
 
   async function analizarConIA() {
     const form = getForm();
@@ -1217,7 +1322,10 @@ export default function App() {
             {tipoForm === "puerta" && <FormularioPuerta form={formPuerta} setF={(k,v) => setFormPuerta(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "mueble" && <FormularioMueble form={formMueble} setF={(k,v) => setFormMueble(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             <div style={{ marginTop: 24, display: "flex", justifyContent: "center", marginBottom: 8 }}>
-              <BTN onClick={guardarFormulario} style={{ width: isMobile?"100%":"auto", padding: "15px 48px", fontSize: 15, letterSpacing: 1 }}>GUARDAR LEVANTAMIENTO</BTN>
+              <div style={{ display:"flex", gap:12, width:isMobile?"100%":"auto", flexDirection:isMobile?"column":"row" }}>
+                <BTN onClick={guardarFormulario} style={{ flex:1, padding:"15px 32px", fontSize:15, letterSpacing:1 }}>💾 GUARDAR LEVANTAMIENTO</BTN>
+                <button onClick={imprimirFormulario} style={{ flex:1, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"15px 32px", fontWeight:900, fontSize:14, cursor:"pointer", letterSpacing:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>🖨️ IMPRIMIR FORMULARIO</button>
+              </div>
             </div>
             <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
