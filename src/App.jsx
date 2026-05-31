@@ -27,15 +27,42 @@ const authFetch = async (path, body) => {
   return r.json();
 };
 
+// Ilustraciones SVG de cocinas por estilo - siempre cargan, sin dependencia externa
+const mkSVG = (svgContent) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
+
 const ESTILOS = [
-  { key: "moderno",       label: "Moderno",       img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&fit=crop&crop=center", desc: "Lineas limpias, colores neutros" },
-  { key: "minimalista",   label: "Minimalista",   img: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?w=600&q=80&fit=crop&crop=center", desc: "Lo esencial, espacios abiertos" },
-  { key: "contemporaneo", label: "Contemporaneo", img: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80&fit=crop&crop=center", desc: "Mezcla de estilos actuales" },
-  { key: "industrial",    label: "Industrial",    img: "https://images.unsplash.com/photo-1588854337236-6a0e4de27897?w=600&q=80&fit=crop&crop=center", desc: "Metal, madera cruda, urbano" },
-  { key: "clasico",       label: "Clasico",       img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80&fit=crop&crop=center", desc: "Molduras, detalles ornamentales" },
-  { key: "rustico",       label: "Rustico",       img: "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=600&q=80&fit=crop&crop=center", desc: "Madera natural, texturas organicas" },
-  { key: "nordico",       label: "Nordico",       img: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=600&q=80&fit=crop&crop=center", desc: "Blanco, madera clara, acogedor" },
-  { key: "lujo",          label: "Lujo / Premium",img: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=600&q=80&fit=crop&crop=center", desc: "Materiales nobles, exclusividad" },
+  {
+    key: "moderno", label: "Moderno", desc: "Lineas limpias, colores neutros",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#1a1a1a"/><rect x="0" y="280" width="600" height="120" fill="#111"/><rect x="30" y="180" width="540" height="100" rx="2" fill="#2a2a2a"/><rect x="30" y="180" width="540" height="8" fill="#3a3a3a"/><rect x="40" y="195" width="118" height="78" rx="1" fill="#222"/><rect x="170" y="195" width="118" height="78" rx="1" fill="#222"/><rect x="300" y="195" width="118" height="78" rx="1" fill="#222"/><rect x="430" y="195" width="132" height="78" rx="1" fill="#222"/><rect x="40" y="195" width="118" height="3" fill="#d4af37" opacity="0.5"/><rect x="170" y="195" width="118" height="3" fill="#d4af37" opacity="0.5"/><rect x="30" y="100" width="540" height="75" rx="2" fill="#2a2a2a"/><rect x="30" y="100" width="540" height="6" fill="#333"/><rect x="40" y="112" width="90" height="56" rx="1" fill="#1e1e1e"/><rect x="140" y="112" width="90" height="56" rx="1" fill="#1e1e1e"/><rect x="240" y="112" width="90" height="56" rx="1" fill="#1e1e1e"/><rect x="340" y="112" width="90" height="56" rx="1" fill="#1e1e1e"/><rect x="440" y="112" width="122" height="56" rx="1" fill="#1e1e1e"/><rect x="30" y="175" width="540" height="8" rx="1" fill="#3d3d3d"/><rect x="150" y="240" width="60" height="20" rx="10" fill="#3a3a3a"/><rect x="270" y="240" width="60" height="20" rx="10" fill="#3a3a3a"/><rect x="390" y="240" width="60" height="20" rx="10" fill="#3a3a3a"/><rect x="100" y="285" width="400" height="80" rx="2" fill="#1e1e1e"/><rect x="100" y="285" width="400" height="4" fill="#d4af37" opacity="0.8"/><ellipse cx="310" cy="340" rx="40" ry="8" fill="#2a2a2a"/><line x1="280" y1="300" x2="280" y2="340" stroke="#555" stroke-width="2"/><line x1="340" y1="300" x2="340" y2="340" stroke="#555" stroke-width="2"/><rect x="0" y="50" width="600" height="45" fill="#111"/><rect x="50" y="60" width="4" height="25" fill="#d4af37" opacity="0.6"/><rect x="70" y="60" width="4" height="25" fill="#d4af37" opacity="0.6"/><rect x="90" y="60" width="4" height="25" fill="#d4af37" opacity="0.6"/></svg>`)
+  },
+  {
+    key: "minimalista", label: "Minimalista", desc: "Lo esencial, espacios abiertos",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#f5f5f3"/><rect x="0" y="300" width="600" height="100" fill="#e8e8e6"/><rect x="20" y="180" width="560" height="122" rx="0" fill="#fff"/><rect x="20" y="180" width="560" height="2" fill="#d4af37"/><rect x="22" y="182" width="138" height="118" fill="#fafafa"/><rect x="162" y="182" width="138" height="118" fill="#fafafa"/><rect x="302" y="182" width="138" height="118" fill="#fafafa"/><rect x="442" y="182" width="136" height="118" fill="#fafafa"/><rect x="160" y="182" width="2" height="118" fill="#e8e8e6"/><rect x="300" y="182" width="2" height="118" fill="#e8e8e6"/><rect x="440" y="182" width="2" height="118" fill="#e8e8e6"/><rect x="20" y="90" width="560" height="85" rx="0" fill="#fff"/><rect x="20" y="90" width="560" height="2" fill="#ccc"/><rect x="22" y="92" width="92" height="81" fill="#fafafa"/><rect x="116" y="92" width="92" height="81" fill="#fafafa"/><rect x="210" y="92" width="92" height="81" fill="#fafafa"/><rect x="304" y="92" width="92" height="81" fill="#fafafa"/><rect x="398" y="92" width="92" height="81" fill="#fafafa"/><rect x="492" y="92" width="86" height="81" fill="#fafafa"/><rect x="114" y="92" width="2" height="81" fill="#e8e8e6"/><rect x="208" y="92" width="2" height="81" fill="#e8e8e6"/><rect x="302" y="92" width="2" height="81" fill="#e8e8e6"/><rect x="396" y="92" width="2" height="81" fill="#e8e8e6"/><rect x="490" y="92" width="2" height="81" fill="#e8e8e6"/><rect x="20" y="176" width="560" height="6" rx="0" fill="#e0e0de"/><rect x="130" y="310" width="340" height="70" rx="1" fill="#fff"/><rect x="130" y="310" width="340" height="2" fill="#ccc"/><ellipse cx="310" cy="350" rx="35" ry="6" fill="#e8e8e6"/><rect x="0" y="30" width="600" height="55" fill="#f0f0ee"/><rect x="50" y="40" width="3" height="35" fill="#d4af37" opacity="0.4"/><rect x="70" y="40" width="3" height="35" fill="#d4af37" opacity="0.4"/><rect x="90" y="40" width="3" height="35" fill="#d4af37" opacity="0.4"/></svg>`)
+  },
+  {
+    key: "contemporaneo", label: "Contemporaneo", desc: "Mezcla de estilos actuales",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#1c1c1e"/><rect x="0" y="270" width="600" height="130" fill="#141416"/><rect x="20" y="160" width="340" height="112" rx="2" fill="#252528"/><rect x="20" y="160" width="340" height="6" fill="#d4af37" opacity="0.7"/><rect x="28" y="172" width="100" height="93" rx="1" fill="#1e1e20"/><rect x="136" y="172" width="100" height="93" rx="1" fill="#1e1e20"/><rect x="244" y="172" width="108" height="93" rx="1" fill="#1e1e20"/><rect x="120" y="215" width="30" height="8" rx="4" fill="#333"/><rect x="228" y="215" width="30" height="8" rx="4" fill="#333"/><rect x="370" y="50" width="210" height="320" rx="2" fill="#252528"/><rect x="370" y="50" width="210" height="8" fill="#d4af37" opacity="0.5"/><rect x="378" y="64" width="95" height="145" rx="1" fill="#1e1e20"/><rect x="481" y="64" width="91" height="145" rx="1" fill="#1e1e20"/><rect x="378" y="216" width="95" height="145" rx="1" fill="#1e1e20"/><rect x="481" y="216" width="91" height="145" rx="1" fill="#1e1e20"/><rect x="423" y="135" width="14" height="6" rx="3" fill="#444"/><rect x="20" y="50" width="340" height="105" rx="2" fill="#252528"/><rect x="28" y="58" width="80" height="90" rx="1" fill="#1e1e20"/><rect x="116" y="58" width="80" height="90" rx="1" fill="#1e1e20"/><rect x="204" y="58" width="80" height="90" rx="1" fill="#1e1e20"/><rect x="292" y="58" width="60" height="90" rx="1" fill="#1e1e20"/><rect x="20" y="152" width="340" height="10" rx="1" fill="#d4af37" opacity="0.3"/><rect x="80" y="278" width="250" height="75" rx="2" fill="#1e1e20"/><rect x="80" y="278" width="250" height="4" fill="#d4af37" opacity="0.6"/></svg>`)
+  },
+  {
+    key: "industrial", label: "Industrial", desc: "Metal, madera cruda, urbano",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#1a1510"/><rect x="0" y="0" width="600" height="400" fill="url(#brick)" opacity="0.15"/><defs><pattern id="brick" width="60" height="30" patternUnits="userSpaceOnUse"><rect width="60" height="30" fill="none" stroke="#8B6914" stroke-width="0.5"/><rect x="0" y="0" width="30" height="15" fill="none" stroke="#8B6914" stroke-width="0.5"/></pattern></defs><rect x="0" y="260" width="600" height="140" fill="#111008"/><rect x="20" y="155" width="560" height="108" rx="1" fill="#2a2218"/><rect x="20" y="155" width="560" height="5" fill="#8B6914" opacity="0.8"/><rect x="28" y="162" width="130" height="94" rx="1" fill="#1e1810"/><rect x="166" y="162" width="130" height="94" rx="1" fill="#1e1810"/><rect x="304" y="162" width="130" height="94" rx="1" fill="#1e1810"/><rect x="442" y="162" width="130" height="94" rx="1" fill="#1e1810"/><rect x="85" y="210" width="18" height="6" rx="1" fill="#555"/><rect x="225" y="210" width="18" height="6" rx="1" fill="#555"/><rect x="363" y="210" width="18" height="6" rx="1" fill="#555"/><rect x="499" y="210" width="18" height="6" rx="1" fill="#555"/><rect x="20" y="60" width="560" height="90" rx="1" fill="#2a2218"/><rect x="28" y="68" width="90" height="74" rx="1" fill="#1e1810"/><rect x="126" y="68" width="90" height="74" rx="1" fill="#1e1810"/><rect x="224" y="68" width="90" height="74" rx="1" fill="#1e1810"/><rect x="322" y="68" width="90" height="74" rx="1" fill="#1e1810"/><rect x="420" y="68" width="90" height="74" rx="1" fill="#1e1810"/><rect x="516" y="68" width="56" height="74" rx="1" fill="#1e1810"/><rect x="20" y="148" width="560" height="10" rx="1" fill="#555"/><rect x="100" y="268" width="400" height="70" rx="1" fill="#1a1510"/><rect x="100" y="268" width="400" height="5" fill="#8B6914" opacity="0.8"/><rect x="0" y="20" width="600" height="35" fill="#0f0d08"/><rect x="40" y="27" width="3" height="20" fill="#8B6914" opacity="0.6"/><rect x="80" y="27" width="3" height="20" fill="#8B6914" opacity="0.6"/><rect x="120" y="27" width="3" height="20" fill="#8B6914" opacity="0.6"/></svg>`)
+  },
+  {
+    key: "clasico", label: "Clasico", desc: "Molduras, detalles ornamentales",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#f8f4ed"/><rect x="0" y="270" width="600" height="130" fill="#f0ece0"/><rect x="20" y="155" width="560" height="118" rx="3" fill="#fff"/><rect x="20" y="155" width="560" height="8" rx="2" fill="#8B6914" opacity="0.4"/><rect x="20" y="155" width="560" height="3" fill="#d4af37" opacity="0.6"/><rect x="28" y="168" width="128" height="97" rx="2" fill="#f8f4ed"/><rect x="28" y="168" width="128" height="97" rx="2" stroke="#d4af37" stroke-width="1.5" fill="none"/><rect x="36" y="176" width="112" height="81" rx="1" fill="#f0ece0"/><rect x="164" y="168" width="128" height="97" rx="2" fill="#f8f4ed"/><rect x="164" y="168" width="128" height="97" rx="2" stroke="#d4af37" stroke-width="1.5" fill="none"/><rect x="172" y="176" width="112" height="81" rx="1" fill="#f0ece0"/><rect x="300" y="168" width="128" height="97" rx="2" fill="#f8f4ed"/><rect x="300" y="168" width="128" height="97" rx="2" stroke="#d4af37" stroke-width="1.5" fill="none"/><rect x="308" y="176" width="112" height="81" rx="1" fill="#f0ece0"/><rect x="436" y="168" width="136" height="97" rx="2" fill="#f8f4ed"/><rect x="436" y="168" width="136" height="97" rx="2" stroke="#d4af37" stroke-width="1.5" fill="none"/><rect x="444" y="176" width="120" height="81" rx="1" fill="#f0ece0"/><circle cx="92" cy="218" r="5" fill="#d4af37" opacity="0.7"/><circle cx="228" cy="218" r="5" fill="#d4af37" opacity="0.7"/><circle cx="364" cy="218" r="5" fill="#d4af37" opacity="0.7"/><circle cx="504" cy="218" r="5" fill="#d4af37" opacity="0.7"/><rect x="20" y="70" width="560" height="80" rx="3" fill="#fff" stroke="#d4af37" stroke-width="1"/><rect x="28" y="78" width="88" height="62" rx="2" fill="#f8f4ed" stroke="#d4af37" stroke-width="0.8"/><rect x="124" y="78" width="88" height="62" rx="2" fill="#f8f4ed" stroke="#d4af37" stroke-width="0.8"/><rect x="220" y="78" width="88" height="62" rx="2" fill="#f8f4ed" stroke="#d4af37" stroke-width="0.8"/><rect x="316" y="78" width="88" height="62" rx="2" fill="#f8f4ed" stroke="#d4af37" stroke-width="0.8"/><rect x="412" y="78" width="88" height="62" rx="2" fill="#f8f4ed" stroke="#d4af37" stroke-width="0.8"/><rect x="508" y="78" width="64" height="62" rx="2" fill="#f8f4ed" stroke="#d4af37" stroke-width="0.8"/><rect x="20" y="148" width="560" height="10" rx="2" fill="#e8e0d0"/><rect x="20" y="150" width="560" height="3" fill="#d4af37" opacity="0.5"/><rect x="120" y="278" width="360" height="72" rx="3" fill="#fff" stroke="#d4af37" stroke-width="1"/></svg>`)
+  },
+  {
+    key: "rustico", label: "Rustico", desc: "Madera natural, texturas organicas",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#2a1f10"/><rect x="0" y="265" width="600" height="135" fill="#1e1508"/><rect x="20" y="155" width="560" height="113" rx="2" fill="#3d2b12"/><rect x="20" y="155" width="560" height="6" fill="#8B5E1A" opacity="0.9"/><rect x="20" y="155" width="560" height="2" fill="#d4af37" opacity="0.5"/><rect x="28" y="163" width="128" height="97" rx="1" fill="#2e1f0a"/><line x1="28" y1="175" x2="156" y2="175" stroke="#4a3318" stroke-width="1"/><line x1="28" y1="200" x2="156" y2="200" stroke="#4a3318" stroke-width="1"/><line x1="28" y1="225" x2="156" y2="225" stroke="#4a3318" stroke-width="1"/><line x1="28" y1="248" x2="156" y2="248" stroke="#4a3318" stroke-width="1"/><rect x="164" y="163" width="128" height="97" rx="1" fill="#2e1f0a"/><line x1="164" y1="175" x2="292" y2="175" stroke="#4a3318" stroke-width="1"/><line x1="164" y1="200" x2="292" y2="200" stroke="#4a3318" stroke-width="1"/><line x1="164" y1="225" x2="292" y2="225" stroke="#4a3318" stroke-width="1"/><line x1="164" y1="248" x2="292" y2="248" stroke="#4a3318" stroke-width="1"/><rect x="300" y="163" width="128" height="97" rx="1" fill="#2e1f0a"/><line x1="300" y1="175" x2="428" y2="175" stroke="#4a3318" stroke-width="1"/><line x1="300" y1="200" x2="428" y2="200" stroke="#4a3318" stroke-width="1"/><line x1="300" y1="225" x2="428" y2="225" stroke="#4a3318" stroke-width="1"/><rect x="436" y="163" width="136" height="97" rx="1" fill="#2e1f0a"/><line x1="436" y1="185" x2="572" y2="185" stroke="#4a3318" stroke-width="1"/><line x1="436" y1="215" x2="572" y2="215" stroke="#4a3318" stroke-width="1"/><rect x="20" y="60" width="560" height="90" rx="2" fill="#3d2b12"/><rect x="28" y="68" width="90" height="74" rx="1" fill="#2e1f0a"/><line x1="28" y1="82" x2="118" y2="82" stroke="#4a3318" stroke-width="1"/><line x1="28" y1="106" x2="118" y2="106" stroke="#4a3318" stroke-width="1"/><line x1="28" y1="128" x2="118" y2="128" stroke="#4a3318" stroke-width="1"/><rect x="126" y="68" width="90" height="74" rx="1" fill="#2e1f0a"/><rect x="224" y="68" width="90" height="74" rx="1" fill="#2e1f0a"/><rect x="322" y="68" width="90" height="74" rx="1" fill="#2e1f0a"/><rect x="420" y="68" width="90" height="74" rx="1" fill="#2e1f0a"/><rect x="518" y="68" width="54" height="74" rx="1" fill="#2e1f0a"/><rect x="20" y="148" width="560" height="10" rx="1" fill="#5a3e1a"/><rect x="100" y="272" width="400" height="68" rx="2" fill="#2e1f0a"/><rect x="100" y="272" width="400" height="5" fill="#8B5E1A" opacity="0.7"/></svg>`)
+  },
+  {
+    key: "nordico", label: "Nordico", desc: "Blanco, madera clara, acogedor",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#f8f8f6"/><rect x="0" y="275" width="600" height="125" fill="#f0f0ee"/><rect x="20" y="158" width="560" height="120" rx="2" fill="#fff"/><rect x="20" y="158" width="560" height="4" fill="#e8c87a" opacity="0.8"/><rect x="28" y="164" width="130" height="106" rx="1" fill="#f5f5f2"/><rect x="28" y="164" width="130" height="106" rx="1" stroke="#e0ddd5" stroke-width="1" fill="none"/><rect x="166" y="164" width="130" height="106" rx="1" fill="#f5f5f2" stroke="#e0ddd5" stroke-width="1"/><rect x="304" y="164" width="130" height="106" rx="1" fill="#f5f5f2" stroke="#e0ddd5" stroke-width="1"/><rect x="442" y="164" width="130" height="106" rx="1" fill="#f5f5f2" stroke="#e0ddd5" stroke-width="1"/><rect x="78" y="208" width="30" height="8" rx="4" fill="#c8b87a" opacity="0.6"/><rect x="216" y="208" width="30" height="8" rx="4" fill="#c8b87a" opacity="0.6"/><rect x="354" y="208" width="30" height="8" rx="4" fill="#c8b87a" opacity="0.6"/><rect x="492" y="208" width="30" height="8" rx="4" fill="#c8b87a" opacity="0.6"/><rect x="20" y="65" width="560" height="88" rx="2" fill="#f0ece0"/><rect x="20" y="65" width="560" height="4" fill="#c8a85a" opacity="0.5"/><rect x="28" y="71" width="92" height="74" rx="1" fill="#e8e4d8" stroke="#ddd9cc" stroke-width="1"/><rect x="128" y="71" width="92" height="74" rx="1" fill="#e8e4d8" stroke="#ddd9cc" stroke-width="1"/><rect x="228" y="71" width="92" height="74" rx="1" fill="#e8e4d8" stroke="#ddd9cc" stroke-width="1"/><rect x="328" y="71" width="92" height="74" rx="1" fill="#e8e4d8" stroke="#ddd9cc" stroke-width="1"/><rect x="428" y="71" width="92" height="74" rx="1" fill="#e8e4d8" stroke="#ddd9cc" stroke-width="1"/><rect x="20" y="150" width="560" height="10" rx="1" fill="#e8c87a" opacity="0.4"/><rect x="130" y="282" width="340" height="72" rx="2" fill="#fff" stroke="#e0ddd5" stroke-width="1"/><rect x="130" y="282" width="340" height="4" fill="#c8a85a" opacity="0.5"/><ellipse cx="310" cy="345" rx="32" ry="6" fill="#ece8de"/><rect x="0" y="20" width="600" height="40" fill="#f0f0ee"/><rect x="60" y="28" width="3" height="24" fill="#c8a85a" opacity="0.5"/><rect x="90" y="28" width="3" height="24" fill="#c8a85a" opacity="0.5"/></svg>`)
+  },
+  {
+    key: "lujo", label: "Lujo / Premium", desc: "Materiales nobles, exclusividad",
+    img: mkSVG(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#0a0a08"/><rect x="0" y="260" width="600" height="140" fill="#060605"/><rect x="20" y="148" width="560" height="115" rx="2" fill="#111108"/><rect x="20" y="148" width="560" height="5" fill="#d4af37"/><rect x="28" y="155" width="130" height="100" rx="1" fill="#0d0d0a"/><rect x="28" y="155" width="130" height="100" rx="1" stroke="#d4af37" stroke-width="0.8" fill="none" opacity="0.5"/><rect x="166" y="155" width="130" height="100" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.8" opacity="0.5"/><rect x="304" y="155" width="130" height="100" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.8" opacity="0.5"/><rect x="442" y="155" width="130" height="100" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.8" opacity="0.5"/><rect x="74" y="195" width="38" height="8" rx="4" fill="#d4af37" opacity="0.7"/><rect x="212" y="195" width="38" height="8" rx="4" fill="#d4af37" opacity="0.7"/><rect x="350" y="195" width="38" height="8" rx="4" fill="#d4af37" opacity="0.7"/><rect x="488" y="195" width="38" height="8" rx="4" fill="#d4af37" opacity="0.7"/><rect x="20" y="50" width="560" height="93" rx="2" fill="#111108"/><rect x="20" y="50" width="560" height="4" fill="#d4af37" opacity="0.6"/><rect x="28" y="56" width="90" height="79" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.5" opacity="0.5"/><rect x="126" y="56" width="90" height="79" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.5" opacity="0.5"/><rect x="224" y="56" width="90" height="79" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.5" opacity="0.5"/><rect x="322" y="56" width="90" height="79" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.5" opacity="0.5"/><rect x="420" y="56" width="90" height="79" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.5" opacity="0.5"/><rect x="518" y="56" width="54" height="79" rx="1" fill="#0d0d0a" stroke="#d4af37" stroke-width="0.5" opacity="0.5"/><rect x="20" y="140" width="560" height="12" rx="1" fill="#1a1a12"/><rect x="20" y="143" width="560" height="3" fill="#d4af37" opacity="0.4"/><rect x="100" y="268" width="400" height="72" rx="2" fill="#0d0d0a"/><rect x="100" y="268" width="400" height="4" fill="#d4af37"/><circle cx="150" cy="50" r="3" fill="#d4af37" opacity="0.8"/><circle cx="300" cy="50" r="3" fill="#d4af37" opacity="0.8"/><circle cx="450" cy="50" r="3" fill="#d4af37" opacity="0.8"/><line x1="0" y1="25" x2="600" y2="25" stroke="#d4af37" stroke-width="0.5" opacity="0.3"/></svg>`)
+  },
 ];
 
 const FORM_INIT = {
@@ -513,7 +540,7 @@ function FormularioMueble({ form, setF, role, isMobile }) {
   );
 }
 // ============ PRESUPUESTO — hoja profesional + todos los canales ============
-function Presupuesto({ form, setF, isMobile, tipoProyecto }) {
+function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg }) {
   const total = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
     .reduce((a, v) => a + (parseFloat(v) || 0), 0);
 
@@ -812,6 +839,119 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
           </SECTION>
         </div>
       </div>
+
+      {/* ── COTIZADOR DE MATERIALES CON IA ── solo admin y taller */}
+      {(role === "admin" || role === "taller") && (
+        <div style={{ marginTop: 28, background: "#0a0a08", border: "1px solid #d4af3730", borderRadius: 16, padding: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 11, color: "#d4af37", letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>🔩 Cotizador de Materiales con IA</div>
+              <div style={{ fontSize: 12, color: "#555" }}>Genera la lista automática basada en las especificaciones del formulario</div>
+            </div>
+            <button
+              onClick={generarMateriales}
+              disabled={materialesLoading}
+              style={{ background: materialesLoading ? "#1a1a10" : "linear-gradient(135deg,#d4af37,#f0c84a)", color: materialesLoading ? "#555" : "#000", border: "none", borderRadius: 10, padding: "11px 20px", fontWeight: 900, fontSize: 13, cursor: materialesLoading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
+              {materialesLoading ? "⏳ Generando..." : "✨ Generar con IA"}
+            </button>
+          </div>
+
+          {materialesMsg && (
+            <div style={{ background: materialesMsg.includes("❌") ? "#1a0a0a" : "#0a1a0a", border: `1px solid ${materialesMsg.includes("❌") ? "#f4433640" : "#4caf5040"}`, color: materialesMsg.includes("❌") ? "#f44336" : "#4caf50", borderRadius: 8, padding: "10px 14px", fontSize: 12, marginBottom: 14 }}>
+              {materialesMsg}
+            </div>
+          )}
+
+          {materiales.length > 0 && (
+            <div>
+              {/* Tabla de materiales */}
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ background: "#1a1208" }}>
+                      {["Material","Cantidad","P. Unitario","Total","Notas"].map(h => (
+                        <th key={h} style={{ padding: "8px 12px", color: "#d4af37", fontWeight: 700, fontSize: 11, letterSpacing: 1, textTransform: "uppercase", textAlign: "left", borderBottom: "1px solid #d4af3730", whiteSpace: "nowrap" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {materiales.map((m, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid #1a1a12", background: i % 2 === 0 ? "#0a0a08" : "#0f0f0a" }}>
+                        <td style={{ padding: "9px 12px", color: "#e8e0d0", fontWeight: 600 }}>{m.material}</td>
+                        <td style={{ padding: "9px 12px", color: "#aaa" }}>{m.cantidad}</td>
+                        <td style={{ padding: "9px 12px", color: "#aaa" }}>${(m.precio_unitario||0).toLocaleString("es-MX")}</td>
+                        <td style={{ padding: "9px 12px", color: "#d4af37", fontWeight: 700 }}>${(m.total||0).toLocaleString("es-MX")}</td>
+                        <td style={{ padding: "9px 12px", color: "#555", fontSize: 11 }}>{m.notas||""}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ background: "#1a1208", borderTop: "2px solid #d4af3730" }}>
+                      <td colSpan={3} style={{ padding: "10px 12px", color: "#d4af37", fontWeight: 900, fontSize: 14 }}>TOTAL MATERIALES</td>
+                      <td colSpan={2} style={{ padding: "10px 12px", color: "#d4af37", fontWeight: 900, fontSize: 16 }}>
+                        ${materiales.reduce((s,m) => s + (parseFloat(m.total)||0), 0).toLocaleString("es-MX")} MXN
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Botones de acción */}
+              <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
+                <button
+                  onClick={() => {
+                    const sep = "━".repeat(30);
+                    const lineas = [`LISTA DE MATERIALES - EnKaje Pro`, sep];
+                    materiales.forEach(m => lineas.push(`• ${m.material} — ${m.cantidad} — $${(m.total||0).toLocaleString("es-MX")} MXN${m.notas?" ("+m.notas+")":""}`));
+                    const total = materiales.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+                    lineas.push(sep, `TOTAL: $${total.toLocaleString("es-MX")} MXN`, "enkajepro.com");
+                    window.open("https://wa.me/?text=" + encodeURIComponent(lineas.join("\n")), "_blank");
+                  }}
+                  style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                  💬 Enviar por WhatsApp
+                </button>
+                <button
+                  onClick={() => {
+                    const lineas = ["Material,Cantidad,Precio Unitario,Total,Notas"];
+                    materiales.forEach(m => lineas.push(`"${m.material}","${m.cantidad}",${m.precio_unitario||0},${m.total||0},"${m.notas||""}"`));
+                    const csv = lineas.join("\n");
+                    const blob = new Blob([csv], {type:"text/csv"});
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = "materiales_enkaje.csv";
+                    a.click();
+                  }}
+                  style={{ background: "transparent", color: "#4caf50", border: "1.5px solid #4caf50", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                  📊 Descargar CSV
+                </button>
+                <button
+                  onClick={() => {
+                    const w = window.open("","_blank");
+                    const total = materiales.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+                    const filas = materiales.map((m,i)=>`<tr style="background:${i%2===0?"#fff":"#f9f7f3"}"><td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #e8e0d0">${m.material}</td><td style="padding:8px 12px;font-size:12px;color:#666;border-bottom:1px solid #e8e0d0">${m.cantidad}</td><td style="padding:8px 12px;font-size:12px;border-bottom:1px solid #e8e0d0">$${(m.precio_unitario||0).toLocaleString("es-MX")}</td><td style="padding:8px 12px;font-size:13px;font-weight:700;color:#8B6914;border-bottom:1px solid #e8e0d0">$${(m.total||0).toLocaleString("es-MX")}</td><td style="padding:8px 12px;font-size:11px;color:#999;border-bottom:1px solid #e8e0d0">${m.notas||""}</td></tr>`).join("");
+                    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Materiales EnKaje Pro</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;padding:40px;max-width:780px;margin:0 auto}.logo{font-family:'Playfair Display',serif;font-size:24px;color:#d4af37;font-weight:700;letter-spacing:3px}h2{font-size:14px;color:#8B6914;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:20px 0 12px}table{width:100%;border-collapse:collapse;border:1px solid #e8e0d0;border-radius:8px;overflow:hidden}th{background:#f8f4ed;padding:10px 12px;font-size:11px;font-weight:700;color:#8B6914;letter-spacing:2px;text-transform:uppercase;text-align:left;border-bottom:2px solid #d4af37}.total-row{background:#1a1208!important}.total-row td{color:#d4af37!important;font-size:15px!important;font-weight:900!important;padding:12px!important}footer{margin-top:24px;padding-top:14px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between;font-size:11px;color:#bbb}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="logo">EnKaje Pro</div><h2>📦 Lista de Materiales</h2><table><thead><tr><th>Material</th><th>Cantidad</th><th>P. Unitario</th><th>Total</th><th>Notas</th></tr></thead><tbody>${filas}<tr class="total-row"><td colspan="3">TOTAL MATERIALES</td><td>$${total.toLocaleString("es-MX")} MXN</td><td></td></tr></tbody></table><footer><span>enkajepro.com · Monterrey, NL</span><span>Generado ${new Date().toLocaleDateString("es-MX")}</span></footer></body></html>`);
+                    w.document.close();
+                    w.print();
+                  }}
+                  style={{ background: "linear-gradient(135deg,#d4af37,#f0c84a)", color: "#000", border: "none", borderRadius: 10, padding: "9px 16px", fontWeight: 900, fontSize: 12, cursor: "pointer" }}>
+                  🖨️ Imprimir lista
+                </button>
+                <button
+                  onClick={() => { setMateriales([]); setMaterialesMsg(""); }}
+                  style={{ background: "transparent", color: "#555", border: "1px solid #333", borderRadius: 10, padding: "9px 16px", fontSize: 12, cursor: "pointer" }}>
+                  🗑️ Limpiar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!materialesLoading && materiales.length === 0 && !materialesMsg && (
+            <div style={{ textAlign: "center", padding: "24px 0", color: "#333", fontSize: 13 }}>
+              Llena las medidas y especificaciones en el formulario, luego presiona Generar con IA
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -842,6 +982,9 @@ export default function App() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
+  const [materiales, setMateriales] = useState([]);
+  const [materialesLoading, setMaterialesLoading] = useState(false);
+  const [materialesMsg, setMaterialesMsg] = useState("");
 
   const getForm = () => tipoForm === "cocina" ? formCocina : tipoForm === "closet" ? formCloset : tipoForm === "puerta" ? formPuerta : formMueble;
   const setFormField = (key, val) => {
@@ -1208,6 +1351,75 @@ ${tallerHTML}
   }
 
 
+  async function generarMateriales() {
+    const f = getForm();
+    setMaterialesLoading(true);
+    setMaterialesMsg("");
+    setMateriales([]);
+    const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v || "no especificado");
+    const tipo = tipoForm === "cocina" ? "cocina integral" : tipoForm === "closet" ? "closet" : tipoForm === "puerta" ? "puerta" : "mueble a medida";
+    const medidas = tipoForm === "cocina"
+      ? `Largo: ${f.largo||"?"}, Altura: ${f.altura||"?"}, Profundidad: ${f.profundidad||"?"}, Área: ${f.area||"?"}`
+      : tipoForm === "puerta"
+      ? `Ancho: ${f.ancho||"?"}, Alto: ${f.alto||"?"}, Grosor: ${f.grosor_puerta||"?"}, Cantidad: ${f.cantidad||1}`
+      : `Largo: ${f.largo||"?"}, Alto: ${f.alto||f.altura||"?"}, Profundidad: ${f.profundidad||"?"}`;
+
+    const prompt = `Eres un maestro carpintero experto en Monterrey, Mexico. Un cliente quiere un(a) ${tipo}.
+
+ESPECIFICACIONES:
+- Medidas: ${medidas}
+- Material principal: ${arr(f.material)}
+- Grosor: ${arr(f.grosor)}
+- Estilo: ${arr(f.estilo)}
+- Color: ${f.color_principal||"no especificado"}
+- Acabado: ${arr(f.tipo_acabado)}
+- Tipo puertas: ${arr(f.tipo_puertas||f.tipo_puerta)}
+- Jaladeras: ${arr(f.jaladeras)}
+- Bisagras: ${arr(f.bisagras)}
+- Correderas: ${arr(f.correderas)}
+- Accesorios: ${arr(f.accesorios||f.accesorios_closet||f.accesorios_mueble)}
+- Cubierta: ${arr(f.material_cubierta)||"ninguna"}
+- Electrodomésticos a panelizar: ${arr(f.electrodomesticos)||"ninguno"}
+
+Genera una lista de materiales necesarios para fabricar este proyecto. Para cada material incluye:
+1. Nombre exacto del material
+2. Cantidad estimada con unidad (pzas, ml, m2, láminas, etc)
+3. Precio unitario aproximado en pesos mexicanos (MXN) en Monterrey 2024
+4. Total (cantidad x precio)
+
+Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explicaciones. Formato exacto:
+[
+  {"material":"Nombre del material","cantidad":"4 láminas","precio_unitario":850,"total":3400,"unidad":"láminas","notas":"MDF 18mm antihumedad"},
+  {"material":"...","cantidad":"...","precio_unitario":0,"total":0,"unidad":"...","notas":"..."}
+]
+
+Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 materiales. Los precios deben ser realistas para Monterrey.`;
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "anthropic-dangerous-direct-browser-calls": "true" },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
+      });
+      const data = await res.json();
+      const txt = data.content?.[0]?.text || "[]";
+      // Limpiar posibles backticks de markdown
+      const clean = txt.replace(/```json|```/g, "").trim();
+      const lista = JSON.parse(clean);
+      setMateriales(lista);
+      setMaterialesMsg(`✅ ${lista.length} materiales generados`);
+      // Autocompletar precio_fabricacion con el total de materiales
+      const totalMat = lista.reduce((s, m) => s + (parseFloat(m.total) || 0), 0);
+      if (totalMat > 0) {
+        setFormField("precio_fabricacion", String(Math.round(totalMat)));
+        setMaterialesMsg(`✅ ${lista.length} materiales · Total: $${totalMat.toLocaleString("es-MX")} MXN → aplicado a Fabricación`);
+      }
+    } catch(e) {
+      setMaterialesMsg("❌ Error al generar. Configura ANTHROPIC_API_KEY en Vercel.");
+    }
+    setMaterialesLoading(false);
+  }
+
   async function analizarConIA() {
     const form = getForm();
     setAiLoading(true); setAiResult("");
@@ -1423,7 +1635,7 @@ ${tallerHTML}
                 <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
                 <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
               </div>
-              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} />
+              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} />
             </div>
           </div>
         )}
@@ -1464,7 +1676,7 @@ ${tallerHTML}
         {tab === "presupuesto" && (
           <div>
             <TIPO_SELECTOR />
-            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} />
+            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} />
           </div>
         )}
 
