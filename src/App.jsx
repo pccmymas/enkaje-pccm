@@ -1740,7 +1740,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { const r = await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); console.log("DELETE result:", r, "id:", p.id, "keys:", Object.keys(p)); if(r && r.message) alert("Error Supabase: " + r.message); else cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
                       </div>
                     </div>
                   )}
