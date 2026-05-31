@@ -218,14 +218,14 @@ const ESTILOS = [
 ];
 
 const ESTILOS_CLOSET = [
-  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/estilos/closet%20moderno.webp" },
-  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/estilos/minimalista%20closet.jpg" },
-  { key: "contemporaneo", label: "Contemporaneo", desc: "Puertas de vidrio, elegante",        img: "/estilos/Closets-con-puertas-de-vidrio-1%20contemporaneo.webp" },
-  { key: "industrial",    label: "Industrial",    desc: "Metal y madera, urbano",             img: "/estilos/closet%20industrial.jpg" },
-  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/estilos/Small-Walk-in-Closet-Dimensions%20clasico.jpg" },
-  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/estilos/closet%20rustico.jpg" },
-  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/estilos/nor%20closet.jpg" },
-  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/estilos/closetlujo.jpg" },
+  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/estilos/closet-moderno.webp" },
+  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/estilos/closet-minimalista.jpg" },
+  { key: "contemporaneo", label: "Contemporaneo", desc: "Puertas de vidrio, elegante",        img: "/estilos/closet-contemporaneo.webp" },
+  { key: "industrial",    label: "Industrial",    desc: "Metal y madera, urbano",             img: "/estilos/closet-industrial.jpg" },
+  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/estilos/closet-clasico.jpg" },
+  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/estilos/closet-rustico.jpg" },
+  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/estilos/closet-nordico.jpg" },
+  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/estilos/closet-lujo.jpg" },
 ];
 
 const FORM_INIT = {
@@ -471,10 +471,10 @@ function FormularioCocina({ form, setF, role, isMobile }) {
               <div key={e.key} onClick={() => setF("estilo", sel ? form.estilo.filter(x=>x!==e.label) : [...form.estilo, e.label])}
                 style={{ borderRadius: 12, overflow: "hidden", cursor: "pointer", border: `2px solid ${sel?"#d4af37":"transparent"}`, transition: "all .2s", boxShadow: sel?"0 0 16px #d4af3830":"none" }}>
                 <div style={{ position: "relative", height: isMobile ? 90 : 110, background: "#1a1a10" }}>
-                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1)":"brightness(0.6)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background=`linear-gradient(135deg,#1a1208,#2a1f0a)`;}} />
+                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1.05)":"brightness(0.8)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background=`linear-gradient(135deg,#1a1208,#2a1f0a)`;}} />
                   {sel && <div style={{ position: "absolute", top: 6, right: 6, background: "#d4af37", color: "#000", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 12 }}>✓</div>}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.85))", padding: "14px 8px 6px" }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: sel?"#d4af37":"#fff" }}>{e.label}</div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.65))", padding: "14px 8px 6px" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: sel?"#d4af37":"#f0f0f0" }}>{e.label}</div>
                   </div>
                 </div>
               </div>
@@ -588,10 +588,10 @@ function FormularioCloset({ form, setF, role, isMobile }) {
               <div key={e.key} onClick={() => setF("estilo", sel ? form.estilo.filter(x=>x!==e.label) : [...form.estilo, e.label])}
                 style={{ borderRadius: 12, overflow: "hidden", cursor: "pointer", border: `2px solid ${sel?"#d4af37":"transparent"}`, transition: "all .2s", boxShadow: sel?"0 0 16px #d4af3830":"none" }}>
                 <div style={{ position: "relative", height: isMobile ? 90 : 110, background: "#1a1a10" }}>
-                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1)":"brightness(0.6)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background="linear-gradient(135deg,#1a1208,#2a1f0a)";}} />
+                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1.05)":"brightness(0.8)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background="linear-gradient(135deg,#1a1208,#2a1f0a)";}} />
                   {sel && <div style={{ position: "absolute", top: 6, right: 6, background: "#d4af37", color: "#000", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 12 }}>✓</div>}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.85))", padding: "14px 8px 6px" }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: sel?"#d4af37":"#fff" }}>{e.label}</div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.65))", padding: "14px 8px 6px" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: sel?"#d4af37":"#f0f0f0" }}>{e.label}</div>
                   </div>
                 </div>
               </div>
@@ -2095,8 +2095,8 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                     <div style={{ position: "relative", height: isMobile?120:160 }}>
                       <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1.05)":"brightness(0.65)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background=`linear-gradient(135deg,#1a1208,#2a1f0a)`;}} />
                       {sel && <div style={{ position: "absolute", top: 8, right: 8, background: "#d4af37", color: "#000", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14 }}>✓</div>}
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.85))", padding: "16px 12px 8px" }}>
-                        <div style={{ fontWeight: 700, fontSize: isMobile?13:15, color: sel?"#d4af37":"#fff" }}>{e.label}</div>
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.65))", padding: "16px 12px 8px" }}>
+                        <div style={{ fontWeight: 700, fontSize: isMobile?13:15, color: sel?"#d4af37":"#f0f0f0" }}>{e.label}</div>
                       </div>
                     </div>
                     {!isMobile && <div style={{ padding: "10px 12px" }}><div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{e.desc}</div></div>}
