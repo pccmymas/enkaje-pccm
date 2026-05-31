@@ -958,7 +958,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
 // ============ MAIN APP ============
 export default function App() {
   const isMobile = useIsMobile();
-  const [screen, setScreen] = useState("welcome");
+  const [screen, setScreen] = useState("login");
   const [role, setRole] = useState(null);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -1440,38 +1440,13 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
   const pad = isMobile ? "16px" : "28px 20px";
 
   // ─── WELCOME ───────────────────────────────────────────────────────────────
-  if (screen === "welcome") return (
-    <div style={{ minHeight: "100vh", background: "#070708", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: isMobile ? "24px 16px" : 40 }}>
-      <style>{GLOBAL_CSS}</style>
-      <div className="fade-up" style={{ textAlign: "center", width: "100%", maxWidth: 700 }}>
-        <div style={{ fontSize: 11, color: "#555", letterSpacing: 6, marginBottom: 20 }}>BIENVENIDO A</div>
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <LogoInline size="lg" />
-        </div>
-        <div style={{ fontSize: 12, color: "#444", letterSpacing: 4, marginBottom: 40 }}>PLATAFORMA DE CARPINTERIA · MONTERREY</div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14, marginBottom: 40 }}>
-          {[["Clientes","Diseña y cotiza tu proyecto ideal","#d4af37"],["Talleres","Recibe proyectos y cotiza en minutos","#00bcd4"],["Asesores","Gestiona tu negocio completo","#4caf50"]].map(([t,d,c],i) => (
-            <div key={i} style={{ background: "#0f0f0a", border: `1px solid ${c}30`, borderRadius: 16, padding: "20px 18px", textAlign: "left" }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: c, marginBottom: 8, letterSpacing: 1 }}>{t}</div>
-              <div style={{ fontSize: 12, color: "#555", lineHeight: 1.6 }}>{d}</div>
-            </div>
-          ))}
-        </div>
-        <button onClick={() => setScreen("login")} style={{ background: "#d4af37", color: "#000", border: "none", borderRadius: 14, padding: isMobile ? "16px 40px" : "18px 56px", fontWeight: 900, fontSize: isMobile ? 15 : 17, cursor: "pointer", letterSpacing: 2, width: isMobile ? "100%" : "auto" }}>
-          ENTRAR A LA PLATAFORMA
-        </button>
-        <div style={{ marginTop: 24, fontSize: 10, color: "#333", letterSpacing: 2 }}>MONTERREY, MEXICO</div>
-      </div>
-    </div>
-  );
-
   // ─── LOGIN ─────────────────────────────────────────────────────────────────
   if (screen === "login") return (
     <div style={{ minHeight: "100vh", background: "#070708", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
       <style>{GLOBAL_CSS}</style>
       <div style={{ width: "100%", maxWidth: 420 }} className="fade-up">
         <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <button onClick={() => setScreen("welcome")} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, marginBottom: 16, padding: "8px 0" }}>← Volver</button>
+          <button onClick={() => window.location.href="/"} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, marginBottom: 16, padding: "8px 0" }}>← Volver</button>
           <LogoInline size="md" />
           <div style={{ fontSize: 10, color: "#444", letterSpacing: 3, marginTop: 6 }}>PLATAFORMA DE CARPINTERIA</div>
         </div>
