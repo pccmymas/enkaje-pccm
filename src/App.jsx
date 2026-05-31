@@ -1347,6 +1347,17 @@ export default function App() {
     cargarTalleres();
   }
 
+  // Leer parámetro ?legal= del URL al cargar (viene desde el landing)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const legal = params.get("legal");
+    if (legal && ["privacidad","terminos","cookies"].includes(legal)) {
+      setLegalPage(legal);
+      // Limpiar el parámetro del URL sin recargar
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   useEffect(() => {
     if (screen === "app" && (tab === "bienvenida" || tab === "proyectos" || tab === "leads")) cargarProyectos();
     if (screen === "app" && tab === "membresias") cargarTalleres();
