@@ -139,8 +139,11 @@ export default function PerfilTaller() {
 
         {/* HEADER DEL TALLER */}
         <div className="fade-up" style={{ background: "linear-gradient(135deg,#1a1208,#0f0f0a)", border: `1px solid ${planColor}30`, borderRadius: 20, padding: "32px", marginBottom: 24, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
-          <div style={{ width: 80, height: 80, borderRadius: "50%", background: `${planColor}20`, border: `2px solid ${planColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, flexShrink: 0 }}>
-            🏭
+          <div style={{ width: 90, height: 90, borderRadius: "50%", background: `${planColor}20`, border: `2px solid ${planColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, flexShrink: 0, overflow: "hidden" }}>
+            {taller.logo_url
+              ? <img src={taller.logo_url} alt={taller.nombre} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} onError={e => { e.target.style.display="none"; e.target.parentNode.innerHTML="🏭"; }} />
+              : <span>🏭</span>
+            }
           </div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
