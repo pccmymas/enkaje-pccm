@@ -2264,12 +2264,12 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                           <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📋 Información del Taller</div>
-                          <button onClick={e => { e.stopPropagation(); setEditInfo(editInfo?.enkaje===t.enkaje ? null : {...t}); }}
+                          <button onClick={e => { e.stopPropagation(); setEditInfo(editInfo && editInfo.enkaje===t.enkaje ? null : {...t}); }}
                             style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
-                            {editInfo?.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
+                            {editInfo && editInfo.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
                           </button>
                         </div>
-                        {editInfo?.enkaje === t.enkaje ? (
+                        {editInfo && editInfo.enkaje === t.enkaje ? (
                           <div>
                             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 10 }}>
                               <INPUT label="Nombre del taller" value={editInfo?.nombre||""} onChange={e=>setEditInfo(p=>({...p,nombre:e.target.value}))} placeholder="Nombre del taller" />
@@ -2305,12 +2305,12 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                           <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📄 Datos para Contratos</div>
-                          <button onClick={e => { e.stopPropagation(); setEditTaller(editTaller?.enkaje===t.enkaje ? null : {...t}); }}
+                          <button onClick={e => { e.stopPropagation(); setEditTaller(editTaller && editTaller.enkaje===t.enkaje ? null : {...t}); }}
                             style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
-                            {editTaller?.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
+                            {editTaller && editTaller.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
                           </button>
                         </div>
-                        {editTaller?.enkaje === t.enkaje ? (
+                        {editTaller && editTaller.enkaje === t.enkaje ? (
                           <div>
                             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 12 }}>
                               <INPUT label="Nombre legal" value={editTaller?.nombre_legal||""} onChange={e=>setEditTaller(p=>({...p,nombre_legal:e.target.value}))} placeholder="Razón social o nombre completo" />
