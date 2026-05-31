@@ -830,6 +830,7 @@ function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMaterial
   }
 
   function imprimirHojaProfesional() {
+    const tallerDataPresup = tallerSel;
     const detalles = getDetallesProyecto();
     const folio = `EP-${Date.now().toString().slice(-6)}`;
     const w = window.open("", "_blank");
@@ -892,7 +893,7 @@ ul li::before{content:"✓";color:#4caf50;font-weight:900;font-size:11px;margin-
 @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:32px}}
 </style></head><body><div class="page">
 <div class="hdr">
-  <div><div class="logo">EnKaje Pro</div><div class="logo-s">Intermediación · Carpintería · Monterrey</div></div>
+  <div>${tallerDataPresup?.logo_url && tallerDataPresup?.plan !== 'basico' ? `<img src="${window.location.origin}${tallerDataPresup.logo_url}" style="height:60px;width:60px;object-fit:cover;border-radius:50%;margin-bottom:4px" alt="logo" onerror="this.style.display='none'"/>` : ''}<div class="logo">${tallerDataPresup?.plan !== 'basico' && tallerDataPresup?.nombre ? tallerDataPresup.nombre : 'EnKaje Pro'}</div><div class="logo-s">${tallerDataPresup?.plan !== 'basico' && tallerDataPresup?.nombre ? 'Carpintería · Ebanistería' : 'Intermediación · Carpintería · Monterrey'}</div></div>
   <div class="di-r"><div class="dt">Presupuesto Profesional</div><div class="dn">Folio: ${folio}</div><div class="df">Fecha: ${form.fecha || new Date().toLocaleDateString("es-MX")}</div><div class="df">Atención: ${form.atencion_por || "Felipe Santiago"}</div></div>
 </div>
 <div class="banner">
@@ -1368,7 +1369,14 @@ export default function App() {
 
   async function cargarTalleres() {
     const data = await sb("talleres_membresia?order=created_at.desc", { token });
-    if (Array.isArray(data)) setTalleresMem(data);
+    if (Array.isArray(data)) {
+      setTalleresMem(data);
+      // Si es taller, setear su propio taller como tallerSel automáticamente
+      if (role === "taller" && user?.email) {
+        const miTaller = data.find(t => t.email === user.email);
+        if (miTaller) setTallerSel(miTaller);
+      }
+    }
   }
 
   async function guardarNuevoTaller() {
@@ -1676,7 +1684,12 @@ table{width:100%;border-collapse:collapse;border:1px solid #e8e0d0;border-radius
 
 <div class="hdr">
   <div>
-    ${planBasico ? `<div class="logo">EnKaje Pro</div><div class="logo-s">Intermediación · Carpintería</div>` : `<div class="logo">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`}
+    ${planBasico 
+      ? `<div class="logo">EnKaje Pro</div><div class="logo-s">Intermediación · Carpintería</div>` 
+      : tallerData?.logo_url 
+        ? `<img src="${window.location.origin}${tallerData.logo_url}" style="height:70px;width:70px;object-fit:cover;border-radius:50%;border:2px solid ${colorTaller}" alt="${tallerNombre}" onerror="this.style.display='none'"/><div class="logo" style="margin-top:6px">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`
+        : `<div class="logo">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`
+    }
   </div>
   <div class="doc-r">
     <div class="doc-t">Contrato de Fabricación</div>
