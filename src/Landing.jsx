@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { LogoInline } from "./Logo.jsx";
 
 const CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -111,8 +112,8 @@ export default function Landing() {
       {/* NAV */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: scrolled ? "rgba(7,7,8,0.95)" : "transparent", backdropFilter: scrolled ? "blur(10px)" : "none", borderBottom: scrolled ? "1px solid #1a1a12" : "none", transition: "all .3s", padding: "0 24px" }}>
         <div className="container" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 0" }}>
-          <div style={{ fontSize: 22, fontWeight: 900, color: "#d4af37", letterSpacing: 3, cursor: "pointer" }} onClick={() => window.scrollTo(0,0)}>
-            EnKaje Pro
+          <div style={{ cursor: "pointer" }} onClick={() => window.scrollTo(0,0)}>
+            <LogoInline size="nav" />
           </div>
           <div className="nav-links" style={{ display: "flex", gap: 32, alignItems: "center" }}>
             {[["#funciones","Funciones"],["#precios","Precios"],["#talleres","Talleres"],["#contacto","Contacto"]].map(([h,l]) => (
@@ -133,6 +134,9 @@ export default function Landing() {
 
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }} className="fade-up">
           <div className="pill" style={{ marginBottom: 24 }}>IA + DISENO + PRODUCCION</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+            <LogoInline size="lg" />
+          </div>
 
           <h1 className="hero-title" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1 }}>
             Convierte ideas en
@@ -412,8 +416,8 @@ export default function Landing() {
       <footer style={{ background: "#0f0f0a", borderTop: "1px solid #1a1a12", padding: "40px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
           <div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: "#d4af37", letterSpacing: 3, marginBottom: 4 }}>EnKaje Pro</div>
-            <div style={{ fontSize: 12, color: "#444", letterSpacing: 2 }}>PLATAFORMA DE CARPINTERIA · MONTERREY</div>
+            <LogoInline size="sm" />
+            <div style={{ fontSize: 11, color: "#444", letterSpacing: 2, marginTop: 6 }}>MONTERREY, MEXICO</div>
           </div>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
             {[["Privacidad","#"],["Terminos","#"],["Contacto","#"],["Iniciar sesion","/app"]].map(([l,h]) => (

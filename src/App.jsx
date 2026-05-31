@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { LogoInline } from "./Logo.jsx";
 
 const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
@@ -864,8 +865,10 @@ enkajepro.com`;
     <div style={{ minHeight: "100vh", background: "#070708", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: isMobile ? "24px 16px" : 40 }}>
       <style>{GLOBAL_CSS}</style>
       <div className="fade-up" style={{ textAlign: "center", width: "100%", maxWidth: 700 }}>
-        <div style={{ fontSize: 11, color: "#555", letterSpacing: 6, marginBottom: 12 }}>BIENVENIDO A</div>
-        <div style={{ fontSize: isMobile ? 42 : 68, fontWeight: 900, color: "#d4af37", letterSpacing: 4, marginBottom: 8, textShadow: "0 0 60px #d4af3730" }}>EnKaje Pro</div>
+        <div style={{ fontSize: 11, color: "#555", letterSpacing: 6, marginBottom: 20 }}>BIENVENIDO A</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+          <LogoInline size="lg" />
+        </div>
         <div style={{ fontSize: 12, color: "#444", letterSpacing: 4, marginBottom: 40 }}>PLATAFORMA DE CARPINTERIA · MONTERREY</div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14, marginBottom: 40 }}>
           {[["Clientes","Diseña y cotiza tu proyecto ideal","#d4af37"],["Talleres","Recibe proyectos y cotiza en minutos","#00bcd4"],["Asesores","Gestiona tu negocio completo","#4caf50"]].map(([t,d,c],i) => (
@@ -939,8 +942,7 @@ enkajepro.com`;
       <div style={{ background: "linear-gradient(135deg,#12100a,#070708)", borderBottom: "1px solid #d4af3720", padding: `0 ${isMobile?14:20}px`, position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0" }}>
           <div style={{ cursor: "pointer" }} onClick={() => setTab("bienvenida")}>
-            <div style={{ fontSize: isMobile?17:20, fontWeight: 900, color: "#d4af37", letterSpacing: 2 }}>EnKaje Pro</div>
-            {!isMobile && <div style={{ fontSize: 9, color: "#444", letterSpacing: 3 }}>{role==="admin"?"ADMIN":role==="taller"?"TALLER":"CLIENTE"}</div>}
+            <LogoInline size="nav" />
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {!isMobile && <div style={{ fontSize: 12, color: "#555" }}>Hola, {nombreUsuario}</div>}
