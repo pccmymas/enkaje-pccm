@@ -883,21 +883,23 @@ export default function App() {
     if (!loginForm.email.includes("@")) { setLoginError("Correo invalido."); setLoginLoading(false); return; }
     if (loginForm.password.length < 6) { setLoginError("La contrasena debe tener al menos 6 caracteres."); setLoginLoading(false); return; }
     const data = await authFetch("signup", { email: loginForm.email, password: loginForm.password, data: { nombre: loginForm.nombre, role: loginForm.role } });
+    console.log("Supabase signup response:", JSON.stringify(data));
     if (data.user && data.session) {
-      // Registro exitoso Y sesion activa (confirmacion de email desactivada en Supabase)
       setToken(data.session.access_token);
       setUser(data.user);
       const r = data.user?.user_metadata?.role || loginForm.role || "cliente";
-      setRole(r);
-      setScreen("app");
-      setTab("bienvenida");
+      setRole(r); setScreen("app"); setTab("bienvenida");
     } else if (data.user && !data.session) {
-      // Registro exitoso PERO requiere confirmar email
-      setLoginError("✅ Cuenta creada. Revisa tu correo para confirmar tu cuenta y luego inicia sesion.");
+      setLoginError("✅ Cuenta creada. Revisa tu correo para confirmar y luego inicia sesion.");
     } else {
-      const msg = data.error_description || data.message || "Error al registrar";
-      const msgFriendly = msg.includes("already registered") ? "Este correo ya tiene una cuenta. Inicia sesion." : msg.includes("password") ? "La contrasena debe tener al menos 6 caracteres." : msg;
-      setLoginError(msgFriendly);
+      const msg = data.error_description || data.message || data.msg || JSON.stringify(data);
+      if (msg.includes("Signups not allowed") || msg.includes("signup") || msg.includes("disabled")) {
+        setLoginError("⚠️ Registro desactivado en Supabase. Ve a: Authentication → Settings → activa Enable Email Signup");
+      } else if (msg.includes("already registered")) {
+        setLoginError("Este correo ya tiene cuenta. Inicia sesion.");
+      } else {
+        setLoginError("Error Supabase: " + msg);
+      }
     }
     setLoginLoading(false);
   }
