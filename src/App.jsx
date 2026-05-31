@@ -1025,7 +1025,7 @@ export default function App() {
     if (!loginForm.nombre.trim()) { setLoginError("Escribe tu nombre."); setLoginLoading(false); return; }
     if (!loginForm.email.includes("@")) { setLoginError("Correo invalido."); setLoginLoading(false); return; }
     if (loginForm.password.length < 6) { setLoginError("La contrasena debe tener al menos 6 caracteres."); setLoginLoading(false); return; }
-    const data = await authFetch("signup", { email: loginForm.email, password: loginForm.password, data: { nombre: loginForm.nombre, role: loginForm.role } });
+    const data = await authFetch("signup", { email: loginForm.email, password: loginForm.password, data: { nombre: loginForm.nombre, role: "cliente" } });
     console.log("Supabase signup response:", JSON.stringify(data));
     if (data.user && data.session) {
       setToken(data.session.access_token);
@@ -1484,21 +1484,18 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
           {loginMode === "register" && <INPUT label="Nombre completo" value={loginForm.nombre} onChange={e => setLoginForm(p => ({...p, nombre: e.target.value}))} placeholder="Tu nombre" />}
           <INPUT label="Correo electronico" value={loginForm.email} onChange={e => setLoginForm(p => ({...p, email: e.target.value}))} placeholder="correo@ejemplo.com" type="email" />
           <INPUT label="Contrasena" value={loginForm.password} onChange={e => setLoginForm(p => ({...p, password: e.target.value}))} placeholder="••••••••" type="password" />
-          {loginMode === "register" && (
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Tipo de cuenta</label>
-              <div style={{ display: "flex", gap: 8 }}>
-                {[["cliente","Cliente"],["taller","Taller"],["admin","Admin"]].map(([k,l]) => (
-                  <button key={k} onClick={() => setLoginForm(p => ({...p, role: k}))} style={{ flex: 1, padding: "11px 4px", borderRadius: 10, border: `1px solid ${loginForm.role===k?"#d4af37":"#2a2a20"}`, background: loginForm.role===k?"#d4af3715":"transparent", color: loginForm.role===k?"#d4af37":"#555", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>{l}</button>
-                ))}
-              </div>
-            </div>
-          )}
+
           {loginError && <div style={{ background: loginError.includes("exitosamente")?"#0a2a0a":"#1a0a0a", border: `1px solid ${loginError.includes("exitosamente")?"#4caf5040":"#f4433640"}`, borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: loginError.includes("exitosamente")?"#4caf50":"#f44336" }}>{loginError}</div>}
           <button onClick={loginMode==="login"?login:register} disabled={loginLoading}
             style={{ width: "100%", background: "#d4af37", color: "#000", border: "none", borderRadius: 12, padding: "14px", fontWeight: 700, fontSize: 15, cursor: "pointer", letterSpacing: 1 }}>
             {loginLoading ? "..." : loginMode==="login" ? "ENTRAR" : "CREAR CUENTA"}
           </button>
+          {loginMode === "register" && (
+            <div style={{ marginTop: 12, textAlign: "center", fontSize: 11, color: "#444", lineHeight: 1.6 }}>
+              Las cuentas de taller son activadas por el equipo EnKaje Pro.<br/>
+              ¿Eres un taller? Escríbenos a <span style={{ color: "#d4af37" }}>hola@enkajepro.com</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -1509,7 +1506,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["membresias","Talleres"],["ia","IA"]]
     : role === "taller"
     ? [["bienvenida","Inicio"],["leads","Proyectos"],["presupuesto","Cotizar"],["ia","IA"]]
-    : [["bienvenida","Inicio"],["formulario","Mi Proyecto"],["estilos","Estilos"],["presupuesto","Presupuesto"],["ia","IA"]];
+    : [["bienvenida","Inicio"],["formulario","Mi Proyecto"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["presupuesto","Presupuesto"],["ia","IA"]];
 
   const form = getForm();
 
@@ -1640,6 +1637,65 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
           </div>
         )}
 
+        {/* MIS PROYECTOS — cliente */}
+        {tab === "mis_proyectos" && role === "cliente" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:24 }}>Mis Proyectos</h1>
+            <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Levantamientos guardados</p>
+            {proyectos.length === 0 && (
+              <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 12, padding: 32, textAlign: "center", color: "#555" }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
+                <div style={{ fontSize: 14 }}>No tienes proyectos guardados aún</div>
+                <BTN onClick={() => setTab("formulario")} style={{ marginTop: 16, fontSize: 13 }}>Crear mi primer proyecto</BTN>
+              </div>
+            )}
+            {proyectos.map((p, i) => {
+              const sel = proyectoSel?.created_at === p.created_at;
+              const tipoIcon = p.tipo_proyecto==="cocina"?"🍳":p.tipo_proyecto==="closet"?"👔":p.tipo_proyecto==="puerta"?"🚪":"🛋️";
+              return (
+                <div key={i} onClick={() => setProyectoSel(sel?null:p)}
+                  style={{ background: "#0f0f0a", border: `1px solid ${sel?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: 16, marginBottom: 10, cursor: "pointer" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#d4af3720", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{tipoIcon}</div>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 15 }}>{p.nombre || "Sin nombre"}</div>
+                        <div style={{ fontSize: 12, color: "#555" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <span style={{ background: "#d4af3720", color: "#d4af37", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{p.estado||"nuevo"}</span>
+                    </div>
+                  </div>
+                  {sel && (
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
+                        {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",p.material],["Tiempo",p.tiempo_entrega]].filter(([,v])=>v).map(([l,v],j) => (
+                          <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
+                        ))}
+                      </div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }} outline color="#d4af37">💰 Ver presupuesto</BTN>
+                        <BTN
+                          onClick={async e => {
+                            e.stopPropagation();
+                            if(window.confirm("¿Eliminar este proyecto? Esta acción no se puede deshacer.")) {
+                              const res = await sb(`proyectos?id=eq.${p.id}`, { method: "DELETE", token });
+                              setProyectoSel(null);
+                              cargarProyectos();
+                            }
+                          }}
+                          outline color="#f44336" style={{ fontSize: 12 }}>🗑️ Eliminar</BTN>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* ESTILOS */}
         {tab === "estilos" && (
           <div>
@@ -1709,7 +1765,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); if(window.confirm("Eliminar este proyecto?")) { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE"}); cargarProyectos(); }}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); if(window.confirm("Eliminar este proyecto?")) { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); cargarProyectos(); }}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
                       </div>
                     </div>
                   )}
