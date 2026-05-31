@@ -381,15 +381,16 @@ const BTN = ({ onClick, children, color = "#d4af37", textColor = "#000", outline
   }}>{children}</button>
 );
 
-// ============ SHARE MENU — botón con popup de iconos ============
+// ============ SHARE MENU — logos oficiales con Font Awesome ============
+// Font Awesome se carga una vez en el GLOBAL_CSS
 const SHARE_OPTIONS = [
-  { key:"whatsapp",  label:"WhatsApp",  icon:"💬", color:"#25D366" },
-  { key:"facebook",  label:"Facebook",  icon:"📘", color:"#1877F2" },
-  { key:"messenger", label:"Messenger", icon:"💙", color:"#0084FF" },
-  { key:"email",     label:"Email",     icon:"📧", color:"#d4af37" },
-  { key:"instagram", label:"Instagram", icon:"📸", color:"#E1306C" },
-  { key:"tiktok",    label:"TikTok",    icon:"🎵", color:"#888"    },
-  { key:"copiar",    label:"Copiar",    icon:"📋", color:"#aaa"    },
+  { key:"whatsapp",  label:"WhatsApp",  fa:"fa-brands fa-whatsapp",  color:"#25D366" },
+  { key:"facebook",  label:"Facebook",  fa:"fa-brands fa-facebook",  color:"#1877F2" },
+  { key:"messenger", label:"Messenger", fa:"fa-brands fa-facebook-messenger", color:"#0084FF" },
+  { key:"email",     label:"Email",     fa:"fa-solid fa-envelope",   color:"#d4af37" },
+  { key:"instagram", label:"Instagram", fa:"fa-brands fa-instagram", color:"#E1306C" },
+  { key:"tiktok",    label:"TikTok",    fa:"fa-brands fa-tiktok",    color:"#fff"    },
+  { key:"copiar",    label:"Copiar",    fa:"fa-solid fa-copy",       color:"#aaa"    },
 ];
 
 function ShareMenu({ onShare, label = "Compartir" }) {
@@ -405,18 +406,19 @@ function ShareMenu({ onShare, label = "Compartir" }) {
       <button
         onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
         style={{ background: "transparent", border: "1.5px solid #d4af37", color: "#d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-        ↑ {label}
+        <i className="fa-solid fa-share-nodes" style={{ fontSize: 14 }} />
+        {label}
       </button>
       {open && (
-        <div onClick={e => e.stopPropagation()} style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 0, background: "#0f0f0a", border: "1px solid #2a2a20", borderRadius: 12, padding: 10, display: "flex", gap: 8, zIndex: 500, boxShadow: "0 8px 32px #00000080", whiteSpace: "nowrap" }}>
-          {SHARE_OPTIONS.map(({ key, label: lbl, icon, color }) => (
+        <div onClick={e => e.stopPropagation()} style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 0, background: "#0f0f0a", border: "1px solid #2a2a20", borderRadius: 14, padding: "10px 12px", display: "flex", gap: 10, zIndex: 500, boxShadow: "0 8px 32px #00000090", whiteSpace: "nowrap", alignItems: "center" }}>
+          {SHARE_OPTIONS.map(({ key, label: lbl, fa, color }) => (
             <button key={key}
               onClick={() => { onShare(key); setOpen(false); }}
               title={lbl}
-              style={{ background: `${color}20`, border: `1px solid ${color}40`, color, borderRadius: 8, width: 38, height: 38, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", flexShrink: 0 }}
-              onMouseEnter={e => { e.currentTarget.style.background = `${color}40`; e.currentTarget.style.transform = "scale(1.1)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = `${color}20`; e.currentTarget.style.transform = "scale(1)"; }}>
-              {icon}
+              style={{ background: `${color}18`, border: `1.5px solid ${color}50`, color, borderRadius: 10, width: 40, height: 40, fontSize: 17, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", flexShrink: 0 }}
+              onMouseEnter={e => { e.currentTarget.style.background = `${color}35`; e.currentTarget.style.transform = "scale(1.12)"; e.currentTarget.style.borderColor = color; }}
+              onMouseLeave={e => { e.currentTarget.style.background = `${color}18`; e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.borderColor = `${color}50`; }}>
+              <i className={fa} />
             </button>
           ))}
         </div>
@@ -438,6 +440,7 @@ function compartir(tipo, texto, titulo) {
   if (tipo === "copiar")    { navigator.clipboard.writeText(`${titulo}\n\n${texto}`); alert("Copiado al portapapeles"); }
 }
 
+const FA_CDN = `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous"/>`;
 const GLOBAL_CSS = `
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -1857,6 +1860,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
   if (screen === "login") return (
     <div style={{ minHeight: "100vh", background: "#070708", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
       <style>{GLOBAL_CSS}</style>
+      <div dangerouslySetInnerHTML={{__html: FA_CDN}} />
       <div style={{ width: "100%", maxWidth: 420 }} className="fade-up">
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <button onClick={() => window.location.href="/"} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, marginBottom: 16, padding: "8px 0" }}>← Volver</button>
@@ -1917,6 +1921,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
   return (
     <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", background: "#070708", minHeight: "100vh", color: "#e8e0d0" }}>
       <style>{GLOBAL_CSS}</style>
+      <div dangerouslySetInnerHTML={{__html: FA_CDN}} />
 
       {/* HEADER */}
       <div style={{ background: "linear-gradient(135deg,#12100a,#070708)", borderBottom: "1px solid #d4af3720", padding: `0 ${isMobile?14:20}px`, position: "sticky", top: 0, zIndex: 100 }}>
