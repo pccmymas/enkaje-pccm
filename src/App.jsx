@@ -1163,7 +1163,7 @@ export default function App() {
   }
 
   async function actualizarTaller(id, cambios) {
-    await sb(`talleres_membresia?id=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
+    await sb(`talleres_membresia?enkaje=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
     cargarTalleres();
   }
 
@@ -1657,7 +1657,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           onClick={async e => {
                             e.stopPropagation();
                             setConfirmModal({ msg: "¿Eliminar este proyecto? No se puede deshacer.", onOk: async () => {
-                              await sb(`proyectos?id=eq.${p.id}`, { method: "DELETE", token });
+                              await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "DELETE", token });
                               setProyectoSel(null); cargarProyectos();
                             }});
                           }}
@@ -1740,7 +1740,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { const r = await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); console.log("DELETE result:", r, "id:", p.id, "keys:", Object.keys(p)); if(r && r.message) alert("Error Supabase: " + r.message); else cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { const r = await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); console.log("DELETE result:", r, "enkaje:", p.enkaje, "keys:", Object.keys(p)); if(r && r.message) alert("Error Supabase: " + r.message); else cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
                       </div>
                     </div>
                   )}
@@ -1850,21 +1850,21 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         <div style={{ fontSize: 11, color: "#555", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Cambiar Plan</div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           {[["basico","Basico $699","#888"],["pro","Pro $1,499","#00bcd4"],["premium","Premium $2,999","#d4af37"]].map(([p,l,c]) => (
-                            <button key={p} onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {plan:p}); }}
+                            <button key={p} onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {plan:p}); }}
                               style={{ padding: "7px 14px", borderRadius: 20, border: `1px solid ${t.plan===p?c:"#333"}`, background: t.plan===p?`${c}20`:"transparent", color: t.plan===p?c:"#666", fontSize: 12, cursor: "pointer", fontWeight: t.plan===p?700:400 }}>{l}</button>
                           ))}
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {estado: t.estado==="activo"?"inactivo":"activo"}); }}
+                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {estado: t.estado==="activo"?"inactivo":"activo"}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${t.estado==="activo"?"#f44336":"#4caf50"}`, background: "transparent", color: t.estado==="activo"?"#f44336":"#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
                           {t.estado==="activo"?"Desactivar":"Activar"}
                         </button>
-                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {leads_recibidos: (t.leads_recibidos||0)+1}); }}
+                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {leads_recibidos: (t.leads_recibidos||0)+1}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Lead</button>
-                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {proyectos_cerrados: (t.proyectos_cerrados||0)+1}); }}
+                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {proyectos_cerrados: (t.proyectos_cerrados||0)+1}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #4caf5040", background: "#4caf5010", color: "#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Cierre</button>
-                        <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?id=eq.${t.id}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
+                        <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?enkaje=eq.${t.enkaje}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #f4433640", background: "#f443360a", color: "#f44336", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Eliminar</button>
                       </div>
                     </div>
