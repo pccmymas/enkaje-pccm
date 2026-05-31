@@ -207,15 +207,27 @@ const authFetch = async (path, body) => {
 };
 
 const ESTILOS = [
-  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/estilos/moderno.webp" },
-  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/estilos/minimalista.jpg" },
-  { key: "contemporaneo", label: "Contemporaneo", desc: "Mezcla de estilos actuales",         img: "/estilos/contemporaneo.jpg" },
-  { key: "industrial",    label: "Industrial",    desc: "Metal, madera cruda, urbano",        img: "/estilos/industrial.jpg" },
-  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/estilos/clasico.png" },
-  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/estilos/rustico.jpg" },
-  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/estilos/nordico.avif" },
-  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/estilos/lujo.webp" },
+  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/moderno.jpg" },
+  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/minimalista.jpg" },
+  { key: "contemporaneo", label: "Contemporaneo", desc: "Mezcla de estilos actuales",         img: "/contemporaneo.jpg" },
+  { key: "industrial",    label: "Industrial",    desc: "Metal, madera cruda, urbano",        img: "/industrial.jpg" },
+  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/clasico.jpg" },
+  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/rustico.jpg" },
+  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/nordico.jpg" },
+  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/lujo.jpg" },
 ];
+
+const ESTILOS_CLOSET = [
+  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/estilos/closet%20moderno.webp" },
+  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/estilos/minimalista%20closet.jpg" },
+  { key: "contemporaneo", label: "Contemporaneo", desc: "Puertas de vidrio, elegante",        img: "/estilos/Closets-con-puertas-de-vidrio-1%20contemporaneo.webp" },
+  { key: "industrial",    label: "Industrial",    desc: "Metal y madera, urbano",             img: "/estilos/closet%20industrial.jpg" },
+  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/estilos/Small-Walk-in-Closet-Dimensions%20clasico.jpg" },
+  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/estilos/closet%20rustico.jpg" },
+  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/estilos/nor%20closet.jpg" },
+  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/estilos/closetlujo.jpg" },
+];
+
 const FORM_INIT = {
   tipo_proyecto: "cocina", nombre: "", telefono: "", direccion: "", correo: "",
   fecha: new Date().toISOString().split("T")[0], atencion_por: "Felipe Santiago",
@@ -568,8 +580,24 @@ function FormularioCloset({ form, setF, role, isMobile }) {
           <INPUT label="Area aproximada" value={form.area} onChange={e=>setF("area",e.target.value)} placeholder="4 m2" />
         </div>
       </SECTION>
-      <SECTION title="Estilo" icon="✨">
-        <PILLS_GROUP options={["Moderno","Minimalista","Contemporaneo","Clasico","Lujo / Premium","Industrial","Nordico"]} value={form.estilo} onChange={v=>setF("estilo",v)} />
+      <SECTION title="Estilo de Closet" icon="✨" subtitle="Toca el estilo que te gusta">
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: 10 }}>
+          {ESTILOS_CLOSET.map(e => {
+            const sel = form.estilo.includes(e.label);
+            return (
+              <div key={e.key} onClick={() => setF("estilo", sel ? form.estilo.filter(x=>x!==e.label) : [...form.estilo, e.label])}
+                style={{ borderRadius: 12, overflow: "hidden", cursor: "pointer", border: `2px solid ${sel?"#d4af37":"transparent"}`, transition: "all .2s", boxShadow: sel?"0 0 16px #d4af3830":"none" }}>
+                <div style={{ position: "relative", height: isMobile ? 90 : 110, background: "#1a1a10" }}>
+                  <img src={e.img} alt={e.label} style={{ width: "100%", height: "100%", objectFit: "cover", filter: sel?"brightness(1)":"brightness(0.6)", transition: "all .3s" }} onError={ev=>{ev.target.style.display="none";ev.target.parentNode.style.background="linear-gradient(135deg,#1a1208,#2a1f0a)";}} />
+                  {sel && <div style={{ position: "absolute", top: 6, right: 6, background: "#d4af37", color: "#000", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 12 }}>✓</div>}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent,rgba(0,0,0,0.85))", padding: "14px 8px 6px" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: sel?"#d4af37":"#fff" }}>{e.label}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </SECTION>
       <SECTION title="Material" icon="🪵">
         <PILLS_GROUP options={["MDF","MDF RH antihumedad","Melamina","Triplay","Madera solida"]} value={form.material} onChange={v=>setF("material",v)} />
