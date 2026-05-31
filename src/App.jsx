@@ -293,7 +293,7 @@ const useIsMobile = () => {
 const PILL = ({ label, checked, onChange, color = "#d4af37" }) => (
   <button onClick={onChange} style={{
     padding: "8px 14px", borderRadius: 50, border: `1.5px solid ${checked ? color : "#2a2a20"}`,
-    background: checked ? `${color}20` : "#0d0d0a", color: checked ? color : "#666",
+    background: checked ? `${color}20` : "#0d0d0a", color: checked ? color : "#aaa",
     fontSize: 13, cursor: "pointer", fontWeight: checked ? 700 : 400,
     transition: "all .15s ease", display: "flex", alignItems: "center", gap: 6,
     boxShadow: checked ? `0 0 12px ${color}30` : "none",
@@ -330,7 +330,7 @@ const PILLS_GROUP = ({ options, value, onChange, multi = true, color = "#d4af37"
 
 const INPUT = ({ label, value, onChange, placeholder, type = "text", style = {} }) => (
   <div style={{ marginBottom: 14, ...style }}>
-    {label && <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>}
+    {label && <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>}
     <input value={value} onChange={onChange} placeholder={placeholder} type={type}
       style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 10, padding: "12px 14px", color: "#e8e0d0", fontSize: 15, boxSizing: "border-box", outline: "none" }} />
   </div>
@@ -338,7 +338,7 @@ const INPUT = ({ label, value, onChange, placeholder, type = "text", style = {} 
 
 const TEXTAREA = ({ label, value, onChange, placeholder, rows = 3 }) => (
   <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>}
+    {label && <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>}
     <textarea value={value} onChange={onChange} placeholder={placeholder} rows={rows}
       style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 10, padding: "12px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", resize: "vertical" }} />
   </div>
@@ -350,7 +350,7 @@ const SECTION = ({ title, icon, children, subtitle }) => (
       {icon && <span style={{ fontSize: 18 }}>{icon}</span>}
       <h3 style={{ margin: 0, fontSize: 14, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>{title}</h3>
     </div>
-    {subtitle && <p style={{ fontSize: 12, color: "#555", margin: "0 0 14px" }}>{subtitle}</p>}
+    {subtitle && <p style={{ fontSize: 12, color: "#aaa", margin: "0 0 14px" }}>{subtitle}</p>}
     {children}
   </div>
 );
@@ -432,6 +432,8 @@ const GLOBAL_CSS = `
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: #0a0a0a; }
   ::-webkit-scrollbar-thumb { background: #d4af3740; border-radius: 3px; }
+  input::placeholder { color: #777 !important; }
+  textarea::placeholder { color: #777 !important; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .fade-up { animation: fadeUp 0.5s ease forwards; }
 `;
@@ -485,7 +487,7 @@ function FormularioCocina({ form, setF, role, isMobile }) {
       <SECTION title="Material Estructura" icon="🪵">
         <PILLS_GROUP options={["MDF","MDF RH antihumedad","Melamina","Triplay","Madera solida","PVC"]} value={form.material} onChange={v=>setF("material",v)} />
         <div style={{ marginTop: 12 }}>
-          <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Grosor</label>
+          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Grosor</label>
           <PILLS_GROUP options={["15 mm","18 mm","Otro"]} value={form.grosor} onChange={v=>setF("grosor",v)} />
         </div>
       </SECTION>
@@ -505,15 +507,15 @@ function FormularioCocina({ form, setF, role, isMobile }) {
       <SECTION title="Herrajes" icon="🔧">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 14 }}>
           <div>
-            <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Bisagras</label>
+            <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Bisagras</label>
             <PILLS_GROUP options={["Normales","Cierre lento","Premium"]} value={form.bisagras} onChange={v=>setF("bisagras",v)} />
           </div>
           <div>
-            <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Correderas</label>
+            <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Correderas</label>
             <PILLS_GROUP options={["Normales","Telescopicas","Cierre lento"]} value={form.correderas} onChange={v=>setF("correderas",v)} />
           </div>
         </div>
-        <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Accesorios</label>
+        <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Accesorios</label>
         <PILLS_GROUP options={["Especiero","Organizador cajones","Basurero oculto","Porta cubiertos","Esquinero magico","Canastillas","Despensero extraible","Pistones hidraulicos","Iluminacion LED"]} value={form.accesorios} onChange={v=>setF("accesorios",v)} />
       </SECTION>
       <SECTION title="Cubierta" icon="⬜">
@@ -523,11 +525,11 @@ function FormularioCocina({ form, setF, role, isMobile }) {
       <SECTION title="Tarja y Griferia" icon="🚿">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <div>
-            <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Tarja</label>
+            <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Tarja</label>
             <PILLS_GROUP options={["Sencilla","Doble","Submontada","Sobrepuesta"]} value={form.tarja} onChange={v=>setF("tarja",v)} />
           </div>
           <div>
-            <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Griferia</label>
+            <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Griferia</label>
             <PILLS_GROUP options={["Negra","Cromada","Dorada","Flexible","Premium"]} value={form.griferia} onChange={v=>setF("griferia",v)} />
           </div>
         </div>
@@ -545,7 +547,7 @@ function FormularioCocina({ form, setF, role, isMobile }) {
       {(role === "admin" || role === "taller") && (
         <SECTION title="Solo para Taller" icon="🏭">
           <TEXTAREA label="Materiales solicitados" value={form.materiales_solicitados} onChange={e=>setF("materiales_solicitados",e.target.value)} placeholder="Lista de materiales especificos..." />
-          <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
+          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
           <PILLS_GROUP options={["Economico","Medio","Premium"]} value={form.nivel_calidad} onChange={v=>setF("nivel_calidad",v)} multi={false} color="#00bcd4" />
           <TEXTAREA label="Comentarios tecnicos" value={form.comentarios_tecnicos} onChange={e=>setF("comentarios_tecnicos",e.target.value)} placeholder="Notas tecnicas del taller..." style={{marginTop:12}} />
         </SECTION>
@@ -619,15 +621,15 @@ function FormularioCloset({ form, setF, role, isMobile }) {
       <SECTION title="Herrajes" icon="🔧">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 14 }}>
           <div>
-            <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Bisagras</label>
+            <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Bisagras</label>
             <PILLS_GROUP options={["Normales","Cierre lento","Premium"]} value={form.bisagras} onChange={v=>setF("bisagras",v)} />
           </div>
           <div>
-            <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Correderas</label>
+            <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Correderas</label>
             <PILLS_GROUP options={["Normales","Telescopicas","Cierre lento"]} value={form.correderas} onChange={v=>setF("correderas",v)} />
           </div>
         </div>
-        <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Accesorios de closet</label>
+        <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Accesorios de closet</label>
         <PILLS_GROUP options={["Zapatero","Cajones internos","Cajonera","Espejo interior","Iluminacion LED","Porta corbatas","Porta bolsas","Canastas extraibles","Barra para ropa","Doble barra"]} value={form.accesorios_closet} onChange={v=>setF("accesorios_closet",v)} />
       </SECTION>
       <SECTION title="Iluminacion" icon="💡">
@@ -639,7 +641,7 @@ function FormularioCloset({ form, setF, role, isMobile }) {
       {(role === "admin" || role === "taller") && (
         <SECTION title="Solo para Taller" icon="🏭">
           <TEXTAREA label="Materiales solicitados" value={form.materiales_solicitados} onChange={e=>setF("materiales_solicitados",e.target.value)} placeholder="Lista de materiales..." />
-          <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
+          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
           <PILLS_GROUP options={["Economico","Medio","Premium"]} value={form.nivel_calidad} onChange={v=>setF("nivel_calidad",v)} multi={false} color="#00bcd4" />
           <TEXTAREA label="Comentarios tecnicos" value={form.comentarios_tecnicos} onChange={e=>setF("comentarios_tecnicos",e.target.value)} placeholder="Notas tecnicas..." style={{marginTop:12}} />
         </SECTION>
@@ -698,7 +700,7 @@ function FormularioPuerta({ form, setF, role, isMobile }) {
       {(role === "admin" || role === "taller") && (
         <SECTION title="Solo para Taller" icon="🏭">
           <TEXTAREA label="Materiales solicitados" value={form.materiales_solicitados} onChange={e=>setF("materiales_solicitados",e.target.value)} placeholder="Lista de materiales..." />
-          <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
+          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
           <PILLS_GROUP options={["Economico","Medio","Premium"]} value={form.nivel_calidad} onChange={v=>setF("nivel_calidad",v)} multi={false} color="#00bcd4" />
           <TEXTAREA label="Comentarios tecnicos" value={form.comentarios_tecnicos} onChange={e=>setF("comentarios_tecnicos",e.target.value)} placeholder="Notas tecnicas..." style={{marginTop:12}} />
         </SECTION>
@@ -757,7 +759,7 @@ function FormularioMueble({ form, setF, role, isMobile }) {
       {(role === "admin" || role === "taller") && (
         <SECTION title="Solo para Taller" icon="🏭">
           <TEXTAREA label="Materiales solicitados" value={form.materiales_solicitados} onChange={e=>setF("materiales_solicitados",e.target.value)} placeholder="Lista de materiales..." />
-          <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
+          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Nivel de calidad</label>
           <PILLS_GROUP options={["Economico","Medio","Premium"]} value={form.nivel_calidad} onChange={v=>setF("nivel_calidad",v)} multi={false} color="#00bcd4" />
           <TEXTAREA label="Comentarios tecnicos" value={form.comentarios_tecnicos} onChange={e=>setF("comentarios_tecnicos",e.target.value)} placeholder="Notas tecnicas..." style={{marginTop:12}} />
         </SECTION>
@@ -1056,7 +1058,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
             <div>
               <div style={{ fontSize: 11, color: "#d4af37", letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>🔩 Cotizador de Materiales con IA</div>
-              <div style={{ fontSize: 12, color: "#555" }}>Genera la lista automática basada en las especificaciones del formulario</div>
+              <div style={{ fontSize: 12, color: "#aaa" }}>Genera la lista automática basada en las especificaciones del formulario</div>
             </div>
             <button
               onClick={generarMateriales}
@@ -1930,13 +1932,13 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
             <LogoInline size="nav" />
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            {!isMobile && <div style={{ fontSize: 12, color: "#555" }}>Hola, {nombreUsuario}</div>}
+            {!isMobile && <div style={{ fontSize: 12, color: "#aaa" }}>Hola, {nombreUsuario}</div>}
             <button onClick={() => { setScreen("login"); setRole(null); setUser(null); setToken(null); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 12px", fontSize: 12, cursor: "pointer" }}>Salir</button>
           </div>
         </div>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 2, overflowX: "auto", paddingBottom: 1 }}>
           {tabs.map(([k,l]) => (
-            <button key={k} onClick={() => setTab(k)} style={{ background: "transparent", border: "none", borderBottom: tab===k?"2px solid #d4af37":"2px solid transparent", color: tab===k?"#d4af37":"#555", padding: isMobile?"10px 12px":"10px 16px", cursor: "pointer", fontSize: isMobile?12:13, fontWeight: 700, whiteSpace: "nowrap" }}>{l}</button>
+            <button key={k} onClick={() => setTab(k)} style={{ background: "transparent", border: "none", borderBottom: tab===k?"2px solid #d4af37":"2px solid transparent", color: tab===k?"#d4af37":"#aaa", padding: isMobile?"10px 12px":"10px 16px", cursor: "pointer", fontSize: isMobile?12:13, fontWeight: 700, whiteSpace: "nowrap" }}>{l}</button>
           ))}
         </div>
       </div>
@@ -1951,7 +1953,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                 {role==="admin"?"PANEL ADMINISTRATIVO":role==="taller"?"PANEL DE TALLER":"PORTAL DE CLIENTE"}
               </div>
               <h1 style={{ fontSize: isMobile?22:32, fontWeight: 900, color: "#e8e0d0", margin: "0 0 8px" }}>Bienvenido, {nombreUsuario}</h1>
-              <p style={{ color: "#666", fontSize: 14, margin: "0 0 20px", lineHeight: 1.6 }}>
+              <p style={{ color: "#aaa", fontSize: 14, margin: "0 0 20px", lineHeight: 1.6 }}>
                 {role==="admin"?"Gestionas todos los proyectos de EnKaje Pro.":role==="taller"?"Aqui recibes proyectos y cotizas directamente.":"Diseña y cotiza tu proyecto ideal con nosotros."}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -1989,7 +1991,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
               <div>
                 <h1 style={{ color: "#d4af37", margin: 0, fontSize: isMobile?20:24 }}>Formulario de Levantamiento</h1>
-                <p style={{ color: "#555", margin: "4px 0 0", fontSize: 13 }}>Especificaciones completas del proyecto</p>
+                <p style={{ color: "#aaa", margin: "4px 0 0", fontSize: 13 }}>Especificaciones completas del proyecto</p>
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 {savedMsg && <div style={{ background: savedMsg.includes("Error")?"#1a0a0a":"#0a2a0a", border: `1px solid ${savedMsg.includes("Error")?"#f4433640":"#4caf5040"}`, color: savedMsg.includes("Error")?"#f44336":"#4caf50", borderRadius: 8, padding: "8px 14px", fontSize: 12 }}>{savedMsg}</div>}
@@ -2046,7 +2048,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#d4af3720", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{tipoIcon}</div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 15 }}>{p.nombre || "Sin nombre"}</div>
-                        <div style={{ fontSize: 12, color: "#555" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
+                        <div style={{ fontSize: 12, color: "#aaa" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -2134,7 +2136,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                   <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 15 }}>{p.nombre || p.user_email}</div>
-                      <div style={{ fontSize: 12, color: "#555" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                       <span style={{ fontSize: 11, color: "#00bcd4", fontWeight: 700, textTransform: "uppercase" }}>{p.estado}</span>
@@ -2173,7 +2175,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                     <div>
                       <div style={{ fontWeight: 700 }}>Proyecto #{i+1} · {(p.tipo_proyecto||"cocina").toUpperCase()}</div>
-                      <div style={{ fontSize: 12, color: "#555" }}>{Array.isArray(p.estilo)?p.estilo.join(", "):""} · {p.created_at?.split("T")[0]}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{Array.isArray(p.estilo)?p.estilo.join(", "):""} · {p.created_at?.split("T")[0]}</div>
                     </div>
                     <div style={{ fontSize: 11, color: "#00bcd4", fontWeight: 700 }}>{p.nivel_calidad||"---"}</div>
                   </div>
@@ -2199,7 +2201,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
               <div>
                 <h1 style={{ color: "#d4af37", margin: 0, fontSize: isMobile?20:26 }}>Talleres Suscritos</h1>
-                <p style={{ color: "#555", margin: "4px 0 0", fontSize: 13 }}>Gestiona membresías, planes y zonas</p>
+                <p style={{ color: "#aaa", margin: "4px 0 0", fontSize: 13 }}>Gestiona membresías, planes y zonas</p>
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 {tallerMsg && <div style={{ background: tallerMsg.includes("Error")?"#1a0a0a":"#0a2a0a", border: `1px solid ${tallerMsg.includes("Error")?"#f4433640":"#4caf5040"}`, color: tallerMsg.includes("Error")?"#f44336":"#4caf50", borderRadius: 8, padding: "8px 14px", fontSize: 12 }}>{tallerMsg}</div>}
@@ -2219,7 +2221,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
               <div style={{ fontSize: 28, fontWeight: 900, color: "#d4af37" }}>
                 ${(talleresMem.filter(t=>t.plan==="basico"&&t.estado==="activo").length*699 + talleresMem.filter(t=>t.plan==="pro"&&t.estado==="activo").length*1499 + talleresMem.filter(t=>t.plan==="premium"&&t.estado==="activo").length*2999).toLocaleString("es-MX")} MXN
               </div>
-              <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>{talleresMem.filter(t=>t.estado==="activo").length} talleres activos</div>
+              <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{talleresMem.filter(t=>t.estado==="activo").length} talleres activos</div>
             </div>
             {talleresMem.length === 0 && (
               <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 12, padding: 32, textAlign: "center", color: "#555" }}>
@@ -2240,7 +2242,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${planColor}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🏭</div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 15 }}>{t.nombre}</div>
-                        <div style={{ fontSize: 12, color: "#555" }}>{t.especialidad} · {t.municipio||t.zona}</div>
+                        <div style={{ fontSize: 12, color: "#aaa" }}>{t.especialidad} · {t.municipio||t.zona}</div>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -2255,7 +2257,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
-                      {t.notas && <div style={{ fontSize: 12, color: "#888", marginBottom: 14, background: "#0a0a0a", borderRadius: 8, padding: 10 }}>📝 {t.notas}</div>}
+                      {t.notas && <div style={{ fontSize: 12, color: "#bbb", marginBottom: 14, background: "#0a0a0a", borderRadius: 8, padding: 10 }}>📝 {t.notas}</div>}
 
                       {/* DATOS LEGALES */}
                       <div style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
@@ -2342,7 +2344,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                     <INPUT label="Fecha vencimiento" value={nuevoTaller.fecha_vencimiento} onChange={e=>setNuevoTaller(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
                   </div>
                   <div style={{ marginBottom: 14 }}>
-                    <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
+                    <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
                     <div style={{ display: "flex", gap: 8 }}>
                       {[["basico","Basico $699","#888"],["pro","Pro $1,499","#00bcd4"],["premium","Premium $2,999","#d4af37"]].map(([p,l,c]) => (
                         <button key={p} onClick={() => setNuevoTaller(prev=>({...prev,plan:p}))}
@@ -2378,8 +2380,8 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                   ["Color",    form.color_principal],
                 ].map(([l,v],i) => (
                   <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 13 }}>
-                    <span style={{ color: "#555", minWidth: 70 }}>{l}:</span>
-                    <span style={{ color: v?"#e8e0d0":"#333" }}>{v || "Sin especificar"}</span>
+                    <span style={{ color: "#aaa", minWidth: 70 }}>{l}:</span>
+                    <span style={{ color: v?"#e8e0d0":"#666" }}>{v || "Sin especificar"}</span>
                   </div>
                 ))}
                 <BTN onClick={analizarConIA} disabled={aiLoading} style={{ width: "100%", marginTop: 16, fontSize: 13, padding: "13px", letterSpacing: 1 }}>
@@ -2425,7 +2427,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
           <div onClick={e => e.stopPropagation()} style={{ background: "#0f0f0a", border: "1px solid #f4433640", borderRadius: 16, padding: 28, maxWidth: 360, width: "100%", textAlign: "center" }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>🗑️</div>
             <div style={{ fontSize: 15, color: "#e8e0d0", fontWeight: 600, marginBottom: 8 }}>{confirmModal.msg}</div>
-            <div style={{ fontSize: 12, color: "#555", marginBottom: 24 }}>Esta acción no se puede deshacer.</div>
+            <div style={{ fontSize: 12, color: "#aaa", marginBottom: 24 }}>Esta acción no se puede deshacer.</div>
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setConfirmModal(null)}
                 style={{ flex: 1, background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
