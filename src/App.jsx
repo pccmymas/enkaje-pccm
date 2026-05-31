@@ -1162,14 +1162,8 @@ export default function App() {
                     onClick={() => {
                       const f = getForm();
                       const tipo = tipoForm === "cocina" ? "Cocina Integral" : tipoForm === "closet" ? "Closet" : tipoForm === "puerta" ? "Puerta" : "Mueble";
-                      const txt = tipo.toUpperCase() + " - EnKaje Pro
-" + "━".repeat(26) + "
-Cliente: " + (f.nombre||"---") + "
-Tel: " + (f.telefono||"---") + "
-Estilo: " + (Array.isArray(f.estilo)?f.estilo.join(", "):"---") + "
-Material: " + (Array.isArray(f.material)?f.material.join(", "):"---") + "
-
-Ver presupuesto en enkajepro.com";
+                      const sep = "━".repeat(26);
+                      const txt = `${tipo.toUpperCase()} - EnKaje Pro\n${sep}\nCliente: ${f.nombre||"---"}\nTel: ${f.telefono||"---"}\nEstilo: ${Array.isArray(f.estilo)?f.estilo.join(", "):"---"}\nMaterial: ${Array.isArray(f.material)?f.material.join(", "):"---"}\n\nVer presupuesto en enkajepro.com`;
                       window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
                     }}
                     style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
@@ -1179,14 +1173,8 @@ Ver presupuesto en enkajepro.com";
                     onClick={() => {
                       const f = getForm();
                       const tipo = tipoForm === "cocina" ? "Cocina Integral" : tipoForm === "closet" ? "Closet" : tipoForm === "puerta" ? "Puerta" : "Mueble";
-                      const txt = tipo.toUpperCase() + " - EnKaje Pro
-" + "━".repeat(26) + "
-Cliente: " + (f.nombre||"---") + "
-Tel: " + (f.telefono||"---") + "
-Estilo: " + (Array.isArray(f.estilo)?f.estilo.join(", "):"---") + "
-Material: " + (Array.isArray(f.material)?f.material.join(", "):"---") + "
-
-Ver presupuesto en enkajepro.com";
+                      const sep = "━".repeat(26);
+                      const txt = `${tipo.toUpperCase()} - EnKaje Pro\n${sep}\nCliente: ${f.nombre||"---"}\nTel: ${f.telefono||"---"}\nEstilo: ${Array.isArray(f.estilo)?f.estilo.join(", "):"---"}\nMaterial: ${Array.isArray(f.material)?f.material.join(", "):"---"}\n\nVer presupuesto en enkajepro.com`;
                       navigator.clipboard.writeText(txt);
                       alert("Copiado al portapapeles");
                     }}
