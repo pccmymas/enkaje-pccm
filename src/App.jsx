@@ -908,11 +908,80 @@ export default function App() {
     setSavedMsg("Guardando...");
     try {
       const f = getForm();
-      const res = await sb("proyectos", {
-        method: "POST",
-        token: token,
-        body: JSON.stringify({ ...f, user_id: user?.id, user_email: user?.email, estado: "nuevo", created_at: new Date().toISOString() })
-      });
+      // Solo los campos que existen en la tabla proyectos de Supabase
+      // Arrays se serializan a texto separado por comas
+      const arr = v => Array.isArray(v) ? v.join(", ") : (v || "");
+      const payload = {
+        user_id:             user?.id,
+        user_email:          user?.email,
+        estado:              "nuevo",
+        created_at:          new Date().toISOString(),
+        tipo_proyecto:       f.tipo_proyecto,
+        nombre:              f.nombre,
+        telefono:            f.telefono,
+        direccion:           f.direccion,
+        correo:              f.correo,
+        fecha:               f.fecha,
+        atencion_por:        f.atencion_por,
+        largo:               f.largo,
+        altura:              f.altura,
+        profundidad:         f.profundidad,
+        area:                f.area,
+        cantidad:            f.cantidad,
+        ancho:               f.ancho,
+        alto:                f.alto,
+        grosor_puerta:       f.grosor_puerta,
+        medidas_isla:        f.medidas_isla,
+        altura_superiores:   f.altura_superiores,
+        color_principal:     f.color_principal,
+        color_secundario:    f.color_secundario,
+        color_cubierta:      f.color_cubierta,
+        textura:             f.textura,
+        medidas_electro:     f.medidas_electro,
+        observaciones:       f.observaciones,
+        materiales_solicitados: f.materiales_solicitados,
+        herrajes_solicitados:   f.herrajes_solicitados,
+        nivel_calidad:       f.nivel_calidad,
+        comentarios_tecnicos: f.comentarios_tecnicos,
+        precio_fabricacion:  f.precio_fabricacion,
+        precio_instalacion:  f.precio_instalacion,
+        precio_cubierta:     f.precio_cubierta,
+        precio_herrajes:     f.precio_herrajes,
+        precio_otros:        f.precio_otros,
+        incluye:             f.incluye,
+        no_incluye:          f.no_incluye,
+        tiempo_entrega:      f.tiempo_entrega,
+        anticipo:            f.anticipo,
+        pago_entrega:        f.pago_entrega,
+        pago_final:          f.pago_final,
+        garantia:            f.garantia,
+        // Arrays → texto
+        tipo_cocina:         arr(f.tipo_cocina),
+        tipo_closet:         arr(f.tipo_closet),
+        tipo_puerta:         arr(f.tipo_puerta),
+        tipo_mueble:         arr(f.tipo_mueble),
+        estilo:              arr(f.estilo),
+        material:            arr(f.material),
+        grosor:              arr(f.grosor),
+        tipo_acabado:        arr(f.tipo_acabado),
+        tipo_puertas:        arr(f.tipo_puertas),
+        jaladeras:           arr(f.jaladeras),
+        bisagras:            arr(f.bisagras),
+        correderas:          arr(f.correderas),
+        accesorios:          arr(f.accesorios),
+        accesorios_closet:   arr(f.accesorios_closet),
+        accesorios_mueble:   arr(f.accesorios_mueble),
+        material_cubierta:   arr(f.material_cubierta),
+        tarja:               arr(f.tarja),
+        griferia:            arr(f.griferia),
+        electrodomesticos:   arr(f.electrodomesticos),
+        iluminacion:         arr(f.iluminacion),
+        tipo_marco:          arr(f.tipo_marco),
+        herrajes_puerta:     arr(f.herrajes_puerta),
+      };
+      // Eliminar claves con valor undefined o null para no mandar columnas inexistentes
+      Object.keys(payload).forEach(k => { if (payload[k] === undefined || payload[k] === null) delete payload[k]; });
+      const res = await sb("proyectos", { method: "POST", token, body: JSON.stringify(payload) });
       if (res && !Array.isArray(res) && (res.code || res.error)) {
         setSavedMsg("❌ " + (res.message || res.error || "Error al guardar"));
       } else {
@@ -1147,44 +1216,16 @@ export default function App() {
             {tipoForm === "closet" && <FormularioCloset form={formCloset} setF={(k,v) => setFormCloset(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "puerta" && <FormularioPuerta form={formPuerta} setF={(k,v) => setFormPuerta(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "mueble" && <FormularioMueble form={formMueble} setF={(k,v) => setFormMueble(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
-            <div style={{ marginTop: 24 }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-                <BTN onClick={guardarFormulario} style={{ width: isMobile?"100%":"auto", padding: "15px 48px", fontSize: 15, letterSpacing: 1 }}>GUARDAR LEVANTAMIENTO</BTN>
+            <div style={{ marginTop: 24, display: "flex", justifyContent: "center", marginBottom: 8 }}>
+              <BTN onClick={guardarFormulario} style={{ width: isMobile?"100%":"auto", padding: "15px 48px", fontSize: 15, letterSpacing: 1 }}>GUARDAR LEVANTAMIENTO</BTN>
+            </div>
+            <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
+                <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
+                <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
               </div>
-              <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 14, padding: "14px 16px" }}>
-                <div style={{ fontSize: 10, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>Acciones rapidas</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                  <button onClick={() => setTab("presupuesto")} style={{ background: "linear-gradient(135deg,#d4af37,#f0c84a)", color: "#000", border: "none", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-                    🖨️ Ir a Presupuesto / PDF
-                  </button>
-                  <button onClick={() => setTab("ia")} style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-                    ✨ Analizar con IA
-                  </button>
-                  <button
-                    onClick={() => {
-                      const f = getForm();
-                      const tipo = tipoForm === "cocina" ? "Cocina Integral" : tipoForm === "closet" ? "Closet" : tipoForm === "puerta" ? "Puerta" : "Mueble";
-                      const sep = "━".repeat(26);
-                      const txt = `${tipo.toUpperCase()} - EnKaje Pro\n${sep}\nCliente: ${f.nombre||"---"}\nTel: ${f.telefono||"---"}\nEstilo: ${Array.isArray(f.estilo)?f.estilo.join(", "):"---"}\nMaterial: ${Array.isArray(f.material)?f.material.join(", "):"---"}\n\nVer presupuesto en enkajepro.com`;
-                      window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank");
-                    }}
-                    style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-                    💬 Compartir por WhatsApp
-                  </button>
-                  <button
-                    onClick={() => {
-                      const f = getForm();
-                      const tipo = tipoForm === "cocina" ? "Cocina Integral" : tipoForm === "closet" ? "Closet" : tipoForm === "puerta" ? "Puerta" : "Mueble";
-                      const sep = "━".repeat(26);
-                      const txt = `${tipo.toUpperCase()} - EnKaje Pro\n${sep}\nCliente: ${f.nombre||"---"}\nTel: ${f.telefono||"---"}\nEstilo: ${Array.isArray(f.estilo)?f.estilo.join(", "):"---"}\nMaterial: ${Array.isArray(f.material)?f.material.join(", "):"---"}\n\nVer presupuesto en enkajepro.com`;
-                      navigator.clipboard.writeText(txt);
-                      alert("Copiado al portapapeles");
-                    }}
-                    style={{ background: "transparent", color: "#555", border: "1.5px solid #2a2a20", borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                    📋 Copiar resumen
-                  </button>
-                </div>
-              </div>
+              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} />
             </div>
           </div>
         )}
