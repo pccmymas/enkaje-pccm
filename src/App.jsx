@@ -1378,7 +1378,7 @@ export default function App() {
   }
 
   async function actualizarTaller(id, cambios) {
-    const res = await sb(`talleres_membresia?enkaje=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
+    const res = await sb(`talleres_membresia?id=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
     console.log("PATCH result:", JSON.stringify(res), "id:", id, "cambios:", JSON.stringify(cambios));
     cargarTalleres();
   }
@@ -2265,12 +2265,12 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                           <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📋 Información del Taller</div>
-                          <button onClick={e => { e.stopPropagation(); setEditInfo(editInfo && editInfo.enkaje===t.enkaje ? null : {...t}); }}
+                          <button onClick={e => { e.stopPropagation(); setEditInfo(editInfo && editInfo.id===t.id ? null : {...t}); }}
                             style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
-                            {editInfo && editInfo.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
+                            {editInfo && editInfo.id===t.id ? "Cancelar" : "✏️ Editar"}
                           </button>
                         </div>
-                        {editInfo && editInfo.enkaje === t.enkaje ? (
+                        {editInfo && editInfo.id === t.id ? (
                           <div>
                             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 10 }}>
                               <INPUT label="Nombre del taller" value={editInfo?.nombre||""} onChange={e=>setEditInfo(p=>({...p,nombre:e.target.value}))} placeholder="Nombre del taller" />
@@ -2285,7 +2285,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                             <TEXTAREA label="Notas internas" value={editInfo?.notas||""} onChange={e=>setEditInfo(p=>({...p,notas:e.target.value}))} placeholder="Notas sobre el taller..." rows={2} />
                             <button onClick={async e => {
                               e.stopPropagation();
-                              await actualizarTaller(editInfo.enkaje, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas });
+                              await actualizarTaller(editInfo.id, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas });
                               setEditInfo(null);
                               setTallerMsg("✅ Información actualizada");
                               setTimeout(()=>setTallerMsg(""), 3000);
@@ -2306,12 +2306,12 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                           <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📄 Datos para Contratos</div>
-                          <button onClick={e => { e.stopPropagation(); setEditTaller(editTaller && editTaller.enkaje===t.enkaje ? null : {...t}); }}
+                          <button onClick={e => { e.stopPropagation(); setEditTaller(editTaller && editTaller.id===t.id ? null : {...t}); }}
                             style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
-                            {editTaller && editTaller.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
+                            {editTaller && editTaller.id===t.id ? "Cancelar" : "✏️ Editar"}
                           </button>
                         </div>
-                        {editTaller && editTaller.enkaje === t.enkaje ? (
+                        {editTaller && editTaller.id === t.id ? (
                           <div>
                             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 12 }}>
                               <INPUT label="Nombre legal" value={editTaller?.nombre_legal||""} onChange={e=>setEditTaller(p=>({...p,nombre_legal:e.target.value}))} placeholder="Razón social o nombre completo" />
@@ -2349,25 +2349,25 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         <div style={{ fontSize: 11, color: "#555", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Cambiar Plan</div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           {[["basico","Basico $699","#888"],["pro","Pro $1,499","#00bcd4"],["premium","Premium $2,999","#d4af37"]].map(([p,l,c]) => (
-                            <button key={p} onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {plan:p}); }}
+                            <button key={p} onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {plan:p}); }}
                               style={{ padding: "7px 14px", borderRadius: 20, border: `1px solid ${t.plan===p?c:"#333"}`, background: t.plan===p?`${c}20`:"transparent", color: t.plan===p?c:"#666", fontSize: 12, cursor: "pointer", fontWeight: t.plan===p?700:400 }}>{l}</button>
                           ))}
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {estado: t.estado==="activo"?"inactivo":"activo"}); }}
+                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {estado: t.estado==="activo"?"inactivo":"activo"}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${t.estado==="activo"?"#f44336":"#4caf50"}`, background: "transparent", color: t.estado==="activo"?"#f44336":"#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
                           {t.estado==="activo"?"Desactivar":"Activar"}
                         </button>
-                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {leads_recibidos: (t.leads_recibidos||0)+1}); }}
+                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {leads_recibidos: (t.leads_recibidos||0)+1}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Lead</button>
-                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.enkaje, {proyectos_cerrados: (t.proyectos_cerrados||0)+1}); }}
+                        <button onClick={e => { e.stopPropagation(); actualizarTaller(t.id, {proyectos_cerrados: (t.proyectos_cerrados||0)+1}); }}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #4caf5040", background: "#4caf5010", color: "#4caf50", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>+1 Cierre</button>
                         {t.slug && (
                           <button onClick={e => { e.stopPropagation(); const link = `https://enkajepro.com/taller/${t.slug}`; navigator.clipboard.writeText(link); alert("Link copiado: " + link); }}
                             style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #d4af3740", background: "#d4af3710", color: "#d4af37", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>🔗 Copiar link</button>
                         )}
-                        <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?enkaje=eq.${t.enkaje}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
+                        <button onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: `¿Eliminar ${t.nombre}?`, onOk: async () => { await sb(`talleres_membresia?id=eq.${t.id}`, {method:"DELETE", token}); cargarTalleres(); setTallerSel(null); }});}}
                           style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #f4433640", background: "#f443360a", color: "#f44336", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Eliminar</button>
                       </div>
                     </div>
