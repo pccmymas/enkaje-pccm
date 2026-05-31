@@ -2271,16 +2271,16 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         {editTaller?.enkaje === t.enkaje ? (
                           <div>
                             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 12 }}>
-                              <INPUT label="Nombre legal" value={editTaller.nombre_legal||""} onChange={e=>setEditTaller(p=>({...p,nombre_legal:e.target.value}))} placeholder="Razón social o nombre completo" />
-                              <INPUT label="RFC" value={editTaller.rfc||""} onChange={e=>setEditTaller(p=>({...p,rfc:e.target.value}))} placeholder="XXXX123456XXX" />
-                              <INPUT label="Representante legal" value={editTaller.representante||""} onChange={e=>setEditTaller(p=>({...p,representante:e.target.value}))} placeholder="Nombre del representante" />
-                              <INPUT label="Teléfono legal" value={editTaller.telefono_legal||""} onChange={e=>setEditTaller(p=>({...p,telefono_legal:e.target.value}))} placeholder="81-1234-5678" />
-                              <INPUT label="Correo legal" value={editTaller.correo_legal||""} onChange={e=>setEditTaller(p=>({...p,correo_legal:e.target.value}))} placeholder="legal@taller.com" />
-                              <INPUT label="Código Postal" value={editTaller.cp||""} onChange={e=>setEditTaller(p=>({...p,cp:e.target.value}))} placeholder="64000" />
+                              <INPUT label="Nombre legal" value={editTaller?.nombre_legal||""} onChange={e=>setEditTaller(p=>({...p,nombre_legal:e.target.value}))} placeholder="Razón social o nombre completo" />
+                              <INPUT label="RFC" value={editTaller?.rfc||""} onChange={e=>setEditTaller(p=>({...p,rfc:e.target.value}))} placeholder="XXXX123456XXX" />
+                              <INPUT label="Representante legal" value={editTaller?.representante||""} onChange={e=>setEditTaller(p=>({...p,representante:e.target.value}))} placeholder="Nombre del representante" />
+                              <INPUT label="Teléfono legal" value={editTaller?.telefono_legal||""} onChange={e=>setEditTaller(p=>({...p,telefono_legal:e.target.value}))} placeholder="81-1234-5678" />
+                              <INPUT label="Correo legal" value={editTaller?.correo_legal||""} onChange={e=>setEditTaller(p=>({...p,correo_legal:e.target.value}))} placeholder="legal@taller.com" />
+                              <INPUT label="Código Postal" value={editTaller?.cp||""} onChange={e=>setEditTaller(p=>({...p,cp:e.target.value}))} placeholder="64000" />
                             </div>
-                            <INPUT label="Dirección fiscal" value={editTaller.direccion_fiscal||""} onChange={e=>setEditTaller(p=>({...p,direccion_fiscal:e.target.value}))} placeholder="Calle, Colonia, Ciudad, Estado" />
-                            <INPUT label="Garantía por defecto" value={editTaller.garantia_default||""} onChange={e=>setEditTaller(p=>({...p,garantia_default:e.target.value}))} placeholder="6 meses en instalación y herrajes" />
-                            <TEXTAREA label="Términos adicionales (opcional)" value={editTaller.terminos_extra||""} onChange={e=>setEditTaller(p=>({...p,terminos_extra:e.target.value}))} placeholder="Condiciones especiales del taller..." rows={2} />
+                            <INPUT label="Dirección fiscal" value={editTaller?.direccion_fiscal||""} onChange={e=>setEditTaller(p=>({...p,direccion_fiscal:e.target.value}))} placeholder="Calle, Colonia, Ciudad, Estado" />
+                            <INPUT label="Garantía por defecto" value={editTaller?.garantia_default||""} onChange={e=>setEditTaller(p=>({...p,garantia_default:e.target.value}))} placeholder="6 meses en instalación y herrajes" />
+                            <TEXTAREA label="Términos adicionales (opcional)" value={editTaller?.terminos_extra||""} onChange={e=>setEditTaller(p=>({...p,terminos_extra:e.target.value}))} placeholder="Condiciones especiales del taller..." rows={2} />
                             <button onClick={async e => {
                               e.stopPropagation();
                               const { enkaje, ...datos } = editTaller;
