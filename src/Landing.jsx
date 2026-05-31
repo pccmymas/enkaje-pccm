@@ -25,6 +25,8 @@ const CSS = `
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .legal-link { font-size: 13px; color: #555; background: transparent; border: none; cursor: pointer; transition: color .2s; text-decoration: underline; font-family: inherit; }
+  .legal-link:hover { color: #d4af37; }
   @media (max-width: 768px) {
     .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
     .hide-mobile { display: none; }
@@ -45,37 +47,9 @@ const PASOS = [
 ];
 
 const PLANES = [
-  {
-    nombre: "Basico", precio: "699", color: "#888", features: [
-      "Hasta 5 leads por mes",
-      "Dashboard basico",
-      "Cotizaciones en la app",
-      "Perfil en el mapa",
-      "Soporte por email",
-    ], popular: false
-  },
-  {
-    nombre: "Pro", precio: "1,499", color: "#00bcd4", features: [
-      "Leads ilimitados",
-      "CRM completo de clientes",
-      "WhatsApp automatico",
-      "Conectar redes sociales",
-      "IA ilimitada",
-      "Contratos digitales",
-      "Soporte prioritario",
-    ], popular: true
-  },
-  {
-    nombre: "Premium", precio: "2,999", color: "#d4af37", features: [
-      "Todo el Plan Pro",
-      "Exclusividad en tu zona",
-      "Primero en recibir leads",
-      "Perfil destacado en mapa",
-      "Renders IA premium",
-      "Onboarding personal",
-      "Soporte 24/7",
-    ], popular: false
-  },
+  { nombre: "Basico", precio: "699", color: "#888", features: ["Hasta 5 leads por mes","Dashboard basico","Cotizaciones en la app","Perfil en el mapa","Soporte por email"], popular: false },
+  { nombre: "Pro", precio: "1,499", color: "#00bcd4", features: ["Leads ilimitados","CRM completo de clientes","WhatsApp automatico","Conectar redes sociales","IA ilimitada","Contratos digitales","Soporte prioritario"], popular: true },
+  { nombre: "Premium", precio: "2,999", color: "#d4af37", features: ["Todo el Plan Pro","Exclusividad en tu zona","Primero en recibir leads","Perfil destacado en mapa","Renders IA premium","Onboarding personal","Soporte 24/7"], popular: false },
 ];
 
 const TESTIMONIOS = [
@@ -104,6 +78,8 @@ export default function Landing() {
   }, []);
 
   const goToApp = () => window.location.href = "/app";
+  // Navegar a página legal dentro de la app
+  const goLegal = (page) => window.location.href = `/app?legal=${page}`;
 
   return (
     <div style={{ background: "#070708", minHeight: "100vh" }}>
@@ -129,34 +105,23 @@ export default function Landing() {
 
       {/* HERO */}
       <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "120px 24px 80px", position: "relative", overflow: "hidden" }}>
-        {/* Background glow */}
         <div style={{ position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)", width: 600, height: 600, background: "radial-gradient(circle, #d4af3715 0%, transparent 70%)", pointerEvents: "none" }} />
-
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }} className="fade-up">
           <div className="pill" style={{ marginBottom: 24 }}>IA + DISENO + PRODUCCION</div>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
             <LogoInline size="lg" />
           </div>
-
           <h1 className="hero-title" style={{ fontSize: 64, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1 }}>
             Convierte ideas en
             <span style={{ color: "#d4af37", display: "block" }}>muebles reales con IA</span>
           </h1>
-
           <p className="hero-sub" style={{ fontSize: 20, color: "#888", lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px" }}>
             La plataforma todo-en-uno para talleres que quieren vender mas, organizarse mejor y ofrecer experiencias increibles a sus clientes.
           </p>
-
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", marginBottom: 56 }}>
-            <button onClick={goToApp} className="btn-primary" style={{ fontSize: 16, padding: "16px 36px" }}>
-              Comenzar ahora →
-            </button>
-            <button onClick={goToApp} className="btn-secondary" style={{ fontSize: 16, padding: "16px 36px" }}>
-              Ver como funciona ▶
-            </button>
+            <button onClick={goToApp} className="btn-primary" style={{ fontSize: 16, padding: "16px 36px" }}>Comenzar ahora →</button>
+            <button onClick={goToApp} className="btn-secondary" style={{ fontSize: 16, padding: "16px 36px" }}>Ver como funciona ▶</button>
           </div>
-
-          {/* Social proof */}
           <div style={{ display: "flex", gap: 8, justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ fontSize: 13, color: "#555" }}>Integrado con tus canales favoritos:</span>
             {INTEGRACIONES.slice(0,4).map(i => (
@@ -170,7 +135,7 @@ export default function Landing() {
       <section style={{ padding: "0 24px 80px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div className="grid-4" style={{ gap: 16 }}>
-            {[["500+","Proyectos completados"],["98%","Clientes satisfechos"],["3x","Mas ventas por taller",""],["24/7","Soporte disponible"]].map(([n,l],i) => (
+            {[["500+","Proyectos completados"],["98%","Clientes satisfechos"],["3x","Mas ventas por taller"],["24/7","Soporte disponible"]].map(([n,l],i) => (
               <div key={i} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: "24px", textAlign: "center" }}>
                 <div style={{ fontSize: 36, fontWeight: 900, color: "#d4af37", marginBottom: 6 }}>{n}</div>
                 <div style={{ fontSize: 13, color: "#555" }}>{l}</div>
@@ -188,11 +153,8 @@ export default function Landing() {
             <h2 className="section-title" style={{ fontSize: 40, fontWeight: 900, marginBottom: 16 }}>
               Asi funciona <span style={{ color: "#d4af37" }}>EnKaje Pro</span>
             </h2>
-            <p style={{ fontSize: 16, color: "#555", maxWidth: 500, margin: "0 auto" }}>
-              De la idea al mueble terminado en 5 pasos simples
-            </p>
+            <p style={{ fontSize: 16, color: "#555", maxWidth: 500, margin: "0 auto" }}>De la idea al mueble terminado en 5 pasos simples</p>
           </div>
-
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}>
             {PASOS.map((p, i) => (
               <div key={i} className="card" style={{ textAlign: "center", position: "relative" }}>
@@ -215,20 +177,10 @@ export default function Landing() {
           <div className="grid-2" style={{ alignItems: "center", gap: 60 }}>
             <div>
               <div className="pill" style={{ marginBottom: 16 }}>IA GENERATIVA</div>
-              <h2 style={{ fontSize: 40, fontWeight: 900, lineHeight: 1.2, marginBottom: 20 }}>
-                Tu cocina antes
-                <span style={{ color: "#d4af37", display: "block" }}>de fabricarla</span>
-              </h2>
-              <p style={{ fontSize: 16, color: "#888", lineHeight: 1.8, marginBottom: 28 }}>
-                El cliente escribe "Quiero una cocina moderna negra mate con isla" y en segundos ve como quedaria. Eso genera emocion inmediata y cierra ventas mas rapido.
-              </p>
+              <h2 style={{ fontSize: 40, fontWeight: 900, lineHeight: 1.2, marginBottom: 20 }}>Tu cocina antes<span style={{ color: "#d4af37", display: "block" }}>de fabricarla</span></h2>
+              <p style={{ fontSize: 16, color: "#888", lineHeight: 1.8, marginBottom: 28 }}>El cliente escribe "Quiero una cocina moderna negra mate con isla" y en segundos ve como quedaria. Eso genera emocion inmediata y cierra ventas mas rapido.</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
-                {[
-                  ["🎨", "Genera renders realistas en segundos"],
-                  ["📐", "Calcula medidas y materiales automaticamente"],
-                  ["💰", "Cotizacion instantanea segun especificaciones"],
-                  ["📱", "El cliente aprueba desde su celular"],
-                ].map(([icon, text], i) => (
+                {[["🎨","Genera renders realistas en segundos"],["📐","Calcula medidas y materiales automaticamente"],["💰","Cotizacion instantanea segun especificaciones"],["📱","El cliente aprueba desde su celular"]].map(([icon,text],i) => (
                   <div key={i} style={{ display: "flex", gap: 12, alignItems: "center" }}>
                     <span style={{ fontSize: 20 }}>{icon}</span>
                     <span style={{ fontSize: 14, color: "#aaa" }}>{text}</span>
@@ -238,11 +190,9 @@ export default function Landing() {
               <button onClick={goToApp} className="btn-primary">Probar IA gratis →</button>
             </div>
             <div style={{ position: "relative" }}>
-              <div className="float" style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 20, padding: 24, position: "relative" }}>
+              <div className="float" style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 20, padding: 24 }}>
                 <div style={{ fontSize: 12, color: "#555", marginBottom: 12, letterSpacing: 1 }}>CLIENTE ESCRIBE:</div>
-                <div style={{ background: "#1a1208", border: "1px solid #d4af3730", borderRadius: 12, padding: "12px 16px", marginBottom: 16, fontSize: 14, color: "#e8e0d0" }}>
-                  "Quiero una cocina moderna negra mate con isla y cubierta de cuarzo blanco"
-                </div>
+                <div style={{ background: "#1a1208", border: "1px solid #d4af3730", borderRadius: 12, padding: "12px 16px", marginBottom: 16, fontSize: 14, color: "#e8e0d0" }}>"Quiero una cocina moderna negra mate con isla y cubierta de cuarzo blanco"</div>
                 <div style={{ fontSize: 12, color: "#555", marginBottom: 12, letterSpacing: 1 }}>IA GENERA:</div>
                 <div style={{ background: "#1a1a10", borderRadius: 12, overflow: "hidden", marginBottom: 16, height: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&q=80&fit=crop" alt="Cocina moderna" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 12 }} />
@@ -257,9 +207,7 @@ export default function Landing() {
                     <div style={{ fontSize: 14, fontWeight: 900, color: "#4caf50" }}>25 dias</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, background: "#d4af37", borderRadius: 10, padding: "10px", textAlign: "center", fontWeight: 700, fontSize: 14, color: "#000", cursor: "pointer" }}>
-                  Me encanta, quiero cotizacion real ✓
-                </div>
+                <div style={{ marginTop: 12, background: "#d4af37", borderRadius: 10, padding: "10px", textAlign: "center", fontWeight: 700, fontSize: 14, color: "#000", cursor: "pointer" }}>Me encanta, quiero cotizacion real ✓</div>
               </div>
             </div>
           </div>
@@ -270,20 +218,10 @@ export default function Landing() {
       <section style={{ padding: "80px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <h2 style={{ fontSize: 40, fontWeight: 900, marginBottom: 16 }}>
-              Todo lo que tu taller necesita
-              <span style={{ color: "#d4af37", display: "block" }}>en un solo lugar</span>
-            </h2>
+            <h2 style={{ fontSize: 40, fontWeight: 900, marginBottom: 16 }}>Todo lo que tu taller necesita<span style={{ color: "#d4af37", display: "block" }}>en un solo lugar</span></h2>
           </div>
           <div className="grid-3">
-            {[
-              ["👥", "CRM de Clientes", "Gestiona todos tus clientes, proyectos y cotizaciones desde un dashboard elegante.", "#d4af37"],
-              ["🤖", "IA Asesora", "Recomendaciones de materiales, colores y presupuestos basadas en inteligencia artificial.", "#00bcd4"],
-              ["💬", "WhatsApp Automatico", "Notifica a talleres cuando llega un nuevo lead. Todo automatico, sin hacer nada.", "#25D366"],
-              ["📊", "Dashboard Completo", "Ingresos, proyectos activos, pagos pendientes y metricas en tiempo real.", "#f0a500"],
-              ["📋", "Cotizaciones Pro", "Genera presupuestos profesionales con PDF, desglose de precios y forma de pago.", "#d4af37"],
-              ["🗺️", "Mapa de Talleres", "Encuentra talleres verificados cerca del cliente segun especialidad y zona.", "#00bcd4"],
-            ].map(([icon, titulo, desc, color], i) => (
+            {[["👥","CRM de Clientes","Gestiona todos tus clientes, proyectos y cotizaciones desde un dashboard elegante.","#d4af37"],["🤖","IA Asesora","Recomendaciones de materiales, colores y presupuestos basadas en inteligencia artificial.","#00bcd4"],["💬","WhatsApp Automatico","Notifica a talleres cuando llega un nuevo lead. Todo automatico, sin hacer nada.","#25D366"],["📊","Dashboard Completo","Ingresos, proyectos activos, pagos pendientes y metricas en tiempo real.","#f0a500"],["📋","Cotizaciones Pro","Genera presupuestos profesionales con PDF, desglose de precios y forma de pago.","#d4af37"],["🗺️","Mapa de Talleres","Encuentra talleres verificados cerca del cliente segun especialidad y zona.","#00bcd4"]].map(([icon,titulo,desc,color],i) => (
               <div key={i} className="card">
                 <div style={{ fontSize: 32, marginBottom: 16 }}>{icon}</div>
                 <div style={{ fontWeight: 700, fontSize: 16, color, marginBottom: 10 }}>{titulo}</div>
@@ -299,18 +237,13 @@ export default function Landing() {
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <div className="pill" style={{ marginBottom: 16 }}>PLANES Y PRECIOS</div>
-            <h2 style={{ fontSize: 40, fontWeight: 900, marginBottom: 16 }}>
-              Elige el plan <span style={{ color: "#d4af37" }}>perfecto para ti</span>
-            </h2>
+            <h2 style={{ fontSize: 40, fontWeight: 900, marginBottom: 16 }}>Elige el plan <span style={{ color: "#d4af37" }}>perfecto para ti</span></h2>
             <p style={{ fontSize: 16, color: "#555" }}>14 dias gratis en todos los planes. Sin tarjeta de credito.</p>
           </div>
-
           <div className="grid-3" style={{ alignItems: "start" }}>
-            {PLANES.map((p, i) => (
-              <div key={i} style={{ background: "#070708", border: `2px solid ${p.popular ? p.color : "#1a1a12"}`, borderRadius: 20, padding: 28, position: "relative", boxShadow: p.popular ? `0 0 40px ${p.color}20` : "none" }}>
-                {p.popular && (
-                  <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: p.color, color: "#000", borderRadius: 50, padding: "4px 16px", fontSize: 11, fontWeight: 900, letterSpacing: 1, whiteSpace: "nowrap" }}>MAS POPULAR</div>
-                )}
+            {PLANES.map((p,i) => (
+              <div key={i} style={{ background: "#070708", border: `2px solid ${p.popular?p.color:"#1a1a12"}`, borderRadius: 20, padding: 28, position: "relative", boxShadow: p.popular?`0 0 40px ${p.color}20`:"none" }}>
+                {p.popular && <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", background: p.color, color: "#000", borderRadius: 50, padding: "4px 16px", fontSize: 11, fontWeight: 900, letterSpacing: 1, whiteSpace: "nowrap" }}>MAS POPULAR</div>}
                 <div style={{ fontSize: 13, color: p.color, fontWeight: 700, letterSpacing: 1, marginBottom: 8 }}>PLAN {p.nombre.toUpperCase()}</div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 6 }}>
                   <span style={{ fontSize: 14, color: "#555" }}>$</span>
@@ -319,16 +252,14 @@ export default function Landing() {
                 </div>
                 <div style={{ fontSize: 12, color: "#555", marginBottom: 24 }}>14 dias gratis para empezar</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-                  {p.features.map((f, j) => (
+                  {p.features.map((f,j) => (
                     <div key={j} style={{ display: "flex", gap: 10, alignItems: "center" }}>
                       <span style={{ color: p.color, fontSize: 14, fontWeight: 900 }}>✓</span>
                       <span style={{ fontSize: 13, color: "#aaa" }}>{f}</span>
                     </div>
                   ))}
                 </div>
-                <button onClick={goToApp} style={{ width: "100%", background: p.popular ? p.color : "transparent", color: p.popular ? "#000" : p.color, border: `1.5px solid ${p.color}`, borderRadius: 12, padding: "13px", fontWeight: 700, fontSize: 14, cursor: "pointer", transition: "all .2s" }}>
-                  Comenzar gratis
-                </button>
+                <button onClick={goToApp} style={{ width: "100%", background: p.popular?p.color:"transparent", color: p.popular?"#000":p.color, border: `1.5px solid ${p.color}`, borderRadius: 12, padding: "13px", fontWeight: 700, fontSize: 14, cursor: "pointer", transition: "all .2s" }}>Comenzar gratis</button>
               </div>
             ))}
           </div>
@@ -339,15 +270,13 @@ export default function Landing() {
       <section style={{ padding: "80px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
           <div className="pill" style={{ marginBottom: 16 }}>INTEGRACIONES</div>
-          <h2 style={{ fontSize: 36, fontWeight: 900, marginBottom: 16 }}>
-            Conecta con tus <span style={{ color: "#d4af37" }}>herramientas favoritas</span>
-          </h2>
+          <h2 style={{ fontSize: 36, fontWeight: 900, marginBottom: 16 }}>Conecta con tus <span style={{ color: "#d4af37" }}>herramientas favoritas</span></h2>
           <p style={{ fontSize: 15, color: "#555", marginBottom: 40 }}>EnKaje Pro se integra con las plataformas que ya usas</p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
             {INTEGRACIONES.map(int => (
               <div key={int.nombre} style={{ background: "#0f0f0a", border: `1px solid ${int.color}30`, borderRadius: 16, padding: "16px 24px", display: "flex", alignItems: "center", gap: 10, transition: "all .2s", cursor: "default" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = int.color}
-                onMouseLeave={e => e.currentTarget.style.borderColor = `${int.color}30`}>
+                onMouseEnter={e => e.currentTarget.style.borderColor=int.color}
+                onMouseLeave={e => e.currentTarget.style.borderColor=`${int.color}30`}>
                 <span style={{ fontSize: 22 }}>{int.icon}</span>
                 <span style={{ fontWeight: 700, color: int.color, fontSize: 14 }}>{int.nombre}</span>
               </div>
@@ -361,12 +290,10 @@ export default function Landing() {
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <div className="pill" style={{ marginBottom: 16 }}>TESTIMONIOS</div>
-            <h2 style={{ fontSize: 36, fontWeight: 900 }}>
-              Talleres que ya <span style={{ color: "#d4af37" }}>confian en EnKaje Pro</span>
-            </h2>
+            <h2 style={{ fontSize: 36, fontWeight: 900 }}>Talleres que ya <span style={{ color: "#d4af37" }}>confian en EnKaje Pro</span></h2>
           </div>
           <div className="grid-3">
-            {TESTIMONIOS.map((t, i) => (
+            {TESTIMONIOS.map((t,i) => (
               <div key={i} className="card">
                 <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
                   {[1,2,3,4,5].map(s => <span key={s} style={{ color: "#d4af37", fontSize: 16 }}>★</span>)}
@@ -391,18 +318,11 @@ export default function Landing() {
         <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 500, height: 500, background: "radial-gradient(circle, #d4af3710 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ maxWidth: 700, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <div className="pill" style={{ marginBottom: 20 }}>EMPIEZA HOY</div>
-          <h2 style={{ fontSize: 48, fontWeight: 900, lineHeight: 1.15, marginBottom: 20 }}>
-            Lleva tu taller al
-            <span style={{ color: "#d4af37", display: "block" }}>siguiente nivel</span>
-          </h2>
-          <p style={{ fontSize: 17, color: "#555", marginBottom: 40, lineHeight: 1.7 }}>
-            Unete a cientos de talleres que ya estan creciendo con EnKaje Pro. 14 dias gratis, sin tarjeta de credito, cancelas cuando quieras.
-          </p>
+          <h2 style={{ fontSize: 48, fontWeight: 900, lineHeight: 1.15, marginBottom: 20 }}>Lleva tu taller al<span style={{ color: "#d4af37", display: "block" }}>siguiente nivel</span></h2>
+          <p style={{ fontSize: 17, color: "#555", marginBottom: 40, lineHeight: 1.7 }}>Unete a cientos de talleres que ya estan creciendo con EnKaje Pro. 14 dias gratis, sin tarjeta de credito, cancelas cuando quieras.</p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", marginBottom: 32 }}>
             <button onClick={goToApp} className="btn-primary" style={{ fontSize: 16, padding: "16px 40px" }}>Comenzar ahora →</button>
-            <a href="https://wa.me/521234567890" target="_blank" rel="noreferrer" style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 12, padding: "16px 32px", fontWeight: 700, fontSize: 16, cursor: "pointer", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
-              💬 Hablar con un asesor
-            </a>
+            <a href="https://wa.me/521234567890" target="_blank" rel="noreferrer" style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 12, padding: "16px 32px", fontWeight: 700, fontSize: 16, cursor: "pointer", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>💬 Hablar con un asesor</a>
           </div>
           <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
             {["✓ 14 dias gratis","✓ Sin tarjeta de credito","✓ Cancelas cuando quieras","✓ Soporte 24/7"].map((t,i) => (
@@ -419,12 +339,13 @@ export default function Landing() {
             <LogoInline size="sm" />
             <div style={{ fontSize: 11, color: "#444", letterSpacing: 2, marginTop: 6 }}>MONTERREY, MEXICO</div>
           </div>
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {[["Privacidad","#"],["Terminos","#"],["Contacto","#"],["Iniciar sesion","/app"]].map(([l,h]) => (
-              <a key={l} href={h} style={{ fontSize: 13, color: "#555", textDecoration: "none", transition: "color .2s" }}
-                onMouseEnter={e => e.target.style.color="#d4af37"}
-                onMouseLeave={e => e.target.style.color="#555"}>{l}</a>
-            ))}
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
+            <button className="legal-link" onClick={() => goLegal("privacidad")}>Privacidad</button>
+            <button className="legal-link" onClick={() => goLegal("terminos")}>Terminos</button>
+            <button className="legal-link" onClick={() => goLegal("cookies")}>Cookies</button>
+            <a href="/app" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}
+              onMouseEnter={e => e.target.style.color="#d4af37"}
+              onMouseLeave={e => e.target.style.color="#555"}>Iniciar sesion</a>
           </div>
           <div style={{ fontSize: 12, color: "#333" }}>© 2025 EnKaje Pro. Todos los derechos reservados.</div>
         </div>
