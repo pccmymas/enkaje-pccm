@@ -218,14 +218,14 @@ const ESTILOS = [
 ];
 
 const ESTILOS_CLOSET = [
-  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/estilos/closet-moderno.webp" },
-  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/estilos/closet-minimalista.jpg" },
-  { key: "contemporaneo", label: "Contemporaneo", desc: "Puertas de vidrio, elegante",        img: "/estilos/closet-contemporaneo.webp" },
-  { key: "industrial",    label: "Industrial",    desc: "Metal y madera, urbano",             img: "/estilos/closet-industrial.jpg" },
-  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/estilos/closet-clasico.jpg" },
-  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/estilos/closet-rustico.jpg" },
-  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/estilos/closet-nordico.jpg" },
-  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/estilos/closet-lujo.jpg" },
+  { key: "moderno",       label: "Moderno",       desc: "Lineas limpias, colores neutros",    img: "/closet-moderno.webp" },
+  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",     img: "/closet-minimalista.jpg" },
+  { key: "contemporaneo", label: "Contemporaneo", desc: "Puertas de vidrio, elegante",        img: "/closet-contemporaneo.webp" },
+  { key: "industrial",    label: "Industrial",    desc: "Metal y madera, urbano",             img: "/closet-industrial.jpg" },
+  { key: "clasico",       label: "Clasico",       desc: "Molduras, detalles ornamentales",    img: "/closet-clasico.jpg" },
+  { key: "rustico",       label: "Rustico",       desc: "Madera natural, texturas organicas", img: "/closet-rustico.jpg" },
+  { key: "nordico",       label: "Nordico",       desc: "Blanco, madera clara, acogedor",     img: "/closet-nordico.jpg" },
+  { key: "lujo",          label: "Lujo / Premium",desc: "Materiales nobles, exclusividad",    img: "/closet-lujo.jpg" },
 ];
 
 const FORM_INIT = {
