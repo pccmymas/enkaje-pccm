@@ -381,6 +381,50 @@ const BTN = ({ onClick, children, color = "#d4af37", textColor = "#000", outline
   }}>{children}</button>
 );
 
+// ============ SHARE MENU — botón con popup de iconos ============
+const SHARE_OPTIONS = [
+  { key:"whatsapp",  label:"WhatsApp",  icon:"💬", color:"#25D366" },
+  { key:"facebook",  label:"Facebook",  icon:"📘", color:"#1877F2" },
+  { key:"messenger", label:"Messenger", icon:"💙", color:"#0084FF" },
+  { key:"email",     label:"Email",     icon:"📧", color:"#d4af37" },
+  { key:"instagram", label:"Instagram", icon:"📸", color:"#E1306C" },
+  { key:"tiktok",    label:"TikTok",    icon:"🎵", color:"#888"    },
+  { key:"copiar",    label:"Copiar",    icon:"📋", color:"#aaa"    },
+];
+
+function ShareMenu({ onShare, label = "Compartir" }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    setTimeout(() => document.addEventListener("click", close), 10);
+    return () => document.removeEventListener("click", close);
+  }, [open]);
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button
+        onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
+        style={{ background: "transparent", border: "1.5px solid #d4af37", color: "#d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+        ↑ {label}
+      </button>
+      {open && (
+        <div onClick={e => e.stopPropagation()} style={{ position: "absolute", bottom: "calc(100% + 8px)", left: 0, background: "#0f0f0a", border: "1px solid #2a2a20", borderRadius: 12, padding: 10, display: "flex", gap: 8, zIndex: 500, boxShadow: "0 8px 32px #00000080", whiteSpace: "nowrap" }}>
+          {SHARE_OPTIONS.map(({ key, label: lbl, icon, color }) => (
+            <button key={key}
+              onClick={() => { onShare(key); setOpen(false); }}
+              title={lbl}
+              style={{ background: `${color}20`, border: `1px solid ${color}40`, color, borderRadius: 8, width: 38, height: 38, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", flexShrink: 0 }}
+              onMouseEnter={e => { e.currentTarget.style.background = `${color}40`; e.currentTarget.style.transform = "scale(1.1)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = `${color}20`; e.currentTarget.style.transform = "scale(1)"; }}>
+              {icon}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ============ COMPARTIR — todos los canales ============
 function compartir(tipo, texto, titulo) {
   const msg = encodeURIComponent(`${titulo}\n\n${texto}`);
@@ -905,16 +949,6 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
     return `PRESUPUESTO - EnKaje Pro\n${tipoIcon} ${tipoLabel.toUpperCase()}\n${sep}\nCliente: ${form.nombre||"---"}\nTel: ${form.telefono||"---"}\nFecha: ${form.fecha||"---"}\n\nTOTAL: $${total.toLocaleString("es-MX")} MXN\n${sep}\nAnticipo ${form.anticipo}%: $${(total*parseFloat(form.anticipo||0)/100).toLocaleString("es-MX")} MXN\nAntes instalación ${form.pago_entrega}%: $${(total*parseFloat(form.pago_entrega||0)/100).toLocaleString("es-MX")} MXN\nContra entrega ${form.pago_final}%: $${(total*parseFloat(form.pago_final||0)/100).toLocaleString("es-MX")} MXN\n${sep}\nTiempo: ${form.tiempo_entrega}\nGarantía: ${form.garantia}\n\nMás información: enkajepro.com`;
   }
 
-  const SHARE_BTNS = [
-    { key:"whatsapp",  label:"WhatsApp",  icon:"💬", color:"#25D366", text:"#fff" },
-    { key:"facebook",  label:"Facebook",  icon:"📘", color:"#1877F2", text:"#fff" },
-    { key:"messenger", label:"Messenger", icon:"💙", color:"#0084FF", text:"#fff" },
-    { key:"email",     label:"Email",     icon:"📧", color:"#d4af37", text:"#000", outline:true },
-    { key:"instagram", label:"Instagram", icon:"📸", color:"#E1306C", text:"#fff" },
-    { key:"tiktok",    label:"TikTok",    icon:"🎵", color:"#555",    text:"#fff" },
-    { key:"copiar",    label:"Copiar",    icon:"📋", color:"#555",    text:"#fff", outline:true },
-  ];
-
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
@@ -939,24 +973,10 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
             }}>📄 Generar Contrato</button>
           )}
         </div>
-        <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:14, padding:"14px 16px" }}>
-          <div style={{ fontSize:10, color:"#444", letterSpacing:2, textTransform:"uppercase", marginBottom:10 }}>Compartir presupuesto</div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-            {SHARE_BTNS.map(({ key, label, icon, color, text, outline }) => (
-              <button key={key}
-                onClick={() => compartir(key, textoPresupuesto(), `Presupuesto ${tipoLabel} - EnKaje Pro`)}
-                style={{
-                  background: outline ? "transparent" : color, color: outline ? color : text,
-                  border:`1.5px solid ${color}`, borderRadius:10, padding:"9px 14px",
-                  fontWeight:700, fontSize:12, cursor:"pointer",
-                  display:"flex", alignItems:"center", gap:6, whiteSpace:"nowrap"
-                }}>
-                <span style={{ fontSize:14 }}>{icon}</span>
-                {!isMobile && label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <ShareMenu
+          onShare={key => compartir(key, textoPresupuesto(), `Presupuesto ${tipoLabel} - EnKaje Pro`)}
+          label="Compartir presupuesto"
+        />
       </div>
 
       <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr":"1fr 1fr", gap:20 }}>
@@ -1982,22 +2002,10 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                 <BTN onClick={guardarFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, padding:"13px 20px", fontSize:14, letterSpacing:.5 }}>💾 Guardar Levantamiento</BTN>
                 <button onClick={imprimirFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"13px 20px", fontWeight:900, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>🖨️ Imprimir / PDF Formulario</button>
               </div>
-              <div style={{ fontSize: 10, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>Compartir levantamiento</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {[
-                  {k:"whatsapp",  l:"WhatsApp",  i:"💬", c:"#25D366", t:"#fff"},
-                  {k:"facebook",  l:"Facebook",  i:"📘", c:"#1877F2", t:"#fff"},
-                  {k:"messenger", l:"Messenger", i:"💙", c:"#0084FF", t:"#fff"},
-                  {k:"email",     l:"Email",     i:"📧", c:"#d4af37", t:"#000", o:true},
-                  {k:"instagram", l:"Instagram", i:"📸", c:"#E1306C", t:"#fff"},
-                  {k:"tiktok",    l:"TikTok",    i:"🎵", c:"#555",    t:"#fff"},
-                  {k:"copiar",    l:"Copiar",    i:"📋", c:"#555",    t:"#fff", o:true},
-                ].map(({k,l,i,c,t,o})=>(
-                  <button key={k} onClick={()=>compartirFormulario(k)} style={{ background:o?"transparent":c, color:o?c:t, border:`1.5px solid ${c}`, borderRadius:10, padding:"9px 14px", fontWeight:700, fontSize:12, cursor:"pointer", display:"flex", alignItems:"center", gap:6, whiteSpace:"nowrap" }}>
-                    <span style={{fontSize:14}}>{i}</span>{!isMobile&&l}
-                  </button>
-                ))}
-              </div>
+              <ShareMenu
+                onShare={key => compartirFormulario(key)}
+                label="Compartir levantamiento"
+              />
             </div>
             <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
