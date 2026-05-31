@@ -2280,12 +2280,13 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                               <INPUT label="Zona / Colonia" value={editInfo?.zona||""} onChange={e=>setEditInfo(p=>({...p,zona:e.target.value}))} placeholder="San Pedro, Valle..." />
                               <INPUT label="Municipio" value={editInfo?.municipio||""} onChange={e=>setEditInfo(p=>({...p,municipio:e.target.value}))} placeholder="San Pedro Garza Garcia" />
                               <INPUT label="Slug (URL)" value={editInfo?.slug||""} onChange={e=>setEditInfo(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
+                              <INPUT label="URL del logo (imagen)" value={editInfo?.logo_url||""} onChange={e=>setEditInfo(p=>({...p,logo_url:e.target.value}))} placeholder="/logo-sonorense.jpg" />
                               <INPUT label="Fecha vencimiento" value={editInfo?.fecha_vencimiento||""} onChange={e=>setEditInfo(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
                             </div>
                             <TEXTAREA label="Notas internas" value={editInfo?.notas||""} onChange={e=>setEditInfo(p=>({...p,notas:e.target.value}))} placeholder="Notas sobre el taller..." rows={2} />
                             <button onClick={async e => {
                               e.stopPropagation();
-                              await actualizarTaller(editInfo.id, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas });
+                              await actualizarTaller(editInfo.id, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas, logo_url: editInfo.logo_url });
                               setEditInfo(null);
                               setTallerMsg("✅ Información actualizada");
                               setTimeout(()=>setTallerMsg(""), 3000);
