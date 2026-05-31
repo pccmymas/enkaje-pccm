@@ -1396,7 +1396,7 @@ export default function App() {
 
   useEffect(() => {
     if (screen === "app" && (tab === "bienvenida" || tab === "proyectos" || tab === "leads")) cargarProyectos();
-    if (screen === "app" && tab === "membresias") cargarTalleres();
+    if (screen === "app" && (tab === "membresias" || (tab === "bienvenida" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
   function compartirFormulario(canal) {
@@ -1961,6 +1961,9 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {role==="admin" && <><BTN onClick={() => setTab("formulario")}>Nuevo Levantamiento</BTN><BTN onClick={() => setTab("proyectos")} outline color="#d4af37">Ver Proyectos ({proyectos.length})</BTN></>}
                 {role==="taller" && <BTN onClick={() => setTab("leads")}>Ver Proyectos ({proyectos.length})</BTN>}
+                {role==="taller" && talleresMem.find(t=>t.email===user?.email)?.slug && (
+                  <BTN onClick={() => window.open(`https://enkajepro.com/taller/${talleresMem.find(t=>t.email===user?.email).slug}`, "_blank")} outline color="#d4af37">🔗 Ver mi link público</BTN>
+                )}
                 {role==="cliente" && <><BTN onClick={() => setTab("formulario")}>Iniciar mi Proyecto</BTN><BTN onClick={() => setTab("estilos")} outline color="#d4af37">Ver Estilos</BTN></>}
               </div>
             </div>
@@ -2257,9 +2260,19 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                   {sel && (
                     <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #ffffff08" }}>
                       <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr 1fr":"repeat(3,1fr)", gap: 10, marginBottom: 16, fontSize: 12, color: "#aaa" }}>
-                        {[["Email",t.email],["Tel",t.telefono],["Especialidad",t.especialidad],["Zona",t.zona],["Municipio",t.municipio],["Vencimiento",t.fecha_vencimiento],["Leads",t.leads_recibidos],["Cierres",t.proyectos_cerrados],["Visitas",t.visitas],["Slug",t.slug?`/taller/${t.slug}`:null]].filter(([,v])=>v!=null&&v!=="").map(([l,v],j) => (
+                        {[["Email",t.email],["Tel",t.telefono],["Especialidad",t.especialidad],["Zona",t.zona],["Municipio",t.municipio],["Vencimiento",t.fecha_vencimiento],["Leads",t.leads_recibidos],["Cierres",t.proyectos_cerrados],["Visitas",t.visitas]].filter(([,v])=>v!=null&&v!=="").map(([l,v],j) => (
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
+                        {t.slug && (
+                          <div style={{ gridColumn: "1/-1", marginTop: 4 }}>
+                            <b style={{color:"#d4af37"}}>Link público:</b>{" "}
+                            <a href={`https://enkajepro.com/taller/${t.slug}`} target="_blank" rel="noreferrer"
+                              onClick={e => e.stopPropagation()}
+                              style={{ color: "#d4af37", fontSize: 12, textDecoration: "underline", wordBreak: "break-all" }}>
+                              enkajepro.com/taller/{t.slug}
+                            </a>
+                          </div>
+                        )}
                       </div>
                       {t.notas && <div style={{ fontSize: 12, color: "#bbb", marginBottom: 14, background: "#0a0a0a", borderRadius: 8, padding: 10 }}>📝 {t.notas}</div>}
 
