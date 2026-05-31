@@ -1382,15 +1382,59 @@ export default function App() {
   async function guardarNuevoTaller() {
     setTallerMsg("Guardando...");
     try {
+      // Generar contraseña temporal
+      const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+      const pass = Array.from({length: 10}, () => chars[Math.floor(Math.random()*chars.length)]).join("") + "!";
+      
       await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0, created_at: new Date().toISOString() }) });
-      setTallerMsg("Taller agregado");
-      const planLabel = nuevoTaller.plan === "premium" ? "Premium $2,999/mes" : nuevoTaller.plan === "pro" ? "Pro $1,499/mes" : "Basico $699/mes";
-      const emailBody = `Bienvenido a EnKaje Pro, ${nuevoTaller.nombre}.\n\nTu cuenta ha sido activada con el Plan ${planLabel}.\n\nAccede en: https://enkajepro.com\nCorreo de acceso: ${nuevoTaller.email}\n\nFelipe Santiago\nEnKaje Pro`;
-      window.open(`mailto:${nuevoTaller.email}?subject=Bienvenido a EnKaje Pro - Tu cuenta esta activa&body=${encodeURIComponent(emailBody)}`, "_blank");
-      setNuevoTaller({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "" });
+      setTallerMsg("✅ Taller agregado");
+      
+      const planLabel = nuevoTaller.plan === "premium" ? "Premium $2,999/mes" : nuevoTaller.plan === "pro" ? "Pro $1,499/mes" : "Básico $699/mes";
+      
+      // Email con credenciales e instrucciones para crear cuenta en Supabase
+      const emailBody = [
+        `Bienvenido a EnKaje Pro, ${nuevoTaller.nombre}!`,
+        ``,
+        `Tu cuenta ha sido activada con el Plan ${planLabel}.`,
+        ``,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        `TUS CREDENCIALES DE ACCESO`,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        `🌐 Plataforma: https://enkajepro.com/app`,
+        `📧 Correo: ${nuevoTaller.email}`,
+        `🔑 Contraseña temporal: ${pass}`,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        ``,
+        `PASOS PARA ENTRAR:`,
+        `1. Ve a enkajepro.com/app`,
+        `2. Click en "Crear cuenta"`,
+        `3. Registrate con este correo y la contraseña temporal`,
+        `4. Una vez dentro puedes cambiar tu contraseña`,
+        ``,
+        `⚠️ IMPORTANTE: Guarda esta contraseña, es de un solo uso.`,
+        ``,
+        `Tu link personal:`,
+        `🔗 enkajepro.com/taller/${nuevoTaller.slug || "tu-slug"}`,
+        ``,
+        `Compártelo en tus redes para recibir leads directo a tu WhatsApp.`,
+        ``,
+        `Cualquier duda escríbenos a hola@enkajepro.com`,
+        ``,
+        `Felipe Santiago`,
+        `EnKaje Pro · Monterrey, México`,
+      ].join("\n");
+      
+      window.open(`mailto:${nuevoTaller.email}?subject=Bienvenido a EnKaje Pro - Tus credenciales de acceso&body=${encodeURIComponent(emailBody)}`, "_blank");
+      
+      // Mostrar contraseña generada al admin para que la tenga de respaldo
+      setTimeout(() => {
+        setTallerMsg(`✅ Guardado · Contraseña generada: ${pass}`);
+      }, 500);
+      
+      setNuevoTaller({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "", slug: "" });
       setShowNuevoTaller(false);
       cargarTalleres();
-      setTimeout(() => setTallerMsg(""), 3000);
+      setTimeout(() => setTallerMsg(""), 10000);
     } catch { setTallerMsg("Error al guardar"); }
   }
 
