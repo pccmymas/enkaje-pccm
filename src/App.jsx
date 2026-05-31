@@ -2272,16 +2272,16 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                         {editInfo?.enkaje === t.enkaje ? (
                           <div>
                             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 10 }}>
-                              <INPUT label="Nombre del taller" value={editInfo.nombre||""} onChange={e=>setEditInfo(p=>({...p,nombre:e.target.value}))} placeholder="Nombre del taller" />
-                              <INPUT label="Email" value={editInfo.email||""} onChange={e=>setEditInfo(p=>({...p,email:e.target.value}))} placeholder="email@taller.com" />
-                              <INPUT label="Teléfono" value={editInfo.telefono||""} onChange={e=>setEditInfo(p=>({...p,telefono:e.target.value}))} placeholder="81-1234-5678" />
-                              <INPUT label="Especialidad" value={editInfo.especialidad||""} onChange={e=>setEditInfo(p=>({...p,especialidad:e.target.value}))} placeholder="Cocinas, Closets..." />
-                              <INPUT label="Zona / Colonia" value={editInfo.zona||""} onChange={e=>setEditInfo(p=>({...p,zona:e.target.value}))} placeholder="San Pedro, Valle..." />
-                              <INPUT label="Municipio" value={editInfo.municipio||""} onChange={e=>setEditInfo(p=>({...p,municipio:e.target.value}))} placeholder="San Pedro Garza Garcia" />
-                              <INPUT label="Slug (URL)" value={editInfo.slug||""} onChange={e=>setEditInfo(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
-                              <INPUT label="Fecha vencimiento" value={editInfo.fecha_vencimiento||""} onChange={e=>setEditInfo(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
+                              <INPUT label="Nombre del taller" value={editInfo?.nombre||""} onChange={e=>setEditInfo(p=>({...p,nombre:e.target.value}))} placeholder="Nombre del taller" />
+                              <INPUT label="Email" value={editInfo?.email||""} onChange={e=>setEditInfo(p=>({...p,email:e.target.value}))} placeholder="email@taller.com" />
+                              <INPUT label="Teléfono" value={editInfo?.telefono||""} onChange={e=>setEditInfo(p=>({...p,telefono:e.target.value}))} placeholder="81-1234-5678" />
+                              <INPUT label="Especialidad" value={editInfo?.especialidad||""} onChange={e=>setEditInfo(p=>({...p,especialidad:e.target.value}))} placeholder="Cocinas, Closets..." />
+                              <INPUT label="Zona / Colonia" value={editInfo?.zona||""} onChange={e=>setEditInfo(p=>({...p,zona:e.target.value}))} placeholder="San Pedro, Valle..." />
+                              <INPUT label="Municipio" value={editInfo?.municipio||""} onChange={e=>setEditInfo(p=>({...p,municipio:e.target.value}))} placeholder="San Pedro Garza Garcia" />
+                              <INPUT label="Slug (URL)" value={editInfo?.slug||""} onChange={e=>setEditInfo(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
+                              <INPUT label="Fecha vencimiento" value={editInfo?.fecha_vencimiento||""} onChange={e=>setEditInfo(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
                             </div>
-                            <TEXTAREA label="Notas internas" value={editInfo.notas||""} onChange={e=>setEditInfo(p=>({...p,notas:e.target.value}))} placeholder="Notas sobre el taller..." rows={2} />
+                            <TEXTAREA label="Notas internas" value={editInfo?.notas||""} onChange={e=>setEditInfo(p=>({...p,notas:e.target.value}))} placeholder="Notas sobre el taller..." rows={2} />
                             <button onClick={async e => {
                               e.stopPropagation();
                               await actualizarTaller(editInfo.enkaje, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas });
