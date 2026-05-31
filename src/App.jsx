@@ -389,7 +389,7 @@ const SHARE_OPTIONS = [
   { key:"messenger", label:"Messenger", fa:"fa-brands fa-facebook-messenger", color:"#0084FF" },
   { key:"email",     label:"Email",     fa:"fa-solid fa-envelope",   color:"#d4af37" },
   { key:"instagram", label:"Instagram", fa:"fa-brands fa-instagram", color:"#E1306C" },
-  { key:"tiktok",    label:"TikTok",    fa:"fa-brands fa-tiktok",    color:"#fff"    },
+  { key:"tiktok",    label:"TikTok",    fa:"fa-brands fa-tiktok",    color:"#ee1d52"  },
   { key:"copiar",    label:"Copiar",    fa:"fa-solid fa-copy",       color:"#aaa"    },
 ];
 
