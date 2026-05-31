@@ -2241,7 +2241,9 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                   style={{ background: "#0f0f0a", border: `1px solid ${sel?planColor:"#ffffff08"}`, borderRadius: 12, padding: 16, marginBottom: 10, cursor: "pointer" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                     <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${planColor}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🏭</div>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${planColor}20`, border: `1px solid ${planColor}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, overflow: "hidden" }}>
+                      {t.logo_url ? <img src={t.logo_url} alt={t.nombre} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} onError={e=>{e.target.style.display="none";}} /> : "🏭"}
+                    </div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 15 }}>{t.nombre}</div>
                         <div style={{ fontSize: 12, color: "#aaa" }}>{t.especialidad} · {t.municipio||t.zona}</div>
