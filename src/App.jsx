@@ -1194,6 +1194,7 @@ export default function App() {
   const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "", slug: "" });
   const [tallerMsg, setTallerMsg] = useState("");
   const [editTaller, setEditTaller] = useState(null); // datos legales del taller en edición
+  const [editInfo, setEditInfo] = useState(null);   // info básica del taller en edición
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
@@ -2259,8 +2260,49 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
                       </div>
                       {t.notas && <div style={{ fontSize: 12, color: "#bbb", marginBottom: 14, background: "#0a0a0a", borderRadius: 8, padding: 10 }}>📝 {t.notas}</div>}
 
+                      {/* EDITAR INFO BÁSICA */}
+                      <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📋 Información del Taller</div>
+                          <button onClick={e => { e.stopPropagation(); setEditInfo(editInfo?.enkaje===t.enkaje ? null : {...t}); }}
+                            style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
+                            {editInfo?.enkaje===t.enkaje ? "Cancelar" : "✏️ Editar"}
+                          </button>
+                        </div>
+                        {editInfo?.enkaje === t.enkaje ? (
+                          <div>
+                            <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 10, marginBottom: 10 }}>
+                              <INPUT label="Nombre del taller" value={editInfo.nombre||""} onChange={e=>setEditInfo(p=>({...p,nombre:e.target.value}))} placeholder="Nombre del taller" />
+                              <INPUT label="Email" value={editInfo.email||""} onChange={e=>setEditInfo(p=>({...p,email:e.target.value}))} placeholder="email@taller.com" />
+                              <INPUT label="Teléfono" value={editInfo.telefono||""} onChange={e=>setEditInfo(p=>({...p,telefono:e.target.value}))} placeholder="81-1234-5678" />
+                              <INPUT label="Especialidad" value={editInfo.especialidad||""} onChange={e=>setEditInfo(p=>({...p,especialidad:e.target.value}))} placeholder="Cocinas, Closets..." />
+                              <INPUT label="Zona / Colonia" value={editInfo.zona||""} onChange={e=>setEditInfo(p=>({...p,zona:e.target.value}))} placeholder="San Pedro, Valle..." />
+                              <INPUT label="Municipio" value={editInfo.municipio||""} onChange={e=>setEditInfo(p=>({...p,municipio:e.target.value}))} placeholder="San Pedro Garza Garcia" />
+                              <INPUT label="Slug (URL)" value={editInfo.slug||""} onChange={e=>setEditInfo(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
+                              <INPUT label="Fecha vencimiento" value={editInfo.fecha_vencimiento||""} onChange={e=>setEditInfo(p=>({...p,fecha_vencimiento:e.target.value}))} type="date" />
+                            </div>
+                            <TEXTAREA label="Notas internas" value={editInfo.notas||""} onChange={e=>setEditInfo(p=>({...p,notas:e.target.value}))} placeholder="Notas sobre el taller..." rows={2} />
+                            <button onClick={async e => {
+                              e.stopPropagation();
+                              await actualizarTaller(editInfo.enkaje, { nombre: editInfo.nombre, email: editInfo.email, telefono: editInfo.telefono, especialidad: editInfo.especialidad, zona: editInfo.zona, municipio: editInfo.municipio, slug: editInfo.slug, fecha_vencimiento: editInfo.fecha_vencimiento, notas: editInfo.notas });
+                              setEditInfo(null);
+                              setTallerMsg("✅ Información actualizada");
+                              setTimeout(()=>setTallerMsg(""), 3000);
+                            }} style={{ background: "#d4af37", border: "none", color: "#000", borderRadius: 8, padding: "9px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer", marginTop: 4 }}>
+                              Guardar información
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa" }}>
+                            {[["Email",t.email],["Tel",t.telefono],["Especialidad",t.especialidad],["Zona",t.zona],["Municipio",t.municipio],["Slug",t.slug]].filter(([,v])=>v).map(([l,v],j) => (
+                              <div key={j}><b style={{color:"#666"}}>{l}:</b> {v}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
                       {/* DATOS LEGALES */}
-                      <div style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
+                      <div onClick={e => e.stopPropagation()} style={{ background: "#0a0a08", border: "1px solid #1a1a12", borderRadius: 10, padding: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                           <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>📄 Datos para Contratos</div>
                           <button onClick={e => { e.stopPropagation(); setEditTaller(editTaller?.enkaje===t.enkaje ? null : {...t}); }}
