@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import Landing from './Landing.jsx'
+import PerfilTaller from './PerfilTaller.jsx'
 
-const isApp = window.location.pathname.startsWith('/app');
+const path = window.location.pathname;
+const isApp    = path.startsWith('/app');
+const isTaller = path.startsWith('/taller/');
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {isApp ? <App /> : <Landing />}
+    {isApp ? <App /> : isTaller ? <PerfilTaller /> : <Landing />}
   </StrictMode>,
 )
