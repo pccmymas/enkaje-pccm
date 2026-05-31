@@ -203,7 +203,7 @@ export default function PerfilTaller() {
         {/* CTA */}
         {!formStep && !sent && (
           <div style={{ background: "linear-gradient(135deg,#1a1208,#0f0f0a)", border: `1px solid ${GOLD}40`, borderRadius: 20, padding: 32, textAlign: "center" }}>
-            <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>¿Listo para tu proyecto?</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, color: "#e8e0d0" }}>¿Listo para tu proyecto?</h2>
             <p style={{ color: "#ccc", fontSize: 14, marginBottom: 24 }}>Solicita tu cotización gratis. Sin compromiso.</p>
             <button className="btn-primary" style={{ fontSize: 16, padding: "14px 40px" }} onClick={() => setFormStep(true)}>
               Solicitar cotización gratis →
