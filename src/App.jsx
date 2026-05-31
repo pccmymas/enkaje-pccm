@@ -958,7 +958,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
 // ============ MAIN APP ============
 export default function App() {
   const isMobile = useIsMobile();
-  const [screen, setScreen] = useState("login");
+  const [screen, setScreen] = useState("welcome");
   const [role, setRole] = useState(null);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
