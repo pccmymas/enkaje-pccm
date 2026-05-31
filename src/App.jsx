@@ -1378,7 +1378,8 @@ export default function App() {
   }
 
   async function actualizarTaller(id, cambios) {
-    await sb(`talleres_membresia?enkaje=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
+    const res = await sb(`talleres_membresia?enkaje=eq.${id}`, { method: "PATCH", token, body: JSON.stringify(cambios) });
+    console.log("PATCH result:", JSON.stringify(res), "id:", id, "cambios:", JSON.stringify(cambios));
     cargarTalleres();
   }
 
