@@ -893,7 +893,7 @@ enkajepro.com`;
       <div style={{ width: "100%", maxWidth: 420 }} className="fade-up">
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <button onClick={() => setScreen("welcome")} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, marginBottom: 16, padding: "8px 0" }}>← Volver</button>
-          <div style={{ fontSize: 28, fontWeight: 900, color: "#d4af37", letterSpacing: 4 }}>EnKaje Pro</div>
+         <LogoInline size="md" /> 
           <div style={{ fontSize: 10, color: "#444", letterSpacing: 3 }}>PLATAFORMA DE CARPINTERIA</div>
         </div>
         <div style={{ background: "#0f0f0a", border: "1px solid #d4af3725", borderRadius: 20, padding: isMobile ? 20 : 28 }}>
