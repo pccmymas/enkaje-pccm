@@ -93,6 +93,13 @@ export default function PerfilTaller() {
           body: JSON.stringify({ leads_recibidos: (taller.leads_recibidos || 0) + 1 })
         }
       );
+      // WhatsApp automático al taller
+      const telTaller = (taller.telefono || "").replace(/\D/g, "");
+      if (telTaller) {
+        const sep = "━".repeat(22);
+        const msg = `🔔 *NUEVA SOLICITUD*\n${sep}\n👤 *Cliente:* ${form.nombre}\n📱 *Tel:* ${form.telefono}\n${form.correo?`📧 *Correo:* ${form.correo}\n`:""}${form.proyecto?`🔨 *Proyecto:* ${form.proyecto}\n`:""}${form.mensaje?`💬 *Mensaje:* ${form.mensaje}\n`:""}${sep}\nCanal: ${ref} · enkajepro.com`;
+        window.open(`https://wa.me/52${telTaller}?text=${encodeURIComponent(msg)}`, "_blank");
+      }
       setSent(true);
     } catch(e) { alert("Error al enviar: " + e.message); }
     setSending(false);
@@ -158,7 +165,7 @@ export default function PerfilTaller() {
               {taller.zona && <span style={{ marginLeft: 16 }}>🗺️ {taller.zona}</span>}
             </div>
             {ref !== "directo" && (
-              <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: "#999", marginTop: 4 }}>
                 Llegaste desde {ref}
               </div>
             )}
@@ -186,10 +193,10 @@ export default function PerfilTaller() {
         <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 24, marginBottom: 20 }}>
           <h3 style={{ fontSize: 13, color: GOLD, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>📍 Zona de Servicio</h3>
           <div style={{ display: "grid", gridTemplate: "grid-2", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {taller.municipio && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>MUNICIPIO</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.municipio}</div></div>}
-            {taller.zona && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>ZONA / COLONIA</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.zona}</div></div>}
-            {taller.garantia_default && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>GARANTÍA</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.garantia_default}</div></div>}
-            <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>PLAN</div><div style={{ fontSize: 14, color: planColor, fontWeight: 700 }}>{planLabel}</div></div>
+            {taller.municipio && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>MUNICIPIO</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.municipio}</div></div>}
+            {taller.zona && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>ZONA / COLONIA</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.zona}</div></div>}
+            {taller.garantia_default && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>GARANTÍA</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.garantia_default}</div></div>}
+            <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>PLAN</div><div style={{ fontSize: 14, color: planColor, fontWeight: 700 }}>{planLabel}</div></div>
           </div>
         </div>
 
@@ -197,7 +204,7 @@ export default function PerfilTaller() {
         {!formStep && !sent && (
           <div style={{ background: "linear-gradient(135deg,#1a1208,#0f0f0a)", border: `1px solid ${GOLD}40`, borderRadius: 20, padding: 32, textAlign: "center" }}>
             <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>¿Listo para tu proyecto?</h2>
-            <p style={{ color: "#aaa", fontSize: 14, marginBottom: 24 }}>Solicita tu cotización gratis. Sin compromiso.</p>
+            <p style={{ color: "#ccc", fontSize: 14, marginBottom: 24 }}>Solicita tu cotización gratis. Sin compromiso.</p>
             <button className="btn-primary" style={{ fontSize: 16, padding: "14px 40px" }} onClick={() => setFormStep(true)}>
               Solicitar cotización gratis →
             </button>
@@ -246,7 +253,7 @@ export default function PerfilTaller() {
 
       {/* FOOTER */}
       <footer style={{ borderTop: "1px solid #1a1a12", padding: "20px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 12, color: "#444" }}>
+        <div style={{ fontSize: 12, color: "#888" }}>
           Powered by <span style={{ color: GOLD, fontWeight: 700 }}>EnKaje Pro</span> · enkajepro.com
         </div>
       </footer>
