@@ -1941,7 +1941,8 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
         setMaterialesMsg(`✅ ${lista.length} materiales · Total: $${totalMat.toLocaleString("es-MX")} MXN → aplicado a Fabricación`);
       }
     } catch(e) {
-      setMaterialesMsg("❌ Error al generar. Configura ANTHROPIC_API_KEY en Vercel.");
+      console.error("IA Error:", e);
+      setMaterialesMsg("❌ Error: " + e.message);
     }
     setMaterialesLoading(false);
   }
