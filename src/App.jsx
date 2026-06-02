@@ -829,127 +829,6 @@ function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMaterial
     return f;
   }
 
-  function imprimirHojaProfesional() {
-    const tallerDataPresup = tallerSel;
-    const detalles = getDetallesProyecto();
-    const folio = `EP-${Date.now().toString().slice(-6)}`;
-    const w = window.open("", "_blank");
-    const incluyeItems = (form.incluye || "Diseño\nFabricación\nTransporte\nInstalación\nAjustes\nLimpieza final").split("\n").filter(Boolean).map(i => `<li>${i}</li>`).join("");
-    const noIncluyeItems = (form.no_incluye || "Plomería\nElectricidad\nAlbañilería\nElectrodomésticos\nCambios post-aprobación").split("\n").filter(Boolean).map(i => `<li>${i}</li>`).join("");
-    const preciosRows = [["Fabricación",form.precio_fabricacion],["Instalación",form.precio_instalacion],["Acabados / Cubierta",form.precio_cubierta],["Herrajes",form.precio_herrajes],["Otros",form.precio_otros]]
-      .filter(([,v])=>v&&parseFloat(v)>0)
-      .map(([l,v])=>`<tr><td>${l}</td><td>$${parseFloat(v).toLocaleString("es-MX")} MXN</td></tr>`).join("");
-    const detallesHTML = detalles.map(([l,v])=>`<div class="di"><span class="dl">${l}</span><span class="dv">${v}</span></div>`).join("");
-
-    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-<title>Presupuesto EnKaje Pro - ${tipoLabel}</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;line-height:1.6}
-.page{max-width:800px;margin:0 auto;padding:48px}
-.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:24px;border-bottom:3px solid #d4af37;margin-bottom:28px}
-.logo{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:#d4af37;letter-spacing:3px}
-.logo-s{font-size:9px;color:#999;letter-spacing:5px;text-transform:uppercase;margin-top:5px}
-.di-r{text-align:right}.dt{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#8B6914;text-transform:uppercase;letter-spacing:2px}
-.dn{font-size:11px;color:#999;margin-top:3px}.df{font-size:12px;color:#555;margin-top:3px}
-.banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid #d4af37;border-radius:0 12px 12px 0;padding:18px 24px;margin-bottom:24px}
-.bt{font-size:10px;color:#d4af3799;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
-.bn{font-family:'Playfair Display',serif;font-size:22px;color:#d4af37;font-weight:700}
-.bs{font-size:12px;color:#9a8060;margin-top:4px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-.card{border:1px solid #e8e0d0;border-radius:10px;overflow:hidden;margin-bottom:20px}
-.ch{background:#f8f4ed;border-bottom:1px solid #e8e0d0;padding:10px 16px;font-size:10px;font-weight:700;color:#8B6914;letter-spacing:3px;text-transform:uppercase}
-.cb{padding:14px 16px}
-.ir{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ece4;font-size:12px}
-.ir:last-child{border-bottom:none}.il{color:#999;font-weight:500;min-width:100px}.iv{color:#1a1a1a;font-weight:600;text-align:right}
-.dg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.di{display:flex;flex-direction:column;padding:6px 0;border-bottom:1px solid #f0ece4;font-size:11.5px}
-.dl{color:#999;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
-.dv{color:#1a1a1a;font-weight:500}
-table{width:100%;border-collapse:collapse}
-table td{padding:9px 14px;font-size:13px;border-bottom:1px solid #f0ece4}
-table td:last-child{text-align:right;font-weight:600;color:#2a1f08}
-table td:first-child{color:#555}
-.tr{background:#1a1208!important}
-.tr td{color:#d4af37!important;font-size:16px!important;font-weight:900!important;padding:14px!important;border-bottom:none!important}
-.pg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.pi{background:#f8f4ed;border-radius:8px;padding:12px;text-align:center}
-.pp{font-size:22px;font-weight:900;color:#8B6914;line-height:1}
-.pl{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.pm{font-size:12px;font-weight:700;color:#1a1a1a;margin-top:4px}
-ul{list-style:none;padding:0}
-ul li{padding:4px 0;font-size:12px;color:#444;display:flex;gap:6px}
-ul li::before{content:"✓";color:#4caf50;font-weight:900;font-size:11px;margin-top:1px;flex-shrink:0}
-.no li::before{content:"✕";color:#f44336}
-.nota{background:#fff8f0;border:1px solid #f0c070;border-radius:8px;padding:12px 16px;font-size:11px;color:#7a5a20;line-height:1.7;margin-bottom:20px}
-.nota b{color:#8B6914}
-.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:48px;padding-top:24px;border-top:1px solid #e8e0d0}
-.fi{text-align:center}.fl{height:1px;background:#333;margin-bottom:8px}
-.fn{font-size:13px;font-weight:700;color:#1a1a1a}.fc{font-size:10px;color:#999;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
-.ftr{margin-top:28px;padding-top:16px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between;align-items:center}
-.flogo{font-family:'Playfair Display',serif;font-size:14px;color:#d4af37;font-weight:700;letter-spacing:2px}
-.finfo{font-size:10px;color:#bbb;text-align:right;line-height:1.6}
-@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:32px}}
-</style></head><body><div class="page">
-<div class="hdr">
-  <div>${tallerDataPresup?.logo_url && tallerDataPresup?.plan !== 'basico' ? `<img src="${window.location.origin}${tallerDataPresup.logo_url}" style="height:60px;width:60px;object-fit:cover;border-radius:50%;margin-bottom:4px" alt="logo" onerror="this.style.display='none'"/>` : ''}<div class="logo">${tallerDataPresup?.plan !== 'basico' && tallerDataPresup?.nombre ? tallerDataPresup.nombre : 'EnKaje Pro'}</div><div class="logo-s">${tallerDataPresup?.plan !== 'basico' && tallerDataPresup?.nombre ? 'Carpintería · Ebanistería' : 'Intermediación · Carpintería · Monterrey'}</div></div>
-  <div class="di-r"><div class="dt">Presupuesto Profesional</div><div class="dn">Folio: ${folio}</div><div class="df">Fecha: ${form.fecha || new Date().toLocaleDateString("es-MX")}</div><div class="df">Atención: ${form.atencion_por || "Felipe Santiago"}</div></div>
-</div>
-<div class="banner">
-  <div class="bt">${tipoIcon} Tipo de proyecto</div>
-  <div class="bn">${tipoLabel.toUpperCase()}</div>
-  <div class="bs">${Array.isArray(form.estilo) && form.estilo.length ? "Estilo: " + form.estilo.join(" · ") : "Estilo por definir"}</div>
-</div>
-<div class="g2">
-  <div class="card" style="margin-bottom:0">
-    <div class="ch">👤 Datos del Cliente</div>
-    <div class="cb">
-      <div class="ir"><span class="il">Nombre</span><span class="iv">${form.nombre||"---"}</span></div>
-      <div class="ir"><span class="il">Teléfono</span><span class="iv">${form.telefono||"---"}</span></div>
-      <div class="ir"><span class="il">Correo</span><span class="iv">${form.correo||"---"}</span></div>
-      <div class="ir"><span class="il">Dirección</span><span class="iv">${form.direccion||"---"}</span></div>
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:0">
-    <div class="ch">⏱️ Tiempo y Garantía</div>
-    <div class="cb">
-      <div class="ir"><span class="il">Entrega</span><span class="iv">${form.tiempo_entrega||"---"}</span></div>
-      <div class="ir"><span class="il">Garantía</span><span class="iv">${form.garantia||"---"}</span></div>
-    </div>
-  </div>
-</div>
-${detalles.length > 0 ? `<div class="card"><div class="ch">📋 Especificaciones del Proyecto</div><div class="cb"><div class="dg">${detallesHTML}</div></div></div>` : ""}
-<div class="g2">
-  <div class="card" style="margin-bottom:0"><div class="ch">✅ Incluye</div><div class="cb"><ul>${incluyeItems}</ul></div></div>
-  <div class="card" style="margin-bottom:0"><div class="ch">❌ No Incluye</div><div class="cb"><ul class="no">${noIncluyeItems}</ul></div></div>
-</div>
-<div class="card" style="margin-top:20px">
-  <div class="ch">💰 Desglose de Precios</div>
-  <div class="cb" style="padding:0"><table>${preciosRows}<tr class="tr"><td>TOTAL DEL PROYECTO</td><td>$${total.toLocaleString("es-MX")} MXN</td></tr></table></div>
-</div>
-<div class="card">
-  <div class="ch">💳 Forma de Pago</div>
-  <div class="cb"><div class="pg">
-    <div class="pi"><div class="pp">${form.anticipo||60}%</div><div class="pl">Anticipo inicial</div><div class="pm">$${(total*parseFloat(form.anticipo||60)/100).toLocaleString("es-MX")} MXN</div></div>
-    <div class="pi"><div class="pp">${form.pago_entrega||30}%</div><div class="pl">Antes instalación</div><div class="pm">$${(total*parseFloat(form.pago_entrega||30)/100).toLocaleString("es-MX")} MXN</div></div>
-    <div class="pi"><div class="pp">${form.pago_final||10}%</div><div class="pl">Contra entrega</div><div class="pm">$${(total*parseFloat(form.pago_final||10)/100).toLocaleString("es-MX")} MXN</div></div>
-  </div></div>
-</div>
-${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</div><div class="cb"><p style="font-size:12px;color:#444;font-style:italic">${form.observaciones}</p></div></div>` : ""}
-<div class="nota"><b>NOTA IMPORTANTE:</b> Este presupuesto tiene vigencia de 15 días naturales. Los precios están sujetos a cambios en caso de variación en el costo de materiales. EnKaje Pro actúa como intermediario; la ejecución es responsabilidad del taller seleccionado. Al aprobar este presupuesto, el cliente acepta los términos descritos.</div>
-<div class="fir">
-  <div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${form.atencion_por||"Felipe Santiago"}</div><div class="fc">EnKaje Pro · Asesor</div></div>
-  <div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${form.nombre||"Cliente"}</div><div class="fc">Firma de Aprobación</div></div>
-</div>
-<div class="ftr">
-  <div class="flogo">EnKaje Pro</div>
-  <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México<br>Intermediación profesional en carpintería fina</div>
-</div>
-</div><script>window.onload=function(){window.print()}</script></body></html>`);
-    w.document.close();
-  }
-
   function textoPresupuesto() {
     const sep = "━".repeat(26);
     return `PRESUPUESTO - EnKaje Pro\n${tipoIcon} ${tipoLabel.toUpperCase()}\n${sep}\nCliente: ${form.nombre||"---"}\nTel: ${form.telefono||"---"}\nFecha: ${form.fecha||"---"}\n\nTOTAL: $${total.toLocaleString("es-MX")} MXN\n${sep}\nAnticipo ${form.anticipo}%: $${(total*parseFloat(form.anticipo||0)/100).toLocaleString("es-MX")} MXN\nAntes instalación ${form.pago_entrega}%: $${(total*parseFloat(form.pago_entrega||0)/100).toLocaleString("es-MX")} MXN\nContra entrega ${form.pago_final}%: $${(total*parseFloat(form.pago_final||0)/100).toLocaleString("es-MX")} MXN\n${sep}\nTiempo: ${form.tiempo_entrega}\nGarantía: ${form.garantia}\n\nMás información: enkajepro.com`;
@@ -2031,8 +1910,7 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
         body: JSON.stringify({ prompt: renderPrompt })
       });
       const data = await res.json();
-      console.log("RENDER response:", JSON.stringify(data).slice(0, 300));
-      // gpt-image-1 devuelve base64, dall-e-3 devuelve url
+      // gpt-image-1 devuelve b64_json
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl = imgData?.url;
       const imgB64 = imgData?.b64_json;
@@ -2043,7 +1921,7 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
         setRenderImg("data:image/png;base64," + imgB64);
         setRenderMsg("✅ Render generado");
       } else {
-        setRenderMsg("❌ Error: " + (data.data?.error?.message || data.error?.message || JSON.stringify(data).slice(0,100)));
+        setRenderMsg("❌ Error: " + (data.data?.error?.message || data.error?.message || JSON.stringify(data).slice(0,150)));
       }
     } catch(e) {
       setRenderMsg("❌ Error: " + e.message);
