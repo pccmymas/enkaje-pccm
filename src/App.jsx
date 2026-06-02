@@ -1170,6 +1170,43 @@ export default function App() {
   const [materialesMsg, setMaterialesMsg] = useState("");
 
   const getForm = () => tipoForm === "cocina" ? formCocina : tipoForm === "closet" ? formCloset : tipoForm === "puerta" ? formPuerta : tipoForm === "panel" ? formPanel : formMueble;
+  // Cargar proyecto en su formulario correspondiente
+  function cargarProyectoEnFormulario(p) {
+    const tipo = p.tipo_proyecto || "cocina";
+    cambiarTipoForm(tipo);
+    const datos = {
+      nombre: p.nombre || "",
+      telefono: p.telefono || "",
+      correo: p.correo || "",
+      direccion: p.direccion || "",
+      observaciones: p.observaciones || "",
+      atencion_por: p.atencion_por || "Felipe Santiago",
+      fecha: p.fecha || new Date().toISOString().split("T")[0],
+    };
+    if (tipo === "cocina") setFormCocina(prev => ({...prev, ...datos}));
+    else if (tipo === "closet") setFormCloset(prev => ({...prev, ...datos}));
+    else if (tipo === "puerta") setFormPuerta(prev => ({...prev, ...datos}));
+    else if (tipo === "panel") setFormPanel(prev => ({...prev, ...datos}));
+    else setFormMueble(prev => ({...prev, ...datos}));
+  }
+
+  function cargarProyectoEnPresupuesto(p) {
+    const tipo = p.tipo_proyecto || "cocina";
+    cambiarTipoForm(tipo);
+    const datos = {
+      nombre: p.nombre || "",
+      telefono: p.telefono || "",
+      correo: p.correo || "",
+      direccion: p.direccion || "",
+      observaciones: p.observaciones || "",
+    };
+    if (tipo === "cocina") setFormCocina(prev => ({...prev, ...datos}));
+    else if (tipo === "closet") setFormCloset(prev => ({...prev, ...datos}));
+    else if (tipo === "puerta") setFormPuerta(prev => ({...prev, ...datos}));
+    else if (tipo === "panel") setFormPanel(prev => ({...prev, ...datos}));
+    else setFormMueble(prev => ({...prev, ...datos}));
+  }
+
   // Función para cambiar tab y guardar en historial
   const setTabWithHistory = (newTab) => {
     sessionStorage.setItem("enkaje_tab", newTab);
@@ -2404,8 +2441,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                         ))}
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
-                        <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }} outline color="#d4af37">💰 Ver presupuesto</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} style={{ fontSize: 12 }} outline color="#d4af37">💰 Ver presupuesto</BTN>
                         <BTN
                           onClick={async e => {
                             e.stopPropagation();
@@ -2504,8 +2541,10 @@ Formato: Caption completo listo para copiar y pegar.`;
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar Formulario</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Presupuesto</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); generarContrato(tallerSel); }} outline color="#4caf50" style={{ fontSize: 12 }}>📄 Contrato</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>🗑️ Eliminar</BTN>
                       </div>
                     </div>
                   )}
@@ -2561,7 +2600,11 @@ Formato: Caption completo listo para copiar y pegar.`;
                           ))}
                         </div>
                       </div>
-                      <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Hacer Cotizacion</BTN>
+                      <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:8 }}>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar Formulario</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Presupuesto</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); generarContrato(tallerSel); }} outline color="#4caf50" style={{ fontSize: 12 }}>📄 Contrato</BTN>
+                      </div>
                     </div>
                   )}
                 </div>
