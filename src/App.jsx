@@ -2379,7 +2379,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                           onClick={async e => {
                             e.stopPropagation();
                             setConfirmModal({ msg: "¿Eliminar este proyecto? No se puede deshacer.", onOk: async () => {
-                              await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "DELETE", token });
+                              await sb(`proyectos?id=eq.${p.id}`, { method: "DELETE", token }); cargarProyectos();
                               setProyectoSel(null); cargarProyectos();
                             }});
                           }}
