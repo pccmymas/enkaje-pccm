@@ -9,7 +9,9 @@ export default async function handler(req, res) {
   try {
     let body = req.body;
     if (typeof body === "string") body = JSON.parse(body);
-    const prompt = body?.prompt || "cocina moderna";
+    const promptOriginal = body?.prompt || "cocina moderna";
+    // DALL-E 2 tiene limite de 1000 chars
+    const prompt = `Interior design render: ${promptOriginal}`.slice(0, 900);
 
     const response = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
@@ -19,20 +21,16 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "dall-e-2",
-        prompt: `Render fotorrealista de interiores: ${prompt}. Estilo revista de diseño, iluminación profesional, alta calidad.`,
+        prompt,
         n: 1,
         size: "1024x1024",
       }),
     });
 
-    const text = await response.text();
-    try {
-      const data = JSON.parse(text);
-      return res.status(response.status).json(data);
-    } catch {
-      return res.status(500).json({ error: "OpenAI response: " + text.slice(0, 200) });
-    }
+    const data = await response.json();
+    // Devolver siempre 200 para ver el error completo
+    return res.status(200).json({ status: response.status, data });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(200).json({ error: err.message });
   }
 }
