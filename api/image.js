@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         prompt,
         n: 1,
         size: "1024x1024",
-        output_format: "b64_json",
+        output_format: "png",
       }),
     });
 
