@@ -1579,7 +1579,14 @@ ${tallerHTML}
     const tipoLabel = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
     const tipoIcon  = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
     const total = [f.precio_fabricacion,f.precio_instalacion,f.precio_cubierta,f.precio_herrajes,f.precio_otros].reduce((a,v)=>a+(parseFloat(v)||0),0);
-    const detalles = getDetallesProyecto();
+    // Generar detalles del proyecto inline (usando tipoForm de App)
+    const detalles = [];
+    const addD = (l,v) => { if(v) detalles.push([l, Array.isArray(v)?v.join(", "):v]); };
+    if(tipoForm==="cocina"){ addD("Tipo de cocina",f.tipo_cocina); addD("Largo",f.largo); addD("Altura",f.altura); addD("Profundidad",f.profundidad); addD("Área",f.area); addD("Cubierta",f.material_cubierta); addD("Tarja",f.tarja); addD("Electrodomésticos",f.electrodomesticos); addD("Accesorios",f.accesorios); }
+    else if(tipoForm==="closet"){ addD("Tipo closet",f.tipo_closet); addD("Largo",f.largo); addD("Altura",f.altura); addD("Profundidad",f.profundidad); addD("Accesorios",f.accesorios_closet); }
+    else if(tipoForm==="puerta"){ addD("Tipo puerta",f.tipo_puerta); addD("Ancho",f.ancho); addD("Alto",f.alto); addD("Cantidad",f.cantidad); addD("Marco",f.tipo_marco); addD("Herrajes",f.herrajes_puerta); }
+    else { addD("Tipo mueble",f.tipo_mueble); addD("Largo",f.largo); addD("Alto",f.alto); addD("Profundidad",f.profundidad); addD("Cantidad",f.cantidad); addD("Accesorios",f.accesorios_mueble); }
+    addD("Estilo",f.estilo); addD("Material",f.material); addD("Color",f.color_principal); addD("Acabado",f.tipo_acabado); addD("Jaladeras",f.jaladeras); addD("Bisagras",f.bisagras);
     const folio = `EP-${Date.now().toString().slice(-6)}`;
     const w = window.open("","_blank");
     if (!w) { alert("Por favor permite las ventanas emergentes para imprimir"); return; }
