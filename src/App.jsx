@@ -1511,7 +1511,7 @@ export default function App() {
 
   useEffect(() => {
     if (screen === "app" && (tab === "bienvenida" || tab === "proyectos" || tab === "leads")) cargarProyectos();
-    if (screen === "app" && (tab === "membresias" || (tab === "bienvenida" && role === "taller"))) cargarTalleres();
+    if (screen === "app" && (tab === "membresias" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
   function compartirFormulario(canal) {
@@ -2154,7 +2154,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   const tabs = role === "admin"
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["membresias","Talleres"],["ia","IA"]]
     : role === "taller"
-    ? [["bienvenida","Inicio"],["leads","Proyectos"],["presupuesto","Cotizar"],["ia","IA"]]
+    ? [["bienvenida","Inicio"],["formulario","Formulario"],["leads","Proyectos"],["presupuesto","Cotizar"],["ia","IA"]]
     : [["bienvenida","Inicio"],["formulario","Mi Proyecto"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["presupuesto","Presupuesto"],["ia","IA"]];
 
   const form = getForm();
