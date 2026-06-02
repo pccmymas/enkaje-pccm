@@ -1040,15 +1040,13 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
                 </div>
               </div>
             )}
-            {total > 0 && (
-              <div style={{ marginTop:14, background:"#0a0a08", border:"1px dashed #d4af3730", borderRadius:10, padding:14, textAlign:"center" }}>
-                <div style={{ fontSize:10, color:"#555", letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>Vista previa del PDF</div>
-                <div style={{ fontSize:11, color:"#777", lineHeight:1.8 }}>📄 Logo EnKaje Pro · Datos del cliente<br/>Especificaciones · Precios · Firmas</div>
-                <button onClick={imprimirHojaProfesional} style={{ marginTop:10, background:"transparent", border:"1px solid #d4af3740", color:"#d4af37", borderRadius:8, padding:"8px 16px", fontSize:12, cursor:"pointer", fontWeight:600 }}>
-                  Ver hoja completa →
-                </button>
-              </div>
-            )}
+            <div style={{ marginTop:14, background:"#0a0a08", border:"1px dashed #d4af3730", borderRadius:10, padding:14, textAlign:"center" }}>
+              <div style={{ fontSize:10, color:"#999", letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>Vista previa del PDF</div>
+              <div style={{ fontSize:11, color:"#aaa", lineHeight:1.8 }}>📄 Logo · Datos del cliente · Especificaciones · Precios · Firmas</div>
+              <button onClick={imprimirHojaProfesional} style={{ marginTop:10, background:"transparent", border:"1px solid #d4af3740", color:"#d4af37", borderRadius:8, padding:"8px 16px", fontSize:12, cursor:"pointer", fontWeight:600 }}>
+                Ver hoja completa →
+              </button>
+            </div>
           </SECTION>
         </div>
       </div>
@@ -1191,6 +1189,8 @@ export default function App() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [tab, setTab] = useState("bienvenida");
   const [tipoForm, setTipoForm] = useState("cocina");
+  // Limpiar materiales cuando cambia el tipo de proyecto
+  const cambiarTipoForm = (tipo) => { setTipoForm(tipo); setMateriales([]); setMaterialesMsg(""); };
   const [formCocina, setFormCocina] = useState(FORM_INIT);
   const [formCloset, setFormCloset] = useState(FORM_CLOSET_INIT);
   const [formPuerta, setFormPuerta] = useState(FORM_PUERTA_INIT);
@@ -1913,13 +1913,28 @@ Genera una lista de materiales necesarios para fabricar este proyecto. Para cada
 3. Precio unitario aproximado en pesos mexicanos (MXN) en Monterrey 2024
 4. Total (cantidad x precio)
 
-Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explicaciones. Formato exacto:
-[
-  {"material":"Nombre del material","cantidad":"4 láminas","precio_unitario":850,"total":3400,"unidad":"láminas","notas":"MDF 18mm antihumedad"},
-  {"material":"...","cantidad":"...","precio_unitario":0,"total":0,"unidad":"...","notas":"..."}
-]
+Genera también un desglose de costos por categoría:
+- precio_fabricacion: costo de materiales y mano de obra de fabricación
+- precio_instalacion: costo de instalación en sitio
+- precio_herrajes: costo de herrajes (bisagras, jaladeras, correderas, etc)
+- precio_acabados: costo de acabados, pintura, lacas, etc
+- precio_otros: otros costos (transporte, ajustes, etc)
 
-Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 materiales. Los precios deben ser realistas para Monterrey.`;
+Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explicaciones. Formato exacto:
+{
+  "materiales": [
+    {"material":"Nombre del material","cantidad":"4 láminas","precio_unitario":850,"total":3400,"unidad":"láminas","notas":"MDF 18mm antihumedad"}
+  ],
+  "desglose": {
+    "precio_fabricacion": 0,
+    "precio_instalacion": 0,
+    "precio_herrajes": 0,
+    "precio_acabados": 0,
+    "precio_otros": 0
+  }
+}
+
+Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser realistas para Monterrey 2025.`;
 
     try {
       const res = await fetch("/api/common", {
@@ -1928,18 +1943,31 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
-      console.log("IA response:", JSON.stringify(data));
-      const txt = data.content?.[0]?.text || "[]";
-      // Limpiar posibles backticks de markdown
+      const txt = data.content?.[0]?.text || "{}";
       const clean = txt.replace(/```json|```/g, "").trim();
-      const lista = JSON.parse(clean);
+      const parsed = JSON.parse(clean);
+      
+      // Soportar tanto el formato nuevo {materiales, desglose} como el viejo []
+      const lista = Array.isArray(parsed) ? parsed : (parsed.materiales || []);
+      const desglose = parsed.desglose || null;
+      
       setMateriales(lista);
-      setMaterialesMsg(`✅ ${lista.length} materiales generados`);
-      // Autocompletar precio_fabricacion con el total de materiales
-      const totalMat = lista.reduce((s, m) => s + (parseFloat(m.total) || 0), 0);
-      if (totalMat > 0) {
-        setFormField("precio_fabricacion", String(Math.round(totalMat)));
-        setMaterialesMsg(`✅ ${lista.length} materiales · Total: $${totalMat.toLocaleString("es-MX")} MXN → aplicado a Fabricación`);
+      
+      // Autocompletar desglose completo si viene de IA
+      if (desglose) {
+        if (desglose.precio_fabricacion > 0) setFormField("precio_fabricacion", String(Math.round(desglose.precio_fabricacion)));
+        if (desglose.precio_instalacion > 0) setFormField("precio_instalacion", String(Math.round(desglose.precio_instalacion)));
+        if (desglose.precio_herrajes > 0)    setFormField("precio_herrajes",    String(Math.round(desglose.precio_herrajes)));
+        if (desglose.precio_acabados > 0)    setFormField("precio_cubierta",    String(Math.round(desglose.precio_acabados)));
+        if (desglose.precio_otros > 0)       setFormField("precio_otros",       String(Math.round(desglose.precio_otros)));
+        const totalIA = Object.values(desglose).reduce((a,v) => a+(parseFloat(v)||0), 0);
+        setMaterialesMsg(`✅ ${lista.length} materiales · Total estimado: $${totalIA.toLocaleString("es-MX")} MXN → desglose aplicado automáticamente`);
+      } else {
+        const totalMat = lista.reduce((s,m) => s+(parseFloat(m.total)||0), 0);
+        if (totalMat > 0) {
+          setFormField("precio_fabricacion", String(Math.round(totalMat)));
+          setMaterialesMsg(`✅ ${lista.length} materiales · $${totalMat.toLocaleString("es-MX")} MXN → aplicado a Fabricación`);
+        }
       }
     } catch(e) {
       console.error("IA Error:", e);
@@ -2029,7 +2057,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
       <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>Tipo de Proyecto</label>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {[["cocina","🍳 Cocina"],["closet","👔 Closet"],["puerta","🚪 Puerta"],["mueble","🛋️ Mueble"]].map(([k,l]) => (
-          <PILL_SINGLE key={k} label={l} checked={tipoForm===k} onChange={() => setTipoForm(k)} />
+          <PILL_SINGLE key={k} label={l} checked={tipoForm===k} onChange={() => cambiarTipoForm(k)} />
         ))}
       </div>
     </div>
