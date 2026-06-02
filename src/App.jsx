@@ -1922,7 +1922,7 @@ Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explic
 Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 materiales. Los precios deben ser realistas para Monterrey.`;
 
     try {
-      const res = await fetch("/api/claude", {
+      const res = await fetch("/api/common", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
@@ -1954,7 +1954,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
     const tipoTxt = tipoForm === "cocina" ? "cocina integral" : tipoForm === "closet" ? "closet" : tipoForm === "puerta" ? "puerta" : "mueble a medida";
     try {
       const prompt = `Eres experto disenador de carpinteria fina en Monterrey. El cliente quiere un ${tipoTxt}. Especificaciones: Estilo: ${Array.isArray(form.estilo)?form.estilo.join(", "):"sin definir"}, Material: ${Array.isArray(form.material)?form.material.join(", "):"sin definir"}, Color: ${form.color_principal||"sin definir"}, Acabado: ${Array.isArray(form.tipo_acabado)?form.tipo_acabado.join(", "):"sin definir"}. Da: 1) Combinacion ideal materiales/colores 2) Accesorios que recomiendas 3) Rango de precio en Monterrey MXN 4) 3 tips profesionales. Usa emojis. Maximo 280 palabras.`;
-      const res = await fetch("/api/claude", {
+      const res = await fetch("/api/common", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
