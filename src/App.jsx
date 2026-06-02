@@ -2769,13 +2769,40 @@ Formato: Caption completo listo para copiar y pegar.`;
             )}
 
             {/* RENDERS DE DISEÑO */}
+            {iaTab === "renders" && (() => {
+              // Pre-llenar prompt con datos del formulario activo
+              const f = getForm();
+              const tipoLabel = tipoForm==="cocina"?"cocina integral":tipoForm==="closet"?"closet":tipoForm==="puerta"?"puerta":tipoForm==="mueble"?"mueble a medida":"proyecto de carpintería";
+              const estilo = Array.isArray(f.estilo)&&f.estilo.length ? f.estilo.join(" y ") : "";
+              const material = Array.isArray(f.material)&&f.material.length ? f.material.join(", ") : "";
+              const color = f.color_principal || "";
+              const acabado = Array.isArray(f.tipo_acabado)&&f.tipo_acabado.length ? f.tipo_acabado.join(", ") : "";
+              const medidas = tipoForm==="cocina" ? (f.largo?`de ${f.largo} metros de largo`:"") : tipoForm==="puerta" ? (f.ancho&&f.alto?`de ${f.ancho}x${f.alto}`:"") : (f.largo?`de ${f.largo} metros`:"");
+              const autoPrompt = [tipoLabel, estilo&&`estilo ${estilo}`, material&&`en ${material}`, color&&`color ${color}`, acabado&&`acabado ${acabado}`, medidas, "en Monterrey, México"].filter(Boolean).join(", ");
+              if (autoPrompt && !renderPrompt) setTimeout(() => setRenderPrompt(autoPrompt), 100);
+              return null;
+            })()}
             {iaTab === "renders" && (
               <div>
                 <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20, marginBottom: 16 }}>
                   <h3 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 13, letterSpacing: 1 }}>🎨 GENERADOR DE RENDERS</h3>
                   <p style={{ color: "#aaa", fontSize: 12, marginBottom: 16 }}>Describe el proyecto y la IA genera una imagen fotorrealista en segundos</p>
                   <div style={{ marginBottom: 12 }}>
-                    <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>Descripción del diseño</label>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <label style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1 }}>Descripción del diseño</label>
+                      <button onClick={() => {
+                        const f = getForm();
+                        const tipoLabel = tipoForm==="cocina"?"cocina integral":tipoForm==="closet"?"closet":tipoForm==="puerta"?"puerta":"mueble a medida";
+                        const estilo = Array.isArray(f.estilo)&&f.estilo.length ? f.estilo.join(" y ") : "";
+                        const material = Array.isArray(f.material)&&f.material.length ? f.material.join(", ") : "";
+                        const color = f.color_principal || "";
+                        const acabado = Array.isArray(f.tipo_acabado)&&f.tipo_acabado.length ? f.tipo_acabado.join(", ") : "";
+                        const medidas = tipoForm==="cocina"?(f.largo?`de ${f.largo} metros de largo`:""):tipoForm==="puerta"?(f.ancho&&f.alto?`de ${f.ancho}x${f.alto}`:""):(f.largo?`de ${f.largo} metros`:"");
+                        setRenderPrompt([tipoLabel, estilo&&`estilo ${estilo}`, material&&`en ${material}`, color&&`color ${color}`, acabado&&`acabado ${acabado}`, medidas, "en Monterrey, México"].filter(Boolean).join(", "));
+                      }} style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
+                        🔄 Usar datos del formulario
+                      </button>
+                    </div>
                     <textarea
                       value={renderPrompt}
                       onChange={e => setRenderPrompt(e.target.value)}
