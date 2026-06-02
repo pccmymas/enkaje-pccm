@@ -2410,7 +2410,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                           onClick={async e => {
                             e.stopPropagation();
                             setConfirmModal({ msg: "¿Eliminar este proyecto? No se puede deshacer.", onOk: async () => {
-                              await sb(`proyectos?id=eq.${p.id}`, { method: "DELETE", token }); cargarProyectos();
+                              await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "DELETE", token }); cargarProyectos();
                               setProyectoSel(null); cargarProyectos();
                             }});
                           }}
@@ -2496,7 +2496,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           {ESTADOS_PROYECTO.map(est => (
                             <button key={est.key}
-                              onClick={async e => { e.stopPropagation(); await sb(`proyectos?id=eq.${p.id}`, {method:"PATCH", token, body:JSON.stringify({estado:est.key})}); cargarProyectos(); }}
+                              onClick={async e => { e.stopPropagation(); await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"PATCH", token, body:JSON.stringify({estado:est.key})}); cargarProyectos(); }}
                               style={{ padding:"5px 10px", borderRadius:20, border:`1px solid ${(p.estado||"nuevo")===est.key?est.color:"#333"}`, background:(p.estado||"nuevo")===est.key?`${est.color}25`:"transparent", color:(p.estado||"nuevo")===est.key?est.color:"#666", fontSize:11, cursor:"pointer", fontWeight:(p.estado||"nuevo")===est.key?700:400, whiteSpace:"nowrap" }}>
                               {est.emoji} {est.label}
                             </button>
@@ -2505,7 +2505,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); setTipoForm(p.tipo_proyecto||"cocina"); setTab("presupuesto"); }} style={{ fontSize: 12 }}>Abrir en Presupuesto</BTN>
-                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?id=eq.${p.id}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>Eliminar</BTN>
                       </div>
                     </div>
                   )}
@@ -2546,7 +2546,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                             <button key={est.key}
                               onClick={async e => {
                                 e.stopPropagation();
-                                await sb(`proyectos?id=eq.${p.id}`, { method: "PATCH", token, body: JSON.stringify({ estado: est.key }) });
+                                await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ estado: est.key }) });
                                 cargarProyectos();
                                 // Notificar al cliente por WhatsApp si tiene teléfono
                                 if (p.telefono) {
