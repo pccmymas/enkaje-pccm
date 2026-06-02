@@ -1996,11 +1996,13 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
         body: JSON.stringify({ prompt: renderPrompt })
       });
       const data = await res.json();
-      if (data.data?.[0]?.url) {
-        setRenderImg(data.data[0].url);
+      console.log("RENDER response:", JSON.stringify(data));
+      const imgUrl = data.data?.data?.[0]?.url || data.data?.[0]?.url;
+      if (imgUrl) {
+        setRenderImg(imgUrl);
         setRenderMsg("✅ Render generado");
       } else {
-        setRenderMsg("❌ Error: " + (data.error?.message || "No se pudo generar"));
+        setRenderMsg("❌ Error: " + (data.data?.error?.message || data.error?.message || JSON.stringify(data)));
       }
     } catch(e) {
       setRenderMsg("❌ Error: " + e.message);
