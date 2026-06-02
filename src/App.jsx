@@ -1115,7 +1115,27 @@ export default function App() {
   const [loginMode, setLoginMode] = useState("login");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
-  const [tab, setTab] = useState("bienvenida");
+  const [tab, setTab] = useState(() => {
+    // Restaurar tab del historial si existe
+    const saved = sessionStorage.getItem("enkaje_tab");
+    return saved || "bienvenida";
+  });
+
+  // Manejar botón atrás del browser
+  useEffect(() => {
+    const handlePop = (e) => {
+      const state = e.state;
+      if (state?.tab && screen === "app") {
+        setTab(state.tab);
+      } else if (screen === "app") {
+        // Si no hay estado, ir a bienvenida en lugar de salir
+        history.pushState({ tab: "bienvenida" }, "", window.location.pathname);
+        setTab("bienvenida");
+      }
+    };
+    window.addEventListener("popstate", handlePop);
+    return () => window.removeEventListener("popstate", handlePop);
+  }, [screen]);
   const [tipoForm, setTipoForm] = useState("cocina");
   // Limpiar materiales cuando cambia el tipo de proyecto
   const cambiarTipoForm = (tipo) => { setTipoForm(tipo); setMateriales([]); setMaterialesMsg(""); };
@@ -1150,6 +1170,13 @@ export default function App() {
   const [materialesMsg, setMaterialesMsg] = useState("");
 
   const getForm = () => tipoForm === "cocina" ? formCocina : tipoForm === "closet" ? formCloset : tipoForm === "puerta" ? formPuerta : tipoForm === "panel" ? formPanel : formMueble;
+  // Función para cambiar tab y guardar en historial
+  const setTabWithHistory = (newTab) => {
+    sessionStorage.setItem("enkaje_tab", newTab);
+    history.pushState({ tab: newTab }, "", window.location.pathname);
+    setTab(newTab);
+  };
+
   const setFormField = (key, val) => {
     if (tipoForm === "cocina")       setFormCocina(p => ({...p, [key]: val}));
     else if (tipoForm === "closet")  setFormCloset(p => ({...p, [key]: val}));
@@ -1167,6 +1194,8 @@ export default function App() {
       setToken(data.access_token); setUser(data.user);
       const r = data.user?.user_metadata?.role || "cliente";
       setRole(r); setScreen("app"); setTab("bienvenida");
+      sessionStorage.setItem("enkaje_tab", "bienvenida");
+      history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
       if (r === "cliente") {
         try {
           const proyData = await sb(`proyectos?user_email=eq.${data.user.email}&order=created_at.desc&limit=4`);
@@ -1196,6 +1225,8 @@ export default function App() {
       setUser(data.user);
       const r = data.user?.user_metadata?.role || loginForm.role || "cliente";
       setRole(r); setScreen("app"); setTab("bienvenida");
+      sessionStorage.setItem("enkaje_tab", "bienvenida");
+      history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
     } else if (data.user && !data.session) {
       setLoginError("✅ Cuenta creada. Revisa tu correo para confirmar y luego inicia sesion.");
     } else {
@@ -2148,17 +2179,17 @@ Formato: Caption completo listo para copiar y pegar.`;
       {/* HEADER */}
       <div style={{ background: "linear-gradient(135deg,#12100a,#070708)", borderBottom: "1px solid #d4af3720", padding: `0 ${isMobile?14:20}px`, position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0" }}>
-          <div style={{ cursor: "pointer" }} onClick={() => setTab("bienvenida")}>
+          <div style={{ cursor: "pointer" }} onClick={() => setTabWithHistory("bienvenida")}>
             <LogoInline size="nav" />
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {!isMobile && <div style={{ fontSize: 12, color: "#aaa" }}>Hola, {nombreUsuario}</div>}
-            <button onClick={() => { setScreen("login"); setRole(null); setUser(null); setToken(null); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 12px", fontSize: 12, cursor: "pointer" }}>Salir</button>
+            <button onClick={() => { setScreen("login"); setRole(null); setUser(null); setToken(null); sessionStorage.removeItem("enkaje_tab"); history.replaceState({}, "", window.location.pathname); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 12px", fontSize: 12, cursor: "pointer" }}>Salir</button>
           </div>
         </div>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 2, overflowX: "auto", paddingBottom: 1 }}>
           {tabs.map(([k,l]) => (
-            <button key={k} onClick={() => setTab(k)} style={{ background: "transparent", border: "none", borderBottom: tab===k?"2px solid #d4af37":"2px solid transparent", color: tab===k?"#d4af37":"#aaa", padding: isMobile?"10px 12px":"10px 16px", cursor: "pointer", fontSize: isMobile?12:13, fontWeight: 700, whiteSpace: "nowrap" }}>{l}</button>
+            <button key={k} onClick={() => setTabWithHistory(k)} style={{ background: "transparent", border: "none", borderBottom: tab===k?"2px solid #d4af37":"2px solid transparent", color: tab===k?"#d4af37":"#aaa", padding: isMobile?"10px 12px":"10px 16px", cursor: "pointer", fontSize: isMobile?12:13, fontWeight: 700, whiteSpace: "nowrap" }}>{l}</button>
           ))}
         </div>
       </div>
@@ -2177,17 +2208,17 @@ Formato: Caption completo listo para copiar y pegar.`;
                 {role==="admin"?"Gestionas todos los proyectos de EnKaje Pro.":role==="taller"?"Aqui recibes proyectos y cotizas directamente.":"Diseña y cotiza tu proyecto ideal con nosotros."}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                {role==="admin" && <><BTN onClick={() => setTab("formulario")}>Nuevo Levantamiento</BTN><BTN onClick={() => setTab("proyectos")} outline color="#d4af37">Ver Proyectos ({proyectos.length})</BTN></>}
-                {role==="taller" && <BTN onClick={() => setTab("leads")}>Ver Proyectos ({proyectos.length})</BTN>}
+                {role==="admin" && <><BTN onClick={() => setTabWithHistory("formulario")}>Nuevo Levantamiento</BTN><BTN onClick={() => setTabWithHistory("proyectos")} outline color="#d4af37">Ver Proyectos ({proyectos.length})</BTN></>}
+                {role==="taller" && <BTN onClick={() => setTabWithHistory("leads")}>Ver Proyectos ({proyectos.length})</BTN>}
                 {role==="taller" && talleresMem.find(t=>t.email===user?.email)?.slug && (
                   <BTN onClick={() => window.open(`https://enkajepro.com/taller/${talleresMem.find(t=>t.email===user?.email).slug}`, "_blank")} outline color="#d4af37">🔗 Ver mi link público</BTN>
                 )}
-                {role==="cliente" && <><BTN onClick={() => setTab("formulario")}>Iniciar mi Proyecto</BTN><BTN onClick={() => setTab("estilos")} outline color="#d4af37">Ver Estilos</BTN></>}
+                {role==="cliente" && <><BTN onClick={() => setTabWithHistory("formulario")}>Iniciar mi Proyecto</BTN><BTN onClick={() => setTabWithHistory("estilos")} outline color="#d4af37">Ver Estilos</BTN></>}
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr 1fr":"repeat(4,1fr)", gap: 12 }}>
               {role==="admin" && [["Proyectos",proyectos.length,"#d4af37"],["Nuevos",proyectos.filter(p=>p.estado==="nuevo").length,"#00bcd4"],["En proceso",proyectos.filter(p=>p.estado==="proceso").length,"#f0a500"],["Cerrados",proyectos.filter(p=>p.estado==="cerrado").length,"#4caf50"]].map(([l,v,c],i) => (
-                <div key={i} onClick={() => setTab("proyectos")} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
+                <div key={i} onClick={() => setTabWithHistory("proyectos")} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
                   <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>{l}</div>
                   <div style={{ fontSize: isMobile?26:32, fontWeight: 900, color: c }}>{v}</div>
                 </div>
@@ -2341,7 +2372,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 12, padding: 32, textAlign: "center", color: "#555" }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
                 <div style={{ fontSize: 14 }}>No tienes proyectos guardados aún</div>
-                <BTN onClick={() => setTab("formulario")} style={{ marginTop: 16, fontSize: 13 }}>Crear mi primer proyecto</BTN>
+                <BTN onClick={() => setTabWithHistory("formulario")} style={{ marginTop: 16, fontSize: 13 }}>Crear mi primer proyecto</BTN>
               </div>
             )}
             {proyectos.map((p, i) => {
@@ -2419,7 +2450,7 @@ Formato: Caption completo listo para copiar y pegar.`;
             {formCocina.estilo.length > 0 && (
               <div style={{ marginTop: 16, background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 12, padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
                 <div style={{ fontSize: 13, color: "#aaa" }}>Seleccionados: <b style={{ color: "#d4af37" }}>{formCocina.estilo.join(", ")}</b></div>
-                <BTN onClick={() => setTab("ia")} style={{ fontSize: 12 }}>Ver Recomendacion IA →</BTN>
+                <BTN onClick={() => setTabWithHistory("ia")} style={{ fontSize: 12 }}>Ver Recomendacion IA →</BTN>
               </div>
             )}
           </div>
