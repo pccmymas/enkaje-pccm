@@ -768,7 +768,7 @@ function FormularioMueble({ form, setF, role, isMobile }) {
   );
 }
 // ============ PRESUPUESTO — hoja profesional + todos los canales ============
-function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg, generarContrato, tallerData }) {
+function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg, generarContrato, tallerData, imprimirHoja }) {
   const total = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
     .reduce((a, v) => a + (parseFloat(v) || 0), 0);
 
@@ -963,7 +963,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
             <h1 style={{ color:"#d4af37", margin:0, fontSize:isMobile?20:24 }}>Presupuesto Profesional</h1>
             <p style={{ color:"#555", margin:"4px 0 0", fontSize:13 }}>Completa los precios y comparte con el cliente</p>
           </div>
-          <button onClick={imprimirHojaProfesional} style={{
+          <button onClick={imprimirHoja} style={{
             background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000",
             border:"none", borderRadius:12, padding:"12px 22px",
             fontWeight:900, fontSize:13, cursor:"pointer",
@@ -1016,6 +1016,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
           </SECTION>
           <SECTION title="Tiempo y Garantia" icon="⏱️">
             <INPUT label="Tiempo de entrega" value={form.tiempo_entrega} onChange={e=>setF("tiempo_entrega",e.target.value)} placeholder="20 a 30 dias habiles" />
+            <INPUT label="Fecha estimada de entrega" value={form.fecha_entrega_estimada||""} onChange={e=>setF("fecha_entrega_estimada",e.target.value)} type="date" />
             <INPUT label="Garantia"          value={form.garantia}       onChange={e=>setF("garantia",e.target.value)}       placeholder="6 meses en instalacion y herrajes" />
           </SECTION>
         </div>
@@ -1043,7 +1044,7 @@ ${form.observaciones ? `<div class="card"><div class="ch">📝 Observaciones</di
             <div style={{ marginTop:14, background:"#0a0a08", border:"1px dashed #d4af3730", borderRadius:10, padding:14, textAlign:"center" }}>
               <div style={{ fontSize:10, color:"#999", letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>Vista previa del PDF</div>
               <div style={{ fontSize:11, color:"#aaa", lineHeight:1.8 }}>📄 Logo · Datos del cliente · Especificaciones · Precios · Firmas</div>
-              <button onClick={imprimirHojaProfesional} style={{ marginTop:10, background:"transparent", border:"1px solid #d4af3740", color:"#d4af37", borderRadius:8, padding:"8px 16px", fontSize:12, cursor:"pointer", fontWeight:600 }}>
+              <button onClick={imprimirHoja} style={{ marginTop:10, background:"transparent", border:"1px solid #d4af3740", color:"#d4af37", borderRadius:8, padding:"8px 16px", fontSize:12, cursor:"pointer", fontWeight:600 }}>
                 Ver hoja completa →
               </button>
             </div>
@@ -1850,13 +1851,47 @@ ${total>0 ? `
   <div class="ch">📋 CLÁUSULAS Y CONDICIONES</div>
   <div class="cb">
     <div class="clausulas">
-      <div class="clausula"><div class="clausula-t">Tiempo de entrega</div><div class="clausula-b">El prestador se compromete a entregar el proyecto terminado en un plazo de <strong>${f.tiempo_entrega||"---"}</strong>, contados a partir de la recepción del anticipo.</div></div>
-      <div class="clausula"><div class="clausula-t">Garantía</div><div class="clausula-b">${garantia}. La garantía cubre defectos de fabricación e instalación bajo uso normal. No cubre daños por mal uso, humedad excesiva o modificaciones no autorizadas.</div></div>
-      <div class="clausula"><div class="clausula-t">Materiales</div><div class="clausula-b">Los materiales especificados en este contrato son los acordados por ambas partes. Cualquier cambio de materiales deberá ser acordado por escrito y podrá generar ajuste en el precio.</div></div>
-      <div class="clausula"><div class="clausula-t">Modificaciones</div><div class="clausula-b">Cualquier modificación al proyecto original solicitada por el cliente después de aprobado este contrato podrá generar cargos adicionales a convenir entre las partes.</div></div>
-      <div class="clausula"><div class="clausula-t">Condiciones del lugar</div><div class="clausula-b">El cliente deberá tener el lugar de instalación listo (pintura, pisos, electricidad y plomería terminados) al momento de la instalación. Retrasos por estas causas no son responsabilidad del prestador.</div></div>
-      <div class="clausula"><div class="clausula-t">Intermediación</div><div class="clausula-b">EnKaje Pro actúa como intermediario digital en esta operación. La responsabilidad de la ejecución del proyecto recae íntegramente en el prestador de servicios.</div></div>
-      ${termExtra?`<div class="clausula"><div class="clausula-t">Condiciones adicionales</div><div class="clausula-b">${termExtra}</div></div>`:""}
+      <div class="clausula">
+        <div class="clausula-t">Descripción y objeto del contrato</div>
+        <div class="clausula-b">El prestador se obliga a fabricar e instalar ${`un(a) ${tipo}`} conforme a las especificaciones acordadas en este contrato. El trabajo incluye: diseño, fabricación, transporte e instalación en el domicilio indicado por el cliente.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Precio acordado y forma de pago</div>
+        <div class="clausula-b">El precio total acordado es de <strong>$${total>0?total.toLocaleString("es-MX"):"___,___"} MXN</strong> (${total>0?`${f.anticipo||60}% anticipo al firmar, ${f.pago_entrega||30}% antes de instalación, ${f.pago_final||10}% contra entrega`:"por acordar"}). El anticipo no es reembolsable una vez iniciada la fabricación.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Fechas de entrega</div>
+        <div class="clausula-b">El prestador se compromete a entregar el proyecto terminado e instalado en un plazo de <strong>${f.tiempo_entrega||"___ días hábiles"}</strong>, contados a partir de la recepción del anticipo acordado. La fecha estimada de entrega es: <strong>${f.fecha_entrega_estimada||"por confirmar"}</strong>.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Garantía del trabajo</div>
+        <div class="clausula-b">${garantia}. La garantía cubre defectos de fabricación e instalación bajo condiciones normales de uso. Queda excluida la garantía en casos de: mal uso, humedad excesiva, daños por terceros, modificaciones no autorizadas o falta de mantenimiento.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Penalizaciones por incumplimiento del prestador</div>
+        <div class="clausula-b">Si el prestador no entrega en el plazo acordado sin causa justificada, el cliente podrá: (a) exigir descuento del 2% del total por cada semana de retraso, hasta un máximo del 10%, o (b) rescindir el contrato con devolución total del anticipo si el retraso supera 30 días naturales.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Penalizaciones por incumplimiento del cliente</div>
+        <div class="clausula-b">Si el cliente no realiza los pagos en los plazos acordados, el prestador podrá suspender la fabricación e instalación hasta recibir el pago. El anticipo no será reembolsable si el cliente cancela el proyecto una vez iniciada la fabricación.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Materiales y especificaciones</div>
+        <div class="clausula-b">Los materiales especificados son los acordados por ambas partes. Cualquier cambio deberá ser solicitado por escrito y podrá generar ajuste en precio y tiempo de entrega. El prestador utilizará materiales de la calidad especificada o superior.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Condiciones del lugar de instalación</div>
+        <div class="clausula-b">El cliente deberá tener el lugar de instalación listo (pintura, pisos, electricidad y plomería terminados) al momento acordado. Retrasos ocasionados por estas causas no son responsabilidad del prestador y podrán generar costos adicionales de movilización.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Modificaciones al proyecto</div>
+        <div class="clausula-b">Cualquier modificación solicitada por el cliente después de firmado este contrato deberá acordarse por escrito y podrá generar ajuste en precio y plazo de entrega. No se aceptarán cambios verbales.</div>
+      </div>
+      <div class="clausula">
+        <div class="clausula-t">Jurisdicción</div>
+        <div class="clausula-b">Para cualquier controversia derivada del presente contrato, las partes se someten a la jurisdicción de los tribunales competentes de la ciudad de Monterrey, Nuevo León, México, renunciando a cualquier otro fuero que pudiera corresponderles.</div>
+      </div>
+      ${termExtra?`<div class="clausula"><div class="clausula-t">Condiciones adicionales del taller</div><div class="clausula-b">${termExtra}</div></div>`:""}
     </div>
   </div>
 </div>
@@ -2238,7 +2273,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
                 <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
               </div>
-              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} />
+              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} />
             </div>
           </div>
         )}
@@ -2340,7 +2375,7 @@ Formato: Caption completo listo para copiar y pegar.`;
         {tab === "presupuesto" && (
           <div>
             <TIPO_SELECTOR />
-            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} />
+            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} />
           </div>
         )}
 
