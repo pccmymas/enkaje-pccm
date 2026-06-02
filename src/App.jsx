@@ -1996,13 +1996,19 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
         body: JSON.stringify({ prompt: renderPrompt })
       });
       const data = await res.json();
-      console.log("RENDER response:", JSON.stringify(data));
-      const imgUrl = data.data?.data?.[0]?.url || data.data?.[0]?.url;
+      console.log("RENDER response:", JSON.stringify(data).slice(0, 300));
+      // gpt-image-1 devuelve base64, dall-e-3 devuelve url
+      const imgData = data.data?.data?.[0] || data.data?.[0];
+      const imgUrl = imgData?.url;
+      const imgB64 = imgData?.b64_json;
       if (imgUrl) {
         setRenderImg(imgUrl);
         setRenderMsg("✅ Render generado");
+      } else if (imgB64) {
+        setRenderImg("data:image/png;base64," + imgB64);
+        setRenderMsg("✅ Render generado");
       } else {
-        setRenderMsg("❌ Error: " + (data.data?.error?.message || data.error?.message || JSON.stringify(data)));
+        setRenderMsg("❌ Error: " + (data.data?.error?.message || data.error?.message || JSON.stringify(data).slice(0,100)));
       }
     } catch(e) {
       setRenderMsg("❌ Error: " + e.message);
