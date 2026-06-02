@@ -1925,7 +1925,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
       const res = await fetch("/api/common", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
+        body: JSON.stringify({ model: "claude-3-5-sonnet-20241022", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
       console.log("IA response:", JSON.stringify(data));
@@ -1957,7 +1957,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
       const res = await fetch("/api/common", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
+        body: JSON.stringify({ model: "claude-3-5-sonnet-20241022", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
       setAiResult(data.content?.[0]?.text || "Configura tu API key de Anthropic en Vercel.");
