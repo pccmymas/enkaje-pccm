@@ -9,9 +9,7 @@ export default async function handler(req, res) {
   try {
     let body = req.body;
     if (typeof body === "string") body = JSON.parse(body);
-    const promptOriginal = body?.prompt || "cocina moderna";
-    // DALL-E 2 tiene limite de 1000 chars
-    const prompt = `Interior design render: ${promptOriginal}`.slice(0, 900);
+    const prompt = `Interior design photorealistic render: ${(body?.prompt || "modern kitchen").slice(0, 900)}`;
 
     const response = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
@@ -20,7 +18,7 @@ export default async function handler(req, res) {
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "dall-e-2",
+        model: "gpt-image-1",
         prompt,
         n: 1,
         size: "1024x1024",
@@ -28,7 +26,6 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    // Devolver siempre 200 para ver el error completo
     return res.status(200).json({ status: response.status, data });
   } catch (err) {
     return res.status(200).json({ error: err.message });
