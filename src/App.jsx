@@ -960,8 +960,44 @@ function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMaterial
           </div>
 
           {materialesMsg && (
-            <div style={{ background: materialesMsg.includes("❌") ? "#1a0a0a" : "#0a1a0a", border: `1px solid ${materialesMsg.includes("❌") ? "#f4433640" : "#4caf5040"}`, color: materialesMsg.includes("❌") ? "#f44336" : "#4caf50", borderRadius: 8, padding: "10px 14px", fontSize: 12, marginBottom: 14 }}>
-              {materialesMsg}
+            <div style={{ background: materialesMsg.includes("❌") ? "#1a0a0a" : "#0a1a0a", border: `1px solid ${materialesMsg.includes("❌") ? "#f4433640" : "#4caf5040"}`, borderRadius: 8, padding: "10px 14px", marginBottom: 14 }}>
+              <div style={{ color: materialesMsg.includes("❌") ? "#f44336" : "#4caf50", fontSize: 12, marginBottom: materialesMsg.includes("❌") ? 0 : 10 }}>{materialesMsg}</div>
+              {!materialesMsg.includes("❌") && materiales.length > 0 && (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button onClick={() => {
+                    const total = materiales.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+                    const lista = materiales.map(m=>`• ${m.material}: ${m.cantidad} — $${parseFloat(m.total||0).toLocaleString("es-MX")} MXN`).join("\n");
+                    const msg = `📋 *LISTA DE MATERIALES — EnKaje Pro*\n\n${lista}\n\n*TOTAL: $${total.toLocaleString("es-MX")} MXN*\n\nenkajepro.com`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+                  }} style={{ background: "#25D36615", border: "1px solid #25D36640", color: "#25D366", borderRadius: 8, padding: "6px 12px", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>
+                    💬 WhatsApp
+                  </button>
+                  <button onClick={() => {
+                    const total = materiales.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+                    const lista = materiales.map(m=>`• ${m.material}: ${m.cantidad} — $${parseFloat(m.total||0).toLocaleString("es-MX")} MXN`).join("%0A");
+                    const subject = "Lista de Materiales — EnKaje Pro";
+                    const body = `Lista de Materiales%0A%0A${lista}%0A%0ATOTAL: $${total.toLocaleString("es-MX")} MXN%0A%0Aenkajepro.com`;
+                    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+                  }} style={{ background: "#d4af3715", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 8, padding: "6px 12px", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>
+                    📧 Email
+                  </button>
+                  <button onClick={() => {
+                    const total = materiales.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+                    const texto = `Lista de Materiales EnKaje Pro - Total: $${total.toLocaleString("es-MX")} MXN - enkajepro.com`;
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=https://enkajepro.com&quote=${encodeURIComponent(texto)}`, "_blank");
+                  }} style={{ background: "#1877F215", border: "1px solid #1877F240", color: "#1877F2", borderRadius: 8, padding: "6px 12px", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>
+                    📘 Facebook
+                  </button>
+                  <button onClick={() => {
+                    const total = materiales.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+                    const lista = materiales.map(m=>`• ${m.material}: ${m.cantidad} — $${parseFloat(m.total||0).toLocaleString("es-MX")} MXN`).join("\n");
+                    navigator.clipboard.writeText(`Lista de Materiales\n\n${lista}\n\nTOTAL: $${total.toLocaleString("es-MX")} MXN`);
+                    alert("✅ Lista copiada al portapapeles");
+                  }} style={{ background: "#55555515", border: "1px solid #55555540", color: "#aaa", borderRadius: 8, padding: "6px 12px", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>
+                    📋 Copiar
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
