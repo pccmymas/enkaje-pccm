@@ -1928,6 +1928,7 @@ Incluye SOLO materiales relevantes para este proyecto específico. Máximo 15 ma
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
+      console.log("IA response:", JSON.stringify(data));
       const txt = data.content?.[0]?.text || "[]";
       // Limpiar posibles backticks de markdown
       const clean = txt.replace(/```json|```/g, "").trim();
