@@ -7,10 +7,8 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    // Leer body
     let body = req.body;
     if (typeof body === "string") body = JSON.parse(body);
-    
     const prompt = body?.prompt || "cocina moderna";
 
     const response = await fetch("https://api.openai.com/v1/images/generations", {
@@ -20,16 +18,14 @@ export default async function handler(req, res) {
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "dall-e-3",
+        model: "dall-e-2",
         prompt: `Render fotorrealista de interiores: ${prompt}. Estilo revista de diseño, iluminación profesional, alta calidad.`,
         n: 1,
         size: "1024x1024",
-        quality: "standard",
       }),
     });
 
     const text = await response.text();
-    
     try {
       const data = JSON.parse(text);
       return res.status(response.status).json(data);
