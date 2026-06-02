@@ -1203,6 +1203,14 @@ export default function App() {
   const [confirmModal, setConfirmModal] = useState(null); // { msg, onOk }
   const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "", slug: "" });
   const [tallerMsg, setTallerMsg] = useState("");
+  const [renderPrompt, setRenderPrompt] = useState("");
+  const [renderImg, setRenderImg] = useState(null);
+  const [renderLoading, setRenderLoading] = useState(false);
+  const [renderMsg, setRenderMsg] = useState("");
+  const [socialFoto, setSocialFoto] = useState(null);
+  const [socialCaption, setSocialCaption] = useState("");
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [iaTab, setIaTab] = useState("asistente"); // asistente | renders | social
   const [editTaller, setEditTaller] = useState(null); // datos legales del taller en edición
   const [editInfo, setEditInfo] = useState(null);   // info básica del taller en edición
   const [aiLoading, setAiLoading] = useState(false);
@@ -1976,6 +1984,62 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
     setMaterialesLoading(false);
   }
 
+  async function generarRender() {
+    if (!renderPrompt.trim()) return;
+    setRenderLoading(true);
+    setRenderMsg("");
+    setRenderImg(null);
+    try {
+      const res = await fetch("/api/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: renderPrompt })
+      });
+      const data = await res.json();
+      if (data.data?.[0]?.url) {
+        setRenderImg(data.data[0].url);
+        setRenderMsg("✅ Render generado");
+      } else {
+        setRenderMsg("❌ Error: " + (data.error?.message || "No se pudo generar"));
+      }
+    } catch(e) {
+      setRenderMsg("❌ Error: " + e.message);
+    }
+    setRenderLoading(false);
+  }
+
+  async function generarContenidoSocial() {
+    if (!socialFoto && !renderImg) return;
+    setSocialLoading(true);
+    setSocialCaption("");
+    try {
+      const tipo = tipoForm === "cocina" ? "cocina" : tipoForm === "closet" ? "closet" : tipoForm === "puerta" ? "puerta" : "mueble";
+      const estilo = Array.isArray(getForm().estilo) ? getForm().estilo.join(", ") : (getForm().estilo || "");
+      const prompt = `Eres un experto en marketing de carpintería para redes sociales en México. Genera un caption para Instagram/Facebook para un taller de carpintería en Monterrey que acaba de terminar un proyecto de ${tipo}${estilo ? ` estilo ${estilo}` : ""}. 
+
+El caption debe:
+- Ser en español mexicano, natural y cercano
+- Máximo 150 palabras
+- Incluir call to action para cotizar
+- Terminar con 15-20 hashtags relevantes en español e inglés
+- Mencionar Monterrey
+- Tener emojis apropiados
+
+Formato: Caption completo listo para copiar y pegar.`;
+
+      const res = await fetch("/api/common", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 500, messages: [{ role: "user", content: prompt }] })
+      });
+      const data = await res.json();
+      setSocialCaption(data.content?.[0]?.text || "");
+    } catch(e) {
+      setSocialCaption("❌ Error: " + e.message);
+    }
+    setSocialLoading(false);
+  }
+
   async function analizarConIA() {
     const form = getForm();
     setAiLoading(true); setAiResult("");
@@ -2689,44 +2753,142 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
         {/* IA */}
         {tab === "ia" && (
           <div>
-            <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:24 }}>IA Asesora de Diseño</h1>
-            <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Recomendaciones personalizadas para tu proyecto</p>
-            <TIPO_SELECTOR />
-            <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 20 }}>
-              <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: isMobile?16:20 }}>
-                <h3 style={{ color: "#d4af37", margin: "0 0 14px", fontSize: 13, letterSpacing: 1 }}>RESUMEN DEL PROYECTO</h3>
-                {[
-                  ["Tipo",     tipoForm === "cocina" ? (Array.isArray(form.tipo_cocina)?form.tipo_cocina.join(", "):"") : tipoForm === "closet" ? (Array.isArray(form.tipo_closet)?form.tipo_closet.join(", "):"") : tipoForm === "puerta" ? (Array.isArray(form.tipo_puerta)?form.tipo_puerta.join(", "):"") : (Array.isArray(form.tipo_mueble)?form.tipo_mueble.join(", "):"")],
-                  ["Estilo",   Array.isArray(form.estilo)?form.estilo.join(", "):""],
-                  ["Material", Array.isArray(form.material)?form.material.join(", "):""],
-                  ["Acabado",  Array.isArray(form.tipo_acabado)?form.tipo_acabado.join(", "):""],
-                  ["Color",    form.color_principal],
-                ].map(([l,v],i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 13 }}>
-                    <span style={{ color: "#aaa", minWidth: 70 }}>{l}:</span>
-                    <span style={{ color: v?"#e8e0d0":"#666" }}>{v || "Sin especificar"}</span>
-                  </div>
-                ))}
-                <BTN onClick={analizarConIA} disabled={aiLoading} style={{ width: "100%", marginTop: 16, fontSize: 13, padding: "13px", letterSpacing: 1 }}>
-                  {aiLoading ? "Analizando..." : "ANALIZAR CON IA"}
-                </BTN>
-              </div>
-              <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 16, padding: isMobile?16:20, minHeight: 250 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
-                  <h3 style={{ color: "#d4af37", margin: 0, fontSize: 13, letterSpacing: 1 }}>RECOMENDACION</h3>
-                  {aiResult && (
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <BTN onClick={() => compartir("whatsapp", aiResult, "Recomendacion IA - EnKaje Pro")} color="#25D366" textColor="#fff" style={{ fontSize: 10, padding: "6px 10px" }}>WA</BTN>
-                      <BTN onClick={() => compartir("email", aiResult, "Recomendacion IA - EnKaje Pro")} outline color="#d4af37" style={{ fontSize: 10, padding: "6px 10px" }}>Email</BTN>
-                      <BTN onClick={() => { navigator.clipboard.writeText(aiResult); alert("Copiado"); }} outline color="#555" style={{ fontSize: 10, padding: "6px 10px" }}>Copiar</BTN>
-                    </div>
-                  )}
-                </div>
-                {!aiResult && !aiLoading && <div style={{ textAlign: "center", padding: "30px 20px", color: "#333", fontSize: 13 }}>Configura tu proyecto y presiona Analizar con IA</div>}
-                {aiLoading && <div style={{ color: "#d4af37", fontSize: 13, padding: "20px 0" }}>Analizando especificaciones...</div>}
-                {aiResult && <div style={{ fontSize: 13, color: "#e8e0d0", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{aiResult}</div>}
-              </div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 4px", fontSize: isMobile?20:24 }}>Centro de IA</h1>
+            <p style={{ color: "#aaa", margin: "0 0 20px", fontSize: 13 }}>Herramientas inteligentes para tu taller</p>
+
+            {/* TABS DE IA */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+              {[["asistente","🤖 Asistente"],["renders","🎨 Renders"],["social","📱 Redes Sociales"]].map(([k,l]) => (
+                <button key={k} onClick={() => setIaTab(k)}
+                  style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${iaTab===k?"#d4af37":"#2a2a20"}`, background: iaTab===k?"#d4af3715":"transparent", color: iaTab===k?"#d4af37":"#aaa", fontSize: 13, cursor: "pointer", fontWeight: iaTab===k?700:400 }}>
+                  {l}
+                </button>
+              ))}
             </div>
+
+            {/* ASISTENTE DE DISEÑO */}
+            {iaTab === "asistente" && (
+              <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 20 }}>
+                <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: isMobile?16:20 }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 14px", fontSize: 13, letterSpacing: 1 }}>RESUMEN DEL PROYECTO</h3>
+                  <TIPO_SELECTOR />
+                  {[
+                    ["Tipo", tipoForm==="cocina"?(Array.isArray(form.tipo_cocina)?form.tipo_cocina.join(", "):""):tipoForm==="closet"?(Array.isArray(form.tipo_closet)?form.tipo_closet.join(", "):""):tipoForm==="puerta"?(Array.isArray(form.tipo_puerta)?form.tipo_puerta.join(", "):""):(Array.isArray(form.tipo_mueble)?form.tipo_mueble.join(", "):"")],
+                    ["Estilo",   Array.isArray(form.estilo)?form.estilo.join(", "):""],
+                    ["Material", Array.isArray(form.material)?form.material.join(", "):""],
+                    ["Acabado",  Array.isArray(form.tipo_acabado)?form.tipo_acabado.join(", "):""],
+                    ["Color",    form.color_principal],
+                  ].map(([l,v],i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 13 }}>
+                      <span style={{ color: "#aaa", minWidth: 70 }}>{l}:</span>
+                      <span style={{ color: v?"#e8e0d0":"#555" }}>{v || "Sin especificar"}</span>
+                    </div>
+                  ))}
+                  <BTN onClick={analizarConIA} disabled={aiLoading} style={{ width: "100%", marginTop: 16, fontSize: 13, padding: "13px", letterSpacing: 1 }}>
+                    {aiLoading ? "Analizando..." : "ANALIZAR CON IA"}
+                  </BTN>
+                </div>
+                <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 16, padding: isMobile?16:20, minHeight: 250 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+                    <h3 style={{ color: "#d4af37", margin: 0, fontSize: 13, letterSpacing: 1 }}>RECOMENDACIÓN</h3>
+                    {aiResult && (
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <BTN onClick={() => compartir("whatsapp", aiResult, "Recomendacion IA")} color="#25D366" textColor="#fff" style={{ fontSize: 10, padding: "6px 10px" }}>WA</BTN>
+                        <BTN onClick={() => { navigator.clipboard.writeText(aiResult); alert("Copiado"); }} outline color="#555" style={{ fontSize: 10, padding: "6px 10px" }}>Copiar</BTN>
+                      </div>
+                    )}
+                  </div>
+                  {!aiResult && !aiLoading && <div style={{ textAlign: "center", padding: "30px 20px", color: "#555", fontSize: 13 }}>Configura tu proyecto y presiona Analizar con IA</div>}
+                  {aiLoading && <div style={{ color: "#d4af37", fontSize: 13, padding: "20px 0" }}>Analizando especificaciones...</div>}
+                  {aiResult && <div style={{ fontSize: 13, color: "#e8e0d0", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{aiResult}</div>}
+                </div>
+              </div>
+            )}
+
+            {/* RENDERS DE DISEÑO */}
+            {iaTab === "renders" && (
+              <div>
+                <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20, marginBottom: 16 }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 13, letterSpacing: 1 }}>🎨 GENERADOR DE RENDERS</h3>
+                  <p style={{ color: "#aaa", fontSize: 12, marginBottom: 16 }}>Describe el proyecto y la IA genera una imagen fotorrealista en segundos</p>
+                  <div style={{ marginBottom: 12 }}>
+                    <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>Descripción del diseño</label>
+                    <textarea
+                      value={renderPrompt}
+                      onChange={e => setRenderPrompt(e.target.value)}
+                      placeholder="Ej: cocina moderna negra mate con isla y cubierta de cuarzo blanco, iluminación LED, Monterrey..."
+                      rows={3}
+                      style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 13, resize: "vertical", fontFamily: "inherit" }}
+                    />
+                  </div>
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                    <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13, padding: "11px 24px" }}>
+                      {renderLoading ? "⏳ Generando render..." : "✨ Generar Render"}
+                    </BTN>
+                    {renderMsg && <span style={{ fontSize: 12, color: renderMsg.startsWith("✅") ? "#4caf50" : "#f44336" }}>{renderMsg}</span>}
+                  </div>
+                </div>
+
+                {renderLoading && (
+                  <div style={{ background: "#0f0f0a", borderRadius: 16, padding: 40, textAlign: "center" }}>
+                    <div style={{ color: "#d4af37", fontSize: 14, marginBottom: 8 }}>✨ Generando render con IA...</div>
+                    <div style={{ color: "#555", fontSize: 12 }}>Esto puede tomar 15-30 segundos</div>
+                  </div>
+                )}
+
+                {renderImg && !renderLoading && (
+                  <div style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 16, overflow: "hidden" }}>
+                    <img src={renderImg} alt="Render generado" style={{ width: "100%", display: "block", borderRadius: "16px 16px 0 0" }} />
+                    <div style={{ padding: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <a href={renderImg} download="render-enkaje-pro.png" target="_blank" rel="noreferrer"
+                        style={{ background: "#d4af37", color: "#000", borderRadius: 10, padding: "9px 20px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                        ⬇️ Descargar
+                      </a>
+                      <BTN onClick={() => compartir("whatsapp", `Mira el render de tu proyecto: ${renderImg}`, "Render EnKaje Pro")} color="#25D366" textColor="#fff" style={{ fontSize: 13 }}>
+                        💬 Compartir por WhatsApp
+                      </BTN>
+                      <BTN onClick={() => setIaTab("social")} outline color="#E1306C" style={{ fontSize: 13 }}>
+                        📱 Generar caption para redes
+                      </BTN>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* CONTENIDO PARA REDES SOCIALES */}
+            {iaTab === "social" && (
+              <div>
+                <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20, marginBottom: 16 }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 13, letterSpacing: 1 }}>📱 GENERADOR DE CONTENIDO</h3>
+                  <p style={{ color: "#aaa", fontSize: 12, marginBottom: 16 }}>Genera captions e hashtags listos para copiar y pegar en tus redes</p>
+                  <TIPO_SELECTOR />
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
+                    <BTN onClick={generarContenidoSocial} disabled={socialLoading} style={{ fontSize: 13, padding: "11px 24px" }}>
+                      {socialLoading ? "⏳ Generando..." : "✨ Generar Caption"}
+                    </BTN>
+                  </div>
+                </div>
+
+                {socialCaption && (
+                  <div style={{ background: "#0f0f0a", border: "1px solid #E1306C30", borderRadius: 16, padding: 20 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <h3 style={{ color: "#E1306C", margin: 0, fontSize: 13, letterSpacing: 1 }}>📸 CAPTION LISTO</h3>
+                      <BTN onClick={() => { navigator.clipboard.writeText(socialCaption); alert("¡Copiado! Pégalo en Instagram o Facebook"); }} outline color="#E1306C" style={{ fontSize: 11, padding: "6px 12px" }}>
+                        📋 Copiar todo
+                      </BTN>
+                    </div>
+                    <div style={{ fontSize: 13, color: "#e8e0d0", lineHeight: 1.8, whiteSpace: "pre-wrap", background: "#0a0a08", borderRadius: 10, padding: 16 }}>
+                      {socialCaption}
+                    </div>
+                    <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                      <BTN onClick={() => compartir("facebook", socialCaption, "Post EnKaje Pro")} color="#1877F2" textColor="#fff" style={{ fontSize: 12 }}>📘 Abrir Facebook</BTN>
+                      <BTN onClick={() => compartir("whatsapp", socialCaption, "Post EnKaje Pro")} color="#25D366" textColor="#fff" style={{ fontSize: 12 }}>💬 Compartir WA</BTN>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
