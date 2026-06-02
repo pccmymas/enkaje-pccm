@@ -1160,6 +1160,9 @@ export default function App() {
   const [socialCaption, setSocialCaption] = useState("");
   const [socialLoading, setSocialLoading] = useState(false);
   const [iaTab, setIaTab] = useState("asistente"); // asistente | renders | social
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
   const [editTaller, setEditTaller] = useState(null); // datos legales del taller en edición
   const [editInfo, setEditInfo] = useState(null);   // info básica del taller en edición
   const [aiLoading, setAiLoading] = useState(false);
@@ -2058,6 +2061,34 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
     setMaterialesLoading(false);
   }
 
+  async function enviarChat() {
+    if (!chatInput.trim() || chatLoading) return;
+    const userMsg = chatInput.trim();
+    setChatInput("");
+    setChatLoading(true);
+    setChatHistory(prev => [...prev, { role: "user", content: userMsg }]);
+    try {
+      const f = getForm();
+      const tipoLabel = tipoForm==="cocina"?"cocina integral":tipoForm==="closet"?"closet":tipoForm==="puerta"?"puerta":tipoForm==="panel"?"panel decorativo":"mueble a medida";
+      const contexto = `Eres un asistente experto en carpintería y ebanistería para talleres en Monterrey, México. Ayudas a talleres con: cotizaciones, materiales, técnicas, diseño, atención al cliente y administración. El taller trabaja con: ${tipoLabel}. Responde en español, de forma práctica y concisa. Máximo 200 palabras.`;
+      const messages = [
+        ...chatHistory.map(m => ({ role: m.role, content: m.content })),
+        { role: "user", content: userMsg }
+      ];
+      const res = await fetch("/api/common", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 400, system: contexto, messages })
+      });
+      const data = await res.json();
+      const reply = data.content?.[0]?.text || "No pude responder, intenta de nuevo.";
+      setChatHistory(prev => [...prev, { role: "assistant", content: reply }]);
+    } catch(e) {
+      setChatHistory(prev => [...prev, { role: "assistant", content: "❌ Error: " + e.message }]);
+    }
+    setChatLoading(false);
+  }
+
   async function generarRender() {
     if (!renderPrompt.trim()) return;
     setRenderLoading(true);
@@ -2939,39 +2970,95 @@ Formato: Caption completo listo para copiar y pegar.`;
 
             {/* ASISTENTE DE DISEÑO */}
             {iaTab === "asistente" && (
-              <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 20 }}>
-                <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: isMobile?16:20 }}>
-                  <h3 style={{ color: "#d4af37", margin: "0 0 14px", fontSize: 13, letterSpacing: 1 }}>RESUMEN DEL PROYECTO</h3>
-                  <TIPO_SELECTOR />
-                  {[
-                    ["Tipo", tipoForm==="cocina"?(Array.isArray(form.tipo_cocina)?form.tipo_cocina.join(", "):""):tipoForm==="closet"?(Array.isArray(form.tipo_closet)?form.tipo_closet.join(", "):""):tipoForm==="puerta"?(Array.isArray(form.tipo_puerta)?form.tipo_puerta.join(", "):""):(Array.isArray(form.tipo_mueble)?form.tipo_mueble.join(", "):"")],
-                    ["Estilo",   Array.isArray(form.estilo)?form.estilo.join(", "):""],
-                    ["Material", Array.isArray(form.material)?form.material.join(", "):""],
-                    ["Acabado",  Array.isArray(form.tipo_acabado)?form.tipo_acabado.join(", "):""],
-                    ["Color",    form.color_principal],
-                  ].map(([l,v],i) => (
-                    <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 13 }}>
-                      <span style={{ color: "#aaa", minWidth: 70 }}>{l}:</span>
-                      <span style={{ color: v?"#e8e0d0":"#555" }}>{v || "Sin especificar"}</span>
-                    </div>
-                  ))}
-                  <BTN onClick={analizarConIA} disabled={aiLoading} style={{ width: "100%", marginTop: 16, fontSize: 13, padding: "13px", letterSpacing: 1 }}>
-                    {aiLoading ? "Analizando..." : "ANALIZAR CON IA"}
-                  </BTN>
+              <div>
+                {/* Sugerencias rápidas */}
+                <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 16, marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>🤖 Prueba tu Asistente IA</div>
+                  <div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>Puedo ayudarte con cotizaciones, materiales, técnicas, atención al cliente y más. Prueba preguntarme:</div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {[
+                      "¿Cuánto cuesta una cocina de 3m en MDF?",
+                      "¿Qué materiales recomiendas para closet de lujo?",
+                      "¿Cómo cotizo un proyecto con medidas irregulares?",
+                      "¿Qué incluir en una garantía de carpintería?",
+                      "¿Cómo responder a un cliente que pide descuento?",
+                    ].map((s,i) => (
+                      <button key={i} onClick={() => setChatInput(s)}
+                        style={{ background: "#1a1208", border: "1px solid #d4af3730", color: "#d4af37", borderRadius: 20, padding: "6px 12px", fontSize: 11, cursor: "pointer", fontWeight: 500 }}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 16, padding: isMobile?16:20, minHeight: 250 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
-                    <h3 style={{ color: "#d4af37", margin: 0, fontSize: 13, letterSpacing: 1 }}>RECOMENDACIÓN</h3>
-                    {aiResult && (
-                      <div style={{ display: "flex", gap: 6 }}>
-                        <BTN onClick={() => compartir("whatsapp", aiResult, "Recomendacion IA")} color="#25D366" textColor="#fff" style={{ fontSize: 10, padding: "6px 10px" }}>WA</BTN>
-                        <BTN onClick={() => { navigator.clipboard.writeText(aiResult); alert("Copiado"); }} outline color="#555" style={{ fontSize: 10, padding: "6px 10px" }}>Copiar</BTN>
+
+                {/* Chat */}
+                <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, overflow: "hidden", marginBottom: 16 }}>
+                  {/* Historial */}
+                  <div style={{ minHeight: 200, maxHeight: 400, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+                    {chatHistory.length === 0 && (
+                      <div style={{ textAlign: "center", color: "#444", fontSize: 13, padding: "30px 0" }}>
+                        Haz una pregunta o selecciona una sugerencia arriba
+                      </div>
+                    )}
+                    {chatHistory.map((m, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: m.role==="user"?"flex-end":"flex-start" }}>
+                        <div style={{
+                          maxWidth: "80%", padding: "10px 14px", borderRadius: m.role==="user"?"16px 16px 4px 16px":"16px 16px 16px 4px",
+                          background: m.role==="user"?"#d4af3720":"#1a1a12",
+                          border: `1px solid ${m.role==="user"?"#d4af3740":"#2a2a20"}`,
+                          fontSize: 13, color: "#e8e0d0", lineHeight: 1.7, whiteSpace: "pre-wrap"
+                        }}>
+                          {m.role==="assistant" && <span style={{ fontSize: 10, color: "#d4af37", display: "block", marginBottom: 4, fontWeight: 700 }}>🤖 Asistente EnKaje</span>}
+                          {m.content}
+                        </div>
+                      </div>
+                    ))}
+                    {chatLoading && (
+                      <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                        <div style={{ background: "#1a1a12", border: "1px solid #2a2a20", borderRadius: "16px 16px 16px 4px", padding: "10px 14px", fontSize: 13, color: "#d4af37" }}>
+                          ✨ Pensando...
+                        </div>
                       </div>
                     )}
                   </div>
-                  {!aiResult && !aiLoading && <div style={{ textAlign: "center", padding: "30px 20px", color: "#555", fontSize: 13 }}>Configura tu proyecto y presiona Analizar con IA</div>}
-                  {aiLoading && <div style={{ color: "#d4af37", fontSize: 13, padding: "20px 0" }}>Analizando especificaciones...</div>}
-                  {aiResult && <div style={{ fontSize: 13, color: "#e8e0d0", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{aiResult}</div>}
+                  {/* Input */}
+                  <div style={{ borderTop: "1px solid #1a1a12", padding: 12, display: "flex", gap: 8 }}>
+                    <input
+                      value={chatInput}
+                      onChange={e => setChatInput(e.target.value)}
+                      onKeyDown={e => e.key==="Enter" && !e.shiftKey && enviarChat()}
+                      placeholder="Pregunta algo sobre carpintería, precios, materiales..."
+                      style={{ flex: 1, background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "10px 14px", color: "#e8e0d0", fontSize: 13, fontFamily: "inherit" }}
+                    />
+                    <button onClick={enviarChat} disabled={chatLoading || !chatInput.trim()}
+                      style={{ background: chatInput.trim()?"#d4af37":"#1a1a12", border: "none", borderRadius: 10, padding: "10px 16px", color: chatInput.trim()?"#000":"#555", fontSize: 13, cursor: chatInput.trim()?"pointer":"default", fontWeight: 700, whiteSpace: "nowrap" }}>
+                      Enviar →
+                    </button>
+                  </div>
+                </div>
+
+                {/* Análisis de proyecto */}
+                <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: isMobile?16:20 }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 12px", fontSize: 13, letterSpacing: 1 }}>📋 ANÁLISIS DEL PROYECTO ACTUAL</h3>
+                  <TIPO_SELECTOR />
+                  <BTN onClick={analizarConIA} disabled={aiLoading} style={{ width: "100%", marginTop: 12, fontSize: 13, padding: "11px", letterSpacing: 1 }}>
+                    {aiLoading ? "Analizando..." : "🔍 ANALIZAR PROYECTO CON IA"}
+                  </BTN>
+                  {aiLoading && <div style={{ color: "#d4af37", fontSize: 13, padding: "12px 0" }}>Analizando especificaciones...</div>}
+                  {aiResult && (
+                    <div style={{ marginTop: 14 }}>
+                      <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, marginBottom: 8 }}>
+                        <BTN onClick={() => compartir("whatsapp", aiResult, "Análisis IA")} color="#25D366" textColor="#fff" style={{ fontSize: 10, padding: "6px 10px" }}>WA</BTN>
+                        <BTN onClick={() => { navigator.clipboard.writeText(aiResult); alert("Copiado"); }} outline color="#555" style={{ fontSize: 10, padding: "6px 10px" }}>Copiar</BTN>
+                      </div>
+                      <div style={{ fontSize: 13, color: "#e8e0d0", lineHeight: 1.9, whiteSpace: "pre-wrap", background: "#0a0a08", borderRadius: 10, padding: 14 }}>{aiResult}</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Disclaimer */}
+                <div style={{ marginTop: 12, padding: "10px 14px", background: "#1a1208", border: "1px solid #d4af3720", borderRadius: 10, fontSize: 11, color: "#777", lineHeight: 1.6 }}>
+                  ⚠️ <b style={{ color: "#d4af3799" }}>Nota:</b> La IA puede cometer errores. Verifica siempre los precios, materiales y recomendaciones antes de compartirlos con tu cliente. EnKaje Pro no se hace responsable por decisiones basadas únicamente en las sugerencias de la IA.
                 </div>
               </div>
             )}
@@ -3052,6 +3139,11 @@ Formato: Caption completo listo para copiar y pegar.`;
                   </div>
                 )}
               </div>
+              
+                {/* Disclaimer */}
+                <div style={{ marginTop: 12, padding: "10px 14px", background: "#1a1208", border: "1px solid #d4af3720", borderRadius: 10, fontSize: 11, color: "#777", lineHeight: 1.6 }}>
+                  ⚠️ <b style={{ color: "#d4af3799" }}>Nota:</b> La IA puede cometer errores. Verifica siempre los resultados antes de compartirlos con tu cliente.
+                </div>
             )}
 
             {/* CONTENIDO PARA REDES SOCIALES */}
