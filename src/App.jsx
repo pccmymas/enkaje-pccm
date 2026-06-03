@@ -2797,7 +2797,111 @@ Formato: Caption completo listo para copiar y pegar.`;
             })}
           </div>
         )}
+{/* LEADS DEL PORTAL */}
+        {tab === "leads_portal" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:26 }}>Leads del Portal</h1>
+            <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Clientes que llenaron el portal público con render de IA</p>
+            {leads.length === 0 && (
+              <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 32, textAlign: "center", color: "#555" }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>📭</div>
+                <div style={{ fontSize: 14 }}>No hay leads aún</div>
+                <div style={{ fontSize: 12, color: "#333", marginTop: 8 }}>Cuando un cliente llene el portal aparecerá aquí</div>
+              </div>
+            )}
+            {leads.map((lead, i) => {
+              const sel = leadSel?.id === lead.id;
+              const scoreColor = lead.score >= 80 ? "#d4af37" : lead.score >= 55 ? "#4caf50" : lead.score >= 30 ? "#f0a500" : "#666";
+              const scoreEmoji = lead.score >= 80 ? "⭐" : lead.score >= 55 ? "🟢" : lead.score >= 30 ? "🟡" : "🔴";
+              const labelTexto = lead.score >= 80 ? "Prioritario" : lead.score >= 55 ? "Listo" : lead.score >= 30 ? "Evaluando" : "Explorando";
+              return (
+                <div key={lead.id || i} onClick={() => setLeadSel(sel ? null : lead)}
+                  style={{ background: "#0f0f0a", border: `1px solid ${sel ? scoreColor : "#1a1a12"}`, borderRadius: 14, padding: 16, marginBottom: 10, cursor: "pointer", transition: "all .2s" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 10, background: "#1a1a12", overflow: "hidden", flexShrink: 0 }}>
+                        {lead.render_url
+                          ? <img src={lead.render_url} alt="render" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🏠</div>}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: "#e8e0d0" }}>
+                          {lead.observaciones?.split("|")[0]?.replace("Nombre:","")?.trim() || "Cliente anónimo"}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#555" }}>
+                          {(lead.tipo_proyecto||"").toUpperCase()} · {lead.estilo_elegido} · {lead.created_at?.split("T")[0]}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <div style={{ background: `${scoreColor}20`, border: `1px solid ${scoreColor}50`, borderRadius: 20, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: scoreColor }}>
+                        {scoreEmoji} {labelTexto}
+                      </div>
+                      <div style={{ background: "#1a1a12", borderRadius: 20, padding: "4px 12px", fontSize: 13, fontWeight: 900, color: scoreColor }}>
+                        {lead.score}/100
+                      </div>
+                    </div>
+                  </div>
 
+                  {sel && (
+                    <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1a1a12" }}>
+                      {lead.render_url && (
+                        <div style={{ borderRadius: 10, overflow: "hidden", marginBottom: 14, position: "relative" }}>
+                          <img src={lead.render_url} alt="Render IA" style={{ width: "100%", maxHeight: 220, objectFit: "cover" }} />
+                          <div style={{ position: "absolute", top: 8, left: 8, background: "#0a0a08cc", borderRadius: 8, padding: "4px 10px", fontSize: 11, color: "#d4af37", fontWeight: 700 }}>🤖 Render IA</div>
+                        </div>
+                      )}
+                      {lead.foto_url && (
+                        <div style={{ borderRadius: 10, overflow: "hidden", marginBottom: 14 }}>
+                          <div style={{ fontSize: 10, color: "#555", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>📸 Foto original del cliente</div>
+                          <img src={lead.foto_url} alt="Foto cliente" style={{ width: "100%", maxHeight: 160, objectFit: "cover", borderRadius: 8 }} />
+                        </div>
+                      )}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+                        {[
+                          ["Proyecto", lead.tipo_proyecto],
+                          ["Estilo", lead.estilo_elegido],
+                          ["Decisión", lead.nivel_decision],
+                          ["Fecha deseada", lead.fecha_inicio_deseada],
+                          ["Inversión est.", `$${(lead.rango_inversion_min||0).toLocaleString("es-MX")} – $${(lead.rango_inversion_max||0).toLocaleString("es-MX")}`],
+                          ["Medidas", lead.medidas || "No especificadas"],
+                          ["Materiales", lead.materiales_sugeridos],
+                          ["Tiempo fab.", lead.tiempo_fabricacion],
+                        ].filter(([,v]) => v).map(([l,v], j) => (
+                          <div key={j} style={{ background: "#0a0a08", borderRadius: 8, padding: "8px 10px" }}>
+                            <div style={{ fontSize: 9, color: "#444", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>{l}</div>
+                            <div style={{ fontSize: 12, color: "#e8e0d0", fontWeight: 600, textTransform: "capitalize" }}>{v}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {lead.observaciones && (
+                        <div style={{ background: "#0a0a08", borderRadius: 8, padding: 10, marginBottom: 14, fontSize: 12, color: "#888" }}>
+                          {lead.observaciones.split("|").map((l,i) => <div key={i}>{l.trim()}</div>)}
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {lead.observaciones?.includes("Tel:") && (
+                          <button onClick={e => {
+                            e.stopPropagation();
+                            const tel = lead.observaciones.split("Tel:")[1]?.split("|")[0]?.trim()?.replace(/\D/g,"");
+                            const msg = `Hola! Te contacto de EnKaje Pro por tu proyecto de ${lead.tipo_proyecto} estilo ${lead.estilo_elegido}. ¿Cuándo podemos hablar para darte una cotización?`;
+                            window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(msg)}`, "_blank");
+                          }} style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                            💬 Contactar por WhatsApp
+                          </button>
+                        )}
+                        <button onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario({...lead, nombre: lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim()}); setTabWithHistory("formulario"); }}
+                          style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                          📋 Abrir en formulario
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
         {/* LEADS TALLER */}
         {tab === "leads" && role === "taller" && (
           <div>
