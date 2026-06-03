@@ -376,9 +376,11 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
             <ProgressBar step={2} total={TOTAL_STEPS} />
             <div style={{ marginTop: 32, marginBottom: 24 }}>
               <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 26, fontWeight: 700, color: "#f0e8dc", marginBottom: 8 }}>
-                ¿Qué estilo te gusta?
-              </h2>
-              <p style={{ color: "#666", fontSize: 14 }}>El estilo define materiales, colores y acabados del render.</p>
+  Medidas del espacio <span style={{ color: "#444", fontSize: 18 }}>(opcional)</span>
+</h2>
+<p style={{ color: "#666", fontSize: 14, lineHeight: 1.7 }}>
+  Entre más info, más precisa será la cotización. Puedes escribir las medidas o subir una foto — puede ser una foto del espacio con un metro, o un dibujito en papel con los números. No tiene que ser perfecto. 📏
+</p>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
