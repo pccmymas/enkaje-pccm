@@ -1451,13 +1451,17 @@ export default function App() {
 
   const nombreUsuario = user?.user_metadata?.nombre || user?.email?.split("@")[0] || "Usuario";
 
-  async function login() {
-    setLoginLoading(true); setLoginError("");
+async function login() {
+  setLoginLoading(true); setLoginError("");
+  try {
     const data = await authFetch("token?grant_type=password", { email: loginForm.email, password: loginForm.password });
     if (data.access_token) {
+      setToken(data.access_token); setUser(data.user);
       sessionStorage.setItem("enkaje_token", data.access_token);
       sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
-      sessionStorage.setItem("enkaje_role", data.user?.user_metadata?.role || "cliente");
+      const r = data.user?.user_metadata?.role || "cliente";
+      sessionStorage.setItem("enkaje_role", r);
+      setRole(r); setScreen("app"); setTab("bienvenida");
       sessionStorage.setItem("enkaje_tab", "bienvenida");
       history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
       if (r === "cliente") {
@@ -1473,9 +1477,15 @@ export default function App() {
           }
         } catch(e) {}
       }
-    } else { setLoginError(data.error_description || data.message || "Error al iniciar sesion"); }
+    } else {
+      setLoginError(data.error_description || data.message || "Error al iniciar sesion");
+    }
+  } catch(e) {
+    setLoginError("Error de conexión. Intenta de nuevo.");
+  } finally {
     setLoginLoading(false);
   }
+}
 
   async function register() {
     setLoginLoading(true); setLoginError("");
