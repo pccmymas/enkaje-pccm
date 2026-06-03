@@ -232,7 +232,10 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
   created_at:           new Date().toISOString(),
 };
 console.log("PAYLOAD:", JSON.stringify(payload));
-      await sb("expedientes", {
+     await sb("expedientes", {
+  method: "POST",
+  body: JSON.stringify(payload)
+});
         method: "POST",
         body: JSON.stringify({
           tipo_proyecto:        tipoProyecto,
