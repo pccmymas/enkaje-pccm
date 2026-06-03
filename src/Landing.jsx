@@ -48,8 +48,6 @@ const CSS = `
 const FOTOS = [
   { label: "Cocina Moderna", img: "https://images.pexels.com/photos/6969870/pexels-photo-6969870.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Lo más pedido" },
   { label: "Closet Premium", img: "https://images.pexels.com/photos/6580406/pexels-photo-6580406.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Tendencia 2026" },
-  { label: "Área de Entretenimiento", img: "https://images.pexels.com/photos/15558114/pexels-photo-15558114.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Muy solicitado" },
-  { label: "Puerta de Madera", img: "https://images.pexels.com/photos/4682153/pexels-photo-4682153.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Elegancia natural" },
 ];
 
 const PASOS_CLIENTE = [
