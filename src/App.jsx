@@ -1478,8 +1478,8 @@ export default function App() {
       setRole(r); setScreen("app"); setTab("bienvenida");
       sessionStorage.setItem("enkaje_tab", "bienvenida");
       history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
-    } else if (data.user && !data.session) {
-      setLoginError("✅ Cuenta creada. Revisa tu correo para confirmar y luego inicia sesion.");
+   } else if (data.user && !data.session) {
+      setLoginError("✅ Cuenta creada. Inicia sesión con tu correo y contraseña.");
     } else {
       const msg = data.error_description || data.message || data.msg || JSON.stringify(data);
       if (msg.includes("Signups not allowed") || msg.includes("signup") || msg.includes("disabled")) {
