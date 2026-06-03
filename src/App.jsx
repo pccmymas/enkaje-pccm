@@ -2720,7 +2720,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                     </div>
                     <TEXTAREA label="Comentarios técnicos" value={formPanel.comentarios_tecnicos} onChange={e=>setFormPanel(p=>({...p,comentarios_tecnicos:e.target.value}))} placeholder="Notas internas del taller..." rows={2} />
                   </div>
-                )}
+                
               </div>
             {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />    
             <div style={{ marginTop: 28, background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 20 }}>
