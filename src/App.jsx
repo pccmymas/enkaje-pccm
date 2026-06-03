@@ -93,7 +93,7 @@ function PaginaTerminos({ onBack }) {
         <p style={LEGAL_S.p}>Adicionalmente, EnKaje Pro ofrece herramientas de inteligencia artificial para generación de propuestas visuales (renders) y estimaciones de inversión, cuyo carácter es estrictamente referencial.</p>
 
         <h2 style={LEGAL_S.h2}>2. Registro y Cuentas</h2>
-        <LegalUL items={["Debes ser mayor de 18 años para registrarte","Eres res
+      <LegalUL items={["Debes ser mayor de 18 años para registrarte","Eres responsable de mantener la confidencialidad de tu contraseña","Debes proporcionar información verídica al registrarte","Las cuentas de taller son activadas exclusivamente por el equipo EnKaje Pro tras completar el proceso de verificación","Nos reservamos el derecho de suspender o eliminar cuentas que violen estos términos"]} />
 
 function PaginaCookies({ onBack }) {
   useEffect(() => window.scrollTo(0,0), []);
