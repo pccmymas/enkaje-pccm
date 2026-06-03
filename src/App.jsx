@@ -2490,7 +2490,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {role==="admin" && <><BTN onClick={() => setTabWithHistory("formulario")}>Nuevo Levantamiento</BTN><BTN onClick={() => setTabWithHistory("proyectos")} outline color="#d4af37">Ver Proyectos ({proyectos.length})</BTN></>}
-                {role==="taller" && <BTN onClick={() => setTabWithHistory("leads")}>Ver Proyectos ({proyectos.length})</BTN>}
+                {role==="taller" && <BTN onClick={() => setTabWithHistory("leads")}>Ver Proyectos ({proyectos?.length || 0})</BTN>} 
                 {role==="taller" && talleresMem.find(t=>t.email===user?.email)?.slug && (
                   <BTN onClick={() => window.open(`https://enkajepro.com/taller/${talleresMem.find(t=>t.email===user?.email).slug}`, "_blank")} outline color="#d4af37">🔗 Ver mi link público</BTN>
                 )}
