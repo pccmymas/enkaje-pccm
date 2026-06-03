@@ -181,7 +181,7 @@ export default function Portal() {
     setFotoUrl(URL.createObjectURL(file));
   };
 
-  const generarRender = async () => {
+ const generarRender = async () => {
     if (!estilo || !tipoProyecto) return;
     setRenderLoading(true);
     setRenderMsg("");
@@ -209,9 +209,45 @@ export default function Portal() {
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl  = imgData?.url;
       const imgB64  = imgData?.b64_json;
-      if (imgUrl)      { setRenderUrl(imgUrl);                             setRenderMsg("✅ Render generado"); }
-      else if (imgB64) { setRenderUrl("data:image/png;base64," + imgB64); setRenderMsg("✅ Render generado"); }
-      else             { setRenderMsg("❌ " + (data?.error?.message || "Error al generar")); }
+
+      if (imgUrl) {
+        setRenderUrl(imgUrl);
+        setRenderMsg("✅ Render generado");
+      } else if (imgB64) {
+        // Subir a Supabase Storage
+        try {
+          const byteString = atob(imgB64);
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+          const blob = new Blob([ab], { type: "image/png" });
+          const fileName = `render_${Date.now()}.png`;
+          const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/renders/${fileName}`, {
+            method: "POST",
+            headers: {
+              "apikey": SUPABASE_KEY,
+              "Authorization": `Bearer ${SUPABASE_KEY}`,
+              "Content-Type": "image/png",
+              "x-upsert": "true"
+            },
+            body: blob
+          });
+          if (uploadRes.ok) {
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`;
+            setRenderUrl(publicUrl);
+            setRenderMsg("✅ Render generado");
+          } else {
+            // Si falla el upload, usar base64 local
+            setRenderUrl("data:image/png;base64," + imgB64);
+            setRenderMsg("✅ Render generado");
+          }
+        } catch {
+          setRenderUrl("data:image/png;base64," + imgB64);
+          setRenderMsg("✅ Render generado");
+        }
+      } else {
+        setRenderMsg("❌ " + (data?.error?.message || "Error al generar"));
+      }
     } catch(e) { setRenderMsg("❌ " + e.message); }
     setRenderLoading(false);
   };
