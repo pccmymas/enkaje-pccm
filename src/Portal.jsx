@@ -205,59 +205,35 @@ const resumen = `🆕 *NUEVO LEAD — EnKaje Pro*\n\n📋 Proyecto: ${tipoProyec
 window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_blank");;
     const score = calcularScore({ nivel_decision: nivelDecision, foto_url: fotoUrl, medidas, fecha_inicio: fechaInicio });
     const label = scoreLabel(score);
-    const rango = RANGOS[tipoProyecto] || { min: 0, max: 0 };
+  const rango = RANGOS[tipoProyecto] || { min: 0, max: 0 };
     try {
-      console.log("Guardando expediente...", JSON.stringify({
-  tipo_proyecto: tipoProyecto,
-  estilo_elegido: estilo,
-  nivel_decision: nivelDecision,
-  score: calcularScore({ nivel_decision: nivelDecision, foto_url: fotoUrl, medidas, fecha_inicio: fechaInicio }),
-}));
+      const score = calcularScore({ nivel_decision: nivelDecision, foto_url: fotoUrl, medidas, fecha_inicio: fechaInicio });
+      const label = scoreLabel(score);
       const payload = {
-  tipo_proyecto:        tipoProyecto,
-  foto_url:             fotoUrl || null,
-  render_url:           renderUrl || null,
-  estilo_elegido:       estilo,
-  materiales_sugeridos: MATERIALES_SUGERIDOS[estilo] || null,
-  rango_inversion_min:  rango.min,
-  rango_inversion_max:  rango.max,
-  tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
-  fecha_inicio_deseada: fechaInicio || null,
-  nivel_decision:       nivelDecision,
-  medidas_sketch_url:   medidas || null,
-  observaciones:        `Nombre: ${nombre} | Tel: ${telefono} | Correo: ${correo}`,
-  score,
-  score_label:          label,
-  estado_lead:          "nuevo",
-  created_at:           new Date().toISOString(),
-};
-console.log("PAYLOAD:", JSON.stringify(payload));
-     await sb("expedientes", {
-  method: "POST",
-  body: JSON.stringify(payload)
-});
+        tipo_proyecto:        tipoProyecto,
+        foto_url:             fotoUrl || null,
+        render_url:           renderUrl || null,
+        estilo_elegido:       estilo,
+        materiales_sugeridos: MATERIALES_SUGERIDOS[estilo] || null,
+        rango_inversion_min:  rango.min,
+        rango_inversion_max:  rango.max,
+        tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
+        fecha_inicio_deseada: fechaInicio || null,
+        nivel_decision:       nivelDecision,
+        medidas_sketch_url:   medidas || null,
+        observaciones:        `Nombre: ${nombre} | Tel: ${telefono} | Correo: ${correo}`,
+        score,
+        score_label:          label,
+        estado_lead:          "nuevo",
+        created_at:           new Date().toISOString(),
+      };
+      console.log("PAYLOAD:", JSON.stringify(payload));
+      await sb("expedientes", {
         method: "POST",
-        body: JSON.stringify({
-          tipo_proyecto:        tipoProyecto,
-          foto_url:             fotoUrl || null,
-          render_url:           renderUrl || null,
-          estilo_elegido:       estilo,
-          materiales_sugeridos: MATERIALES_SUGERIDOS[estilo] || null,
-          rango_inversion_min:  rango.min,
-          rango_inversion_max:  rango.max,
-          tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
-          fecha_inicio_deseada: fechaInicio || null,
-          nivel_decision:       nivelDecision,
-          medidas_sketch_url:   medidas || null,
-          observaciones:        `Nombre: ${nombre} | Tel: ${telefono} | Correo: ${correo}`,
-          score,
-          score_label:          label,
-          estado_lead:          "nuevo",
-          created_at:           new Date().toISOString(),
-        })
+        body: JSON.stringify(payload)
       });
       setSaved(true);
-  } catch(e) {
+    } catch(e) {
       console.error("ERROR EXPEDIENTE:", e);
       alert("Error: " + e.message);
     } 
