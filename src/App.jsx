@@ -1726,7 +1726,7 @@ export default function App() {
   function compartirFormulario(canal) {
     const f = getForm();
     const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v || "");
-    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
+    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":tipoForm==="bano"?"Baño":"Mueble";
     const sep = "━".repeat(26);
     const lineas = [
       `LEVANTAMIENTO ${tipo.toUpperCase()} - EnKaje Pro`,
