@@ -461,7 +461,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
+)}
       {/* ── PRECIOS ── */}
       <section id="precios" style={{ padding: "80px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
