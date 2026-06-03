@@ -200,7 +200,9 @@ export default function Portal() {
 
   // ─── GUARDAR EXPEDIENTE ──────────────────────────────────────────────────────
   const guardarExpediente = async () => {
-    setSaving(true);
+    setSaving(true)// Notificar a EnKaje Pro por WhatsApp
+const resumen = `🆕 *NUEVO LEAD — EnKaje Pro*\n\n📋 Proyecto: ${tipoProyecto.toUpperCase()}\n🎨 Estilo: ${estilo}\n👤 Nombre: ${nombre}\n📱 Tel: ${telefono}\n📧 Correo: ${correo}\n📅 Fecha deseada: ${fechaInicio}\n🎯 Decisión: ${nivelDecision}\n📐 Medidas: ${medidas || "no especificadas"}\n💰 Rango: $${(RANGOS[tipoProyecto]?.min||0).toLocaleString("es-MX")} – $${(RANGOS[tipoProyecto]?.max||0).toLocaleString("es-MX")} MXN\n\nenkajepro.com`;
+window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_blank");;
     const score = calcularScore({ nivel_decision: nivelDecision, foto_url: fotoUrl, medidas, fecha_inicio: fechaInicio });
     const label = scoreLabel(score);
     const rango = RANGOS[tipoProyecto] || { min: 0, max: 0 };
