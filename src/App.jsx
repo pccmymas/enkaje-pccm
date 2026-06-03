@@ -1429,7 +1429,8 @@ export default function App() {
     if (tipoForm === "cocina")       setFormCocina(p => ({...p, [key]: val}));
     else if (tipoForm === "closet")  setFormCloset(p => ({...p, [key]: val}));
     else if (tipoForm === "puerta")  setFormPuerta(p => ({...p, [key]: val}));
-    else if (tipoForm === "panel")   setFormPanel(p => ({...p, [key]: val}));
+   else if (tipoForm === "panel")   setFormPanel(p => ({...p, [key]: val}));
+    else if (tipoForm === "bano")   setFormBano(p => ({...p, [key]: val}));
     else                             setFormMueble(p => ({...p, [key]: val}));
   };
 
