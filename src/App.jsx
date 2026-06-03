@@ -94,7 +94,37 @@ function PaginaTerminos({ onBack }) {
 
         <h2 style={LEGAL_S.h2}>2. Registro y Cuentas</h2>
       <LegalUL items={["Debes ser mayor de 18 años para registrarte","Eres responsable de mantener la confidencialidad de tu contraseña","Debes proporcionar información verídica al registrarte","Las cuentas de taller son activadas exclusivamente por el equipo EnKaje Pro tras completar el proceso de verificación","Nos reservamos el derecho de suspender o eliminar cuentas que violen estos términos"]} />
-
+<h2 style={LEGAL_S.h2}>3. Verificación de Talleres</h2>
+        <p style={LEGAL_S.p}>EnKaje Pro aplica un proceso de verificación básica antes de activar la cuenta de cualquier taller, que incluye validación de identidad del responsable, datos de contacto y ubicación del negocio. Este proceso tiene como finalidad mantener un directorio de talleres confiables, sin que ello constituya garantía alguna sobre la calidad, legalidad o resultado de sus servicios.</p>
+        <p style={LEGAL_S.p}>EnKaje Pro no es responsable por actos, omisiones, incumplimientos o daños causados por los talleres registrados. La relación contractual por cualquier trabajo realizado es exclusivamente entre el cliente y el taller.</p>
+        <h2 style={LEGAL_S.h2}>4. Contenido e Imágenes Subidas</h2>
+        <p style={LEGAL_S.p}>Al subir fotografías u otro contenido a la plataforma, el usuario declara y garantiza que:</p>
+        <LegalUL items={["Tiene derechos legales sobre las imágenes subidas o ha obtenido la autorización correspondiente","El contenido no viola derechos de terceros ni contiene material ilegal","Autoriza expresamente a EnKaje Pro a procesar dichas imágenes mediante sistemas de inteligencia artificial para generar la propuesta visual solicitada","Autoriza a EnKaje Pro a compartir las imágenes con los talleres asignados para fines de cotización"]} />
+        <p style={LEGAL_S.p}>EnKaje Pro no es responsable por el contenido de imágenes subidas por usuarios ni por reclamaciones de terceros relacionadas con dicho contenido.</p>
+        <div style={LEGAL_S.div}/>
+        <h2 style={LEGAL_S.h2}>5. Inteligencia Artificial y Renders</h2>
+        <p style={LEGAL_S.p}>Los renders generados por la plataforma son propuestas visuales creadas mediante inteligencia artificial a partir de las imágenes y preferencias del usuario. Tienen carácter estrictamente referencial y <strong style={{color:"#e8e0d0"}}>no constituyen una garantía del resultado final</strong> del proyecto.</p>
+        <p style={LEGAL_S.p}>Los rangos de inversión estimados son aproximaciones basadas en parámetros generales del mercado y no representan cotizaciones formales. El precio real será determinado por el taller en su cotización.</p>
+        <p style={LEGAL_S.p}>EnKaje Pro retiene los derechos sobre los renders generados por sus sistemas de IA. El usuario obtiene una licencia de uso personal, no transferible y no comercial. Queda prohibido remover, alterar u ocultar la marca de agua presente en renders generados en modalidad gratuita.</p>
+        <h2 style={LEGAL_S.h2}>6. Servicio Freemium</h2>
+        <p style={LEGAL_S.p}>EnKaje Pro ofrece una generación gratuita de render sin necesidad de crear una cuenta. Esta generación incluye marca de agua y no permite descarga en alta resolución. Al registrarse, el usuario accede a generaciones adicionales según los términos vigentes del plan gratuito.</p>
+        <p style={LEGAL_S.p}>El acceso gratuito es un beneficio revocable. EnKaje Pro se reserva el derecho de modificar, limitar o eliminar el acceso gratuito en cualquier momento sin previo aviso, sin que esto genere derecho a compensación.</p>
+        <h2 style={LEGAL_S.h2}>7. Uso Prohibido</h2>
+        <LegalUL items={["Usar la plataforma para fines ilegales o fraudulentos","Publicar información falsa sobre proyectos o presupuestos","Contactar directamente a talleres para evadir la intermediación de EnKaje Pro","Subir imágenes sobre las cuales no se tienen derechos o que contengan contenido ilegal","Remover o alterar marcas de agua en renders generados en modalidad gratuita","Copiar o redistribuir contenido de la plataforma sin autorización escrita","Interferir con el funcionamiento técnico de la plataforma","Usar los renders generados con fines comerciales sin autorización expresa de EnKaje Pro"]} />
+        <h2 style={LEGAL_S.h2}>8. Limitación de Responsabilidad</h2>
+        <p style={LEGAL_S.p}>EnKaje Pro no garantiza la disponibilidad ininterrumpida del servicio ni la exactitud de los renders o estimaciones generadas por IA.</p>
+        <div style={LEGAL_S.warn}><p style={{...LEGAL_S.p,margin:0,color:"#f44336",fontWeight:600}}>Limitación de Responsabilidad</p><p style={{...LEGAL_S.p,margin:"6px 0 0"}}>La responsabilidad máxima de EnKaje Pro ante cualquier reclamación se limita al monto de la suscripción mensual pagada por el usuario en el mes en que ocurrió el evento reclamado. EnKaje Pro no será responsable por daños indirectos, pérdida de negocio, pérdida de datos ni cualquier daño consecuente.</p></div>
+        <h2 style={LEGAL_S.h2}>9. Suscripciones y Pagos</h2>
+        <LegalUL items={["Planes: Básico $699, Pro $1,499 y Premium $2,999 MXN/mes","Pagos mensuales anticipados","Sin reembolsos por períodos parciales","Puedes cancelar en cualquier momento desde tu panel — el acceso continúa hasta el fin del período pagado","Los precios pueden cambiar con al menos 30 días de aviso previo"]} />
+        <h2 style={LEGAL_S.h2}>10. Propiedad Intelectual</h2>
+        <p style={LEGAL_S.p}>Todo el contenido, diseño, código, marca, renders generados por IA y materiales de EnKaje Pro son propiedad de EnKaje Pro y están protegidos por las leyes de propiedad intelectual mexicanas. Queda prohibida su reproducción, distribución o uso sin autorización escrita previa.</p>
+        <h2 style={LEGAL_S.h2}>11. Ley Aplicable</h2>
+        <p style={LEGAL_S.p}>Estos Términos se rigen por las leyes de los Estados Unidos Mexicanos. Cualquier controversia se somete a la jurisdicción de los tribunales competentes de Monterrey, Nuevo León, renunciando las partes a cualquier otro fuero que pudiera corresponderles.</p>
+        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Dudas sobre los términos?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>hola@enkajepro.com</span></p></div>
+      </div>
+    </div>
+  );
+}
 function PaginaCookies({ onBack }) {
   useEffect(() => window.scrollTo(0,0), []);
   const tipos = [
