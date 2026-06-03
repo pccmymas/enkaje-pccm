@@ -2909,7 +2909,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                           {lead.observaciones.split("|").map((l,i) => <div key={i}>{l.trim()}</div>)}
                         </div>
                       )}
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                         {lead.observaciones?.includes("Tel:") && (
                           <button onClick={e => {
                             e.stopPropagation();
@@ -2917,31 +2917,28 @@ Formato: Caption completo listo para copiar y pegar.`;
                             const msg = `Hola! Te contacto de EnKaje Pro por tu proyecto de ${lead.tipo_proyecto} estilo ${lead.estilo_elegido}. ¿Cuándo podemos hablar para darte una cotización?`;
                             window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(msg)}`, "_blank");
                           }} style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                            💬 Contactar por WhatsApp
+                            💬 WhatsApp
                           </button>
                         )}
                         <button onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario({...lead, nombre: lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim()}); setTabWithHistory("formulario"); }}
                           style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                          📋 Abrir en formulario
-                          <button onClick={async e => {
-  e.stopPropagation();
-  setConfirmModal({ msg: `¿Eliminar el lead de ${lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim() || "este cliente"}?`, onOk: async () => {
-    await sb(`expedientes?id=eq.${lead.id}`, { method: "DELETE", token });
-    cargarLeads();
-    setLeadSel(null);
-  }});
-}} style={{ background: "transparent", color: "#f44336", border: "1.5px solid #f44336", borderRadius: 10, padding: "9px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>
-  🗑️
-</button>
+                          📋 Formulario
                         </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+                        <button onClick={e => { e.stopPropagation(); }} 
+                          style={{ background: "transparent", color: "#00bcd4", border: "1.5px solid #00bcd4", borderRadius: 10, padding: "9px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                          ✏️
+                        </button>
+                        <button onClick={async e => {
+                          e.stopPropagation();
+                          setConfirmModal({ msg: `¿Eliminar el lead de ${lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim() || "este cliente"}?`, onOk: async () => {
+                            await sb(`expedientes?id=eq.${lead.id}`, { method: "DELETE", token });
+                            cargarLeads();
+                            setLeadSel(null);
+                          }});
+                        }} style={{ background: "transparent", color: "#f44336", border: "1.5px solid #f44336", borderRadius: 10, padding: "9px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                          🗑️
+                        </button>
+                      </div>            
  
         {/* LEADS TALLER */}
         {tab === "leads" && role === "taller" && (
