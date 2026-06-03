@@ -1401,7 +1401,7 @@ export default function App() {
   const [materialesLoading, setMaterialesLoading] = useState(false);
   const [materialesMsg, setMaterialesMsg] = useState("");
 
-  const getForm = () => tipoForm === "cocina" ? formCocina : tipoForm === "closet" ? formCloset : tipoForm === "puerta" ? formPuerta : tipoForm === "panel" ? formPanel : formMueble;
+  const getForm = () => tipoForm === "cocina" ? formCocina : tipoForm === "closet" ? formCloset : tipoForm === "puerta" ? formPuerta : tipoForm === "panel" ? formPanel : tipoForm === "bano" ? formBano : formMueble;
   // Cargar proyecto en su formulario correspondiente
   function cargarProyectoEnFormulario(p) {
     const tipo = p.tipo_proyecto || "cocina";
