@@ -2933,8 +2933,6 @@ Formato: Caption completo listo para copiar y pegar.`;
 }} style={{ background: "transparent", color: "#f44336", border: "1.5px solid #f44336", borderRadius: 10, padding: "9px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer", flexShrink: 0 }}>
   🗑️
 </button>
-  🗑️
-</button>
                         </button>
                       </div>
                     </div>
