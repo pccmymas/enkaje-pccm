@@ -310,7 +310,20 @@ const FORM_MUEBLE_INIT = {
   incluye: "", no_incluye: "", tiempo_entrega: "15 a 20 dias habiles",
   anticipo: "60", pago_entrega: "30", pago_final: "10", garantia: "6 meses en instalacion",
 };
-
+const FORM_BANO_INIT = {
+  tipo_proyecto: "bano", nombre: "", telefono: "", direccion: "", correo: "",
+  fecha: new Date().toISOString().split("T")[0], atencion_por: "Felipe Santiago",
+  tipo_mueble_bano: [], tipo_mueble_bano_otro: "",
+  ancho: "", alto: "", profundidad: "", cantidad: "",
+  instalacion: [], estilo: [], material: [], grosor: [], color_principal: "", color_secundario: "",
+  tipo_acabado: [], tipo_puertas: [], jaladeras: [], bisagras: [], correderas: [],
+  tipo_tarja: [], color_tarja: "", griferia: [],
+  iluminacion_bano: [], espejo: [], accesorios_bano: [], observaciones: "",
+  materiales_solicitados: "", nivel_calidad: "", comentarios_tecnicos: "",
+  precio_fabricacion: "", precio_instalacion: "", precio_herrajes: "", precio_otros: "",
+  incluye: "", no_incluye: "", tiempo_entrega: "10 a 15 dias habiles",
+  anticipo: "60", pago_entrega: "30", pago_final: "10", garantia: "6 meses en instalacion y herrajes",
+};
 const FORM_PANEL_INIT = {
   tipo_proyecto: "panel", nombre: "", telefono: "", direccion: "", correo: "",
   fecha: new Date().toISOString().split("T")[0], atencion_por: "Felipe Santiago",
