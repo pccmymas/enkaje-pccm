@@ -2442,8 +2442,7 @@ Formato: Caption completo listo para copiar y pegar.`;
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["membresias","Talleres"],["ia","IA"]]
    : role === "taller"
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["leads","Proyectos"],["leads_portal","Leads"],["presupuesto","Cotizar"],["ia","IA"]]
-   : [["bienvenida","Inicio"],["formulario","Mi Proyecto"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["ia","IA"]]
-
+  : [["bienvenida","Inicio"],["formulario","Formulario"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["ia","IA"]]
   const form = getForm();
 
   const TIPO_SELECTOR = () => (
