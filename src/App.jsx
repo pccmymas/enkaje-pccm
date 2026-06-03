@@ -1381,6 +1381,19 @@ export default function App() {
   const [materiales, setMateriales] = useState([]);
   const [materialesLoading, setMaterialesLoading] = useState(false);
   const [materialesMsg, setMaterialesMsg] = useState("");
+  useEffect(() => {
+  const token = sessionStorage.getItem("enkaje_token");
+  const user  = sessionStorage.getItem("enkaje_user");
+  const role  = sessionStorage.getItem("enkaje_role");
+  const tab   = sessionStorage.getItem("enkaje_tab");
+  if (token && user && role) {
+    setToken(token);
+    setUser(JSON.parse(user));
+    setRole(role);
+    setScreen("app");
+    setTab(tab || "bienvenida");
+  }
+}, []);
 
   const getForm = () => tipoForm === "cocina" ? formCocina : tipoForm === "closet" ? formCloset : tipoForm === "puerta" ? formPuerta : tipoForm === "panel" ? formPanel : tipoForm === "bano" ? formBano : formMueble;
   // Cargar proyecto en su formulario correspondiente
