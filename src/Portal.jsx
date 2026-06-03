@@ -767,7 +767,7 @@ export default function Portal() {
               </Btn>
               <Btn onClick={() => {
                 const msg = `Hola! Acabo de solicitar cotización en EnKaje Pro para mi proyecto de ${TIPOS_PROYECTO.find(t=>t.key===tipoProyecto)?.label} estilo ${ESTILOS.find(e=>e.key===estilo)?.label}. ¿Me pueden ayudar?`;
-                window.open(`https://wa.me/528112345678?text=${encodeURIComponent(msg)}`, "_blank");
+                window.open(`https://wa.me/https://wa.me/528127176786?text=${encodeURIComponent(msg)}`, "_blank");
               }} color="#25D366" textColor="#fff" style={{ fontSize: 13 }}>
                 💬 Contactar por WhatsApp
               </Btn>
