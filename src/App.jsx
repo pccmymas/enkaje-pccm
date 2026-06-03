@@ -2932,6 +2932,22 @@ Formato: Caption completo listo para copiar y pegar.`;
             })}
           </div>
         )}
+        <button onClick={e => {
+  e.stopPropagation();
+  setLeadSel({...lead, editando: true});
+}} style={{ background: "transparent", color: "#00bcd4", border: "1.5px solid #00bcd4", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+  ✏️ Editar
+</button>
+<button onClick={async e => {
+  e.stopPropagation();
+  setConfirmModal({ msg: `¿Eliminar el lead de ${lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim() || "este cliente"}?`, onOk: async () => {
+    await sb(`expedientes?id=eq.${lead.id}`, { method: "DELETE", token });
+    cargarLeads();
+    setLeadSel(null);
+  }});
+}} style={{ background: "transparent", color: "#f44336", border: "1.5px solid #f44336", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+  🗑️ Eliminar
+</button>
         {/* LEADS TALLER */}
         {tab === "leads" && role === "taller" && (
           <div>
