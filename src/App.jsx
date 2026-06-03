@@ -38,29 +38,27 @@ function PaginaPrivacidad({ onBack }) {
       <div style={LEGAL_S.wrap}>
         <div style={LEGAL_S.badge}>LEGAL</div>
         <h1 style={LEGAL_S.h1}>Aviso de Privacidad</h1>
-        <p style={LEGAL_S.meta}>Última actualización: enero 2025 · Monterrey, Nuevo León, México</p>
-        <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>En cumplimiento con la LFPDPPP, EnKaje Pro pone a disposición el presente Aviso de Privacidad.</p></div>
+        <p style={LEGAL_S.meta}>Última actualización: junio 2026 · Monterrey, Nuevo León, México</p>
+        <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>En cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de Particulares (LFPDPPP), EnKaje Pro pone a disposición el presente Aviso de Privacidad.</p></div>
+
         <h2 style={LEGAL_S.h2}>1. Responsable del Tratamiento</h2>
         <p style={LEGAL_S.p}><strong style={{color:"#e8e0d0"}}>EnKaje Pro</strong> · Monterrey, Nuevo León, México · <span style={{color:"#d4af37"}}>hola@enkajepro.com</span></p>
+        <p style={{...LEGAL_S.p,color:"#555",fontStyle:"italic",fontSize:12}}>Nota: La razón social y RFC serán actualizados una vez formalizado el registro ante el SAT.</p>
+
         <h2 style={LEGAL_S.h2}>2. Datos que Recabamos</h2>
-        <LegalUL items={["Nombre completo","Correo electrónico","Teléfono","Dirección del proyecto","Especificaciones del proyecto de carpintería","Datos de navegación y uso de la plataforma"]} />
-        <p style={LEGAL_S.p}>No recabamos datos sensibles como información financiera completa, biométricos ni salud.</p>
+        <LegalUL items={["Nombre completo","Correo electrónico","Teléfono","Dirección del proyecto","Especificaciones del proyecto de carpintería","Fotografías del espacio o proyecto subidas voluntariamente por el usuario","Imágenes de renders generadas por inteligencia artificial a partir de las fotos proporcionadas","Datos de navegación y uso de la plataforma"]} />
+        <p style={LEGAL_S.p}>No recabamos datos sensibles como información financiera completa, biométricos ni datos de salud.</p>
+
         <h2 style={LEGAL_S.h2}>3. Finalidad del Tratamiento</h2>
-        <LegalUL items={["Conectar clientes con talleres de carpintería en Monterrey","Generar presupuestos y levantamientos de proyectos","Enviar comunicaciones relacionadas con su proyecto","Mejorar los servicios de la plataforma","Cumplir con obligaciones legales"]} />
+        <LegalUL items={["Conectar clientes con talleres de carpintería en Monterrey","Generar presupuestos y levantamientos de proyectos","Procesar imágenes mediante sistemas de inteligencia artificial para generar propuestas visuales (renders) del proyecto","Crear y gestionar el expediente digital del cliente para facilitar la cotización con talleres","Enviar comunicaciones relacionadas con su proyecto","Mejorar los servicios y algoritmos de la plataforma","Cumplir con obligaciones legales"]} />
+
         <div style={LEGAL_S.div}/>
-        <h2 style={LEGAL_S.h2}>4. Transferencia de Datos</h2>
-        <p style={LEGAL_S.p}>Sus datos podrán ser compartidos con los talleres registrados únicamente para la gestión de su proyecto. No vendemos ni comercializamos sus datos personales a terceros.</p>
-        <h2 style={LEGAL_S.h2}>5. Derechos ARCO</h2>
-        <p style={LEGAL_S.p}>Tiene derecho a <strong style={{color:"#e8e0d0"}}>Acceder, Rectificar, Cancelar u Oponerse</strong> al tratamiento de sus datos. Envíe su solicitud a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span> con nombre completo, descripción del derecho y copia de ID. Respuesta en máximo 20 días hábiles.</p>
-        <h2 style={LEGAL_S.h2}>6. Seguridad</h2>
-        <p style={LEGAL_S.p}>Implementamos medidas técnicas y administrativas para proteger sus datos, incluyendo cifrado en tránsito y en reposo mediante Supabase.</p>
-        <h2 style={LEGAL_S.h2}>7. Cambios al Aviso</h2>
-        <p style={LEGAL_S.p}>Nos reservamos el derecho de modificar este Aviso. Los cambios se notificarán con al menos 30 días de anticipación.</p>
-        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Preguntas sobre tu privacidad?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span></p></div>
-      </div>
-    </div>
-  );
-}
+        <h2 style={LEGAL_S.h2}>4. Uso de Inteligencia Artificial</h2>
+        <p style={LEGAL_S.p}>EnKaje Pro utiliza sistemas de inteligencia artificial para generar propuestas visuales (renders) a partir de las imágenes y especificaciones proporcionadas por el usuario. Al subir una fotografía a la plataforma, el usuario autoriza expresamente su procesamiento por dichos sistemas con la finalidad de generar la propuesta visual solicitada.</p>
+        <p style={LEGAL_S.p}>Los renders generados son propuestas visuales de carácter referencial y no constituyen una garantía del resultado final del proyecto. El resultado real puede diferir del render generado debido a materiales, condiciones del espacio, interpretación del taller u otros factores. Los rangos de precio estimados son igualmente referenciales y no representan cotizaciones formales.</p>
+        <p style={LEGAL_S.p}>EnKaje Pro retiene los derechos sobre los renders generados por sus sistemas. El usuario obtiene una licencia de uso personal, no comercial, sobre el render asociado a su proyecto.</p>
+
+        <h2 style={LEGAL_S.h2}>5. Transfe
 
 function PaginaTerminos({ onBack }) {
   useEffect(() => window.scrollTo(0,0), []);
@@ -70,29 +68,15 @@ function PaginaTerminos({ onBack }) {
       <div style={LEGAL_S.wrap}>
         <div style={LEGAL_S.badge}>LEGAL</div>
         <h1 style={LEGAL_S.h1}>Términos y Condiciones</h1>
-        <p style={LEGAL_S.meta}>Última actualización: enero 2025 · Monterrey, Nuevo León, México</p>
-        <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>Al usar EnKaje Pro, aceptas estos términos en su totalidad.</p></div>
+        <p style={LEGAL_S.meta}>Última actualización: junio 2026 · Monterrey, Nuevo León, México</p>
+        <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>Al usar EnKaje Pro, aceptas estos términos en su totalidad. Si no estás de acuerdo, te pedimos no usar la plataforma.</p></div>
+
         <h2 style={LEGAL_S.h2}>1. Descripción del Servicio</h2>
-        <p style={LEGAL_S.p}><strong style={{color:"#e8e0d0"}}>EnKaje Pro actúa exclusivamente como intermediario</strong> digital que conecta clientes con talleres de carpintería en Monterrey. No es responsable de la ejecución, calidad ni entrega de los trabajos contratados.</p>
+        <p style={LEGAL_S.p}><strong style={{color:"#e8e0d0"}}>EnKaje Pro actúa exclusivamente como intermediario</strong> digital que conecta clientes con talleres de carpintería independientes. EnKaje Pro no es parte del contrato entre cliente y taller, y no es responsable de la ejecución, calidad, tiempos, entrega ni precio final de los trabajos acordados entre las partes.</p>
+        <p style={LEGAL_S.p}>Adicionalmente, EnKaje Pro ofrece herramientas de inteligencia artificial para generación de propuestas visuales (renders) y estimaciones de inversión, cuyo carácter es estrictamente referencial.</p>
+
         <h2 style={LEGAL_S.h2}>2. Registro y Cuentas</h2>
-        <LegalUL items={["Debes ser mayor de 18 años para registrarte","Eres responsable de mantener la confidencialidad de tu contraseña","Debes proporcionar información verídica al registrarte","Las cuentas de taller son activadas exclusivamente por el equipo EnKaje Pro","Nos reservamos el derecho de suspender cuentas que violen estos términos"]} />
-        <h2 style={LEGAL_S.h2}>3. Uso Prohibido</h2>
-        <LegalUL items={["Usar la plataforma para fines ilegales o fraudulentos","Publicar información falsa sobre proyectos o presupuestos","Contactar directamente a talleres para evadir la intermediación de EnKaje Pro","Copiar o redistribuir contenido de la plataforma sin autorización","Interferir con el funcionamiento técnico de la plataforma"]} />
-        <div style={LEGAL_S.div}/>
-        <h2 style={LEGAL_S.h2}>4. Responsabilidad de los Talleres</h2>
-        <p style={LEGAL_S.p}>Los talleres son empresas o personas físicas independientes. EnKaje Pro no garantiza calidad, tiempos ni resultados de sus trabajos.</p>
-        <div style={LEGAL_S.warn}><p style={{...LEGAL_S.p,margin:0,color:"#f44336",fontWeight:600}}>Limitación de Responsabilidad</p><p style={{...LEGAL_S.p,margin:"6px 0 0"}}>La responsabilidad máxima de EnKaje Pro se limita al monto de la suscripción mensual pagada.</p></div>
-        <h2 style={LEGAL_S.h2}>5. Suscripciones y Pagos</h2>
-        <LegalUL items={["Planes: Básico $699, Pro $1,499 y Premium $2,999 MXN/mes","Pagos mensuales anticipados","Sin reembolsos por períodos parciales","Puedes cancelar en cualquier momento desde tu panel","Los precios pueden cambiar con 30 días de aviso"]} />
-        <h2 style={LEGAL_S.h2}>6. Propiedad Intelectual</h2>
-        <p style={LEGAL_S.p}>Todo el contenido de EnKaje Pro es propiedad de EnKaje Pro y está protegido por leyes de propiedad intelectual mexicanas.</p>
-        <h2 style={LEGAL_S.h2}>7. Ley Aplicable</h2>
-        <p style={LEGAL_S.p}>Estos Términos se rigen por las leyes de México. Cualquier controversia se somete a los tribunales de Monterrey, Nuevo León.</p>
-        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Dudas sobre los términos?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>hola@enkajepro.com</span></p></div>
-      </div>
-    </div>
-  );
-}
+        <LegalUL items={["Debes ser mayor de 18 años para registrarte","Eres res
 
 function PaginaCookies({ onBack }) {
   useEffect(() => window.scrollTo(0,0), []);
