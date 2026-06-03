@@ -2554,7 +2554,92 @@ Formato: Caption completo listo para copiar y pegar.`;
             {tipoForm === "closet" && <FormularioCloset form={formCloset} setF={(k,v) => setFormCloset(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "puerta" && <FormularioPuerta form={formPuerta} setF={(k,v) => setFormPuerta(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
             {tipoForm === "mueble" && <FormularioMueble form={formMueble} setF={(k,v) => setFormMueble(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
-            {tipoForm === "panel" && (
+          {tipoForm === "panel" && (
+              <div className="fade-up">
+                <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 14, letterSpacing: 1 }}>👤 DATOS DEL CLIENTE</h3>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12 }}>
+                    <INPUT label="Nombre" value={formPanel.nombre} onChange={e=>setFormPanel(p=>({...p,nombre:e.target.value}))} placeholder="Nombre completo" />
+                    <INPUT label="Teléfono" value={formPanel.telefono} onChange={e=>setFormPanel(p=>({...p,telefono:e.target.value}))} placeholder="81-1234-5678" />
+                    <INPUT label="Correo" value={formPanel.correo} onChange={e=>setFormPanel(p=>({...p,correo:e.target.value}))} placeholder="correo@email.com" />
+                    <INPUT label="Dirección / Obra" value={formPanel.direccion} onChange={e=>setFormPanel(p=>({...p,direccion:e.target.value}))} placeholder="Calle, Colonia, Monterrey" />
+                  </div>
+                </div>
+                <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 14, letterSpacing: 1 }}>🪵 ESPECIFICACIONES DEL PANEL</h3>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Tipo de panel</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {["MDF liso","MDF ranurado","MDF perforado","Triplay pino","Triplay cedro","Triplay abedul","Lambrín madera","Lambrín PVC","Duela madera","Panel decorativo","Panel enchapado","Otro"].map(op => (
+                        <PILL key={op} label={op} checked={formPanel.tipo_panel?.includes(op)} onChange={() => setFormPanel(p=>({...p, tipo_panel: p.tipo_panel?.includes(op)?p.tipo_panel.filter(x=>x!==op):[...(p.tipo_panel||[]),op]}))} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Ubicación</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {["Sala","Comedor","Recámara","Estudio","Pasillo","Baño","Cocina","Exterior","Comercial","Otro"].map(op => (
+                        <PILL key={op} label={op} checked={formPanel.ubicacion_panel?.includes(op)} onChange={() => setFormPanel(p=>({...p, ubicacion_panel: p.ubicacion_panel?.includes(op)?p.ubicacion_panel.filter(x=>x!==op):[...(p.ubicacion_panel||[]),op]}))} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
+                    <INPUT label="Largo / Ancho (m)" value={formPanel.largo} onChange={e=>setFormPanel(p=>({...p,largo:e.target.value}))} placeholder="2.40 m" />
+                    <INPUT label="Alto (m)" value={formPanel.alto} onChange={e=>setFormPanel(p=>({...p,alto:e.target.value}))} placeholder="2.40 m" />
+                    <INPUT label="Cantidad de piezas" value={formPanel.cantidad} onChange={e=>setFormPanel(p=>({...p,cantidad:e.target.value}))} placeholder="4" />
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Grosor</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {["3mm","6mm","9mm","12mm","15mm","18mm","25mm"].map(op => (
+                        <PILL key={op} label={op} checked={formPanel.grosor?.includes(op)} onChange={() => setFormPanel(p=>({...p, grosor: p.grosor?.includes(op)?p.grosor.filter(x=>x!==op):[...(p.grosor||[]),op]}))} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Acabado</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {["Natural","Pintado","Lacado mate","Lacado brillante","Enchapado madera","Melamina","Tapiz","Sin acabado"].map(op => (
+                        <PILL key={op} label={op} checked={formPanel.acabado_panel?.includes(op)} onChange={() => setFormPanel(p=>({...p, acabado_panel: p.acabado_panel?.includes(op)?p.acabado_panel.filter(x=>x!==op):[...(p.acabado_panel||[]),op]}))} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12, marginBottom: 16 }}>
+                    <INPUT label="Color principal" value={formPanel.color_principal} onChange={e=>setFormPanel(p=>({...p,color_principal:e.target.value}))} placeholder="Blanco mate, nogal, wengué..." />
+                    <INPUT label="Color secundario" value={formPanel.color_secundario} onChange={e=>setFormPanel(p=>({...p,color_secundario:e.target.value}))} placeholder="Opcional" />
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Patrón / Diseño</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {["Liso","Ranurado horizontal","Ranurado vertical","Perforado","Geométrico","Biselado","Ondulado","Personalizado"].map(op => (
+                        <PILL key={op} label={op} checked={formPanel.patron_panel?.includes(op)} onChange={() => setFormPanel(p=>({...p, patron_panel: p.patron_panel?.includes(op)?p.patron_panel.filter(x=>x!==op):[...(p.patron_panel||[]),op]}))} />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: 11, color: "#777", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Instalación</label>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {["Incluye instalación","Solo suministro","Con estructura","Sin estructura","Con iluminación LED"].map(op => (
+                        <PILL key={op} label={op} checked={formPanel.instalacion_panel?.includes(op)} onChange={() => setFormPanel(p=>({...p, instalacion_panel: p.instalacion_panel?.includes(op)?p.instalacion_panel.filter(x=>x!==op):[...(p.instalacion_panel||[]),op]}))} />
+                      ))}
+                    </div>
+                  </div>
+                  <TEXTAREA label="Observaciones" value={formPanel.observaciones} onChange={e=>setFormPanel(p=>({...p,observaciones:e.target.value}))} placeholder="Detalles adicionales, referencias de diseño, etc." rows={3} />
+                </div>
+                {(role==="admin"||role==="taller") && (
+                  <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+                    <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 14, letterSpacing: 1 }}>🏭 NOTAS DEL TALLER</h3>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12 }}>
+                      <INPUT label="Nivel de calidad" value={formPanel.nivel_calidad} onChange={e=>setFormPanel(p=>({...p,nivel_calidad:e.target.value}))} placeholder="Estándar / Premium / Lujo" />
+                      <INPUT label="Materiales sugeridos" value={formPanel.materiales_solicitados} onChange={e=>setFormPanel(p=>({...p,materiales_solicitados:e.target.value}))} placeholder="MDF 18mm, triplay..." />
+                    </div>
+                    <TEXTAREA label="Comentarios técnicos" value={formPanel.comentarios_tecnicos} onChange={e=>setFormPanel(p=>({...p,comentarios_tecnicos:e.target.value}))} placeholder="Notas internas del taller..." rows={2} />
+                  </div>
+                )}
+              </div>
+            )}
+            {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
+            {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
               <div className="fade-up">
                 <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
                   <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 14, letterSpacing: 1 }}>🪵 DATOS DEL CLIENTE</h3>
