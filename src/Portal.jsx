@@ -658,7 +658,7 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
               ) : (
                 <div>
                   <div style={{ fontSize: 28, marginBottom: 8 }}>📐</div>
-                  <p style={{ color: "#555", fontSize: 13 }}>Subir croquis o plano (opcional)</p>
+                 <p style={{ color: "#555", fontSize: 13 }}>Subir foto de medidas o dibujito del espacio (opcional)</p>
                 </div>
               )}
             </div>
