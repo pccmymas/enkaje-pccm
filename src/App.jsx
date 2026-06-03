@@ -2460,8 +2460,8 @@ Formato: Caption completo listo para copiar y pegar.`;
   const TIPO_SELECTOR = () => (
     <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: "16px 20px", marginBottom: 20 }}>
       <label style={{ fontSize: 11, color: "#555", display: "block", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>Tipo de Proyecto</label>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        [["cocina","🍳 Cocina"],["closet","👔 Closet"],["puerta","🚪 Puerta"],["mueble","🛋️ Mueble"],["panel","🪵 Panel"],["bano","🚿 Baño"]]
+     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {[["cocina","🍳 Cocina"],["closet","👔 Closet"],["puerta","🚪 Puerta"],["mueble","🛋️ Mueble"],["panel","🪵 Panel"],["bano","🚿 Baño"]].map(([k,l]) => (
           <PILL_SINGLE key={k} label={l} checked={tipoForm===k} onChange={() => cambiarTipoForm(k)} />
         ))}
       </div>
