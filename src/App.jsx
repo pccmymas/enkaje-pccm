@@ -58,7 +58,24 @@ function PaginaPrivacidad({ onBack }) {
         <p style={LEGAL_S.p}>Los renders generados son propuestas visuales de carácter referencial y no constituyen una garantía del resultado final del proyecto. El resultado real puede diferir del render generado debido a materiales, condiciones del espacio, interpretación del taller u otros factores. Los rangos de precio estimados son igualmente referenciales y no representan cotizaciones formales.</p>
         <p style={LEGAL_S.p}>EnKaje Pro retiene los derechos sobre los renders generados por sus sistemas. El usuario obtiene una licencia de uso personal, no comercial, sobre el render asociado a su proyecto.</p>
 
-        <h2 style={LEGAL_S.h2}>5. Transfe
+        <h2 style={LEGAL_S.h2}>5. Transferencia de Datos</h2>
+        <p style={LEGAL_S.p}>Sus datos, incluyendo fotografías del proyecto y renders generados, podrán ser compartidos con los talleres registrados y verificados en la plataforma, únicamente para la gestión y cotización de su proyecto. Esta transferencia es necesaria para la prestación del servicio y se considera aceptada al usar la plataforma.</p>
+        <p style={LEGAL_S.p}>No vendemos ni comercializamos sus datos personales a terceros con fines publicitarios o de mercadotecnia.</p>
+
+        <h2 style={LEGAL_S.h2}>6. Derechos ARCO</h2>
+        <p style={LEGAL_S.p}>Tiene derecho a <strong style={{color:"#e8e0d0"}}>Acceder, Rectificar, Cancelar u Oponerse</strong> al tratamiento de sus datos. Envíe su solicitud a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span> con nombre completo, descripción del derecho y copia de ID. Respuesta en máximo 20 días hábiles.</p>
+
+        <h2 style={LEGAL_S.h2}>7. Seguridad</h2>
+        <p style={LEGAL_S.p}>Implementamos medidas técnicas y administrativas para proteger sus datos, incluyendo cifrado en tránsito y en reposo mediante Supabase. Las fotografías e imágenes subidas se almacenan en servidores seguros con acceso restringido.</p>
+
+        <h2 style={LEGAL_S.h2}>8. Cambios al Aviso</h2>
+        <p style={LEGAL_S.p}>Nos reservamos el derecho de modificar este Aviso. Los cambios se notificarán con al menos 30 días de anticipación mediante correo electrónico o aviso visible en la plataforma. El uso continuado del servicio tras la notificación implica la aceptación de los cambios.</p>
+
+        <div style={LEGAL_S.foot}><p style={{...LEGAL_S.p,margin:0,fontWeight:600,color:"#e8e0d0",marginBottom:6}}>¿Preguntas sobre tu privacidad?</p><p style={{...LEGAL_S.p,margin:0}}>Escríbenos a <span style={{color:"#d4af37"}}>privacidad@enkajepro.com</span></p></div>
+      </div>
+    </div>
+  );
+}
 
 function PaginaTerminos({ onBack }) {
   useEffect(() => window.scrollTo(0,0), []);
