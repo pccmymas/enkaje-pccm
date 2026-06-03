@@ -207,6 +207,12 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
     const label = scoreLabel(score);
     const rango = RANGOS[tipoProyecto] || { min: 0, max: 0 };
     try {
+      console.log("Guardando expediente...", JSON.stringify({
+  tipo_proyecto: tipoProyecto,
+  estilo_elegido: estilo,
+  nivel_decision: nivelDecision,
+  score: calcularScore({ nivel_decision: nivelDecision, foto_url: fotoUrl, medidas, fecha_inicio: fechaInicio }),
+}));
       await sb("expedientes", {
         method: "POST",
         body: JSON.stringify({
@@ -229,9 +235,10 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
         })
       });
       setSaved(true);
-    } catch(e) {
-      console.error(e);
-    }
+  } catch(e) {
+      console.error("ERROR EXPEDIENTE:", e);
+      alert("Error: " + e.message);
+    } 
     setSaving(false);
   };
 
