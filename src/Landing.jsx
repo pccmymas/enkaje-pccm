@@ -405,7 +405,8 @@ export default function Landing() {
           </div>
         </section>
       )}
-{/* ── PARA TALLERES ── */}
+
+      {/* ── PARA TALLERES ── */}
       {audiencia === "taller" && (
       <section id="talleres" style={{ padding: "80px 24px", background: "#0f0f0a" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
