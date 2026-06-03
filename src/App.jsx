@@ -2535,17 +2535,8 @@ Formato: Caption completo listo para copiar y pegar.`;
             </div>
           </div>
         )}
-
-       REEMPLAZA desde:
-        {/* FORMULARIO */}
-        {tab === "formulario" && (
-
-hasta:
         {/* MIS PROYECTOS — cliente */}
-
-CON ESTO:
-
-        {/* FORMULARIO */}
+       {/* FORMULARIO */}
         {tab === "formulario" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
