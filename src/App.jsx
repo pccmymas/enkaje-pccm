@@ -2638,8 +2638,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                 )}
               </div>
             )}
-            {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
-            {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
+            
+           {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
               <div className="fade-up">
                 <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
                   <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 14, letterSpacing: 1 }}>🪵 DATOS DEL CLIENTE</h3>
