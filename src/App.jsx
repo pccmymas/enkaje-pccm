@@ -1442,9 +1442,9 @@ export default function App() {
     setLoginLoading(true); setLoginError("");
     const data = await authFetch("token?grant_type=password", { email: loginForm.email, password: loginForm.password });
     if (data.access_token) {
-      setToken(data.access_token); setUser(data.user);
-      const r = data.user?.user_metadata?.role || "cliente";
-      setRole(r); setScreen("app"); setTab("bienvenida");
+      sessionStorage.setItem("enkaje_token", data.access_token);
+      sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
+      sessionStorage.setItem("enkaje_role", data.user?.user_metadata?.role || "cliente");
       sessionStorage.setItem("enkaje_tab", "bienvenida");
       history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
       if (r === "cliente") {
