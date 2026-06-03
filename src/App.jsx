@@ -825,7 +825,190 @@ function FormularioMueble({ form, setF, role, isMobile }) {
     </div>
   );
 }
-// ============ PRESUPUESTO — hoja profesional + todos los canales ============
+// ============================================================
+// FORM_BANO_INIT — pegar junto a los otros FORM_*_INIT
+// ============================================================
+const FORM_BANO_INIT = {
+  tipo_proyecto: "bano", nombre: "", telefono: "", direccion: "", correo: "",
+  fecha: new Date().toISOString().split("T")[0], atencion_por: "Felipe Santiago",
+  tipo_mueble_bano: [], tipo_mueble_bano_otro: "",
+  ancho: "", alto: "", profundidad: "", cantidad: "",
+  instalacion: [], // flotante | con patas | empotrado
+  estilo: [], material: [], grosor: [], color_principal: "", color_secundario: "",
+  tipo_acabado: [], tipo_puertas: [], jaladeras: [], bisagras: [], correderas: [],
+  tipo_tarja: [], color_tarja: "", griferia: [],
+  iluminacion_bano: [], // LED inferior | LED lateral | LED espejo | sensores | ninguna
+  espejo: [], // con marco | nicho empotrado | touch | sin espejo
+  accesorios_bano: [], observaciones: "",
+  materiales_solicitados: "", nivel_calidad: "", comentarios_tecnicos: "",
+  precio_fabricacion: "", precio_instalacion: "", precio_herrajes: "", precio_otros: "",
+  incluye: "", no_incluye: "", tiempo_entrega: "10 a 15 dias habiles",
+  anticipo: "60", pago_entrega: "30", pago_final: "10", garantia: "6 meses en instalacion y herrajes",
+};
+
+// ============================================================
+// FormularioBano — pegar junto a los otros Formulario* components
+// ============================================================
+function FormularioBano({ form, setF, role, isMobile }) {
+  return (
+    <div>
+      <SECTION title="Datos del Cliente" icon="👤">
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
+          <INPUT label="Nombre completo" value={form.nombre} onChange={e=>setF("nombre",e.target.value)} placeholder="María González" />
+          <INPUT label="Teléfono" value={form.telefono} onChange={e=>setF("telefono",e.target.value)} placeholder="81-1234-5678" />
+          <INPUT label="Correo electrónico" value={form.correo} onChange={e=>setF("correo",e.target.value)} placeholder="correo@ejemplo.com" />
+          <INPUT label="Dirección" value={form.direccion} onChange={e=>setF("direccion",e.target.value)} placeholder="Calle, Colonia, Ciudad" />
+          <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
+          <INPUT label="Atención por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+        </div>
+      </SECTION>
+
+      <SECTION title="Tipo de Mueble de Baño" icon="🚿" subtitle="Selecciona lo que necesitas">
+        <PILLS_GROUP
+          options={["Vanity / Mueble bajo lavabo","Botiquín","Torre de baño","Nicho empotrado","Mueble auxiliar","Repisa flotante","Mueble completo de baño"]}
+          value={form.tipo_mueble_bano}
+          onChange={v=>setF("tipo_mueble_bano",v)}
+        />
+        <INPUT label="Otro tipo" value={form.tipo_mueble_bano_otro} onChange={e=>setF("tipo_mueble_bano_otro",e.target.value)} placeholder="Especifica..." style={{marginTop:10}} />
+      </SECTION>
+
+      <SECTION title="Medidas" icon="📐">
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: 12 }}>
+          <INPUT label="Ancho" value={form.ancho} onChange={e=>setF("ancho",e.target.value)} placeholder="0.90 m" />
+          <INPUT label="Alto" value={form.alto} onChange={e=>setF("alto",e.target.value)} placeholder="0.55 m" />
+          <INPUT label="Profundidad" value={form.profundidad} onChange={e=>setF("profundidad",e.target.value)} placeholder="0.45 m" />
+          <INPUT label="Cantidad" value={form.cantidad} onChange={e=>setF("cantidad",e.target.value)} placeholder="1" type="number" />
+        </div>
+      </SECTION>
+
+      <SECTION title="Tipo de Instalación" icon="🔩" subtitle="¿Cómo va montado?">
+        <PILLS_GROUP
+          options={["Flotante (con efecto levitación)","Con patas","Empotrado en pared","Apoyado en piso"]}
+          value={form.instalacion}
+          onChange={v=>setF("instalacion",v)}
+          color="#00bcd4"
+        />
+      </SECTION>
+
+      <SECTION title="Estilo de Diseño" icon="✨">
+        <PILLS_GROUP
+          options={["Minimalista","Moderno","Contemporáneo","Clásico","Industrial","Nórdico","Lujo / Premium"]}
+          value={form.estilo}
+          onChange={v=>setF("estilo",v)}
+        />
+      </SECTION>
+
+      <SECTION title="Material" icon="🪵">
+        <PILLS_GROUP
+          options={["Melamina","MDF","MDF RH antihumedad","Madera sólida","PVC impermeable","Triplay"]}
+          value={form.material}
+          onChange={v=>setF("material",v)}
+        />
+        <label style={{ fontSize:11, color:"#555", display:"block", margin:"12px 0 8px", textTransform:"uppercase", letterSpacing:1 }}>Grosor</label>
+        <PILLS_GROUP options={["15 mm","18 mm","Otro"]} value={form.grosor} onChange={v=>setF("grosor",v)} />
+        <div style={{ marginTop:12, background:"#1a1208", border:"1px solid #d4af3720", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#888" }}>
+          💡 Para baños se recomienda MDF RH antihumedad o melamina resistente al vapor para mayor durabilidad.
+        </div>
+      </SECTION>
+
+      <SECTION title="Acabado y Color" icon="🎨">
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:14 }}>
+          <INPUT label="Color principal" value={form.color_principal} onChange={e=>setF("color_principal",e.target.value)} placeholder="Blanco mate, Gris, Negro..." />
+          <INPUT label="Color secundario" value={form.color_secundario} onChange={e=>setF("color_secundario",e.target.value)} placeholder="Dorado, Cromado..." />
+        </div>
+        <PILLS_GROUP options={["Mate","Liso","Alto brillo","Satinado","Tipo madera","Texturizado"]} value={form.tipo_acabado} onChange={v=>setF("tipo_acabado",v)} />
+      </SECTION>
+
+      <SECTION title="Puertas y Jaladeras" icon="🚪">
+        <PILLS_GROUP
+          options={["Sin puertas (abierto)","Con puertas abatibles","Con puertas corredizas","Solo cajones","Combinación puertas y cajones"]}
+          value={form.tipo_puertas}
+          onChange={v=>setF("tipo_puertas",v)}
+        />
+        <label style={{ fontSize:11, color:"#555", display:"block", margin:"14px 0 8px", textTransform:"uppercase", letterSpacing:1 }}>Jaladeras</label>
+        <PILLS_GROUP
+          options={["Sin jaladeras (push open)","Perfil Gola oculta","Metálicas negras","Metálicas doradas","Metálicas cromadas","Integradas"]}
+          value={form.jaladeras}
+          onChange={v=>setF("jaladeras",v)}
+        />
+      </SECTION>
+
+      <SECTION title="Herrajes" icon="🔧">
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:14 }}>
+          <div>
+            <label style={{ fontSize:11, color:"#999", display:"block", marginBottom:8, textTransform:"uppercase", letterSpacing:1 }}>Bisagras</label>
+            <PILLS_GROUP options={["Normales","Cierre lento","Premium"]} value={form.bisagras} onChange={v=>setF("bisagras",v)} />
+          </div>
+          <div>
+            <label style={{ fontSize:11, color:"#999", display:"block", marginBottom:8, textTransform:"uppercase", letterSpacing:1 }}>Correderas</label>
+            <PILLS_GROUP options={["Normales","Telescópicas","Cierre lento"]} value={form.correderas} onChange={v=>setF("correderas",v)} />
+          </div>
+        </div>
+      </SECTION>
+
+      <SECTION title="Iluminación" icon="💡" subtitle="Lo que le da el efecto flotante y premium">
+        <PILLS_GROUP
+          options={["LED inferior (efecto flotante)","LED lateral espejo","LED superior","Sensores de movimiento","Sin iluminación"]}
+          value={form.iluminacion_bano}
+          onChange={v=>setF("iluminacion_bano",v)}
+          color="#f0c030"
+        />
+        <div style={{ marginTop:12, background:"#1a1208", border:"1px solid #d4af3720", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#888" }}>
+          💡 El LED inferior crea el efecto de levitación — es el acabado más pedido en vanities modernos y minimalistas.
+        </div>
+      </SECTION>
+
+      <SECTION title="Tarja / Lavabo" icon="🚿">
+        <PILLS_GROUP
+          options={["Submontada","Sobrepuesta","Integrada al mueble","Sin tarja (solo mueble)","Doble lavabo"]}
+          value={form.tipo_tarja}
+          onChange={v=>setF("tipo_tarja",v)}
+        />
+        <INPUT label="Color / modelo de tarja" value={form.color_tarja} onChange={e=>setF("color_tarja",e.target.value)} placeholder="Blanca, negra, acero..." style={{marginTop:12}} />
+        <label style={{ fontSize:11, color:"#555", display:"block", margin:"14px 0 8px", textTransform:"uppercase", letterSpacing:1 }}>Grifería</label>
+        <PILLS_GROUP
+          options={["Negra mate","Cromada","Dorada","Níquel cepillado","Premium"]}
+          value={form.griferia}
+          onChange={v=>setF("griferia",v)}
+        />
+      </SECTION>
+
+      <SECTION title="Espejo" icon="🪞">
+        <PILLS_GROUP
+          options={["Con marco integrado al mueble","Nicho empotrado con iluminación","Espejo touch con LED","Espejo simple sin marco","Sin espejo"]}
+          value={form.espejo}
+          onChange={v=>setF("espejo",v)}
+        />
+      </SECTION>
+
+      <SECTION title="Accesorios" icon="🧴">
+        <PILLS_GROUP
+          options={["Porta toallas integrado","Gancho para bata","Repisa interna","Cajón organizador","Porta rollo integrado","Separadores internos"]}
+          value={form.accesorios_bano}
+          onChange={v=>setF("accesorios_bano",v)}
+        />
+      </SECTION>
+
+      <SECTION title="Observaciones" icon="📝">
+        <TEXTAREA
+          value={form.observaciones}
+          onChange={e=>setF("observaciones",e.target.value)}
+          placeholder="Notas adicionales, presupuesto aproximado, preferencias especiales, foto de referencia..."
+          rows={4}
+        />
+      </SECTION>
+
+      {(role === "admin" || role === "taller") && (
+        <SECTION title="Solo para Taller" icon="🏭">
+          <TEXTAREA label="Materiales solicitados" value={form.materiales_solicitados} onChange={e=>setF("materiales_solicitados",e.target.value)} placeholder="Lista de materiales específicos..." />
+          <label style={{ fontSize:11, color:"#999", display:"block", marginBottom:8, textTransform:"uppercase", letterSpacing:1 }}>Nivel de calidad</label>
+          <PILLS_GROUP options={["Económico","Medio","Premium"]} value={form.nivel_calidad} onChange={v=>setF("nivel_calidad",v)} multi={false} color="#00bcd4" />
+          <TEXTAREA label="Comentarios técnicos" value={form.comentarios_tecnicos} onChange={e=>setF("comentarios_tecnicos",e.target.value)} placeholder="Notas técnicas del taller..." style={{marginTop:12}} />
+        </SECTION>
+      )}
+    </div>
+  );
+}// ============ PRESUPUESTO — hoja profesional + todos los canales ============
 function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg, generarContrato, tallerData, imprimirHoja }) {
   const total = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
     .reduce((a, v) => a + (parseFloat(v) || 0), 0);
