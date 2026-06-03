@@ -734,6 +734,8 @@ function FormularioPuerta({ form, setF, role, isMobile }) {
       </SECTION>
       <SECTION title="Marco y Herrajes" icon="🔧">
         <PILLS_GROUP options={["Marco de madera","Marco de aluminio","Sin marco (oculto)","Marco con moldura"]} value={form.tipo_marco} onChange={v=>setF("tipo_marco",v)} />
+<label style={{ fontSize:11, color:"#555", display:"block", margin:"14px 0 8px", textTransform:"uppercase", letterSpacing:1 }}>Chambrana</label>
+<PILLS_GROUP options={["Chambrana de madera lisa","Chambrana con moldura","Chambrana MDF","Chambrana metálica","Sin chambrana"]} value={form.chambrana||[]} onChange={v=>setF("chambrana",v)} />
         <label style={{ fontSize: 11, color: "#555", display: "block", margin: "14px 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>Herrajes</label>
         <PILLS_GROUP options={["Bisagras normales","Bisagras ocultas","Chapa con llave","Chapa sin llave","Manija negra","Manija dorada","Manija cromada","Amortiguador","Puerta pivotante"]} value={form.herrajes_puerta} onChange={v=>setF("herrajes_puerta",v)} />
       </SECTION>
