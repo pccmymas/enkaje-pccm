@@ -51,7 +51,6 @@ const FOTOS = [
   { label: "Área de Entretenimiento", img: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=700&q=85&fit=crop&crop=center", tag: "Muy solicitado" },
   { label: "Mueble a Medida", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&q=85&fit=crop&crop=center", tag: "Personalizable" },
 ];
-];
 
 const PASOS_CLIENTE = [
   { num:"01", emoji:"📸", titulo:"Sube tu foto", desc:"Del espacio actual. Así como está, sin preparar nada." },
