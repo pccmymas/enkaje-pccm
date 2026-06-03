@@ -220,7 +220,7 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
           tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
           fecha_inicio_deseada: fechaInicio || null,
           nivel_decision:       nivelDecision,
-          medidas:              medidas || null,
+          medidas_sketch_url:   medidas || null,
           observaciones:        `Nombre: ${nombre} | Tel: ${telefono} | Correo: ${correo}`,
           score,
           score_label:          label,
