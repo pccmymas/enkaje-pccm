@@ -3537,8 +3537,6 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
         )}
 
-      </div>
-
       {/* COOKIE BANNER */}
       <CookieBanner onVerCookies={() => setLegalPage("cookies")} />
 
