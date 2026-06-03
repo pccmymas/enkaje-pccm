@@ -1,290 +1,248 @@
-import { useState } from "react";
-import { LogoInline } from "./Logo.jsx";
-
-const DOCS = {
-  privacidad: {
-    titulo: "Politica de Privacidad",
-    fecha: "1 de junio de 2025",
-    contenido: [
-      {
-        titulo: "1. Responsable del Tratamiento de Datos",
-        texto: `EnKaje Pro, operado por Felipe Santiago, con domicilio en Monterrey, Nuevo Leon, Mexico, es el responsable del tratamiento de sus datos personales. Puede contactarnos en: contacto@enkajepro.com`
-      },
-      {
-        titulo: "2. Datos que Recopilamos",
-        texto: `Recopilamos los siguientes datos personales:
-- Nombre completo
-- Correo electronico
-- Numero de telefono
-- Direccion del proyecto
-- Informacion sobre su proyecto de carpinteria (medidas, estilos, materiales)
-- Datos de uso de la plataforma`
-      },
-      {
-        titulo: "3. Finalidad del Tratamiento",
-        texto: `Sus datos son utilizados para:
-- Crear y gestionar su cuenta en la plataforma
-- Conectarle con talleres de carpinteria certificados
-- Generar cotizaciones y presupuestos
-- Enviar notificaciones relacionadas con su proyecto
-- Mejorar nuestros servicios
-- Cumplir con obligaciones legales`
-      },
-      {
-        titulo: "4. Comparticion de Datos",
-        texto: `Sus datos podran ser compartidos con:
-- Talleres de carpinteria afiliados a EnKaje Pro, unicamente para gestionar su proyecto
-- Proveedores tecnologicos que nos ayudan a operar la plataforma (Supabase, Vercel)
-- Autoridades competentes cuando sea requerido por ley
-No vendemos ni compartimos sus datos con terceros para fines publicitarios.`
-      },
-      {
-        titulo: "5. Derechos ARCO",
-        texto: `Conforme a la Ley Federal de Proteccion de Datos Personales en Posesion de los Particulares, usted tiene derecho a:
-- Acceder a sus datos personales
-- Rectificar datos inexactos
-- Cancelar sus datos
-- Oponerse al tratamiento
-Para ejercer estos derechos, contactenos en: contacto@enkajepro.com`
-      },
-      {
-        titulo: "6. Seguridad",
-        texto: `Implementamos medidas tecnicas y organizativas para proteger sus datos personales contra acceso no autorizado, perdida o destruccion. Utilizamos encriptacion SSL y bases de datos seguras.`
-      },
-      {
-        titulo: "7. Cookies",
-        texto: `Utilizamos cookies para mejorar su experiencia. Consulte nuestra Politica de Cookies para mas informacion.`
-      },
-      {
-        titulo: "8. Cambios a esta Politica",
-        texto: `Nos reservamos el derecho de actualizar esta politica. Le notificaremos cambios importantes por correo electronico o mediante un aviso en la plataforma.`
-      },
-    ]
-  },
-  terminos: {
-    titulo: "Terminos y Condiciones",
-    fecha: "1 de junio de 2025",
-    contenido: [
-      {
-        titulo: "1. Aceptacion de Terminos",
-        texto: `Al acceder y utilizar EnKaje Pro, usted acepta estos Terminos y Condiciones en su totalidad. Si no esta de acuerdo, no utilice la plataforma.`
-      },
-      {
-        titulo: "2. Descripcion del Servicio",
-        texto: `EnKaje Pro es una plataforma de intermediacion que conecta a clientes que requieren servicios de carpinteria con talleres certificados en Monterrey y area metropolitana. EnKaje Pro actua exclusivamente como intermediario y NO presta servicios de carpinteria directamente.`
-      },
-      {
-        titulo: "3. Registro de Usuarios",
-        texto: `Para utilizar la plataforma debe:
-- Proporcionar informacion veraz y actualizada
-- Mantener la confidencialidad de su contrasena
-- Notificarnos de cualquier uso no autorizado de su cuenta
-- Ser mayor de 18 anos`
-      },
-      {
-        titulo: "4. Membresias para Talleres",
-        texto: `Los talleres pueden suscribirse a los siguientes planes:
-- Plan Basico: $699 MXN/mes — hasta 5 leads mensuales
-- Plan Pro: $1,499 MXN/mes — leads ilimitados y funciones avanzadas
-- Plan Premium: $2,999 MXN/mes — exclusividad por zona y especialidad
-
-Todos los planes incluyen 14 dias de prueba gratuita. Los cobros son mensuales y pueden cancelarse en cualquier momento.`
-      },
-      {
-        titulo: "5. Cancelaciones y Reembolsos",
-        texto: `- Puede cancelar su membresia en cualquier momento desde su panel de control
-- No se realizan reembolsos por periodos ya cobrados
-- Al cancelar, mantendra acceso hasta el fin del periodo pagado
-- EnKaje Pro se reserva el derecho de cancelar cuentas que violen estos terminos`
-      },
-      {
-        titulo: "6. Responsabilidad del Intermediario",
-        texto: `EnKaje Pro actua como intermediario y NO es responsable de:
-- La calidad, tiempos o garantias del trabajo realizado por los talleres
-- Disputas entre clientes y talleres
-- Danos derivados del trabajo de carpinteria
-- La veracidad de la informacion proporcionada por talleres o clientes
-
-La relacion contractual de la obra es exclusivamente entre el cliente y el taller seleccionado.`
-      },
-      {
-        titulo: "7. Propiedad Intelectual",
-        texto: `Todo el contenido de EnKaje Pro, incluyendo logotipo, diseno, codigo y textos, son propiedad de EnKaje Pro y estan protegidos por las leyes de propiedad intelectual vigentes en Mexico.`
-      },
-      {
-        titulo: "8. Modificaciones",
-        texto: `EnKaje Pro se reserva el derecho de modificar estos terminos en cualquier momento. Los cambios seran notificados con al menos 30 dias de anticipacion.`
-      },
-      {
-        titulo: "9. Ley Aplicable",
-        texto: `Estos terminos se rigen por las leyes de los Estados Unidos Mexicanos. Cualquier disputa sera resuelta ante los tribunales competentes de Monterrey, Nuevo Leon.`
-      },
-    ]
-  },
-  cookies: {
-    titulo: "Politica de Cookies",
-    fecha: "1 de junio de 2025",
-    contenido: [
-      {
-        titulo: "1. Que son las Cookies",
-        texto: `Las cookies son pequenos archivos de texto que se almacenan en su dispositivo cuando visita nuestro sitio. Nos ayudan a mejorar su experiencia y analizar el uso de la plataforma.`
-      },
-      {
-        titulo: "2. Tipos de Cookies que Usamos",
-        texto: `Cookies esenciales: Necesarias para el funcionamiento de la plataforma. Sin ellas, no podria iniciar sesion ni usar las funciones basicas.
-
-Cookies de rendimiento: Nos ayudan a entender como los usuarios interactuan con la plataforma para mejorarla.
-
-Cookies de preferencias: Guardan sus preferencias como idioma y configuracion.
-
-Cookies de terceros: Utilizamos servicios de terceros como Google Analytics que pueden instalar sus propias cookies.`
-      },
-      {
-        titulo: "3. Control de Cookies",
-        texto: `Puede controlar y eliminar las cookies desde la configuracion de su navegador. Sin embargo, deshabilitar ciertas cookies puede afectar el funcionamiento de la plataforma.`
-      },
-      {
-        titulo: "4. Cookies de Redes Sociales",
-        texto: `Si accede mediante redes sociales como Facebook o Instagram, estas plataformas pueden instalar sus propias cookies. Consulte las politicas de privacidad de dichas plataformas.`
-      },
-      {
-        titulo: "5. Actualizaciones",
-        texto: `Esta politica puede actualizarse periodicamente. Le recomendamos revisarla regularmente.`
-      },
-    ]
-  },
-  responsabilidad: {
-    titulo: "Aviso de No Responsabilidad",
-    fecha: "1 de junio de 2025",
-    contenido: [
-      {
-        titulo: "1. Naturaleza del Servicio",
-        texto: `EnKaje Pro es una plataforma de INTERMEDIACION EXCLUSIVAMENTE. No somos una empresa de carpinteria, no fabricamos muebles, no instalamos cocinas ni realizamos ninguna obra de carpinteria directamente.`
-      },
-      {
-        titulo: "2. Relacion entre Partes",
-        texto: `Al utilizar EnKaje Pro, el cliente entiende y acepta que:
-- EnKaje Pro conecta clientes con talleres independientes
-- El contrato de obra es directamente entre el cliente y el taller seleccionado
-- EnKaje Pro no es parte del contrato de obra
-- Los talleres afiliados son empresas independientes, no empleados de EnKaje Pro`
-      },
-      {
-        titulo: "3. Limitacion de Responsabilidad",
-        texto: `EnKaje Pro NO se hace responsable de:
-- La calidad del trabajo realizado por los talleres
-- Tiempos de entrega incumplidos por los talleres
-- Materiales defectuosos utilizados por los talleres
-- Danos a la propiedad durante la instalacion
-- Incumplimiento de garantias por parte de los talleres
-- Cualquier disputa economica entre cliente y taller`
-      },
-      {
-        titulo: "4. Verificacion de Talleres",
-        texto: `EnKaje Pro realiza una verificacion basica de los talleres afiliados, pero no garantiza ni certifica la calidad de su trabajo. Recomendamos al cliente:
-- Revisar el portafolio del taller
-- Solicitar referencias
-- Firmar un contrato detallado directamente con el taller
-- Verificar que el taller cuente con seguro cuando sea aplicable`
-      },
-      {
-        titulo: "5. Servicio de Asesoria",
-        texto: `Los asesores de EnKaje Pro brindan orientacion sobre opciones de talleres y presupuestos estimados. Esta asesoria es de caracter informativo y no constituye una garantia sobre el resultado final del proyecto.`
-      },
-      {
-        titulo: "6. Indemnizacion",
-        texto: `El usuario acepta indemnizar y mantener indemne a EnKaje Pro de cualquier reclamacion, demanda o dano que surja de su uso de la plataforma o de la relacion contractual con el taller seleccionado.`
-      },
-      {
-        titulo: "7. Contacto para Disputas",
-        texto: `Si tiene una disputa con un taller afiliado, puede notificarnos en contacto@enkajepro.com. Haremos nuestro mejor esfuerzo para mediar, sin que esto implique ninguna responsabilidad legal de nuestra parte.`
-      },
-    ]
-  }
-};
-
-export default function Legal() {
-  const [doc, setDoc] = useState("privacidad");
-  const current = DOCS[doc];
-
+export default function Privacidad() {
   return (
-    <div style={{ minHeight: "100vh", background: "#070708", color: "#e8e0d0", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
-      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: #070708; }`}</style>
-
+    <div style={{
+      minHeight: '100vh',
+      background: '#0f0f0f',
+      color: '#e8e0d4',
+      fontFamily: "'Georgia', 'Times New Roman', serif",
+      padding: '0 0 80px 0'
+    }}>
       {/* Header */}
-      <div style={{ background: "#0f0f0a", borderBottom: "1px solid #1a1a12", padding: "16px 24px", position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-          <a href="/" style={{ textDecoration: "none" }}>
-            <LogoInline size="nav" />
-          </a>
-          <a href="/" style={{ color: "#888", fontSize: 13, textDecoration: "none" }}>← Volver al inicio</a>
-        </div>
+      <div style={{
+        borderBottom: '1px solid #2a2a2a',
+        padding: '24px 32px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px'
+      }}>
+        <a href="/legal" style={{
+          color: '#8a7a6a',
+          textDecoration: 'none',
+          fontSize: '13px',
+          letterSpacing: '0.05em',
+          fontFamily: "'Helvetica Neue', sans-serif"
+        }}>← Volver</a>
+        <span style={{ color: '#2a2a2a' }}>|</span>
+        <span style={{
+          fontSize: '11px',
+          letterSpacing: '0.15em',
+          color: '#8a7a6a',
+          fontFamily: "'Helvetica Neue', sans-serif",
+          textTransform: 'uppercase'
+        }}>LEGAL</span>
       </div>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 24px" }}>
-
-        {/* Selector de documentos */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 40 }}>
-          {[
-            ["privacidad", "Privacidad"],
-            ["terminos", "Terminos"],
-            ["cookies", "Cookies"],
-            ["responsabilidad", "No Responsabilidad"],
-          ].map(([k, l]) => (
-            <button key={k} onClick={() => setDoc(k)} style={{
-              padding: "8px 18px", borderRadius: 20,
-              border: `1px solid ${doc === k ? "#d4af37" : "#2a2a20"}`,
-              background: doc === k ? "#d4af3715" : "transparent",
-              color: doc === k ? "#d4af37" : "#666",
-              fontSize: 13, cursor: "pointer", fontWeight: doc === k ? 700 : 400,
-              transition: "all .2s"
-            }}>{l}</button>
-          ))}
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '48px 32px 0' }}>
+        {/* Logo */}
+        <div style={{ marginBottom: '8px' }}>
+          <span style={{
+            fontSize: '13px',
+            letterSpacing: '0.2em',
+            fontFamily: "'Helvetica Neue', sans-serif",
+            color: '#8a7a6a',
+            textTransform: 'uppercase'
+          }}>EnKaje</span>
+          <span style={{
+            fontSize: '11px',
+            letterSpacing: '0.15em',
+            fontFamily: "'Helvetica Neue', sans-serif",
+            color: '#c8a97a',
+            marginLeft: '4px',
+            textTransform: 'uppercase'
+          }}>PRO</span>
         </div>
 
-        {/* Documento */}
-        <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 20, padding: "36px 40px" }}>
-          <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 900, color: "#d4af37", marginBottom: 8 }}>{current.titulo}</h1>
-            <p style={{ fontSize: 13, color: "#555" }}>Ultima actualizacion: {current.fecha}</p>
-            <div style={{ width: 60, height: 2, background: "#d4af37", marginTop: 16, borderRadius: 2 }} />
-          </div>
+        <h1 style={{
+          fontSize: '32px',
+          fontWeight: '400',
+          letterSpacing: '-0.02em',
+          margin: '0 0 12px 0',
+          color: '#f0e8dc'
+        }}>Aviso de Privacidad</h1>
 
-          <div style={{ marginBottom: 28, background: "#1a1208", border: "1px solid #d4af3730", borderRadius: 12, padding: "16px 20px" }}>
-            <p style={{ fontSize: 14, color: "#aaa", lineHeight: 1.7 }}>
-              Este documento forma parte de los acuerdos legales de <strong style={{ color: "#d4af37" }}>EnKaje Pro</strong>, plataforma operada por Felipe Santiago, con domicilio en Monterrey, Nuevo Leon, Mexico.
-            </p>
-          </div>
+        <p style={{
+          fontSize: '12px',
+          color: '#5a5048',
+          fontFamily: "'Helvetica Neue', sans-serif",
+          letterSpacing: '0.05em',
+          marginBottom: '48px'
+        }}>Última actualización: junio 2026 · Monterrey, Nuevo León, México</p>
 
-          {current.contenido.map((s, i) => (
-            <div key={i} style={{ marginBottom: 28 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: "#e8e0d0", marginBottom: 10, paddingLeft: 12, borderLeft: "3px solid #d4af37" }}>{s.titulo}</h2>
-              <p style={{ fontSize: 14, color: "#888", lineHeight: 1.9, whiteSpace: "pre-line", paddingLeft: 12 }}>{s.texto}</p>
-            </div>
-          ))}
+        <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px', marginBottom: '40px' }}>
+          En cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de
+          Particulares (LFPDPPP), EnKaje Pro pone a disposición el presente Aviso de Privacidad.
+        </p>
 
-          <div style={{ marginTop: 40, paddingTop: 24, borderTop: "1px solid #1a1a12", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-            <div style={{ fontSize: 13, color: "#555" }}>
-              EnKaje Pro — contacto@enkajepro.com
+        {[
+          {
+            num: '1',
+            title: 'Responsable del Tratamiento',
+            content: (
+              <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px' }}>
+                EnKaje Pro · Monterrey, Nuevo León, México · <a href="mailto:hola@enkajepro.com" style={{ color: '#c8a97a', textDecoration: 'none' }}>hola@enkajepro.com</a>
+                <br /><br />
+                <em style={{ color: '#6a5a4a', fontSize: '13px' }}>
+                  Nota: La razón social y RFC serán actualizados en este aviso una vez formalizado el registro ante el SAT.
+                </em>
+              </p>
+            )
+          },
+          {
+            num: '2',
+            title: 'Datos que Recabamos',
+            content: (
+              <ul style={{ lineHeight: '2', color: '#b8a898', fontSize: '15px', paddingLeft: '20px', margin: 0 }}>
+                <li>Nombre completo</li>
+                <li>Correo electrónico</li>
+                <li>Teléfono</li>
+                <li>Dirección del proyecto</li>
+                <li>Especificaciones del proyecto de carpintería</li>
+                <li>Fotografías del espacio o proyecto subidas voluntariamente por el usuario</li>
+                <li>Imágenes de renders generadas por inteligencia artificial a partir de las fotos proporcionadas</li>
+                <li>Datos de navegación y uso de la plataforma</li>
+                <li style={{ marginTop: '16px', listStyle: 'none', color: '#6a5a4a', fontSize: '13px', fontStyle: 'italic' }}>
+                  No recabamos datos sensibles como información financiera completa, biométricos ni datos de salud.
+                </li>
+              </ul>
+            )
+          },
+          {
+            num: '3',
+            title: 'Finalidad del Tratamiento',
+            content: (
+              <ul style={{ lineHeight: '2', color: '#b8a898', fontSize: '15px', paddingLeft: '20px', margin: 0 }}>
+                <li>Conectar clientes con talleres de carpintería en Monterrey</li>
+                <li>Generar presupuestos y levantamientos de proyectos</li>
+                <li>Procesar imágenes mediante sistemas de inteligencia artificial para generar propuestas visuales (renders) del proyecto</li>
+                <li>Crear y gestionar el expediente digital del cliente para facilitar la cotización con talleres</li>
+                <li>Enviar comunicaciones relacionadas con su proyecto</li>
+                <li>Mejorar los servicios y algoritmos de la plataforma</li>
+                <li>Cumplir con obligaciones legales</li>
+              </ul>
+            )
+          },
+          {
+            num: '4',
+            title: 'Uso de Inteligencia Artificial',
+            content: (
+              <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px' }}>
+                EnKaje Pro utiliza sistemas de inteligencia artificial para generar propuestas visuales (renders) a partir de las imágenes y especificaciones proporcionadas por el usuario. Al subir una fotografía a la plataforma, el usuario autoriza expresamente su procesamiento por dichos sistemas con la finalidad de generar la propuesta visual solicitada.
+                <br /><br />
+                Los renders generados son propuestas visuales de carácter referencial y no constituyen una garantía del resultado final del proyecto. El resultado real puede diferir del render generado debido a materiales, condiciones del espacio, interpretación del taller u otros factores. Los rangos de precio estimados por la plataforma son igualmente referenciales y no representan cotizaciones formales.
+                <br /><br />
+                EnKaje Pro retiene los derechos sobre los renders generados por sus sistemas. El usuario obtiene una licencia de uso personal, no comercial, sobre el render asociado a su proyecto.
+              </p>
+            )
+          },
+          {
+            num: '5',
+            title: 'Transferencia de Datos',
+            content: (
+              <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px' }}>
+                Sus datos, incluyendo fotografías del proyecto y renders generados, podrán ser compartidos con los talleres registrados y verificados en la plataforma, únicamente para la gestión y cotización de su proyecto. Esta transferencia es necesaria para la prestación del servicio y se considera aceptada al usar la plataforma.
+                <br /><br />
+                No vendemos ni comercializamos sus datos personales a terceros con fines publicitarios o de mercadotecnia.
+              </p>
+            )
+          },
+          {
+            num: '6',
+            title: 'Derechos ARCO',
+            content: (
+              <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px' }}>
+                Tiene derecho a <strong style={{ color: '#e8e0d4' }}>Acceder, Rectificar, Cancelar u Oponerse</strong> al tratamiento de sus datos personales. Para ejercer estos derechos envíe su solicitud a <a href="mailto:privacidad@enkajepro.com" style={{ color: '#c8a97a', textDecoration: 'none' }}>privacidad@enkajepro.com</a> con:
+              </p>
+            )
+          },
+          {
+            num: '7',
+            title: 'Seguridad',
+            content: (
+              <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px' }}>
+                Implementamos medidas técnicas y administrativas para proteger sus datos, incluyendo cifrado en tránsito y en reposo mediante Supabase. Las fotografías e imágenes subidas se almacenan en servidores seguros con acceso restringido.
+              </p>
+            )
+          },
+          {
+            num: '8',
+            title: 'Cambios al Aviso',
+            content: (
+              <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px' }}>
+                Nos reservamos el derecho de modificar este Aviso. Los cambios se notificarán con al menos 30 días de anticipación mediante correo electrónico o aviso visible en la plataforma. El uso continuado del servicio tras la notificación implica la aceptación de los cambios.
+              </p>
+            )
+          }
+        ].map((section, i) => (
+          <div key={i} style={{
+            marginBottom: '40px',
+            paddingBottom: '40px',
+            borderBottom: '1px solid #1a1a1a'
+          }}>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <span style={{
+                fontSize: '11px',
+                color: '#c8a97a',
+                fontFamily: "'Helvetica Neue', sans-serif",
+                letterSpacing: '0.1em',
+                paddingTop: '4px',
+                minWidth: '16px'
+              }}>{section.num}.</span>
+              <h2 style={{
+                fontSize: '16px',
+                fontWeight: '400',
+                letterSpacing: '0.05em',
+                margin: 0,
+                color: '#f0e8dc',
+                fontFamily: "'Helvetica Neue', sans-serif",
+                textTransform: 'uppercase'
+              }}>{section.title}</h2>
             </div>
-            <div style={{ fontSize: 13, color: "#555" }}>
-              Monterrey, Nuevo Leon, Mexico
+            <div style={{ paddingLeft: '32px' }}>
+              {section.content}
             </div>
           </div>
+        ))}
+
+        {/* ARCO details inline */}
+        <div style={{
+          marginTop: '-24px',
+          marginBottom: '40px',
+          paddingLeft: '32px',
+          paddingBottom: '40px',
+          borderBottom: '1px solid #1a1a1a'
+        }}>
+          <ul style={{ lineHeight: '2', color: '#b8a898', fontSize: '15px', paddingLeft: '20px', margin: '0 0 16px 0' }}>
+            <li>Nombre completo</li>
+            <li>Descripción clara del derecho que desea ejercer</li>
+            <li>Copia de identificación oficial</li>
+          </ul>
+          <p style={{ lineHeight: '1.8', color: '#b8a898', fontSize: '15px', margin: 0 }}>
+            Responderemos en un máximo de <strong style={{ color: '#e8e0d4' }}>20 días hábiles</strong>.
+          </p>
         </div>
 
-        {/* Navegacion entre docs */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 32, flexWrap: "wrap" }}>
-          {[["privacidad","Privacidad"],["terminos","Terminos"],["cookies","Cookies"],["responsabilidad","No Responsabilidad"]].map(([k,l]) => (
-            <button key={k} onClick={() => { setDoc(k); window.scrollTo(0,0); }}
-              style={{ background: "transparent", border: "none", color: doc===k?"#d4af37":"#555", fontSize: 13, cursor: "pointer", textDecoration: doc===k?"underline":"none" }}>{l}</button>
-          ))}
+        {/* Footer CTA */}
+        <div style={{
+          background: '#1a1a1a',
+          border: '1px solid #2a2a2a',
+          borderRadius: '2px',
+          padding: '32px',
+          textAlign: 'center'
+        }}>
+          <p style={{
+            fontSize: '13px',
+            color: '#8a7a6a',
+            fontFamily: "'Helvetica Neue', sans-serif",
+            letterSpacing: '0.05em',
+            margin: '0 0 12px 0'
+          }}>¿Preguntas sobre tu privacidad?</p>
+          <a href="mailto:privacidad@enkajepro.com" style={{
+            color: '#c8a97a',
+            textDecoration: 'none',
+            fontSize: '15px',
+            letterSpacing: '0.05em'
+          }}>privacidad@enkajepro.com</a>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div style={{ background: "#0f0f0a", borderTop: "1px solid #1a1a12", padding: "24px", textAlign: "center", marginTop: 40 }}>
-        <div style={{ fontSize: 12, color: "#444" }}>© 2025 EnKaje Pro. Todos los derechos reservados. Monterrey, Mexico.</div>
       </div>
     </div>
   );
