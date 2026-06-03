@@ -1352,7 +1352,8 @@ export default function App() {
   const [formPuerta, setFormPuerta] = useState(FORM_PUERTA_INIT);
   const [formMueble, setFormMueble] = useState(FORM_MUEBLE_INIT);
   const [formBano, setFormBano] = useState(FORM_BANO_INIT);
-  const [proyectos, setProyectos] = useState([]);
+  const [leads, setLeads] = useState([]);
+  const [leadSel, setLeadSel] = useState(null);
   const [proyectoSel, setProyectoSel] = useState(null);
   const [talleresMem, setTalleresMem] = useState([]);
   const [tallerSel, setTallerSel] = useState(null);
