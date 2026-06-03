@@ -405,13 +405,10 @@ export default function Landing() {
           </div>
         </section>
       )}
-
-      {/* ── PARA TALLERES ── */}
-      <section id="talleres" style={{ padding: "80px 24px", background:{audiencia === "taller" && (
-<section id="talleres" ...>
-  ...
-</section>
-)} 
+{/* ── PARA TALLERES ── */}
+      {audiencia === "taller" && (
+      <section id="talleres" style={{ padding: "80px 24px", background: "#0f0f0a" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <div className="pill" style={{ marginBottom: 16 }}>PARA TALLERES</div>
             <h2 className="section-title" style={{ fontSize: 38, fontWeight: 900, marginBottom: 16, color: "#f0e8dc" }}>
