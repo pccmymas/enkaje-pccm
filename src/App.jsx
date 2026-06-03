@@ -2435,8 +2435,8 @@ Formato: Caption completo listo para copiar y pegar.`;
   // ─── APP ───────────────────────────────────────────────────────────────────
   const tabs = role === "admin"
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["membresias","Talleres"],["ia","IA"]]
-    : role === "taller"
-    ? [["bienvenida","Inicio"],["formulario","Formulario"],["leads","Proyectos"],["presupuesto","Cotizar"],["ia","IA"]]
+   : role === "taller"
+    ? [["bienvenida","Inicio"],["formulario","Formulario"],["leads","Proyectos"],["leads_portal","Leads"],["presupuesto","Cotizar"],["ia","IA"]]
     : [["bienvenida","Inicio"],["formulario","Mi Proyecto"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["presupuesto","Presupuesto"],["ia","IA"]];
 
   const form = getForm();
