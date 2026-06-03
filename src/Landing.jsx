@@ -47,9 +47,10 @@ const CSS = `
 
 const FOTOS = [
   { label: "Cocina Moderna", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&q=85&fit=crop&crop=center", tag: "Lo más pedido" },
-  { label: "Closet Premium", img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=85&fit=crop&crop=center", tag: "Tendencia 2026" },
-  { label: "Área de Entretenimiento", img: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=700&q=85&fit=crop&crop=center", tag: "Muy solicitado" },
+  { label: "Closet Premium", img: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=700&q=85&fit=crop&crop=center", tag: "Tendencia 2026" },
+  { label: "Área de Entretenimiento", img: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=700&q=85&fit=crop&crop=center", tag: "Muy solicitado" },
   { label: "Mueble a Medida", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&q=85&fit=crop&crop=center", tag: "Personalizable" },
+];
 ];
 
 const PASOS_CLIENTE = [
