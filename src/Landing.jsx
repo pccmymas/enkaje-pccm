@@ -46,10 +46,10 @@ const CSS = `
 `;
 
 const FOTOS = [
-  { label: "Cocina Moderna", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&q=85&fit=crop&crop=center", tag: "Lo más pedido" },
-  { label: "Closet Premium", img: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=700&q=85&fit=crop&crop=center", tag: "Tendencia 2026" },
-  { label: "Área de Entretenimiento", img: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=700&q=85&fit=crop&crop=center", tag: "Muy solicitado" },
-  { label: "Mueble a Medida", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&q=85&fit=crop&crop=center", tag: "Personalizable" },
+  { label: "Cocina Moderna", img: "https://images.pexels.com/photos/6969870/pexels-photo-6969870.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Lo más pedido" },
+  { label: "Closet Premium", img: "https://images.pexels.com/photos/6580406/pexels-photo-6580406.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Tendencia 2026" },
+  { label: "Área de Entretenimiento", img: "https://images.pexels.com/photos/15558114/pexels-photo-15558114.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Muy solicitado" },
+  { label: "Puerta de Madera", img: "https://images.pexels.com/photos/4682153/pexels-photo-4682153.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Elegancia natural" },
 ];
 
 const PASOS_CLIENTE = [
