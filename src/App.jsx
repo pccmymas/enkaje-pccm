@@ -3277,7 +3277,7 @@ Formato: Caption completo listo para copiar y pegar.`;
 
             {/* TABS DE IA */}
             <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
-              {[["asistente","🤖 Asistente"],["renders","🎨 Renders"],["social","📱 Redes Sociales"]].map(([k,l]) => (
+             {[["asistente","🤖 Asistente"],["renders","🎨 Renders"],...(role !== "cliente" ? [["social","📱 Redes Sociales"]] : [])].map(([k,l]) => (
                 <button key={k} onClick={() => setIaTab(k)}
                   style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${iaTab===k?"#d4af37":"#2a2a20"}`, background: iaTab===k?"#d4af3715":"transparent", color: iaTab===k?"#d4af37":"#aaa", fontSize: 13, cursor: "pointer", fontWeight: iaTab===k?700:400 }}>
                   {l}
