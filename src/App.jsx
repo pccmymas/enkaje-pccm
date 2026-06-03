@@ -2510,7 +2510,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                   <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>{d}</div>
                 </div>
               ))}
-              {role==="taller" && ["Proyectos nuevos",(proyectos||[]).filter(p=>p.estado==="nuevo").length,"#d4af37"],["Total",(proyectos||[]).length,"#00bcd4"]].map(([l,v,c],i) => (
+              {role==="taller" && [["Proyectos nuevos",(proyectos||[]).filter(p=>p.estado==="nuevo").length,"#d4af37"],["Total",(proyectos||[]).length,"#00bcd4"]].map(([l,v,c],i) => (
                 <div key={i} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18 }}>
                   <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>{l}</div>
                   <div style={{ fontSize: 32, fontWeight: 900, color: c }}>{v}</div>
