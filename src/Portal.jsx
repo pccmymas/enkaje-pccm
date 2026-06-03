@@ -9,7 +9,12 @@ const sb = async (path, opts = {}) => {
   const url = `${SUPABASE_URL}/rest/v1/${path}${sep}apikey=${SUPABASE_KEY}`;
   const r = await fetch(url, {
     method: opts.method || "GET",
-    headers: { "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=representation" },
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal"
+    },
     body: opts.body
   });
   const text = await r.text();
