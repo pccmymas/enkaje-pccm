@@ -1724,7 +1724,7 @@ async function cargarLeads() {
   }, []);
 
   useEffect(() => {
-    if (screen === "app" && (tab === "bienvenida" || tab === "proyectos" || tab === "leads")) cargarProyectos();
+    if (screen === "app" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
     if (screen === "app" && (tab === "membresias" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
