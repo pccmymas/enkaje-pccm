@@ -1473,6 +1473,9 @@ export default function App() {
     console.log("Supabase signup response:", JSON.stringify(data));
     if (data.user && data.session) {
       setToken(data.session.access_token);
+      sessionStorage.setItem("enkaje_token", data.session.access_token);
+      sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
+      sessionStorage.setItem("enkaje_role", data.user?.user_metadata?.role || "cliente");
       setUser(data.user);
       const r = data.user?.user_metadata?.role || loginForm.role || "cliente";
       setRole(r); setScreen("app"); setTab("bienvenida");
