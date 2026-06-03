@@ -2722,8 +2722,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                   </div>
                 )}
               </div>
-            {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />}
-            )}
+            {tipoForm === "bano" && <FormularioBano form={formBano} setF={(k,v) => setFormBano(p=>({...p,[k]:v}))} role={role} isMobile={isMobile} />    
             <div style={{ marginTop: 28, background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 20 }}>
               {savedMsg && <div style={{ background: savedMsg.includes("❌")?"#1a0a0a":"#0a2a0a", border: `1px solid ${savedMsg.includes("❌")?"#f4433640":"#4caf5040"}`, color: savedMsg.includes("❌")?"#f44336":"#4caf50", borderRadius: 8, padding: "10px 14px", fontSize: 13, marginBottom: 14, textAlign: "center" }}>{savedMsg}</div>}
               <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom: 14 }}>
