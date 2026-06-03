@@ -212,7 +212,7 @@ window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_
       const payload = {
         tipo_proyecto:        tipoProyecto,
         foto_url:             fotoUrl || null,
-        render_url:           renderUrl || null,
+        render_url:           (renderUrl && !renderUrl.startsWith("data:")) ? renderUrl : null,
         estilo_elegido:       estilo,
         materiales_sugeridos: MATERIALES_SUGERIDOS[estilo] || null,
         rango_inversion_min:  rango.min,
