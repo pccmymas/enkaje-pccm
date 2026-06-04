@@ -189,16 +189,23 @@ export default function Portal() {
     const estiloData = ESTILOS.find(e => e.key === estilo);
     const tipoLabel = tipoProyecto === "cocina" ? "kitchen" : tipoProyecto === "closet" ? "walk-in closet" : tipoProyecto === "puerta" ? "interior door" : tipoProyecto === "mueble" ? "custom furniture" : tipoProyecto === "panel" ? "decorative wall panel" : "bathroom vanity";
     const colorLabel = COLORES.find(c => c.key === colorElegido)?.label || "";
+  const colorInstruccion = colorLabel
+      ? `Apply ${colorLabel} color ONLY to cabinet doors and drawer fronts. Do NOT add wood grain or brown tones unless explicitly requested.`
+      : "";
+    const acabadoInstruccion = acabado
+      ? `Cabinet finish must be ${acabado}. Apply this finish strictly, no substitutions.`
+      : "";
     const prompt = [
-      `Photorealistic interior design render of a custom ${tipoLabel}`,
-      `${estiloData?.label} style: ${estiloData?.desc}`,
-      colorLabel && `Color: ${colorLabel}`,
-      acabado && `Finish: ${acabado}`,
-      descripcion && `Client description: ${descripcion}`,
-      colorLabel && `Use ONLY this color: ${colorLabel}. No wood, no other colors unless specified.`,
-      MATERIALES_SUGERIDOS[estilo],
-      "High-end Monterrey Mexico home, dramatic lighting, architectural photography, 4K quality"
-    ].filter(Boolean).join(". ");
+      `Photorealistic interior design render. Transform this exact space keeping the SAME room dimensions, SAME counter position, SAME appliance locations, SAME layout.`,
+      `Project type: custom ${tipoLabel}.`,
+      `Style: ${estiloData?.label} — ${estiloData?.desc}.`,
+      colorInstruccion,
+      acabadoInstruccion,
+      descripcion && `Client specifications: ${descripcion}.`,
+      `Materials: ${MATERIALES_SUGERIDOS[estilo]}.`,
+      `Strict rules: maintain exact spatial layout, do not add furniture that was not in original photo, do not change room shape or window positions.`,
+      `Quality: dramatic professional lighting, high-end Monterrey Mexico home, architectural photography, 4K ultra detailed.`
+    ].filter(Boolean).join(" ");
 
     try {
      let fotoBase64 = null;
