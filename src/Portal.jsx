@@ -302,7 +302,7 @@ export default function Portal() {
             <ProgressBar step={step} total={TOTAL_STEPS} />
           </div>
         )}
-        <a href="/app" style={{ fontSize:12, color:"#555", textDecoration:"none", border:"1px solid #2a2a20", borderRadius:8, padding:"6px 14px" }}>Soy un taller →</a>
+       <a href="/app" onClick={() => { sessionStorage.removeItem("enkaje_token"); sessionStorage.removeItem("enkaje_user"); sessionStorage.removeItem("enkaje_role"); sessionStorage.removeItem("enkaje_tab"); }} style={{ fontSize:12, color:"#555", textDecoration:"none", border:"1px solid #2a2a20", borderRadius:8, padding:"6px 14px" }}>Soy un taller →</a>
       </div>
 
       <div style={{ maxWidth:680, margin:"0 auto", padding:"32px 20px 80px" }}>
