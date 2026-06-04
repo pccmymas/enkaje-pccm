@@ -2545,8 +2545,8 @@ Formato: Caption completo listo para copiar y pegar.`;
               ))}
             </div>
           </div>
-        )}
-        {/* MIS PROYECTOS — cliente */}
+         )}
+        
        {/* FORMULARIO */}
         {tab === "formulario" && (
           <div>
