@@ -3465,6 +3465,9 @@ Formato: Caption completo listo para copiar y pegar.`;
                   </div>
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                     <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13, padding: "11px 24px" }}>
+                     <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
+                     {renderLoading ? "⏳ Generando..." : "📐 Render Técnico"}
+                      </BTN>
                       {renderLoading ? "⏳ Generando render..." : "✨ Generar Render"}
                     </BTN>
                     {renderMsg && <span style={{ fontSize: 12, color: renderMsg.startsWith("✅") ? "#4caf50" : "#f44336" }}>{renderMsg}</span>}
