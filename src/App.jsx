@@ -3466,22 +3466,23 @@ Formato: Caption completo listo para copiar y pegar.`;
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                     <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13, padding: "11px 24px" }}>
                      <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
-                     {renderLoading ? "⏳ Generando..." : "📐 Render Técnico"}
-                      </BTN>
-                      {renderLoading ? "⏳ Generando render..." : "✨ Generar Render"}
+                    {renderLoading ? "⏳ Generando render..." : "✨ Generar Render"}
+                    </BTN>
+                    <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
+                      {renderLoading ? "⏳ Generando..." : "📐 Render Técnico"}
                     </BTN>
                     async function generarRenderTecnico() {
-  if (!renderPrompt.trim()) return;
-  setRenderLoading(true);
-  setRenderMsg("");
-  setRenderImg(null);
-  const promptTecnico = `Technical carpentry blueprint drawing of: ${renderPrompt}. Style: clean architectural line drawing, white background, precise measurements annotated, front view and side view, exploded view showing all components, labels for each part (doors, drawers, shelves, hardware), dimensions in meters, professional technical drawing style, no colors, black lines on white, 2D orthographic projection.`;
-  try {
-    const res = await fetch("/api/image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: promptTecnico })
-    });
+                    if (!renderPrompt.trim()) return;
+                    setRenderLoading(true);
+                    setRenderMsg("");
+                    setRenderImg(null);
+                    const promptTecnico = `Technical carpentry blueprint drawing of: ${renderPrompt}. Style: clean architectural line drawing, white background, precise measurements annotated, front view and side view, exploded view showing all components, labels for each part (doors, drawers, shelves, hardware), dimensions in meters, professional technical drawing style, no colors, black lines on white, 2D orthographic projection.`;
+                    try {
+                    const res = await fetch("/api/image", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: promptTecnico })
+                 });
     const data = await res.json();
     const imgData = data.data?.data?.[0] || data.data?.[0];
     const imgUrl = imgData?.url;
