@@ -102,7 +102,13 @@ export default function Landing() {
   }, []);
 
   const goPortal = () => window.location.href = "/portal";
-  const goApp = () => window.location.href = "/app";
+  const goApp = () => {
+  sessionStorage.removeItem("enkaje_token");
+  sessionStorage.removeItem("enkaje_user");
+  sessionStorage.removeItem("enkaje_role");
+  sessionStorage.removeItem("enkaje_tab");
+  window.location.href = "/app";
+};
   const goLegal = (p) => window.location.href = `/app?legal=${p}`;
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
