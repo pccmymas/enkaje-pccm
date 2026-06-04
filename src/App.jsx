@@ -3567,7 +3567,7 @@ Formato: Caption completo listo para copiar y pegar.`;
         {[["privacidad","Privacidad"],["terminos","Términos"],["cookies","Cookies"]].map(([k,l]) => (
           <button key={k} onClick={() => setLegalPage(k)} style={{ background: "transparent", border: "none", color: "#444", fontSize: 11, cursor: "pointer", letterSpacing: 1, textDecoration: "underline" }}>{l}</button>
         ))}
-        <span style={{ color: "#2a2a20", fontSize: 11 }}>· © 2025 EnKaje Pro · Monterrey, México</span>
+        <span style={{ color: "#2a2a20", fontSize: 11 }}>· © 2026 EnKaje Pro · Monterrey, México</span>
       </div>
 
       {/* MODAL CONFIRMACIÓN */}
