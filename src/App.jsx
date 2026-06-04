@@ -1608,10 +1608,7 @@ async function cargarLeads() {
   const data = await sb("expedientes?order=created_at.desc", { token });
   if (Array.isArray(data)) setLeads(data);
 }
-  async function cargarLeads() {
-  const data = await sb("expedientes?order=created_at.desc", { token });
-  if (Array.isArray(data)) setLeads(data);
-}
+
   async function cargarProyectos() {
     let url = "proyectos?order=created_at.desc";
     if (role === "cliente") url += `&user_email=eq.${user?.email}`;
