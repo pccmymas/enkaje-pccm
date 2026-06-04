@@ -2260,7 +2260,15 @@ Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explic
   }
 }
 
-Incluye SOLO materiales relevantes. Máximo 10 materiales. Sé conciso en los nombres y notas. Los precios deben ser realistas para Monterrey 2025.`;
+REGLAS CRÍTICAS:
+1. Calcula cantidades EXACTAS basadas en las medidas proporcionadas. Si largo es 3.20m y profundidad 0.60m, calcula m2 reales.
+2. Para láminas de MDF 18mm (1.22x2.44m), calcula cuántas láminas se necesitan según las medidas reales.
+3. Precios realistas Monterrey 2025: MDF 18mm lámina $850-950, MDF 15mm $750-850, melamina lámina $650-750, bisagras cierre lento $45-65 pza, corredera telescópica $85-120 pza, jaladeras $35-80 pza, laca mate litro $280-350, cuarzo m2 $1800-2500, granito m2 $1200-1800.
+4. Mano de obra Monterrey: fabricación cocina $8000-15000, instalación $3000-6000.
+5. NO inventes materiales que no apliquen. NO uses precios de CDMX.
+6. El total de cada material debe ser cantidad x precio_unitario exacto.
+7. El desglose debe sumar coherentemente con la lista de materiales.
+Máximo 10 materiales. JSON válido únicamente, sin texto adicional.`;
 
     try {
       const res = await fetch("/api/common", {
