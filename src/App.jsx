@@ -3463,14 +3463,15 @@ Formato: Caption completo listo para copiar y pegar.`;
                       style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 13, resize: "vertical", fontFamily: "inherit" }}
                     />
                   </div>
-                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                 <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                     <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13, padding: "11px 24px" }}>
-                     <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
-                    {renderLoading ? "⏳ Generando render..." : "✨ Generar Render"}
+                      {renderLoading ? "⏳ Generando render..." : "✨ Generar Render"}
                     </BTN>
                     <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
                       {renderLoading ? "⏳ Generando..." : "📐 Render Técnico"}
                     </BTN>
+                    {renderMsg && <span style={{ fontSize: 12, color: renderMsg.startsWith("✅") ? "#4caf50" : "#f44336" }}>{renderMsg}</span>}
+                  </div>
                     async function generarRenderTecnico() {
                     if (!renderPrompt.trim()) return;
                     setRenderLoading(true);
