@@ -3472,10 +3472,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                     </BTN>
                     {renderMsg && <span style={{ fontSize: 12, color: renderMsg.startsWith("✅") ? "#4caf50" : "#f44336" }}>{renderMsg}</span>}
                   </div>
-                 </div>
-                </div>
-
-                {renderLoading && (
+                 {renderLoading && (
                   <div style={{ background: "#0f0f0a", borderRadius: 16, padding: 40, textAlign: "center" }}>
                     <div style={{ color: "#d4af37", fontSize: 14, marginBottom: 8 }}>✨ Generando render con IA...</div>
                     <div style={{ color: "#555", fontSize: 12 }}>Esto puede tomar 15-30 segundos</div>
