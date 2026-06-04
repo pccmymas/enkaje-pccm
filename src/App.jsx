@@ -2922,7 +2922,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                           style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
                           📋 Formulario
                         </button>
-                        <button onClick={e => { e.stopPropagation(); setLeadSel({...lead, editando: true}); }} 
+                        <button onClick={e => { e.stopPropagation(); console.log("EDITAR CLICK", lead.id); setLeadSel({...lead, editando: true}); console.log("LEADSEL SET", lead.id); }}
                          style={{ background: "transparent", color: "#00bcd4", border: "1.5px solid #00bcd4", borderRadius: 10, padding: "9px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
                          ✏️
                  
