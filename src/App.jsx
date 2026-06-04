@@ -2339,7 +2339,7 @@ Incluye SOLO materiales relevantes. Máximo 10 materiales. Sé conciso en los no
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: renderPrompt })
+       body: JSON.stringify({ prompt: `Professional photorealistic interior design render of a ${renderPrompt}. High quality, detailed, realistic materials, professional lighting, modern Mexican home, 4K quality, architectural visualization.` })
       });
       const data = await res.json();
       // gpt-image-1 devuelve b64_json
