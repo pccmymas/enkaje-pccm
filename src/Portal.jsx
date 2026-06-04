@@ -203,6 +203,15 @@ export default function Portal() {
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // Convertir foto a base64
+let fotoBase64 = null;
+if (foto) {
+  fotoBase64 = await new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.readAsDataURL(foto);
+  });
+}
        body: JSON.stringify({ prompt, image: fotoBase64 })
       });
       const data = await res.json();
