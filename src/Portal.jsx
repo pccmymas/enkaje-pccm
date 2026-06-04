@@ -203,7 +203,7 @@ export default function Portal() {
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
+       body: JSON.stringify({ prompt, image: fotoBase64 })
       });
       const data = await res.json();
       const imgData = data.data?.data?.[0] || data.data?.[0];
