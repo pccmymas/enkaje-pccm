@@ -988,7 +988,7 @@ function FormularioBano({ form, setF, role, isMobile }) {
     </div>
   );
 }// ============ PRESUPUESTO — hoja profesional + todos los canales ============
-function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg, generarContrato, tallerData, imprimirHoja }) {
+  function Presupuesto({ form, setF, isMobile, tipoProyecto, role, generarMateriales, materiales, materialesLoading, materialesMsg, generarContrato, tallerData, imprimirHoja, setMateriales, setMaterialesMsg }) {
   const total = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
     .reduce((a, v) => a + (parseFloat(v) || 0), 0);
 
