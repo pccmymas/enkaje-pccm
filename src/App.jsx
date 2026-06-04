@@ -2668,7 +2668,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
               </div>
               <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} setMateriales={setMateriales} setMaterialesMsg={setMaterialesMsg} />
-          </div>
          </div> 
         )}
         {/* MIS PROYECTOS — cliente */}
