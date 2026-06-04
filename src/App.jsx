@@ -1125,7 +1125,7 @@ function FormularioBano({ form, setF, role, isMobile }) {
            <INPUT label="Instalacion (MXN)" value={form.precio_instalacion} onChange={e=>setF("precio_instalacion",e.target.value)} placeholder="8000" type="number" />
            <INPUT label={tipoProyecto==="cocina"?"Cubierta (MXN)":tipoProyecto==="puerta"?"Acabado / Pintura (MXN)":tipoProyecto==="bano"?"Tarja / Acabados (MXN)":"Acabados (MXN)"} value={form.precio_cubierta} onChange={e=>setF("precio_cubierta",e.target.value)} placeholder="12000" type="number" />
            <INPUT label={tipoProyecto==="puerta"?"Herrajes / Chapa (MXN)":tipoProyecto==="bano"?"Herrajes / Grifería (MXN)":"Herrajes (MXN)"} value={form.precio_herrajes} onChange={e=>setF("precio_herrajes",e.target.value)} placeholder="5000" type="number" />
-           <INPUT label="Otros (MXN)" value={form.precio_otros} onChange={e=>setF("precio_otros",e.target.value)} placeholder="0" type="number" />    placeholder="0"     type="number" />
+           <INPUT label="Otros (MXN)" value={form.precio_otros} onChange={e=>setF("precio_otros",e.target.value)} placeholder="0" type="number" />    
             {total > 0 && (
               <div style={{ background:"#1a1208", border:"1px solid #d4af3730", borderRadius:12, padding:16, marginTop:8 }}>
                 {[["Fabricacion",form.precio_fabricacion],["Instalacion",form.precio_instalacion],["Acabados",form.precio_cubierta],["Herrajes",form.precio_herrajes],["Otros",form.precio_otros]]
