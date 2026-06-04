@@ -2260,13 +2260,13 @@ Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explic
   }
 }
 
-Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser realistas para Monterrey 2025.`;
+Incluye SOLO materiales relevantes. Máximo 10 materiales. Sé conciso en los nombres y notas. Los precios deben ser realistas para Monterrey 2025.`;
 
     try {
       const res = await fetch("/api/common", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 2500, messages: [{ role: "user", content: prompt }] })
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
       const txt = data.content?.[0]?.text || "{}";
