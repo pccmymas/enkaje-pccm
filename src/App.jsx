@@ -2667,8 +2667,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
                 <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
               </div>
-              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} />
-            </div>
+              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} setMateriales={setMateriales} setMaterialesMsg={setMaterialesMsg} />
           </div>
         )}
         {/* MIS PROYECTOS — cliente */}
@@ -2768,7 +2767,7 @@ Formato: Caption completo listo para copiar y pegar.`;
         {tab === "presupuesto" && (
           <div>
             <TIPO_SELECTOR />
-            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} />
+            <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} setMateriales={setMateriales} setMaterialesMsg={setMaterialesMsg} />
           </div>
         )}
 
