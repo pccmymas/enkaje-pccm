@@ -2837,6 +2837,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               </div>
             )}
             {leads.map((lead, i) => {
+              const sel = leadSel?.id === lead.id;
               const scoreColor = lead.score >= 80 ? "#d4af37" : lead.score >= 55 ? "#4caf50" : lead.score >= 30 ? "#f0a500" : "#666";
               const scoreEmoji = lead.score >= 80 ? "⭐" : lead.score >= 55 ? "🟢" : lead.score >= 30 ? "🟡" : "🔴";
               const labelTexto = lead.score >= 80 ? "Prioritario" : lead.score >= 55 ? "Listo" : lead.score >= 30 ? "Evaluando" : "Explorando";
