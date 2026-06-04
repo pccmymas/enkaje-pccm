@@ -3498,7 +3498,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                 )}
               <div style={{ marginTop: 12, padding: "10px 14px", background: "#1a1208", border: "1px solid #d4af3720", borderRadius: 10, fontSize: 11, color: "#777", lineHeight: 1.6 }}>
                 ⚠️ <b style={{ color: "#d4af3799" }}>Nota:</b> La IA puede cometer errores. Verifica siempre los resultados antes de compartirlos con tu cliente.
-             </div>
+            </div>
+                </div>
             </div>
             )}
             {/* CONTENIDO PARA REDES SOCIALES */}
