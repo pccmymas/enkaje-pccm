@@ -195,6 +195,7 @@ export default function Portal() {
       colorLabel && `Color: ${colorLabel}`,
       acabado && `Finish: ${acabado}`,
       descripcion && `Client description: ${descripcion}`,
+      colorLabel && `Use ONLY this color: ${colorLabel}. No wood, no other colors unless specified.`,
       MATERIALES_SUGERIDOS[estilo],
       "High-end Monterrey Mexico home, dramatic lighting, architectural photography, 4K quality"
     ].filter(Boolean).join(". ");
