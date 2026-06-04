@@ -2768,8 +2768,7 @@ Formato: Caption completo listo para copiar y pegar.`;
           <div>
             <TIPO_SELECTOR />
             <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} setMateriales={setMateriales} setMaterialesMsg={setMaterialesMsg} />
-          </div>
-         </div>
+       </div>
        )}
 
         {/* PROYECTOS ADMIN */}
