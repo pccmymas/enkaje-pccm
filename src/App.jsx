@@ -2266,7 +2266,7 @@ Incluye SOLO materiales relevantes. Máximo 15 materiales. Los precios deben ser
       const res = await fetch("/api/common", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 2500, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
       const txt = data.content?.[0]?.text || "{}";
