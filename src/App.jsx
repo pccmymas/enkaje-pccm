@@ -3538,8 +3538,8 @@ Formato: Caption completo listo para copiar y pegar.`;
             )}
           </div>
         )}
-
-      {/* COOKIE BANNER */}
+       </div>
+     {/* COOKIE BANNER */}
       <CookieBanner onVerCookies={() => setLegalPage("cookies")} />
 
       {/* FOOTER LEGAL — visible en todas las tabs */}
