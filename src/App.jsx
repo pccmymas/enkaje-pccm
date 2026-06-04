@@ -2462,7 +2462,7 @@ Formato: Caption completo listo para copiar y pegar.`;
 
   // ─── APP ───────────────────────────────────────────────────────────────────
   const tabs = role === "admin"
-    ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["membresias","Talleres"],["ia","IA"]]
+    ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["leads_portal","Leads"],["membresias","Talleres"],["ia","IA"]]
    : role === "taller"
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["leads","Proyectos"],["leads_portal","Leads"],["presupuesto","Cotizar"],["ia","IA"]]
   : [["bienvenida","Inicio"],["formulario","Formulario"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["ia","IA"]]
@@ -2825,7 +2825,7 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
         )}
 {/* LEADS DEL PORTAL */}
-        {tab === "leads_portal" && (
+        {tab === "leads_portal" && (role === "taller" || role === "admin") && (
           <div>
             <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:26 }}>Leads del Portal</h1>
             <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Clientes que llenaron el portal público con render de IA</p>
