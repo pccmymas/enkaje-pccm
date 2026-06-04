@@ -2843,7 +2843,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               const scoreEmoji = lead.score >= 80 ? "⭐" : lead.score >= 55 ? "🟢" : lead.score >= 30 ? "🟡" : "🔴";
               const labelTexto = lead.score >= 80 ? "Prioritario" : lead.score >= 55 ? "Listo" : lead.score >= 30 ? "Evaluando" : "Explorando";
               return (
-               <div key={lead.id || i}onClick={e => { if (e.target.tagName === "BUTTON" || e.target.closest("button")) return; if (!editando) setLeadSel(leadSel?.id === lead.id && !leadSel?.editando ? null : lead); }}
+               <div key={lead.id || i}<div key={lead.id || i} onClick={() => setLeadSel(sel ? null : lead)}
                   style={{ background: "#0f0f0a", border: `1px solid ${sel ? scoreColor : "#1a1a12"}`, borderRadius: 14, padding: 16, marginBottom: 10, cursor: "pointer", transition: "all .2s" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
                     <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
