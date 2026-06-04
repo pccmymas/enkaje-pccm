@@ -203,9 +203,17 @@ export default function Portal() {
      let fotoBase64 = null;
       if (foto) {
         fotoBase64 = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result.split(",")[1]);
-          reader.readAsDataURL(foto);
+         const canvas = document.createElement("canvas");
+const img = new Image();
+img.onload = () => {
+  const maxSize = 400;
+  let w = img.width, h = img.height;
+  if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+  else { w = Math.round(w * maxSize / h); h = maxSize; }
+  canvas.width = w; canvas.height = h;
+  canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+  resolve(canvas.toDataURL("image/jpeg", 0.5).split(",")[1]);
+  img.src = URL.createObjectURL(foto);
         });
       }
       const res = await fetch("/api/image", {
