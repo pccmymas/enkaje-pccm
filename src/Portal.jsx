@@ -170,6 +170,7 @@ export default function Portal() {
   const [correo, setCorreo]           = useState("");
   const [saving, setSaving]           = useState(false);
   const [sinCuenta]                   = useState(true);
+  const [renderBloqueado, setRenderBloqueado] = useState(false); 
   const fileRef = useRef();
 
   useEffect(() => { document.title = "Portal Cliente · EnKaje Pro"; }, []);
