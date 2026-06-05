@@ -515,7 +515,25 @@ img.src = URL.createObjectURL(foto);
               <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:"#f0e8dc", marginBottom:8 }}>Tu propuesta visual</h2>
               <p style={{ color:"#666", fontSize:14 }}>Así podría verse tu proyecto terminado.</p>
             </div>
-
+            {renderBloqueado && (
+  <div style={{ background:"#1a0808", border:"1px solid #d4af3740", borderRadius:16, padding:32, textAlign:"center", marginBottom:16 }}>
+    <div style={{ fontSize:36, marginBottom:12 }}>🔒</div>
+    <h3 style={{ fontFamily:"'Playfair Display',serif", color:"#f0e8dc", fontSize:20, marginBottom:8 }}>
+      {sinCuenta ? "Ya usaste tu render gratuito" : "Llegaste al límite de renders"}
+    </h3>
+    <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
+      {sinCuenta
+        ? "Crea una cuenta gratis y obtén 3 renders sin marca de agua."
+        : "Has usado tus 3 renders del mes. Actualiza tu plan para más."}
+    </p>
+    {sinCuenta && (
+      <a href="/app" style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>
+        Crear cuenta gratis → 3 renders
+      </a>
+    )}
+  </div>
+)}
+{renderLoading && (
             {renderLoading && (
               <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:"60px 24px", textAlign:"center" }}>
                 <div style={{ width:40, height:40, border:"3px solid #d4af3730", borderTop:"3px solid #d4af37", borderRadius:"50%", animation:"spin 1s linear infinite", margin:"0 auto 20px" }} />
