@@ -264,10 +264,13 @@ img.src = URL.createObjectURL(foto);
           if (uploadRes.ok) {
             const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`;
             setRenderUrl(publicUrl);
+            localStorage.setItem("enkaje_renders", String(usados + 1));
             setRenderMsg("✅ Render generado");
           } else {
             // Si falla el upload, usar base64 local
             setRenderUrl("data:image/png;base64," + imgB64);
+            localStorage.setItem("enkaje_renders", String(usados + 1));
+            localStorage.setItem("enkaje_renders", String(usados + 1));
             setRenderMsg("✅ Render generado");
           }
         } catch {
