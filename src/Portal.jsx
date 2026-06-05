@@ -533,7 +533,6 @@ img.src = URL.createObjectURL(foto);
     )}
   </div>
 )}
-{renderLoading && (
             {renderLoading && (
               <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:"60px 24px", textAlign:"center" }}>
                 <div style={{ width:40, height:40, border:"3px solid #d4af3730", borderTop:"3px solid #d4af37", borderRadius:"50%", animation:"spin 1s linear infinite", margin:"0 auto 20px" }} />
