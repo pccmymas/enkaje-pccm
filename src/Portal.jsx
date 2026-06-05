@@ -183,8 +183,11 @@ export default function Portal() {
   };
 
  const generarRender = async () => {
-    if (!estilo || !tipoProyecto) return;
-    setRenderLoading(true);
+  if (!estilo || !tipoProyecto) return;
+  const LIMITE = sinCuenta ? 1 : 3;
+  const usados = parseInt(localStorage.getItem("enkaje_renders") || "0", 10);
+  if (usados >= LIMITE) { setRenderBloqueado(true); return; }
+  setRenderLoading(true);
     setRenderMsg("");
     setRenderUrl(null);
     const estiloData = ESTILOS.find(e => e.key === estilo);
