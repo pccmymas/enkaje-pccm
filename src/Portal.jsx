@@ -365,18 +365,49 @@ export default function Portal() {
       : tipoProyecto === "panel"  ? "decorative wall panel"
       : "bathroom vanity";
 
+    // ── Descripción técnica de material para prompt ──────────────────────────
+    const MATERIAL_PROMPT_DETAIL = {
+      melamina: `Cabinet material: melamine-coated particleboard (tablero aglomerado con melamina). Surface must look perfectly smooth, uniform, matte or satin texture with no visible wood grain. Edges have thin ABS edge banding, perfectly flush. The surface reflects light softly and evenly. This is the most common Mexican residential kitchen material — it should look clean, practical and modern, NOT cheap.`,
+      mdf: `Cabinet material: MDF with lacquered paint finish (MDF lacado). Surface must look ultra-smooth, perfectly flat, zero texture, like a painted automotive surface. Solid color, no wood grain visible whatsoever. Edges are perfectly sharp and clean. The paint gives a premium, almost plastic-smooth appearance. Very high-end finish.`,
+      enchapado: `Cabinet material: MDF base with real wood veneer surface (enchapado de madera). The surface shows genuine natural wood grain texture — visible, tactile-looking, organic. Grain runs consistently in one direction. Color varies naturally across panels as real wood does. Edges show matching wood veneer. The wood veneer creates warmth and visual richness that painted surfaces cannot replicate.`,
+      madera_solida: `Cabinet material: solid hardwood (madera sólida maciza). Each panel and door is made from a single piece or glued solid wood boards. The grain is deep, rich, three-dimensional — NOT a veneer or print. You can see the natural variation between boards, knots if rustic style, end grain on edges. The wood has depth and warmth that reads as genuinely natural. Surface may be oiled, waxed, or lacquered but the solid wood character must be unmistakable.`,
+    };
+
+    const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
+
     const prompt = [
-      `Photorealistic interior design render. Transform this exact space keeping the SAME room dimensions, SAME counter position, SAME appliance locations, SAME layout.`,
-      `Project type: custom ${tipoLabel}.`,
-      `Style: ${estiloData?.label} — ${estiloData?.prompt_hint}.`,
-      colorData    && `Cabinet color: ${colorData.prompt}. Apply ONLY to cabinet doors and drawer fronts.`,
-      acabadoData  && `Cabinet surface finish: ${acabadoData.prompt}.`,
-      materialData && `Primary material: ${materialData.prompt}.`,
-      vidaHints    && `Special requirements based on household: ${vidaHints}.`,
-      descripcion  && `Client additional specifications: ${descripcion}.`,
-      `Materials: ${MATERIALES_SUGERIDOS[estilo]}.`,
-      `Strict rules: maintain exact spatial layout, do not add furniture not in original photo, do not change room shape or window positions.`,
-      `Quality: dramatic professional lighting, high-end Monterrey Mexico home, architectural photography, 4K ultra detailed.`
+      // Base y calidad
+      `Hyperrealistic architectural interior render, photographic quality, indistinguishable from a real photograph.`,
+      `Shot with a professional architectural camera, wide-angle lens, perfect exposure, no lens distortion.`,
+      `Lighting: dramatic yet natural, combination of warm ambient light and precise accent lighting, soft shadows, no blown highlights.`,
+      `Setting: high-end residential home in Monterrey, Mexico, upper-middle class neighborhood.`,
+
+      // Tipo de proyecto
+      `The space features a brand new custom-built ${tipoLabel} as the centerpiece.`,
+
+      // Estilo
+      `Design style: ${estiloData?.label}. ${estiloData?.prompt_hint}. Every design decision must reflect this style consistently.`,
+
+      // Material — descripción técnica detallada
+      materialPromptDetail && `MATERIAL SPECIFICATION (critical): ${materialPromptDetail}`,
+
+      // Color
+      colorData && `Cabinet door color: ${colorData.prompt}. Apply this color consistently to ALL cabinet doors and drawer fronts. Do NOT apply to walls, countertop, or appliances.`,
+
+      // Acabado
+      acabadoData && `Surface finish on all cabinet doors: ${acabadoData.prompt}. This finish must be clearly visible in the render — pay attention to how light interacts with the surface.`,
+
+      // Vida
+      vidaHints && `Functional design requirements based on the household: ${vidaHints}.`,
+
+      // Descripción del cliente
+      descripcion && `Client's specific requests: ${descripcion}.`,
+
+      // Reglas estrictas de layout
+      foto ? `LAYOUT RULES: preserve the EXACT same room geometry, wall positions, window locations, ceiling height, and floor area from the reference photo. Only replace or redesign the ${tipoLabel} itself.` : `Create a realistic, well-proportioned ${tipoLabel} that looks naturally integrated in a Mexican home.`,
+
+      // Calidad final
+      `Final quality requirements: 8K resolution detail, sharp focus throughout, realistic material textures with proper specularity and micro-detail, professional interior photography composition, no watermarks, no text, no artificial-looking elements.`,
     ].filter(Boolean).join(" ");
 
     try {
