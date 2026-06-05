@@ -34,49 +34,49 @@ const TIPOS_PROYECTO = [
 const ESTILOS = [
   {
     key: "moderno", label: "Moderno", desc: "Líneas limpias, sin adornos",
-    foto: "/estilos/moderno.png",
+    foto: "/moderno.png",
     prompt_hint: "modern clean lines, flat panel cabinets, neutral tones, hidden hardware",
     color: "#e8e0d0"
   },
   {
     key: "minimalista", label: "Minimalista", desc: "Lo esencial, espacios abiertos",
-    foto: "/estilos/minimalista.png",
+    foto: "/minimalista.png",
     prompt_hint: "minimalist, handleless cabinets, push-open doors, white matte, open space",
     color: "#ffffff"
   },
   {
     key: "contemporaneo", label: "Contemporáneo", desc: "Mezcla de estilos actuales",
-    foto: "/estilos/contemporaneo.png",
+    foto: "/contemporaneo.png",
     prompt_hint: "contemporary style, mix of wood and lacquer, porcelain countertop",
     color: "#d0d8e8"
   },
   {
     key: "industrial", label: "Industrial", desc: "Metal, madera cruda, urbano",
-    foto: "/estilos/industrial.png",
+    foto: "/industrial.png",
     prompt_hint: "industrial style, raw wood, black matte metal hardware, exposed textures, urban loft",
     color: "#888"
   },
   {
     key: "clasico", label: "Clásico", desc: "Molduras, detalles ornamentales",
-    foto: "/estilos/clasico.png",
+    foto: "/clasico.png",
     prompt_hint: "classic style, raised panel doors, ornamental moldings, solid wood, warm tones",
     color: "#d4af37"
   },
   {
     key: "rustico", label: "Rústico", desc: "Madera natural, texturas orgánicas",
-    foto: "/estilos/rustico.png",
+    foto: "/rustico.png",
     prompt_hint: "rustic style, natural pine or cedar wood, visible grain, organic textures, warm earthy tones",
     color: "#8B6914"
   },
   {
     key: "nordico", label: "Nórdico", desc: "Blanco, madera clara, acogedor",
-    foto: "/estilos/nordico.png",
+    foto: "/nordico.png",
     prompt_hint: "scandinavian nordic style, white cabinets, light birch wood accents, cozy warm lighting",
     color: "#c0d8e0"
   },
   {
     key: "lujo", label: "Lujo / Premium", desc: "Materiales nobles, exclusividad",
-    foto: "/estilos/lujo.png",
+    foto: "/lujo.png",
     prompt_hint: "luxury premium style, veined marble countertop, gold brass hardware, noble wood veneer, dramatic lighting",
     color: "#d4af37"
   },
@@ -99,32 +99,32 @@ const COLORES = [
 const ACABADOS = [
   {
     key: "mate",        label: "Mate",        desc: "Sin brillo, antihuella",
-    foto: "/acabados/acabados.png", pos: "0% 0%",
+    foto: "/acabados.png", pos: "0% 0%",
     prompt: "matte finish, no gloss, fingerprint resistant surface"
   },
   {
     key: "alto_brillo", label: "Alto brillo", desc: "Brillante, moderno",
-    foto: "/acabados/acabados.png", pos: "50% 0%",
+    foto: "/acabados.png", pos: "50% 0%",
     prompt: "high gloss finish, reflective shiny surface, lacquered"
   },
   {
     key: "satinado",    label: "Satinado",    desc: "Suave, intermedio",
-    foto: "/acabados/acabados.png", pos: "100% 0%",
+    foto: "/acabados.png", pos: "100% 0%",
     prompt: "satin finish, soft sheen, semi-gloss"
   },
   {
     key: "tipo_madera", label: "Tipo madera", desc: "Veta natural visible",
-    foto: "/acabados/acabados.png", pos: "0% 100%",
+    foto: "/acabados.png", pos: "0% 100%",
     prompt: "wood grain texture finish, natural veneer look, visible wood grain pattern"
   },
   {
     key: "lacado",      label: "Lacado",      desc: "Color sólido, premium",
-    foto: "/acabados/acabados.png", pos: "50% 100%",
+    foto: "/acabados.png", pos: "50% 100%",
     prompt: "lacquered finish, solid color, premium painted surface"
   },
   {
     key: "texturizado", label: "Texturizado", desc: "Relieves táctiles",
-    foto: "/acabados/acabados.png", pos: "100% 100%",
+    foto: "/acabados.png", pos: "100% 100%",
     prompt: "textured finish, embossed surface, tactile relief pattern"
   },
 ];
