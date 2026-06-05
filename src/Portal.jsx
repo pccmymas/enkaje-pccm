@@ -30,53 +30,53 @@ const TIPOS_PROYECTO = [
   { key: "bano",    label: "Baño",    emoji: "🚿", desc: "Vanity, mueble flotante, espejo" },
 ];
 
-// Estilos con fotos reales de Unsplash
+// Estilos con fotos locales
 const ESTILOS = [
   {
     key: "moderno", label: "Moderno", desc: "Líneas limpias, sin adornos",
-    foto: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80",
+    foto: "/estilos/moderno.png",
     prompt_hint: "modern clean lines, flat panel cabinets, neutral tones, hidden hardware",
     color: "#e8e0d0"
   },
   {
     key: "minimalista", label: "Minimalista", desc: "Lo esencial, espacios abiertos",
-    foto: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&q=80",
+    foto: "/estilos/minimalista.png",
     prompt_hint: "minimalist, handleless cabinets, push-open doors, white matte, open space",
     color: "#ffffff"
   },
   {
     key: "contemporaneo", label: "Contemporáneo", desc: "Mezcla de estilos actuales",
-    foto: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&q=80",
+    foto: "/estilos/contemporaneo.png",
     prompt_hint: "contemporary style, mix of wood and lacquer, porcelain countertop",
     color: "#d0d8e8"
   },
   {
     key: "industrial", label: "Industrial", desc: "Metal, madera cruda, urbano",
-    foto: "https://images.unsplash.com/photo-1504275107627-0c2ba7a43dba?w=400&q=80",
+    foto: "/estilos/industrial.png",
     prompt_hint: "industrial style, raw wood, black matte metal hardware, exposed textures, urban loft",
     color: "#888"
   },
   {
     key: "clasico", label: "Clásico", desc: "Molduras, detalles ornamentales",
-    foto: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=400&q=80",
+    foto: "/estilos/clasico.png",
     prompt_hint: "classic style, raised panel doors, ornamental moldings, solid wood, warm tones",
     color: "#d4af37"
   },
   {
     key: "rustico", label: "Rústico", desc: "Madera natural, texturas orgánicas",
-    foto: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=400&q=80",
+    foto: "/estilos/rustico.png",
     prompt_hint: "rustic style, natural pine or cedar wood, visible grain, organic textures, warm earthy tones",
     color: "#8B6914"
   },
   {
     key: "nordico", label: "Nórdico", desc: "Blanco, madera clara, acogedor",
-    foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
+    foto: "/estilos/nordico.png",
     prompt_hint: "scandinavian nordic style, white cabinets, light birch wood accents, cozy warm lighting",
     color: "#c0d8e0"
   },
   {
     key: "lujo", label: "Lujo / Premium", desc: "Materiales nobles, exclusividad",
-    foto: "https://images.unsplash.com/photo-1556909172-89cf0b22f04d?w=400&q=80",
+    foto: "/estilos/lujo.png",
     prompt_hint: "luxury premium style, veined marble countertop, gold brass hardware, noble wood veneer, dramatic lighting",
     color: "#d4af37"
   },
@@ -94,36 +94,37 @@ const COLORES = [
   { key: "beige",         label: "Beige",          hex: "#E8D5B0", desc: "Suave, acogedor",      prompt: "warm beige cabinets" },
 ];
 
-// Acabados con foto de textura real
+// Acabados — una sola imagen con 6 secciones, recortada con object-position
+// Imagen: 3 columnas x 2 filas → posiciones: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
 const ACABADOS = [
   {
-    key: "mate", label: "Mate", desc: "Sin brillo, antihuella",
-    foto: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80",
+    key: "mate",        label: "Mate",        desc: "Sin brillo, antihuella",
+    foto: "/acabados/acabados.png", pos: "0% 0%",
     prompt: "matte finish, no gloss, fingerprint resistant surface"
   },
   {
     key: "alto_brillo", label: "Alto brillo", desc: "Brillante, moderno",
-    foto: "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=200&q=80",
+    foto: "/acabados/acabados.png", pos: "50% 0%",
     prompt: "high gloss finish, reflective shiny surface, lacquered"
   },
   {
-    key: "satinado", label: "Satinado", desc: "Suave, intermedio",
-    foto: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=200&q=80",
+    key: "satinado",    label: "Satinado",    desc: "Suave, intermedio",
+    foto: "/acabados/acabados.png", pos: "100% 0%",
     prompt: "satin finish, soft sheen, semi-gloss"
   },
   {
     key: "tipo_madera", label: "Tipo madera", desc: "Veta natural visible",
-    foto: "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=200&q=80",
+    foto: "/acabados/acabados.png", pos: "0% 100%",
     prompt: "wood grain texture finish, natural veneer look, visible wood grain pattern"
   },
   {
-    key: "lacado", label: "Lacado", desc: "Color sólido, premium",
-    foto: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80",
+    key: "lacado",      label: "Lacado",      desc: "Color sólido, premium",
+    foto: "/acabados/acabados.png", pos: "50% 100%",
     prompt: "lacquered finish, solid color, premium painted surface"
   },
   {
     key: "texturizado", label: "Texturizado", desc: "Relieves táctiles",
-    foto: "https://images.unsplash.com/photo-1504275107627-0c2ba7a43dba?w=200&q=80",
+    foto: "/acabados/acabados.png", pos: "100% 100%",
     prompt: "textured finish, embossed surface, tactile relief pattern"
   },
 ];
@@ -718,12 +719,19 @@ export default function Portal() {
                       transition:"all .2s", padding:0,
                       boxShadow: sel ? "0 0 14px #d4af3825" : "none"
                     }}>
-                      {/* Foto textura */}
+                      {/* Foto textura — recorte de imagen compuesta 3x2 */}
                       <div style={{ position:"relative", height:64, overflow:"hidden" }}>
                         <img
                           src={a.foto}
                           alt={a.label}
-                          style={{ width:"100%", height:"100%", objectFit:"cover", filter: sel ? "brightness(1)" : "brightness(0.6)" }}
+                          style={{
+                            position:"absolute",
+                            width:"300%", height:"200%",
+                            top: a.pos.endsWith("100%") ? "-100%" : "0",
+                            left: a.pos.startsWith("100%") ? "-200%" : a.pos.startsWith("50%") ? "-100%" : "0",
+                            objectFit:"cover",
+                            filter: sel ? "brightness(1)" : "brightness(0.6)"
+                          }}
                           onError={ev => { ev.target.style.background="#1a1a12"; ev.target.style.display="none"; }}
                         />
                         {sel && (
