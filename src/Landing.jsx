@@ -33,6 +33,7 @@ const CSS = `
   .mockup-window { background: #0a0a08; border: 1px solid #2a2a20; border-radius: 12px; overflow: hidden; }
   .mockup-bar { background: #1a1a12; padding: 8px 12px; display: flex; align-items: center; gap: 6px; }
   .mockup-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .tipo-chip:hover { border-color: #d4af3780 !important; color: #d4af37 !important; transform: translateY(-1px); }
   @media (max-width: 768px) {
     .hide-mobile { display: none !important; }
     .grid-mobile-1 { grid-template-columns: 1fr !important; }
@@ -45,9 +46,13 @@ const CSS = `
   }
 `;
 
+// ── Slider de tipos de proyecto con fotos locales ──────────────────────────
 const FOTOS = [
-  { label: "Cocina Moderna", img: "https://images.pexels.com/photos/6969870/pexels-photo-6969870.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Lo más pedido" },
-  { label: "Closet Premium", img: "https://images.pexels.com/photos/6580406/pexels-photo-6580406.jpeg?auto=compress&cs=tinysrgb&w=700&h=500&fit=crop", tag: "Tendencia 2026" },
+  { label: "Cocina de Lujo",             img: "/tipo-cocina.png",      tag: "Lo más pedido",   emoji: "🍳", desc: "Cocinas integrales" },
+  { label: "Closet Premium",             img: "/tipo-closet.png",      tag: "Tendencia 2026",  emoji: "👔", desc: "Closets y vestidores" },
+  { label: "Baño a Medida",              img: "/tipo-bano.png",        tag: "Alta demanda",    emoji: "🚿", desc: "Vanity y muebles de baño" },
+  { label: "Centro de Entretenimiento",  img: "/tipo-entretenimiento.png", tag: "Nuevo",       emoji: "📺", desc: "Muebles TV y lambrin" },
+  { label: "Puertas y Cancelería",       img: "/tipo-puerta.png",      tag: "Especialidad",   emoji: "🚪", desc: "Puertas interiores y exteriores" },
 ];
 
 const PASOS_CLIENTE = [
@@ -83,6 +88,16 @@ const PLANES = [
   { nombre:"Premium", precio:"2,999", color:"#d4af37", features:["Todo el Plan Pro","Expediente completo del cliente","Leads prioritarios primero","IA sugiere respuesta al lead","Perfil destacado en directorio","Onboarding personal","Soporte 24/7"] },
 ];
 
+// ── Ejemplo de render para sección IA ─────────────────────────────────────
+const RENDER_EJEMPLO = {
+  img: "/lujo.png",
+  estilo: "Lujo / Premium",
+  color: "Madera oscura",
+  acabado: "Satinado",
+  descripcion: "Tu cocina premium en madera oscura satinada está pensada para recibir con estilo. La isla central de mármol es el corazón del espacio — perfecta para quienes disfrutan cocinar mientras conviven. Los herrajes dorados y la iluminación LED arquitectónica elevan cada detalle. El acabado satinado es fácil de mantener sin perder la sensación de lujo.",
+  tags: ["Madera noble enchapada", "Cubierta mármol", "Herrajes dorados", "LED integrado"],
+};
+
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
   const [audiencia, setAudiencia] = useState("cliente");
@@ -103,12 +118,12 @@ export default function Landing() {
 
   const goPortal = () => window.location.href = "/portal";
   const goApp = () => {
-  sessionStorage.removeItem("enkaje_token");
-  sessionStorage.removeItem("enkaje_user");
-  sessionStorage.removeItem("enkaje_role");
-  sessionStorage.removeItem("enkaje_tab");
-  window.location.href = "/app";
-};
+    sessionStorage.removeItem("enkaje_token");
+    sessionStorage.removeItem("enkaje_user");
+    sessionStorage.removeItem("enkaje_role");
+    sessionStorage.removeItem("enkaje_tab");
+    window.location.href = "/app";
+  };
   const goLegal = (p) => window.location.href = `/app?legal=${p}`;
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -186,23 +201,53 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Visual */}
+            {/* Visual — Slider */}
             <div className="float fade-up-d2">
               {audiencia==="cliente" ? (
                 <div style={{ position:"relative" }}>
                   <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:20, overflow:"hidden" }}>
-                    <div style={{ position:"relative", height:260, overflow:"hidden", background:"#1a1a12" }}>
-                      <img key={fotoIdx} src={FOTOS[fotoIdx].img} alt={FOTOS[fotoIdx].label} style={{ width:"100%", height:"100%", objectFit:"cover", animation:"fadeIn 0.6s ease", display:"block" }} onError={e=>{e.target.style.display="none";}} />
+                    <div style={{ position:"relative", height:280, overflow:"hidden", background:"#1a1a12" }}>
+                      <img
+                        key={fotoIdx}
+                        src={FOTOS[fotoIdx].img}
+                        alt={FOTOS[fotoIdx].label}
+                        style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center", animation:"fadeIn 0.6s ease", display:"block" }}
+                        onError={e => { e.target.style.display="none"; }}
+                      />
+                      {/* Marca de agua */}
                       <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
                         <div style={{ fontFamily:"'Playfair Display',serif", fontSize:14, fontWeight:900, color:"rgba(212,175,55,0.3)", transform:"rotate(-25deg)", letterSpacing:3, userSelect:"none" }}>EnKaje Pro · Vista Previa</div>
                       </div>
+                      {/* Tags */}
                       <div style={{ position:"absolute", top:12, left:12, background:"#d4af37", color:"#000", borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700 }}>{FOTOS[fotoIdx].tag}</div>
-                      <div style={{ position:"absolute", top:12, right:12, background:"rgba(7,7,8,0.85)", color:"#d4af37", borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700 }}>{FOTOS[fotoIdx].label}</div>
+                      <div style={{ position:"absolute", top:12, right:12, background:"rgba(7,7,8,0.85)", color:"#d4af37", borderRadius:20, padding:"4px 12px", fontSize:11, fontWeight:700 }}>{FOTOS[fotoIdx].emoji} {FOTOS[fotoIdx].label}</div>
+                      {/* Dots */}
                       <div style={{ position:"absolute", bottom:12, left:"50%", transform:"translateX(-50%)", display:"flex", gap:6 }}>
-                        {FOTOS.map((_,i) => (<button key={i} onClick={()=>setFotoIdx(i)} style={{ width:i===fotoIdx?20:6, height:6, borderRadius:3, background:i===fotoIdx?"#d4af37":"#ffffff40", border:"none", cursor:"pointer", transition:"all .3s", padding:0 }} />))}
+                        {FOTOS.map((_,i) => (
+                          <button key={i} onClick={() => { setFotoIdx(i); clearInterval(intervalRef.current); intervalRef.current = setInterval(() => setFotoIdx(idx => (idx+1) % FOTOS.length), 3800); }} style={{ width:i===fotoIdx?20:6, height:6, borderRadius:3, background:i===fotoIdx?"#d4af37":"#ffffff40", border:"none", cursor:"pointer", transition:"all .3s", padding:0 }} />
+                        ))}
                       </div>
                     </div>
-                    <div style={{ padding:"16px 20px" }}>
+
+                    {/* Chips de tipos — clickeables */}
+                    <div style={{ padding:"12px 16px", display:"flex", gap:6, flexWrap:"wrap", borderBottom:"1px solid #1a1a12" }}>
+                      {FOTOS.map((f,i) => (
+                        <button key={i} className="tipo-chip" onClick={() => setFotoIdx(i)} style={{
+                          display:"flex", alignItems:"center", gap:5,
+                          background: fotoIdx===i ? "#d4af3718" : "#0a0a08",
+                          border: `1px solid ${fotoIdx===i ? "#d4af37" : "#1a1a12"}`,
+                          borderRadius:20, padding:"5px 12px", cursor:"pointer",
+                          color: fotoIdx===i ? "#d4af37" : "#555",
+                          fontSize:11, fontWeight: fotoIdx===i ? 700 : 400,
+                          transition:"all .2s"
+                        }}>
+                          <span>{f.emoji}</span>
+                          <span>{f.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{ padding:"14px 20px" }}>
                       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
                         {[["$35K–$120K","Inversión est."],["15–35 días","Tiempo típico"],["6 meses","Garantía"]].map(([v,l],i) => (
                           <div key={i} style={{ background:"#0a0a08", borderRadius:8, padding:"8px 10px", textAlign:"center" }}>
@@ -236,6 +281,87 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── SECCIÓN EJEMPLO RENDER + DESCRIPCIÓN IA (solo cliente) ── */}
+      {audiencia === "cliente" && (
+        <section style={{ padding:"80px 24px", background:"linear-gradient(180deg,#0f0f0a 0%,#070708 100%)" }}>
+          <div style={{ maxWidth:1100, margin:"0 auto" }}>
+            <div style={{ textAlign:"center", marginBottom:48 }}>
+              <div className="pill" style={{ marginBottom:16 }}>EJEMPLO REAL</div>
+              <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:38, fontWeight:900, color:"#f0e8dc", marginBottom:12 }}>
+                Así trabaja la <span style={{ color:"#d4af37" }}>IA de EnKaje Pro</span>
+              </h2>
+              <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto" }}>
+                No es solo una imagen — es una descripción personalizada basada en tu estilo de vida.
+              </p>
+            </div>
+
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"center" }} className="grid-mobile-1">
+              {/* Render ejemplo */}
+              <div style={{ position:"relative", borderRadius:20, overflow:"hidden", border:"1px solid #d4af3730" }}>
+                <img
+                  src={RENDER_EJEMPLO.img}
+                  alt="Ejemplo render IA"
+                  style={{ width:"100%", height:380, objectFit:"cover", objectPosition:"center", display:"block" }}
+                  onError={e => { e.target.style.background="#1a1a12"; e.target.style.height="380px"; }}
+                />
+                {/* Overlay marca agua */}
+                <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
+                  <div style={{ fontFamily:"'Playfair Display',serif", fontSize:16, fontWeight:900, color:"rgba(212,175,55,0.3)", transform:"rotate(-25deg)", letterSpacing:3, userSelect:"none", whiteSpace:"nowrap" }}>EnKaje Pro · Vista Previa</div>
+                </div>
+                {/* Badge */}
+                <div style={{ position:"absolute", bottom:16, left:16, background:"rgba(7,7,8,0.92)", border:"1px solid #d4af3740", borderRadius:12, padding:"8px 14px", display:"flex", gap:10, alignItems:"center" }}>
+                  <span style={{ fontSize:11, color:"#d4af37", fontWeight:700 }}>🤖 Generado con IA</span>
+                  <span style={{ fontSize:10, color:"#444" }}>Estilo: {RENDER_EJEMPLO.estilo}</span>
+                </div>
+              </div>
+
+              {/* Descripción IA */}
+              <div>
+                <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>
+                  Descripción generada por IA
+                </div>
+                <div style={{ background:"#0f0f0a", border:"1px solid #d4af3720", borderRadius:16, padding:24, marginBottom:20, position:"relative" }}>
+                  {/* Icono quote */}
+                  <div style={{ fontSize:40, color:"#d4af3720", fontFamily:"serif", lineHeight:1, marginBottom:8 }}>"</div>
+                  <p style={{ fontSize:15, color:"#aaa", lineHeight:1.85, fontStyle:"italic" }}>
+                    {RENDER_EJEMPLO.descripcion}
+                  </p>
+                </div>
+
+                {/* Tags de materiales */}
+                <div style={{ marginBottom:24 }}>
+                  <div style={{ fontSize:11, color:"#555", letterSpacing:1, textTransform:"uppercase", marginBottom:10 }}>Materiales sugeridos</div>
+                  <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                    {RENDER_EJEMPLO.tags.map((t,i) => (
+                      <span key={i} style={{ background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"5px 12px", fontSize:12, color:"#d4af37", fontWeight:500 }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Info rápida */}
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:24 }}>
+                  {[
+                    ["Estilo", RENDER_EJEMPLO.estilo],
+                    ["Color", RENDER_EJEMPLO.color],
+                    ["Acabado", RENDER_EJEMPLO.acabado],
+                    ["Inversión", "$80K–$120K MXN"],
+                  ].map(([l,v],i) => (
+                    <div key={i} style={{ background:"#0a0a08", borderRadius:10, padding:"10px 14px" }}>
+                      <div style={{ fontSize:10, color:"#444", textTransform:"uppercase", letterSpacing:1, marginBottom:3 }}>{l}</div>
+                      <div style={{ fontSize:13, color:"#e8e0d0", fontWeight:600 }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <button onClick={goPortal} className="btn-gold" style={{ fontSize:14, padding:"13px 28px" }}>
+                  Crear mi render personalizado →
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* COMO FUNCIONA */}
       <section id="como-funciona" style={{ padding:"80px 24px", background:"#0f0f0a" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
@@ -264,7 +390,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FUNCIONES TALLER con mockups */}
+      {/* FUNCIONES TALLER */}
       {audiencia==="taller" && (
         <section id="funciones" style={{ padding:"80px 24px" }}>
           <div style={{ maxWidth:1100, margin:"0 auto" }}>
@@ -273,10 +399,7 @@ export default function Landing() {
               <h2 style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>Todo en una sola <span style={{ color:"#d4af37" }}>plataforma</span></h2>
               <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto" }}>Sin saltar entre WhatsApp, Excel y correo. Todo desde tu celular o computadora.</p>
             </div>
-
-            {/* Mockups visuales */}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16, marginBottom:48 }} className="grid-mobile-1">
-              {/* Mockup 1 — Formulario */}
               <div className="mockup-window">
                 <div className="mockup-bar">
                   {["#ff5f57","#ffbd2e","#28c840"].map((c,i) => <div key={i} className="mockup-dot" style={{ background:c }} />)}
@@ -285,30 +408,15 @@ export default function Landing() {
                 <div style={{ padding:16 }}>
                   <div style={{ fontSize:10, color:"#d4af37", fontWeight:700, letterSpacing:1, marginBottom:10 }}>TIPO DE COCINA</div>
                   <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-                    {["En L","Con isla","Lineal"].map((t,i) => (
-                      <span key={i} style={{ background:i===1?"#d4af3720":"#1a1a12", border:`1px solid ${i===1?"#d4af37":"#2a2a20"}`, color:i===1?"#d4af37":"#555", borderRadius:20, padding:"4px 10px", fontSize:11, fontWeight:i===1?700:400 }}>{i===1&&"✓ "}{t}</span>
-                    ))}
+                    {["En L","Con isla","Lineal"].map((t,i) => (<span key={i} style={{ background:i===1?"#d4af3720":"#1a1a12", border:`1px solid ${i===1?"#d4af37":"#2a2a20"}`, color:i===1?"#d4af37":"#555", borderRadius:20, padding:"4px 10px", fontSize:11, fontWeight:i===1?700:400 }}>{i===1&&"✓ "}{t}</span>))}
                   </div>
                   <div style={{ fontSize:10, color:"#d4af37", fontWeight:700, letterSpacing:1, marginBottom:10 }}>MATERIAL</div>
                   <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-                    {["MDF","Melamina","Madera sólida"].map((t,i) => (
-                      <span key={i} style={{ background:i===0?"#d4af3720":"#1a1a12", border:`1px solid ${i===0?"#d4af37":"#2a2a20"}`, color:i===0?"#d4af37":"#555", borderRadius:20, padding:"4px 10px", fontSize:11, fontWeight:i===0?700:400 }}>{i===0&&"✓ "}{t}</span>
-                    ))}
-                  </div>
-                  <div style={{ fontSize:10, color:"#d4af37", fontWeight:700, letterSpacing:1, marginBottom:8 }}>MEDIDAS</div>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
-                    {[["Largo","3.20 m"],["Altura","2.40 m"]].map(([l,v],i) => (
-                      <div key={i} style={{ background:"#1a1a12", borderRadius:6, padding:"6px 8px" }}>
-                        <div style={{ fontSize:9, color:"#444" }}>{l}</div>
-                        <div style={{ fontSize:12, color:"#e8e0d0", fontWeight:600 }}>{v}</div>
-                      </div>
-                    ))}
+                    {["MDF","Melamina","Madera sólida"].map((t,i) => (<span key={i} style={{ background:i===0?"#d4af3720":"#1a1a12", border:`1px solid ${i===0?"#d4af37":"#2a2a20"}`, color:i===0?"#d4af37":"#555", borderRadius:20, padding:"4px 10px", fontSize:11, fontWeight:i===0?700:400 }}>{i===0&&"✓ "}{t}</span>))}
                   </div>
                   <div style={{ marginTop:12, background:"#d4af37", borderRadius:8, padding:"8px", textAlign:"center", fontSize:11, fontWeight:700, color:"#000" }}>🖨️ Generar PDF</div>
                 </div>
               </div>
-
-              {/* Mockup 2 — Presupuesto */}
               <div className="mockup-window">
                 <div className="mockup-bar">
                   {["#ff5f57","#ffbd2e","#28c840"].map((c,i) => <div key={i} className="mockup-dot" style={{ background:c }} />)}
@@ -317,24 +425,14 @@ export default function Landing() {
                 <div style={{ padding:16 }}>
                   <div style={{ fontSize:10, color:"#555", marginBottom:4 }}>CLIENTE</div>
                   <div style={{ fontSize:13, fontWeight:700, color:"#e8e0d0", marginBottom:12 }}>María González · 81-1234-5678</div>
-                  {[["Fabricación","$42,000"],["Instalación","$8,000"],["Cubierta","$12,000"],["Herrajes","$5,500"]].map(([l,v],i) => (
-                    <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0", borderBottom:"1px solid #1a1a12", fontSize:12 }}>
-                      <span style={{ color:"#666" }}>{l}</span>
-                      <span style={{ color:"#e8e0d0", fontWeight:600 }}>{v}</span>
-                    </div>
-                  ))}
-                  <div style={{ display:"flex", justifyContent:"space-between", padding:"10px 0", fontSize:15, fontWeight:900 }}>
-                    <span style={{ color:"#d4af37" }}>TOTAL</span>
-                    <span style={{ color:"#d4af37" }}>$67,500 MXN</span>
-                  </div>
+                  {[["Fabricación","$42,000"],["Instalación","$8,000"],["Cubierta","$12,000"],["Herrajes","$5,500"]].map(([l,v],i) => (<div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0", borderBottom:"1px solid #1a1a12", fontSize:12 }}><span style={{ color:"#666" }}>{l}</span><span style={{ color:"#e8e0d0", fontWeight:600 }}>{v}</span></div>))}
+                  <div style={{ display:"flex", justifyContent:"space-between", padding:"10px 0", fontSize:15, fontWeight:900 }}><span style={{ color:"#d4af37" }}>TOTAL</span><span style={{ color:"#d4af37" }}>$67,500 MXN</span></div>
                   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, marginTop:4 }}>
                     <div style={{ background:"#25D36615", border:"1px solid #25D36640", borderRadius:8, padding:"7px", textAlign:"center", fontSize:11, color:"#25D366", fontWeight:700 }}>💬 WhatsApp</div>
                     <div style={{ background:"#d4af3715", border:"1px solid #d4af3740", borderRadius:8, padding:"7px", textAlign:"center", fontSize:11, color:"#d4af37", fontWeight:700 }}>📄 PDF</div>
                   </div>
                 </div>
               </div>
-
-              {/* Mockup 3 — Lead scoring */}
               <div className="mockup-window">
                 <div className="mockup-bar">
                   {["#ff5f57","#ffbd2e","#28c840"].map((c,i) => <div key={i} className="mockup-dot" style={{ background:c }} />)}
@@ -345,12 +443,7 @@ export default function Landing() {
                     <div style={{ fontSize:13, fontWeight:700, color:"#e8e0d0" }}>Cocina Moderna</div>
                     <div style={{ background:"#d4af3720", border:"1px solid #d4af3740", borderRadius:20, padding:"3px 10px", fontSize:11, color:"#d4af37", fontWeight:700 }}>⭐ Prioritario</div>
                   </div>
-                  {[["📸 Foto","Subida ✓"],["🎨 Estilo","Moderno"],["📐 Medidas","3.2×2.4m"],["📅 Inicio","Lo antes posible 🔥"],["🎯 Decisión","Listo para cotizar"]].map(([l,v],i) => (
-                    <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0", borderBottom:i<4?"1px solid #1a1a12":"none", fontSize:12 }}>
-                      <span style={{ color:"#555" }}>{l}</span>
-                      <span style={{ color:"#e8e0d0", fontWeight:500 }}>{v}</span>
-                    </div>
-                  ))}
+                  {[["📸 Foto","Subida ✓"],["🎨 Estilo","Moderno"],["📐 Medidas","3.2×2.4m"],["📅 Inicio","Lo antes posible 🔥"],["🎯 Decisión","Listo para cotizar"]].map(([l,v],i) => (<div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0", borderBottom:i<4?"1px solid #1a1a12":"none", fontSize:12 }}><span style={{ color:"#555" }}>{l}</span><span style={{ color:"#e8e0d0", fontWeight:500 }}>{v}</span></div>))}
                   <div style={{ marginTop:12, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                     <div style={{ fontSize:10, color:"#555" }}>Score de compra</div>
                     <div style={{ fontSize:22, fontWeight:900, color:"#4caf50" }}>87/100</div>
@@ -361,16 +454,8 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-
-            {/* Grid de funciones */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:16 }} className="grid-mobile-1">
-              {FUNCIONES_TALLER.map((f,i) => (
-                <div key={i} className="card">
-                  <div style={{ fontSize:28, marginBottom:12 }}>{f.icon}</div>
-                  <div style={{ fontWeight:700, fontSize:14, color:f.color, marginBottom:8 }}>{f.titulo}</div>
-                  <div style={{ fontSize:12, color:"#555", lineHeight:1.7 }}>{f.desc}</div>
-                </div>
-              ))}
+              {FUNCIONES_TALLER.map((f,i) => (<div key={i} className="card"><div style={{ fontSize:28, marginBottom:12 }}>{f.icon}</div><div style={{ fontWeight:700, fontSize:14, color:f.color, marginBottom:8 }}>{f.titulo}</div><div style={{ fontSize:12, color:"#555", lineHeight:1.7 }}>{f.desc}</div></div>))}
             </div>
           </div>
         </section>
@@ -383,19 +468,11 @@ export default function Landing() {
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }} className="grid-mobile-1">
               <div style={{ background:"#0f0f0a", border:"1px solid #f4433620", borderRadius:16, padding:24 }}>
                 <div style={{ fontSize:13, color:"#f44336", fontWeight:700, letterSpacing:1, marginBottom:16 }}>❌ SIN ENKAJE PRO</div>
-                {["Mensajes de WhatsApp sin información","El cliente no sabe qué quiere","Cotizas sin ver el espacio","Tiempo perdido en visitas que no cierran","Sin contrato, sin protección","Sin seguimiento del proyecto"].map((t,i) => (
-                  <div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a1a12":"none", fontSize:13, color:"#555" }}>
-                    <span style={{ color:"#f44336", flexShrink:0 }}>✕</span>{t}
-                  </div>
-                ))}
+                {["Mensajes de WhatsApp sin información","El cliente no sabe qué quiere","Cotizas sin ver el espacio","Tiempo perdido en visitas que no cierran","Sin contrato, sin protección","Sin seguimiento del proyecto"].map((t,i) => (<div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a1a12":"none", fontSize:13, color:"#555" }}><span style={{ color:"#f44336", flexShrink:0 }}>✕</span>{t}</div>))}
               </div>
               <div style={{ background:"#0a2a0a", border:"1px solid #4caf5030", borderRadius:16, padding:24 }}>
                 <div style={{ fontSize:13, color:"#4caf50", fontWeight:700, letterSpacing:1, marginBottom:16 }}>✅ CON ENKAJE PRO</div>
-                {["Lead con foto, medidas y estilo elegido","El cliente ya sabe lo que quiere","Cotizas con toda la información","Solo atiendes a los que van en serio","Contrato digital que te protege","Dashboard completo de proyectos"].map((t,i) => (
-                  <div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a2a12":"none", fontSize:13, color:"#aaa" }}>
-                    <span style={{ color:"#4caf50", flexShrink:0 }}>✓</span>{t}
-                  </div>
-                ))}
+                {["Lead con foto, medidas y estilo elegido","El cliente ya sabe lo que quiere","Cotizas con toda la información","Solo atiendes a los que van en serio","Contrato digital que te protege","Dashboard completo de proyectos"].map((t,i) => (<div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a2a12":"none", fontSize:13, color:"#aaa" }}><span style={{ color:"#4caf50", flexShrink:0 }}>✓</span>{t}</div>))}
               </div>
             </div>
             <div style={{ textAlign:"center", marginTop:32, display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
@@ -413,14 +490,10 @@ export default function Landing() {
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:60, alignItems:"center" }} className="grid-mobile-1">
               <div>
                 <div className="pill" style={{ marginBottom:16 }}>LO QUE PUEDES VISUALIZAR</div>
-                <h2 style={{ fontSize:38, fontWeight:900, lineHeight:1.2, marginBottom:20, color:"#f0e8dc" }}>
-                  Cualquier proyecto<br /><span style={{ color:"#d4af37" }}>en segundos</span>
-                </h2>
-                <p style={{ fontSize:15, color:"#666", lineHeight:1.8, marginBottom:28 }}>
-                  No importa si es una cocina completa o un mueble de televisión. La IA genera la propuesta visual y tú decides si te gusta antes de contratar a alguien.
-                </p>
+                <h2 style={{ fontSize:38, fontWeight:900, lineHeight:1.2, marginBottom:20, color:"#f0e8dc" }}>Cualquier proyecto<br /><span style={{ color:"#d4af37" }}>en segundos</span></h2>
+                <p style={{ fontSize:15, color:"#666", lineHeight:1.8, marginBottom:28 }}>No importa si es una cocina completa o un mueble de televisión. La IA genera la propuesta visual y tú decides si te gusta antes de contratar a alguien.</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:14, marginBottom:32 }}>
-                  {[["🍳","Cocinas integrales — modernas, rústicas, de lujo"],["👔","Closets y walk-ins — con iluminación LED y accesorios"],["📺","Áreas de entretenimiento — lambrin, panel TV, estantes"],["🛋️","Muebles a medida — mesa, librero, tocador, bar"],["🚪","Puertas y cancelería — madera sólida o aluminio"]].map(([icon,text],i) => (
+                  {[["🍳","Cocinas integrales — modernas, rústicas, de lujo"],["👔","Closets y walk-ins — con iluminación LED y accesorios"],["📺","Centros de entretenimiento — lambrin, panel TV, estantes"],["🛋️","Muebles a medida — mesa, librero, tocador, bar"],["🚪","Puertas y cancelería — madera sólida o aluminio"],["🚿","Baños a medida — vanity, mueble flotante, espejo"]].map(([icon,text],i) => (
                     <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
                       <span style={{ fontSize:20, flexShrink:0, marginTop:2 }}>{icon}</span>
                       <span style={{ fontSize:14, color:"#aaa", lineHeight:1.6 }}>{text}</span>
@@ -430,7 +503,7 @@ export default function Landing() {
                 <button onClick={goPortal} className="btn-gold" style={{ fontSize:15, padding:"14px 32px" }}>Visualizar mi proyecto →</button>
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                {[{step:"1",label:"Subes tu foto",desc:"Así como está el espacio ahora",highlight:false},{step:"2",label:"Eliges el estilo",desc:"Moderno, rústico, nórdico, industrial...",highlight:false},{step:"3",label:"IA genera el render",desc:"Fotorrealista en 20 segundos",highlight:true},{step:"4",label:"Recibes cotizaciones reales",desc:"De talleres verificados en tu zona",highlight:false}].map((s,i) => (
+                {[{step:"1",label:"Subes tu foto",desc:"Así como está el espacio ahora",highlight:false},{step:"2",label:"Eliges el estilo",desc:"Moderno, rústico, nórdico, industrial...",highlight:false},{step:"3",label:"IA genera el render",desc:"Fotorrealista en 20 segundos",highlight:true},{step:"4",label:"IA describe tu proyecto",desc:"Materiales, mantenimiento y recomendaciones personalizadas",highlight:false},{step:"5",label:"Recibes cotizaciones reales",desc:"De talleres verificados en tu zona",highlight:false}].map((s,i) => (
                   <div key={i} style={{ background:s.highlight?"#1a1208":"#0f0f0a", border:`1px solid ${s.highlight?"#d4af3740":"#1a1a12"}`, borderRadius:14, padding:"14px 18px", display:"flex", gap:14, alignItems:"center", boxShadow:s.highlight?"0 0 24px #d4af3818":"none" }}>
                     <div style={{ width:36, height:36, borderRadius:"50%", background:s.highlight?"#d4af3720":"#1a1a12", border:`1.5px solid ${s.highlight?"#d4af37":"#333"}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:900, color:s.highlight?"#d4af37":"#555", flexShrink:0 }}>{s.step}</div>
                     <div style={{ flex:1 }}>
@@ -455,20 +528,7 @@ export default function Landing() {
               <h2 style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>¿Por qué confiar en<br /><span style={{ color:"#d4af37" }}>los talleres de EnKaje Pro?</span></h2>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }} className="grid-mobile-1">
-              {[
-                {icon:"🔍",titulo:"Verificados manualmente",desc:"Cada taller pasa por validación de identificación oficial, RFC, ubicación y portafolio antes de activar su cuenta.",color:"#d4af37"},
-                {icon:"📋",titulo:"Expediente completo",desc:"El taller recibe tu foto, medidas, estilo y presupuesto estimado antes de contactarte. Llegan preparados, no a adivinar.",color:"#00bcd4"},
-                {icon:"⭐",titulo:"Reseñas verificadas",desc:"Solo clientes que contrataron pueden dejar reseña. Sin reseñas falsas ni perfiles inflados.",color:"#4caf50"},
-                {icon:"📄",titulo:"Contrato que te protege",desc:"Todos los proyectos pueden formalizarse con contrato digital que incluye garantías, penalizaciones y pagos escalonados.",color:"#f0a500"},
-                {icon:"🗺️",titulo:"Talleres en tu zona",desc:"Conectamos con talleres de San Pedro, Monterrey, San Nicolás, Guadalupe, Santa Catarina y toda el área metro.",color:"#e91e63"},
-                {icon:"💬",titulo:"Sin comisión al cliente",desc:"El pago va directo al taller. EnKaje Pro cobra membresía al taller, nunca porcentaje de tu proyecto.",color:"#9c27b0"},
-              ].map((f,i) => (
-                <div key={i} className="card">
-                  <div style={{ fontSize:32, marginBottom:14 }}>{f.icon}</div>
-                  <div style={{ fontWeight:700, fontSize:15, color:f.color, marginBottom:8 }}>{f.titulo}</div>
-                  <div style={{ fontSize:13, color:"#555", lineHeight:1.7 }}>{f.desc}</div>
-                </div>
-              ))}
+              {[{icon:"🔍",titulo:"Verificados manualmente",desc:"Cada taller pasa por validación de identificación oficial, RFC, ubicación y portafolio antes de activar su cuenta.",color:"#d4af37"},{icon:"📋",titulo:"Expediente completo",desc:"El taller recibe tu foto, medidas, estilo y presupuesto estimado antes de contactarte. Llegan preparados, no a adivinar.",color:"#00bcd4"},{icon:"⭐",titulo:"Reseñas verificadas",desc:"Solo clientes que contrataron pueden dejar reseña. Sin reseñas falsas ni perfiles inflados.",color:"#4caf50"},{icon:"📄",titulo:"Contrato que te protege",desc:"Todos los proyectos pueden formalizarse con contrato digital que incluye garantías, penalizaciones y pagos escalonados.",color:"#f0a500"},{icon:"🗺️",titulo:"Talleres en tu zona",desc:"Conectamos con talleres de San Pedro, Monterrey, San Nicolás, Guadalupe, Santa Catarina y toda el área metro.",color:"#e91e63"},{icon:"💬",titulo:"Sin comisión al cliente",desc:"El pago va directo al taller. EnKaje Pro cobra membresía al taller, nunca porcentaje de tu proyecto.",color:"#9c27b0"}].map((f,i) => (<div key={i} className="card"><div style={{ fontSize:32, marginBottom:14 }}>{f.icon}</div><div style={{ fontWeight:700, fontSize:15, color:f.color, marginBottom:8 }}>{f.titulo}</div><div style={{ fontSize:13, color:"#555", lineHeight:1.7 }}>{f.desc}</div></div>))}
             </div>
           </div>
         </section>
@@ -483,61 +543,33 @@ export default function Landing() {
             <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto 12px" }}>Así se verá el directorio cuando los talleres completen su verificación. Cada semana se incorporan nuevos.</p>
             <div style={{ display:"inline-block", background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"6px 16px", fontSize:12, color:"#d4af37", fontWeight:600, marginBottom:32 }}>🔄 Directorio en construcción · Incorporando talleres verificados</div>
             <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
-              {["Todos","Cocinas","Closets","Puertas","Muebles","Entretenimiento"].map(f => (
-                <button key={f} onClick={()=>setFiltro(f)} className={`filter-btn ${filtro===f?"active":""}`}>{f}</button>
-              ))}
+              {["Todos","Cocinas","Closets","Puertas","Muebles","Entretenimiento"].map(f => (<button key={f} onClick={()=>setFiltro(f)} className={`filter-btn ${filtro===f?"active":""}`}>{f}</button>))}
             </div>
           </div>
-
-          {/* Cards de ejemplo */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, opacity:0.7 }} className="grid-mobile-1">
-            {[
-              {emoji:"🍳",nombre:"Taller de Cocinas",especialidad:"Cocinas integrales",zona:"San Pedro Garza García",plan:"premium",anos:"+10 años",badge:"⭐ Destacado"},
-              {emoji:"👔",nombre:"Closets a Medida",especialidad:"Closets y vestidores",zona:"Monterrey Centro",plan:"pro",anos:"+8 años",badge:null},
-              {emoji:"📺",nombre:"Muebles y Lambrin",especialidad:"Paneles y entretenimiento",zona:"San Nicolás de los Garza",plan:"pro",anos:"+5 años",badge:null},
-              {emoji:"🚪",nombre:"Puertas Premium",especialidad:"Puertas y cancelería",zona:"Guadalupe",plan:"premium",anos:"+15 años",badge:"⭐ Destacado"},
-              {emoji:"🛋️",nombre:"Carpintería Fina",especialidad:"Muebles a medida",zona:"Santa Catarina",plan:"pro",anos:"+6 años",badge:null},
-              {emoji:"🍳",nombre:"Ebanistería MTY",especialidad:"Cocinas y muebles",zona:"Apodaca",plan:"pro",anos:"+12 años",badge:null},
-            ].map((t,i) => (
+            {[{emoji:"🍳",nombre:"Taller de Cocinas",especialidad:"Cocinas integrales",zona:"San Pedro Garza García",plan:"premium",anos:"+10 años",badge:"⭐ Destacado"},{emoji:"👔",nombre:"Closets a Medida",especialidad:"Closets y vestidores",zona:"Monterrey Centro",plan:"pro",anos:"+8 años",badge:null},{emoji:"📺",nombre:"Muebles y Lambrin",especialidad:"Paneles y entretenimiento",zona:"San Nicolás de los Garza",plan:"pro",anos:"+5 años",badge:null},{emoji:"🚪",nombre:"Puertas Premium",especialidad:"Puertas y cancelería",zona:"Guadalupe",plan:"premium",anos:"+15 años",badge:"⭐ Destacado"},{emoji:"🛋️",nombre:"Carpintería Fina",especialidad:"Muebles a medida",zona:"Santa Catarina",plan:"pro",anos:"+6 años",badge:null},{emoji:"🍳",nombre:"Ebanistería MTY",especialidad:"Cocinas y muebles",zona:"Apodaca",plan:"pro",anos:"+12 años",badge:null}].map((t,i) => (
               <div key={i} style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:20, position:"relative" }}>
                 <div style={{ position:"absolute", top:12, right:12, background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"3px 10px", fontSize:10, color:"#d4af37", fontWeight:700 }}>Ejemplo</div>
                 <div style={{ display:"flex", gap:14, alignItems:"center", marginBottom:14 }}>
                   <div style={{ width:44, height:44, borderRadius:"50%", background:"#d4af3715", border:"1px solid #d4af3730", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{t.emoji}</div>
-                  <div>
-                    <div style={{ fontWeight:700, fontSize:14, color:"#e8e0d0" }}>{t.nombre}</div>
-                    <div style={{ fontSize:12, color:"#d4af37" }}>{t.especialidad}</div>
-                  </div>
+                  <div><div style={{ fontWeight:700, fontSize:14, color:"#e8e0d0" }}>{t.nombre}</div><div style={{ fontSize:12, color:"#d4af37" }}>{t.especialidad}</div></div>
                 </div>
                 <div style={{ fontSize:12, color:"#555", marginBottom:10 }}>📍 {t.zona}</div>
-                <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}>
-                  <span>⏱️ {t.anos} de experiencia</span>
-                  <span style={{ color:t.plan==="premium"?"#d4af37":"#00bcd4", fontWeight:700, textTransform:"uppercase", fontSize:10 }}>{t.plan}</span>
-                </div>
-                <div style={{ display:"flex", gap:3 }}>
-                  {[1,2,3,4,5].map(s => <span key={s} style={{ color:"#d4af37", fontSize:12 }}>★</span>)}
-                  <span style={{ fontSize:11, color:"#555", marginLeft:4 }}>5.0</span>
-                </div>
+                <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}><span>⏱️ {t.anos} de experiencia</span><span style={{ color:t.plan==="premium"?"#d4af37":"#00bcd4", fontWeight:700, textTransform:"uppercase", fontSize:10 }}>{t.plan}</span></div>
+                <div style={{ display:"flex", gap:3 }}>{[1,2,3,4,5].map(s => <span key={s} style={{ color:"#d4af37", fontSize:12 }}>★</span>)}<span style={{ fontSize:11, color:"#555", marginLeft:4 }}>5.0</span></div>
               </div>
             ))}
           </div>
-
-          {/* CTA unirse al directorio */}
           <div style={{ marginTop:32, background:"linear-gradient(135deg,#1a1208,#0f0f0a)", border:"1px solid #d4af3730", borderRadius:16, padding:"28px 32px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
-            <div>
-              <div style={{ fontWeight:700, fontSize:16, color:"#f0e8dc", marginBottom:6 }}>¿Tienes un taller en Monterrey?</div>
-              <div style={{ fontSize:13, color:"#666" }}>Sé parte de los talleres fundadores. Primer mes completamente gratis.</div>
-            </div>
+            <div><div style={{ fontWeight:700, fontSize:16, color:"#f0e8dc", marginBottom:6 }}>¿Tienes un taller en Monterrey?</div><div style={{ fontSize:13, color:"#666" }}>Sé parte de los talleres fundadores. Primer mes completamente gratis.</div></div>
             <button onClick={goApp} className="btn-gold" style={{ fontSize:14, padding:"12px 24px", whiteSpace:"nowrap" }}>Unirme al directorio →</button>
           </div>
-
-          {/* Zonas */}
           <div style={{ marginTop:24, background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:24 }}>
             <div style={{ fontSize:12, color:"#555", letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>Zonas de cobertura</div>
             <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
               {ZONAS.map(z => (<span key={z} style={{ background:"#1a1a12", border:"1px solid #2a2a20", borderRadius:20, padding:"6px 14px", fontSize:13, color:"#aaa" }}>📍 {z}</span>))}
             </div>
           </div>
-
           <div style={{ textAlign:"center", marginTop:32 }}>
             <button onClick={goPortal} className="btn-gold" style={{ fontSize:15, padding:"14px 32px" }}>Solicitar cotización gratis →</button>
           </div>
@@ -558,11 +590,7 @@ export default function Landing() {
                 <div key={i} style={{ background:"#070708", border:`2px solid ${p.popular?p.color:"#1a1a12"}`, borderRadius:20, padding:28, position:"relative", boxShadow:p.popular?`0 0 48px ${p.color}18`:"none" }}>
                   {p.popular && <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:p.color, color:"#000", borderRadius:50, padding:"4px 18px", fontSize:11, fontWeight:900, letterSpacing:1, whiteSpace:"nowrap" }}>MÁS POPULAR</div>}
                   <div style={{ fontSize:13, color:p.color, fontWeight:700, letterSpacing:1, marginBottom:8 }}>PLAN {p.nombre.toUpperCase()}</div>
-                  <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:4 }}>
-                    <span style={{ fontSize:13, color:"#555" }}>$</span>
-                    <span style={{ fontFamily:"'Playfair Display',serif", fontSize:44, fontWeight:900, color:p.color }}>{p.precio}</span>
-                    <span style={{ fontSize:13, color:"#555" }}>MXN/mes</span>
-                  </div>
+                  <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:4 }}><span style={{ fontSize:13, color:"#555" }}>$</span><span style={{ fontFamily:"'Playfair Display',serif", fontSize:44, fontWeight:900, color:p.color }}>{p.precio}</span><span style={{ fontSize:13, color:"#555" }}>MXN/mes</span></div>
                   <div style={{ fontSize:12, color:"#444", marginBottom:24 }}>Primer mes gratis</div>
                   <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:28 }}>
                     {p.features.map((f,j) => (<div key={j} style={{ display:"flex", gap:10, alignItems:"flex-start" }}><span style={{ color:p.color, fontSize:13, fontWeight:900, flexShrink:0, marginTop:1 }}>✓</span><span style={{ fontSize:13, color:"#aaa", lineHeight:1.5 }}>{f}</span></div>))}
@@ -583,7 +611,7 @@ export default function Landing() {
             <>
               <div className="pill" style={{ marginBottom:20 }}>EMPIEZA GRATIS HOY</div>
               <h2 style={{ fontSize:44, fontWeight:900, lineHeight:1.15, marginBottom:20, color:"#f0e8dc" }}>Tu proyecto merece<br /><span style={{ color:"#d4af37" }}>un render antes de una decisión</span></h2>
-              <p style={{ fontSize:16, color:"#555", marginBottom:40, lineHeight:1.7 }}>Visualiza tu cocina, closet, área de entretenimiento o mueble con IA antes de contratar. En segundos, gratis, sin registro.</p>
+              <p style={{ fontSize:16, color:"#555", marginBottom:40, lineHeight:1.7 }}>Visualiza tu cocina, closet, baño, centro de entretenimiento o mueble con IA antes de contratar. En segundos, gratis, sin registro.</p>
               <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:24 }}>
                 <button onClick={goPortal} className="btn-gold" style={{ fontSize:16, padding:"16px 36px" }}>📸 Visualizar mi proyecto gratis</button>
                 <a href="https://wa.me/528127176786" target="_blank" rel="noreferrer" className="btn-wa" style={{ fontSize:16, padding:"16px 28px" }}>💬 Hablar con un asesor</a>
