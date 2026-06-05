@@ -320,11 +320,23 @@ export default function Portal() {
   const [telefono, setTelefono]       = useState("");
   const [correo, setCorreo]           = useState("");
   const [saving, setSaving]           = useState(false);
-  const [sinCuenta]                   = useState(true);
   const [renderBloqueado, setRenderBloqueado] = useState(false);
   const fileRef = useRef();
 
-  useEffect(() => { document.title = "Portal Cliente · EnKaje Pro"; }, []);
+  // Detectar si tiene cuenta activa
+  const tieneCuenta = !!sessionStorage.getItem("enkaje_token");
+  const sinCuenta = !tieneCuenta;
+  const LIMITE_RENDERS = tieneCuenta ? 3 : 1;
+  // Clave de localStorage separada por tipo de usuario
+  const STORAGE_KEY = tieneCuenta ? "enkaje_renders_cuenta" : "enkaje_renders";
+
+  useEffect(() => {
+    document.title = "Portal Cliente · EnKaje Pro";
+    // Si tiene cuenta y nunca ha usado renders de cuenta, inicializar en 0
+    if (tieneCuenta && !localStorage.getItem("enkaje_renders_cuenta")) {
+      localStorage.setItem("enkaje_renders_cuenta", "0");
+    }
+  }, []);
 
   const handleFoto = (e) => {
     const file = e.target.files[0];
@@ -344,9 +356,8 @@ export default function Portal() {
 
   const generarRender = async () => {
     if (!estilo || !tipoProyecto) return;
-    const LIMITE = sinCuenta ? 1 : 3;
-    const usados = parseInt(localStorage.getItem("enkaje_renders") || "0", 10);
-    if (usados >= LIMITE) { setRenderBloqueado(true); return; }
+    const usados = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
+    if (usados >= LIMITE_RENDERS) { setRenderBloqueado(true); return; }
     setRenderLoading(true);
     setRenderMsg("");
     setRenderUrl(null);
@@ -455,7 +466,7 @@ export default function Portal() {
 
       if (imgUrl) {
         setRenderUrl(imgUrl);
-        localStorage.setItem("enkaje_renders", String(usados + 1));
+        localStorage.setItem(STORAGE_KEY, String(usados + 1));
         setRenderMsg("✅ Render generado");
       } else if (imgB64) {
         try {
@@ -472,7 +483,7 @@ export default function Portal() {
           });
           const publicUrl = uploadRes.ok ? `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}` : "data:image/png;base64," + imgB64;
           setRenderUrl(publicUrl);
-          localStorage.setItem("enkaje_renders", String(usados + 1));
+          localStorage.setItem(STORAGE_KEY, String(usados + 1));
           setRenderMsg("✅ Render generado");
         } catch {
           setRenderUrl("data:image/png;base64," + imgB64);
@@ -567,6 +578,17 @@ export default function Portal() {
         {step === 0 && (
           <div className="portal-step" style={{ textAlign:"center", paddingTop:32 }}>
             <div style={{ fontSize:48, marginBottom:16 }}>🪵</div>
+            {tieneCuenta && (
+              <div style={{ background:"#0f2a0f", border:"1px solid #4caf5040", borderRadius:14, padding:"12px 20px", marginBottom:20, display:"inline-flex", alignItems:"center", gap:10 }}>
+                <span style={{ fontSize:18 }}>✅</span>
+                <div style={{ textAlign:"left" }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#4caf50" }}>Sesión activa</div>
+                  <div style={{ fontSize:11, color:"#555" }}>
+                    Tienes {LIMITE_RENDERS - parseInt(localStorage.getItem(STORAGE_KEY)||"0",10)} render(s) disponibles este mes
+                  </div>
+                </div>
+              </div>
+            )}
             <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:36, fontWeight:900, color:"#f0e8dc", lineHeight:1.15, marginBottom:16 }}>
               Visualiza tu proyecto<br /><span style={{ color:"#d4af37" }}>antes de gastar un peso</span>
             </h1>
@@ -835,12 +857,18 @@ export default function Portal() {
               <div style={{ background:"#1a0808", border:"1px solid #d4af3740", borderRadius:16, padding:32, textAlign:"center", marginBottom:16 }}>
                 <div style={{ fontSize:36, marginBottom:12 }}>🔒</div>
                 <h3 style={{ fontFamily:"'Playfair Display',serif", color:"#f0e8dc", fontSize:20, marginBottom:8 }}>
-                  {sinCuenta ? "Ya usaste tu render gratuito" : "Llegaste al límite de renders"}
+                  {sinCuenta ? "Ya usaste tu render gratuito" : "Usaste tus 3 renders del mes"}
                 </h3>
                 <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
-                  {sinCuenta ? "Crea una cuenta gratis y obtén 3 renders sin marca de agua." : "Has usado tus 3 renders del mes."}
+                  {sinCuenta
+                    ? "Crea una cuenta gratis y obtén 3 renders sin marca de agua."
+                    : "Tu cuenta incluye 3 renders. Se renuevan el próximo mes."}
                 </p>
-                {sinCuenta && <a href="/app" style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>Crear cuenta gratis → 3 renders</a>}
+                {sinCuenta && (
+                  <a href="/app" style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>
+                    Crear cuenta gratis → 3 renders
+                  </a>
+                )}
               </div>
             )}
 
