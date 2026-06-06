@@ -520,7 +520,7 @@ export default function Portal() {
     const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
 
     const prompt = [
-      `Professional photorealistic interior design render. Ultra-realistic, indistinguishable from a professional 3D visualization studio output. High quality, detailed, realistic materials, 4K quality, architectural visualization.`,
+      `Ultra-realistic architectural interior render, premium quality, indistinguishable from a professional 3D visualization studio output.`,
       `Lighting: ${tipoCtx.lighting}`,
       `Camera: wide angle lens, eye-level shot. ${tipoCtx.layout_hint} Sharp focus throughout, no bokeh.`,
       `Setting: luxury residential home in Monterrey, Mexico — San Pedro Garza García or Cumbres style, upper class neighborhood.`,
@@ -539,9 +539,9 @@ export default function Portal() {
       vidaHints && (tipoProyecto === "cocina" || tipoProyecto === "bano") && `Functional household requirements: ${vidaHints}.`,
       descripcion && `Client specific requests: ${descripcion}.`,
       foto
-  ? `CRITICAL LAYOUT INSTRUCTION: The reference photo shows the ACTUAL room where this project will be installed. You MUST use this exact room as your base — same walls, same floor, same ceiling height, same windows, same proportions, same perspective angle, same lighting direction. DO NOT create a new room. Transform ONLY the ${tipoCtx.subject} in this specific room. Everything else (walls, floor, ceiling, windows) must remain identical to the reference photo.`
-  : `Create a realistic well-proportioned ${tipoCtx.subject} naturally integrated in a Monterrey home. Use the reference image as the base room layout and perspective.`,
-    `Final output: professional 3D visualization studio quality, ultra-sharp, perfect warm LED lighting, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
+        ? `LAYOUT: preserve the EXACT room geometry, wall positions, window locations, ceiling height from the reference photo. Only replace the ${tipoCtx.subject}.`
+        : `Create a realistic well-proportioned ${tipoCtx.subject} naturally integrated in a Monterrey home.`,
+      `Final output: professional 3D visualization studio quality, ultra-sharp, perfect warm LED lighting, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
     ].filter(Boolean).join(" ");
 
     try {
@@ -551,13 +551,13 @@ export default function Portal() {
           const canvas = document.createElement("canvas");
           const img = new Image();
           img.onload = () => {
-            const maxSize = 800;
+            const maxSize = 400;
             let w = img.width, h = img.height;
             if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
             else { w = Math.round(w * maxSize / h); h = maxSize; }
             canvas.width = w; canvas.height = h;
             canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL("image/jpeg", 0.85).split(",")[1]);
+            resolve(canvas.toDataURL("image/jpeg", 0.5).split(",")[1]);
           };
           img.src = URL.createObjectURL(foto);
         });
