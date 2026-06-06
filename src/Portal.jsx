@@ -66,13 +66,13 @@ const MATERIALES = [
   {
     key: "melamina",
     label: "Melamina",
-    desc: "Económico · Más popular",
+    desc: "Liso + veta madera · Lo más popular",
     badge: "💚 Más económico",
     badgeColor: "#4caf50",
     foto: "/mat-melamina.png",
     color: "#4caf50",
     prompt: "melamine board finish, smooth uniform surface, economic and durable material",
-    info: "El material más usado en Monterrey. Resistente a la humedad, fácil de limpiar y disponible en cientos de colores. Ideal para proyectos con buen presupuesto sin sacrificar calidad.",
+    info: "El material más usado en Monterrey. Disponible en cientos de colores lisos y también en acabados tipo madera. Resistente a la humedad y fácil de limpiar.",
   },
   {
     key: "mdf",
@@ -378,47 +378,49 @@ export default function Portal() {
 
     // ── Descripción técnica de material para prompt ──────────────────────────
     const MATERIAL_PROMPT_DETAIL = {
-      melamina: `Cabinet material: melamine-coated particleboard (tablero aglomerado con melamina). Surface must look perfectly smooth, uniform, matte or satin texture with no visible wood grain. Edges have thin ABS edge banding, perfectly flush. The surface reflects light softly and evenly. This is the most common Mexican residential kitchen material — it should look clean, practical and modern, NOT cheap.`,
-      mdf: `Cabinet material: MDF with lacquered paint finish (MDF lacado). Surface must look ultra-smooth, perfectly flat, zero texture, like a painted automotive surface. Solid color, no wood grain visible whatsoever. Edges are perfectly sharp and clean. The paint gives a premium, almost plastic-smooth appearance. Very high-end finish.`,
-      enchapado: `Cabinet material: MDF base with real wood veneer surface (enchapado de madera). The surface shows genuine natural wood grain texture — visible, tactile-looking, organic. Grain runs consistently in one direction. Color varies naturally across panels as real wood does. Edges show matching wood veneer. The wood veneer creates warmth and visual richness that painted surfaces cannot replicate.`,
-      madera_solida: `Cabinet material: solid hardwood (madera sólida maciza). Each panel and door is made from a single piece or glued solid wood boards. The grain is deep, rich, three-dimensional — NOT a veneer or print. You can see the natural variation between boards, knots if rustic style, end grain on edges. The wood has depth and warmth that reads as genuinely natural. Surface may be oiled, waxed, or lacquered but the solid wood character must be unmistakable.`,
+      melamina: `Cabinets are MELAMINE (melamina). Design the kitchen using a COMBINATION of two melamine finishes: some cabinet doors in smooth solid color (liso) and other doors or sections in melamine with printed wood grain pattern (tipo madera). This mix is very common in Mexican kitchens — for example upper cabinets in white or grey matte melamine and lower cabinets or island in wood-grain melamine, or vice versa. Both surfaces are flat panel construction with thin ABS edge banding — the wood grain is printed/laminated onto the surface, perfectly uniform repeat pattern, NOT real wood depth. Clean straight edges, uniform sheen across all panels.`,
+      mdf: `OVERRIDE ALL OTHER MATERIAL INSTRUCTIONS: Cabinets are MDF LACADO (painted MDF). NO wood grain anywhere on any cabinet door or drawer front. Surface is painted solid color, smooth as glass, like automotive paint or a painted wall. Zero texture. Zero grain. Zero variation. Perfectly uniform color across all panels. Sharp clean edges. MDF LACADO = PAINTED SURFACE = NO WOOD GRAIN EVER. If wood grain appears on cabinet doors, the render is WRONG.`,
+      enchapado: `OVERRIDE ALL OTHER MATERIAL INSTRUCTIONS: Cabinets are MADERA ENCHAPADA (wood veneer on MDF). Cabinet surfaces show clear natural wood grain in consistent direction across all panels. Organic color variation between panels as real wood has. Warm natural wood appearance but perfectly flat panels — NOT thick solid timber. Edge banding matches veneer. Like premium IKEA veneer kitchen — clearly wood-looking but flat construction.`,
+      madera_solida: `OVERRIDE ALL OTHER MATERIAL INSTRUCTIONS: Cabinets are MADERA SOLIDA MACIZA (solid hardwood). Each cabinet door is visibly thick solid wood. Deep rich grain with natural variation between boards. Possible subtle knots. Three-dimensional wood depth impossible to fake with veneer. End grain visible at edges. Surface may be oiled or lacquered but solid timber character is unmistakable. Like traditional Mexican carpenter work.`,
     };
 
     const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
 
     const prompt = [
-      // Base y calidad
+      // Calidad base
       `Hyperrealistic architectural interior render, photographic quality, indistinguishable from a real photograph.`,
-      `Shot with a professional architectural camera, wide-angle lens, perfect exposure, no lens distortion.`,
-      `Lighting: dramatic yet natural, combination of warm ambient light and precise accent lighting, soft shadows, no blown highlights.`,
-      `Setting: high-end residential home in Monterrey, Mexico, upper-middle class neighborhood.`,
+      `Shot with a professional architectural camera, wide-angle lens, perfect exposure. Lighting: dramatic yet natural, warm ambient combined with precise accent lighting, soft shadows.`,
+      `Setting: high-end residential home in Monterrey, Mexico.`,
 
       // Tipo de proyecto
       `The space features a brand new custom-built ${tipoLabel} as the centerpiece.`,
 
-      // Estilo
-      `Design style: ${estiloData?.label}. ${estiloData?.prompt_hint}. Every design decision must reflect this style consistently.`,
+      // MATERIAL PRIMERO — máxima prioridad
+      material === "mdf" && `CRITICAL RULE: cabinet doors have NO wood grain, NO wood texture whatsoever. Painted smooth surface only.`,
+      materialPromptDetail,
 
-      // Material — descripción técnica detallada
-      materialPromptDetail && `MATERIAL SPECIFICATION (critical): ${materialPromptDetail}`,
-
-      // Color
-      colorData && `Cabinet door color: ${colorData.prompt}. Apply this color consistently to ALL cabinet doors and drawer fronts. Do NOT apply to walls, countertop, or appliances.`,
+      // Color — después del material
+      colorData && `Cabinet door and drawer front color: ${colorData.prompt}. Apply this color to ALL cabinet surfaces consistently.`,
 
       // Acabado
-      acabadoData && `Surface finish on all cabinet doors: ${acabadoData.prompt}. This finish must be clearly visible in the render — pay attention to how light interacts with the surface.`,
+      acabadoData && `Surface finish: ${acabadoData.prompt}. This must be clearly visible in how light interacts with the surface.`,
+
+      // Estilo — después del material para no sobreescribirlo
+      `Overall design style: ${estiloData?.label}. ${estiloData?.prompt_hint}. Apply this style to layout, hardware, and proportions — but the cabinet surface material defined above takes absolute priority.`,
 
       // Vida
-      vidaHints && `Functional design requirements based on the household: ${vidaHints}.`,
+      vidaHints && `Functional requirements: ${vidaHints}.`,
 
-      // Descripción del cliente
-      descripcion && `Client's specific requests: ${descripcion}.`,
+      // Cliente
+      descripcion && `Client requests: ${descripcion}.`,
 
-      // Reglas estrictas de layout
-      foto ? `LAYOUT RULES: preserve the EXACT same room geometry, wall positions, window locations, ceiling height, and floor area from the reference photo. Only replace or redesign the ${tipoLabel} itself.` : `Create a realistic, well-proportioned ${tipoLabel} that looks naturally integrated in a Mexican home.`,
+      // Layout
+      foto
+        ? `LAYOUT: preserve the EXACT room geometry, wall positions, window locations, ceiling height from the reference photo. Only redesign the ${tipoLabel}.`
+        : `Create a realistic well-proportioned ${tipoLabel} naturally integrated in a Mexican home interior.`,
 
       // Calidad final
-      `Final quality requirements: 8K resolution detail, sharp focus throughout, realistic material textures with proper specularity and micro-detail, professional interior photography composition, no watermarks, no text, no artificial-looking elements.`,
+      `Final output: 8K detail, sharp focus, realistic material textures with correct specularity, professional interior photography. No watermarks, no text overlays.`,
     ].filter(Boolean).join(" ");
 
     try {
