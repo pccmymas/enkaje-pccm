@@ -4,7 +4,8 @@
     { "source": "/app", "destination": "/index.html" },
     { "source": "/app/(.*)", "destination": "/index.html" },
     { "source": "/legal/(.*)", "destination": "/index.html" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/portal", "destination": "/index.html" },
+    { "source": "/((?!api|assets|favicon).*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/*.js": {
