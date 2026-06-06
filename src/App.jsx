@@ -1499,6 +1499,7 @@ async function login() {
       sessionStorage.setItem("enkaje_token", data.session.access_token);
       sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
       sessionStorage.setItem("enkaje_role", data.user?.user_metadata?.role || "cliente");
+      localStorage.removeItem("enkaje_renders");
       setUser(data.user);
       const r = data.user?.user_metadata?.role || loginForm.role || "cliente";
       setRole(r); setScreen("app"); setTab("bienvenida");
