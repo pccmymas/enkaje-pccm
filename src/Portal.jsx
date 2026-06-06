@@ -618,7 +618,7 @@ export default function Portal() {
       }
     } catch(e) { setRenderMsg("❌ " + e.message); }
     setRenderLoading(false);
-
+    await new Promise(r => setTimeout(r, 100));
     setDescripcionLoading(true);
     const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion });
     setDescripcionIA(desc);
