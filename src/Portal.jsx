@@ -520,7 +520,7 @@ export default function Portal() {
     const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
 
     const prompt = [
-      `Ultra-realistic architectural interior render, premium quality, indistinguishable from a professional 3D visualization studio output.`,
+      `Professional photorealistic interior design render. Ultra-realistic, indistinguishable from a professional 3D visualization studio output. High quality, detailed, realistic materials, 4K quality, architectural visualization.`,
       `Lighting: ${tipoCtx.lighting}`,
       `Camera: wide angle lens, eye-level shot. ${tipoCtx.layout_hint} Sharp focus throughout, no bokeh.`,
       `Setting: luxury residential home in Monterrey, Mexico — San Pedro Garza García or Cumbres style, upper class neighborhood.`,
