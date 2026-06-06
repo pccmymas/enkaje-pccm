@@ -387,10 +387,13 @@ export default function Portal() {
     const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
 
     const prompt = [
-      // Calidad base
-      `Hyperrealistic architectural interior render, photographic quality, indistinguishable from a real photograph.`,
-      `Shot with a professional architectural camera, wide-angle lens, perfect exposure. Lighting: dramatic yet natural, warm ambient combined with precise accent lighting, soft shadows.`,
-      `Setting: high-end residential home in Monterrey, Mexico.`,
+      // Calidad base — estilo render arquitectónico premium Monterrey
+      `Ultra-realistic architectural interior render, premium quality, indistinguishable from a professional 3D visualization studio output.`,
+      `Lighting style: dramatic warm LED accent lighting — LED strips under cabinets, recessed ceiling spots, warm 2700K-3000K color temperature throughout. Deep shadows contrasting with warm light pools. Dark ceiling with bright work surfaces. This lighting style is the signature of high-end Monterrey residential design.`,
+      `Color palette: rich dark walnut or warm wood tones combined with matte grey, charcoal or white flat panels. Quartz or marble countertops in light grey or white. Polished large-format floor tiles in light grey or cream. Matte black hardware and fixtures.`,
+      `Camera: wide angle lens, eye-level shot showing full depth of the space, slight perspective. Sharp focus throughout, no bokeh. Professional architectural visualization camera settings.`,
+      `The render looks like output from a high-end 3D visualization studio — perfect geometry, precise reflections, no noise, ultra-sharp details on every surface.`,
+      `Setting: luxury residential home in Monterrey, Mexico — San Pedro Garza García or Cumbres style, upper class neighborhood.`,
 
       // Tipo de proyecto
       `The space features a brand new custom-built ${tipoLabel} as the centerpiece.`,
@@ -420,7 +423,7 @@ export default function Portal() {
         : `Create a realistic well-proportioned ${tipoLabel} naturally integrated in a Mexican home interior.`,
 
       // Calidad final
-      `Final output: 8K detail, sharp focus, realistic material textures with correct specularity, professional interior photography. No watermarks, no text overlays.`,
+      `Final render quality: professional 3D visualization studio output, ultra-sharp, perfect lighting balance between warm LED accents and ambient fill light, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
     ].filter(Boolean).join(" ");
 
     try {
