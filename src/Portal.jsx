@@ -211,7 +211,7 @@ Responde SOLO la descripción, sin títulos ni listas. Máximo 4 oraciones.`;
     const res = await fetch("/api/common", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: model: `claude-sonnet-4-6`, max_tokens: 300, messages: [{ role: "user", content: prompt }] })
+      body: JSON.stringify({ model: `claude-sonnet-4-6`, max_tokens: 300, messages: [{ role: "user", content: prompt }] })
     });
     const data = await res.json();
     return data.content?.[0]?.text?.trim() || null;
