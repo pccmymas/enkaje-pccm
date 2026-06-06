@@ -1061,13 +1061,12 @@ export default function Portal() {
                 </p>
                 {sinCuenta && (
                  <a href="/app" onClick={() => localStorage.removeItem("enkaje_renders")} style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>
-                   Crear cuenta gratis → 3 renders
-                  </a>
-                 </a>
+                   Crear cuenta gratis → 3 renders </a>
                 )}
               </div>
-            )}
-
+            )} 
+                     
+               
             {renderLoading && (
               <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:"60px 24px", textAlign:"center" }}>
                 <div style={{ width:40, height:40, border:"3px solid #d4af3730", borderTop:"3px solid #d4af37", borderRadius:"50%", animation:"spin 1s linear infinite", margin:"0 auto 20px" }} />
