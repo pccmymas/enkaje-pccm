@@ -16,8 +16,9 @@ export default async function handler(req, res) {
       body: JSON.stringify(req.body),
     });
     const data = await response.json();
-    res.status(response.status).json(data);
+    // Siempre 200 para ver el error real de Anthropic
+    return res.status(200).json({ anthropic_status: response.status, data });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(200).json({ error: err.message });
   }
 }
