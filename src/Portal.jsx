@@ -321,8 +321,6 @@ export default function Portal() {
   const [correo, setCorreo]           = useState("");
   const [saving, setSaving]           = useState(false);
   const [renderBloqueado, setRenderBloqueado] = useState(false);
-  const [guardadoEnPerfil, setGuardadoEnPerfil] = useState(false);
-  const [guardandoPerfil, setGuardandoPerfil]   = useState(false);
   const fileRef = useRef();
 
   // Detectar si tiene cuenta activa
@@ -356,69 +354,6 @@ export default function Portal() {
     }).filter(Boolean).join(", ");
   };
 
-  const descargarRender = async () => {
-    if (!renderUrl) return;
-    try {
-      const res = await fetch(renderUrl);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `enkaje-render-${tipoProyecto}-${estilo}-${Date.now()}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      // Si falla el fetch (CORS), abrir en nueva pestaña
-      window.open(renderUrl, "_blank");
-    }
-  };
-
-  const guardarEnPerfil = async () => {
-    if (!tieneCuenta || !renderUrl || guardadoEnPerfil) return;
-    setGuardandoPerfil(true);
-    const token = sessionStorage.getItem("enkaje_token");
-    const user  = JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
-    const materialData = MATERIALES.find(m => m.key === material);
-    const acabadoData  = ACABADOS.find(a => a.key === acabado);
-    const vidaResumen  = PREGUNTAS_VIDA.map(p => {
-      const r = vidaResp[p.key];
-      const op = p.opciones.find(o => o.value === r);
-      return op ? op.label : null;
-    }).filter(Boolean).join(", ");
-    const rango = RANGOS[tipoProyecto] || { min:0, max:0 };
-    try {
-      const payload = {
-        tipo_proyecto:        tipoProyecto,
-        render_url:           renderUrl.startsWith("data:") ? null : renderUrl,
-        estilo_elegido:       estilo,
-        materiales_sugeridos: [MATERIALES_SUGERIDOS[estilo], colorElegido && `Color: ${colorElegido}`, acabadoData && `Acabado: ${acabadoData.label}`, materialData && `Material: ${materialData.label}`].filter(Boolean).join(" | "),
-        rango_inversion_min:  rango.min,
-        rango_inversion_max:  rango.max,
-        tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
-        nivel_decision:       "explorando",
-        observaciones:        `Guardado desde portal | Vida: ${vidaResumen} | Desc: ${descripcion} | DescIA: ${descripcionIA || ""}`,
-        score:                30,
-        score_label:          "evaluando",
-        estado_lead:          "guardado",
-        user_id:              user?.id || null,
-        created_at:           new Date().toISOString(),
-      };
-      const url = `${SUPABASE_URL}/rest/v1/expedientes?apikey=${SUPABASE_KEY}`;
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify(payload)
-      });
-      setGuardadoEnPerfil(true);
-    } catch(e) { console.error("Error guardando en perfil:", e); }
-    setGuardandoPerfil(false);
-  };
-
   const generarRender = async () => {
     if (!estilo || !tipoProyecto) return;
     const usados = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
@@ -434,185 +369,61 @@ export default function Portal() {
     const materialData = MATERIALES.find(m => m.key === material);
     const vidaHints    = buildVidaPromptHints();
 
-    // ── Contexto específico por tipo de proyecto ─────────────────────────────
-    const TIPO_CONTEXT = {
-      cocina: {
-        subject: "custom kitchen (cocina integral)",
-        elements: "kitchen cabinets, upper and lower cabinet doors, drawer fronts, island if applicable, countertop, backsplash, integrated appliances",
-        layout_hint: "Show full kitchen from a wide angle — upper cabinets, lower cabinets, countertop, backsplash, and appliances all visible.",
-        lighting: "LED strips under upper cabinets illuminating the countertop, recessed ceiling spots, warm 2700K-3000K. Classic Monterrey premium kitchen lighting.",
-        material_target: "cabinet doors and drawer fronts",
-        detail: `Kitchen layout: upper wall cabinets and lower base cabinets with countertop. Island or peninsula if space allows. Integrated hood or ceiling-mounted extraction. Countertop in quartz or porcelain slab — light grey or white veined. Backsplash in large format tile or stone slab. Integrated appliances flush with cabinet faces. Hardware: handleless push-open OR matte black bar pulls — consistent throughout. Toe kick detail at base. Soft-close hinges implied. Plinth lighting or under-cabinet LED strips active in render.`,
-      },
-      closet: {
-        subject: "custom walk-in closet or built-in wardrobe (closet a medida)",
-        elements: "closet door panels or open system, hanging rails at two heights, folded clothing shelves, shoe display area, drawer bank, internal LED strip lighting, full-length mirror panel",
-        layout_hint: "Show the full closet wall or walk-in interior — hanging section, shelving, drawers, and internal lighting all visible. Clothing neatly organized inside.",
-        lighting: "Internal LED strip lighting mounted inside the closet illuminating hanging clothes and shelves from above. Warm 2700K glow creating luxury boutique feel. Recessed ceiling spot outside. The interior of the closet glows warmly.",
-        material_target: "closet door panels, drawer fronts, and shelf edge banding",
-        detail: `Closet interior organization: double hanging rail section for shirts and jackets, long hang section for dresses and pants, open shelving for folded items, full-length mirror panel on one side, 3-4 drawer bank for accessories. Shoe display shelf with individual slots or open floating shelves. All interior surfaces in the same material and color as door fronts for cohesion. LED strip mounted at top interior edge. Hardware: minimal brushed nickel or matte black. Interior looks like a luxury boutique fitting room.`,
-      },
-      puerta: {
-        subject: "custom interior door (puerta interior a medida)",
-        elements: "full height door panel with design detail, solid door frame and architrave, premium door handle set, door closer hardware, wall context on both sides",
-        layout_hint: "Show the door as the absolute hero of the image — full height from floor to ceiling visible, with 50cm of wall visible on each side. Room behind slightly visible through door if ajar. Dramatic lighting.",
-        lighting: "Dramatic directional side lighting raking across the door surface to reveal texture, grain, or panel depth. Warm ambient room light from both sides. The door surface is the focal point — lighting must make the material beautiful.",
-        material_target: "door panel face and frame surface",
-        detail: `Door design: full height flush panel OR grooved/slat design OR raised panel design — depending on style. Floor-to-ceiling height (2.40m minimum). Door frame and architrave in matching or contrasting material. Hardware: lever handle in matte black or brushed gold depending on style — premium quality feel. If solid wood or veneer: grain direction runs vertically on door panel. If MDF lacado: perfectly smooth painted surface. Door has visible weight and solidity — not hollow-core look. Hinge detail visible at frame. Threshold transition clean at floor level.`,
-      },
-      mueble: {
-        subject: "custom entertainment center and TV wall (mueble de entretenimiento a medida)",
-        elements: "TV panel with floating TV mount, flanking tall cabinets with closed doors and open display niches, floating media console below TV, integrated LED lighting behind TV and inside niches, decorative objects in open shelves",
-        layout_hint: "Show the full entertainment wall — TV centered at eye level, tall flanking units, floating console below, open niches with objects. The LED lighting behind TV creates a dramatic halo effect. Wide angle shot showing the complete wall.",
-        lighting: "LED strip behind TV panel creating warm halo glow — this is the signature element. LED inside open display niches illuminating objects from above. Recessed ceiling spots. All warm 2700K. Deep shadows between cabinet sections. The wall feels dramatic and luxurious.",
-        material_target: "cabinet door panels, floating console faces, and decorative panel surfaces",
-        detail: `TV wall layout: TV mounted floating at center, surrounded by full-height custom millwork. Flanking towers with mix of closed cabinet doors (lower) and open display niches (upper). Floating console/credenza below TV at 40cm height. Open niches have LED strip inside at top — showcasing books, plants, decorative objects. Background wall behind TV panel in contrasting texture: fluted wood panel, stone slab, or microcement. Console has thin legs or floating mount — reveals floor beneath. Hardware: handleless push-open or integrated Gola profile. The overall composition feels like a high-end hotel lobby feature wall.`,
-      },
-      panel: {
-        subject: "custom decorative wall panel or lambrin (panel decorativo / lambrin a medida)",
-        elements: "full wall decorative panel system, vertical or horizontal slat design OR solid panel with texture, integrated LED lighting strip, clean transition to ceiling and floor",
-        layout_hint: "Show the full decorative wall as the hero — floor to ceiling, full width visible. The panel texture, depth, and lighting are everything. Show it in context with the room — sofa in front if living room, bed headboard context if bedroom.",
-        lighting: "Grazing light from ceiling-mounted LED strip at top of panel — light washes down the surface revealing every ridge, groove, and texture detail. LED strip hidden at top edge creating a warm curtain of light down the panel face. Side lighting from room lamps adds depth. This lighting is critical — it transforms a flat panel into a dramatic architectural feature.",
-        material_target: "panel face, slat surfaces, and visible edges",
-        detail: `Panel design: vertical fluted/slat design (most popular in Monterrey 2024-2026) OR horizontal V-groove panel OR solid textured panel. If slat design: uniform spacing of 3-5cm wide slats with 1-2cm deep shadow gaps between — the shadow lines are as important as the slats themselves. If solid panel: surface has visible texture — brushed, sandblasted, or natural grain. Panel runs floor to ceiling OR from dado rail height to ceiling. Clean aluminum or wood reveal at ceiling and floor transitions. The panel should feel like a feature you would see in a luxury hotel or high-end Monterrey residence.`,
-      },
-      bano: {
-        subject: "custom bathroom vanity and cabinetry (mueble de baño / vanity a medida)",
-        elements: "floating vanity cabinet with doors and drawers, undermount or vessel sink, stone or quartz countertop, large format mirror or illuminated mirror cabinet, wall-mounted storage tower, premium faucet set, large format wall tiles",
-        layout_hint: "Show the full vanity wall — mirror above, countertop with sink, cabinet below, and side tower if applicable. Clean spa-like composition. Wide enough to show full design.",
-        lighting: "LED strip behind mirror creating a floating mirror halo effect — very popular in Monterrey luxury bathrooms. Recessed ceiling spots above vanity. Warm 2700K throughout. The LED behind mirror is the signature lighting element. Countertop surface lit from above — reflections visible in countertop.",
-        material_target: "vanity cabinet door and drawer front surfaces, and mirror cabinet frame",
-        detail: `Vanity layout: floating wall-mounted vanity at 85cm height (standard Mexican bathroom). Cabinet below sink has 2-3 drawers OR push-open doors. Countertop in Calacatta marble slab, white quartz, or light grey stone — undermount rectangular sink OR vessel sink in white ceramic. Mirror: full-width illuminated mirror with LED strip behind (floating mirror effect) OR framed mirror with side sconces. Faucet: wall-mounted OR deck-mounted — matte black or brushed gold. Large format wall tiles: 60x120cm or slab panels in marble-look or concrete-look. Floor: herringbone tile or large format stone. The bathroom feels like a 5-star hotel spa.`,
-      },
-    };
+    const tipoLabel = tipoProyecto === "cocina" ? "kitchen"
+      : tipoProyecto === "closet" ? "walk-in closet"
+      : tipoProyecto === "puerta" ? "interior door"
+      : tipoProyecto === "mueble" ? "custom furniture"
+      : tipoProyecto === "panel"  ? "decorative wall panel"
+      : "bathroom vanity";
 
-    const tipoCtx = TIPO_CONTEXT[tipoProyecto] || TIPO_CONTEXT.cocina;
-
-    // ── Detalle por tipo × estilo ─────────────────────────────────────────────
-    const TIPO_ESTILO_DETAIL = {
-      cocina: {
-        moderno:       "Flat panel doors, handleless or thin bar pulls in matte black, quartz countertop in light grey or white, large format porcelain backsplash slab, integrated hood flush with upper cabinets, island with waterfall countertop edge.",
-        minimalista:   "Handleless push-open doors with Gola profile, seamless integrated appliances, no visible hardware, monochromatic palette, floating upper cabinets, countertop flush with backsplash creating a continuous surface.",
-        contemporaneo: "Mix of lacquered panels and wood veneer sections, porcelain countertop, mixed hardware styles, open shelving section, pendant lights over island, layered materials.",
-        industrial:    "Open shelving in raw steel, concrete-look countertop, black matte pipe hardware, exposed brick or microcement backsplash, Edison bulb pendants, raw wood open shelves mixed with matte black cabinets.",
-        clasico:       "Shaker-style cabinet doors with recessed center panel, cream or white painted finish, farmhouse sink, beadboard backsplash or subway tile, brass or antique bronze hardware, wood butcher block countertop section.",
-        rustico:       "Solid wood doors with visible grain, knotty pine or cedar, hand-forged iron hardware, stone countertop, terracotta or hand-painted tile backsplash, open wood beam ceiling visible, antique-look fixtures.",
-        nordico:       "White or light grey flat panel doors, light birch wood accents on island or open shelf, simple brushed nickel hardware, white subway tile backsplash, pendant wicker or white lights, clean and airy feel.",
-        lujo:          "Book-matched stone slab backsplash and countertop in continuous Calacatta marble or quartzite, wood veneer doors in dark walnut or smoked oak, integrated brass or gold hardware, wine cooler integrated, dramatic pendant lighting, lacquered ceiling detail.",
-        default:       "Clean flat panel doors, quartz countertop, large format backsplash tile, recessed lighting.",
-      },
-      closet: {
-        moderno:       "Sliding or hinged flat panel doors in matte lacquer, integrated LED strip at top interior, brushed aluminum frame detail, open niches with floating shelves, drawer bank in matching finish, mirror panel flush with door system.",
-        minimalista:   "Full-width sliding doors in white matte, no visible hardware, push-latch system, interior in all white — white shelves, white hanging rails, white drawer fronts. Minimal visible objects inside. Clean empty luxury feel.",
-        contemporaneo: "Mix of opaque and frosted glass door panels, internal warm LED, combination of open and closed sections, wood veneer drawer bank contrasting with lacquered doors.",
-        industrial:    "Open system — no doors, exposed black steel pipe hanging rails, raw wood or concrete-look shelves, vintage Edison bulb lighting inside, visible clothing as decorative element.",
-        clasico:       "Paneled door fronts with raised center panel, cream or white painted, brass cup pulls, interior with cedar-lined shelves, traditional organized appearance, tie and belt rack visible.",
-        rustico:       "Barn-style sliding doors on black steel track, reclaimed wood panels, rope or iron handles, interior with natural wood shelves and rails, warm Edison bulb strip lighting.",
-        nordico:       "White or light grey sliding doors, interior in light birch wood, simple chrome rails, integrated lighting from above, clean organized shelving with wicker baskets, natural light feel.",
-        lujo:          "Full-height glass and metal framed doors showing interior — boutique luxury store feel. Interior: illuminated display shelving for bags and shoes, velvet drawer inserts, chandelier or LED chandelier inside, mirror wall, island with jewelry storage, premium hotel dressing room.",
-        default:       "Flat panel doors, internal LED lighting, organized shelving and hanging sections.",
-      },
-      puerta: {
-        moderno:       "Full-height flush door in matte lacquer, no visible molding, integrated handle in recessed channel or minimal bar pull, clean shadow gap at frame, monolithic appearance from floor to ceiling.",
-        minimalista:   "Pivot door OR flush panel door that disappears into wall — handle-less push system or minimal recessed pull, no frame visible, perfect flush installation, door appears as continuation of wall.",
-        contemporaneo: "Door with horizontal groove detail or fluted surface pattern, combined materials — wood veneer center panel with lacquered frame, architectural lever handle in matte black.",
-        industrial:    "Steel-framed glass door OR solid door with black powder-coated steel frame and hardware, glass panel option for industrial loft feel, visible black hinges as design element.",
-        clasico:       "Raised panel door with traditional molding profile, cream or white painted, oval or round knob in antique brass, pediment detail at top, visible hinge in brass, architrave with detailed profile.",
-        rustico:       "Solid wood plank door with visible grain and natural knots, hand-forged iron strap hinges as visible design feature, iron ring pull or rustic lever, aged wood patina, visible wood joinery.",
-        nordico:       "Simple flat door in white or light grey, minimal hardware in brushed nickel, clean frame, no ornamentation, Scandinavian simplicity — the beauty is in the proportions.",
-        lujo:          "Oversized pivot door in book-matched wood veneer or lacquered in rich dark color, architectural hardware in brushed gold or smoked bronze, full-height 2.80m minimum, door has commanding presence and visual weight.",
-        default:       "Full-height door, quality hardware, clean frame detail.",
-      },
-      mueble: {
-        moderno:       "Floating TV wall with flat panel closed cabinets below and open niches above, LED halo behind TV panel, thin console, matte black hardware, clean horizontal lines, background panel in dark wood veneer or microcement.",
-        minimalista:   "Seamless floating wall system — TV recessed or mounted flush, all storage behind handle-less doors, no visible objects, monolithic wall appearance, hidden LED at ceiling creates indirect glow on wall.",
-        contemporaneo: "Mix of closed lacquered cabinets and open display shelving, background accent wall in fluted wood panel, integrated LED in niches, mix of wood and lacquer materials, pendant light over console.",
-        industrial:    "Open steel and wood shelving system, exposed black pipe frame, Edison bulb strip lighting, raw concrete or brick background wall, record player or bar cart visible on open shelves, industrial brackets.",
-        clasico:       "Traditional bookcase with cornice detail and raised panel cabinet doors below, cream painted, brass hardware, wood countertop shelf, traditional books and objects on display shelves, symmetrical composition.",
-        rustico:       "Solid wood built-in entertainment center with natural grain, barn wood planks as background wall, wrought iron hardware, vintage objects on open shelves, warm Edison lighting, organic asymmetrical design.",
-        nordico:       "White floating shelves system, light wood accents, simple TV mount flush to wall, plants and minimal decorative objects, white walls, clean composition, pendant in natural material above.",
-        lujo:          "Dramatic full-wall millwork in book-matched dark walnut veneer, TV recessed into panel flush, flanking display niches with museum-quality lighting inside, floating console in marble slab, brass hardware details, luxury hotel lobby level design.",
-        default:       "TV wall with floating shelves, integrated LED lighting, mix of open and closed storage.",
-      },
-      panel: {
-        moderno:       "Vertical fluted panel in matte lacquer or wood veneer — 4cm wide slats with 1.5cm deep shadow grooves, floor to ceiling height, LED strip hidden at top washing light down the surface, clean aluminum reveal at ceiling.",
-        minimalista:   "Seamless solid panel with subtle horizontal V-groove lines — the texture is minimal but visible, white or off-white, LED grazing light from ceiling reveals the groove depth, the beauty is in the simplicity.",
-        contemporaneo: "Mix of fluted section and solid panel section on same wall, two materials or two tones, integrated LED in transition between sections, creates visual depth and interest.",
-        industrial:    "Corrugated metal panel OR raw concrete panel with visible form-tie holes, alternating with raw wood planks, industrial LED strip lighting at top, raw unfinished edge details.",
-        clasico:       "Traditional wainscoting panel with raised molding profile, chair rail dividing wall, lower panel in painted wood, upper wall in contrasting wallpaper or paint, classic proportions.",
-        rustico:       "Rough-sawn wood plank paneling with visible grain and natural gaps between planks, reclaimed or aged wood texture, wall-mounted lantern style sconces, organic imperfect installation.",
-        nordico:       "Horizontal shiplap boards in white or light grey, subtle horizontal rhythm, clean and airy, natural wood accent strip at ceiling, simple pendant lighting in front of panel.",
-        lujo:          "Book-matched stone slab panel covering full wall — Calacatta marble, travertine, or quartzite — OR dark smoked oak fluted panel floor to ceiling, hidden LED cove at top and bottom creating floating effect, dramatic and expensive looking.",
-        default:       "Vertical slat or fluted panel, floor to ceiling, LED lighting from above.",
-      },
-      bano: {
-        moderno:       "Floating vanity in matte lacquer at 85cm, flat panel doors, undermount rectangular sink, quartz countertop, full-width illuminated mirror with LED behind, large format 60x120 porcelain tiles in grey or white, matte black faucet and hardware.",
-        minimalista:   "Ultra-minimal floating vanity — single slab countertop extending as shelf, integrated sink carved from countertop material, no visible hardware, mirror flush with wall or frameless, seamless tile floor-to-ceiling in same material, hidden LED cove.",
-        contemporaneo: "Floating vanity mixing wood veneer and lacquered panels, vessel sink in white ceramic, mixed material countertop, framed mirror with integrated LED border, combination wall tile and microcement.",
-        industrial:    "Exposed pipe under vanity, concrete countertop with undermount sink, black steel mirror frame, subway tile wall, matte black faucet, open towel display on black pipe rail.",
-        clasico:       "Furniture-style vanity with raised panel doors and turned legs OR fitted vanity with molding detail, marble countertop, undermount oval sink, polished chrome or brass faucet, beveled edge mirror with brass frame, subway tile in classic pattern.",
-        rustico:       "Vanity in natural wood — live edge countertop or reclaimed wood base, vessel sink in natural stone or ceramic, bronze faucet, round rustic mirror with wood frame, stone tile wall in natural texture.",
-        nordico:       "White floating vanity, light oak wood drawer fronts, white quartz countertop, round mirror in simple wood frame, white tiles with light grout, chrome fixtures, plants on counter, airy and light bathroom feel.",
-        lujo:          "Full book-matched marble slab — wall, countertop, and floor in continuous Calacatta or Statuario marble, floating vanity in dark wood veneer, backlit mirror full wall width, gold or brushed brass fixtures, freestanding bathtub if space allows, spa-level luxury.",
-        default:       "Floating vanity, quartz countertop, undermount sink, illuminated mirror, large format tiles.",
-      },
-    };
-
-    // ── Material por tipo ─────────────────────────────────────────────────────
+    // ── Descripción técnica de material para prompt ──────────────────────────
     const MATERIAL_PROMPT_DETAIL = {
-      melamina: `${tipoCtx.material_target} are MELAMINE (melamina) — a combination of smooth solid color panels AND sections with printed wood grain pattern (tipo madera). This mix is very common in Mexican homes. Flat panel construction, thin ABS edge banding. The wood grain is printed/laminated — uniform repeat pattern, NOT real wood depth.`,
-      mdf: `OVERRIDE: ${tipoCtx.material_target} are MDF LACADO (painted MDF). NO wood grain anywhere. Surface is painted solid color, smooth as glass — zero texture, zero grain, zero variation. Perfectly uniform color. Sharp clean edges. If wood grain appears, the render is WRONG.`,
-      enchapado: `OVERRIDE: ${tipoCtx.material_target} are MADERA ENCHAPADA (real wood veneer on MDF). Surface shows clear natural wood grain in consistent direction. Organic color variation between panels. Warm natural wood appearance but perfectly flat — NOT solid timber thickness. Edge banding matches veneer.`,
-      madera_solida: `OVERRIDE: ${tipoCtx.material_target} are MADERA SOLIDA MACIZA (solid hardwood). Visibly thick solid wood. Deep rich grain with natural variation. Possible subtle knots. Three-dimensional wood depth. End grain visible at edges. Solid timber character unmistakable.`,
+      melamina: `Cabinets are MELAMINE (melamina). Design the kitchen using a COMBINATION of two melamine finishes: some cabinet doors in smooth solid color (liso) and other doors or sections in melamine with printed wood grain pattern (tipo madera). This mix is very common in Mexican kitchens — for example upper cabinets in white or grey matte melamine and lower cabinets or island in wood-grain melamine, or vice versa. Both surfaces are flat panel construction with thin ABS edge banding — the wood grain is printed/laminated onto the surface, perfectly uniform repeat pattern, NOT real wood depth. Clean straight edges, uniform sheen across all panels.`,
+      mdf: `OVERRIDE ALL OTHER MATERIAL INSTRUCTIONS: Cabinets are MDF LACADO (painted MDF). NO wood grain anywhere on any cabinet door or drawer front. Surface is painted solid color, smooth as glass, like automotive paint or a painted wall. Zero texture. Zero grain. Zero variation. Perfectly uniform color across all panels. Sharp clean edges. MDF LACADO = PAINTED SURFACE = NO WOOD GRAIN EVER. If wood grain appears on cabinet doors, the render is WRONG.`,
+      enchapado: `OVERRIDE ALL OTHER MATERIAL INSTRUCTIONS: Cabinets are MADERA ENCHAPADA (wood veneer on MDF). Cabinet surfaces show clear natural wood grain in consistent direction across all panels. Organic color variation between panels as real wood has. Warm natural wood appearance but perfectly flat panels — NOT thick solid timber. Edge banding matches veneer. Like premium IKEA veneer kitchen — clearly wood-looking but flat construction.`,
+      madera_solida: `OVERRIDE ALL OTHER MATERIAL INSTRUCTIONS: Cabinets are MADERA SOLIDA MACIZA (solid hardwood). Each cabinet door is visibly thick solid wood. Deep rich grain with natural variation between boards. Possible subtle knots. Three-dimensional wood depth impossible to fake with veneer. End grain visible at edges. Surface may be oiled or lacquered but solid timber character is unmistakable. Like traditional Mexican carpenter work.`,
     };
 
     const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
 
     const prompt = [
-      // Calidad base
+      // Calidad base — estilo render arquitectónico premium Monterrey
       `Ultra-realistic architectural interior render, premium quality, indistinguishable from a professional 3D visualization studio output.`,
-      `Lighting: ${tipoCtx.lighting}`,
-      `Camera: wide angle lens, eye-level shot. ${tipoCtx.layout_hint} Sharp focus throughout, no bokeh. Professional architectural visualization.`,
-      `The render looks like output from a high-end 3D studio — perfect geometry, precise reflections, ultra-sharp details on every surface.`,
+      `Lighting style: dramatic warm LED accent lighting — LED strips under cabinets, recessed ceiling spots, warm 2700K-3000K color temperature throughout. Deep shadows contrasting with warm light pools. Dark ceiling with bright work surfaces. This lighting style is the signature of high-end Monterrey residential design.`,
+      `Color palette: rich dark walnut or warm wood tones combined with matte grey, charcoal or white flat panels. Quartz or marble countertops in light grey or white. Polished large-format floor tiles in light grey or cream. Matte black hardware and fixtures.`,
+      `Camera: wide angle lens, eye-level shot showing full depth of the space, slight perspective. Sharp focus throughout, no bokeh. Professional architectural visualization camera settings.`,
+      `The render looks like output from a high-end 3D visualization studio — perfect geometry, precise reflections, no noise, ultra-sharp details on every surface.`,
       `Setting: luxury residential home in Monterrey, Mexico — San Pedro Garza García or Cumbres style, upper class neighborhood.`,
 
-      // Tipo de proyecto específico — detalle completo cruzado con estilo
-      `The centerpiece of this render is a brand new ${tipoCtx.subject}.`,
-      `Elements to include: ${tipoCtx.elements}.`,
-      `Design specification: ${tipoCtx.detail}`,
-      `Style-specific design language for this ${tipoCtx.subject}: ${TIPO_ESTILO_DETAIL[tipoProyecto]?.[estilo] || TIPO_ESTILO_DETAIL[tipoProyecto]?.default || ""}`,
+      // Tipo de proyecto
+      `The space features a brand new custom-built ${tipoLabel} as the centerpiece.`,
 
-      // Material — máxima prioridad sobre todo
-      material === "mdf" && `CRITICAL RULE: NO wood grain on any ${tipoCtx.material_target}. Painted smooth surface ONLY.`,
+      // MATERIAL PRIMERO — máxima prioridad
+      material === "mdf" && `CRITICAL RULE: cabinet doors have NO wood grain, NO wood texture whatsoever. Painted smooth surface only.`,
       materialPromptDetail,
 
-      // Color — aplicado SOLO al elemento principal, no a paredes, piso ni techo
-      colorData && `COLOR RULE: Apply ${colorData.prompt} EXCLUSIVELY to the ${tipoCtx.material_target}. Do NOT apply this color to walls, floor, ceiling, countertop, tiles, or any other surface. Everything else keeps its own natural color. The ${tipoCtx.material_target} color is ${colorData.label} — this is the ONLY surface that changes color.`,
+      // Color — después del material
+      colorData && `Cabinet door and drawer front color: ${colorData.prompt}. Apply this color to ALL cabinet surfaces consistently.`,
 
-      // Acabado — solo al elemento principal
-      acabadoData && `FINISH RULE: The ${tipoCtx.material_target} has a ${acabadoData.label} finish (${acabadoData.prompt}). This finish applies ONLY to the ${tipoCtx.material_target}. Other surfaces in the room have their own natural finishes.`,
+      // Acabado
+      acabadoData && `Surface finish: ${acabadoData.prompt}. This must be clearly visible in how light interacts with the surface.`,
 
-      // Compatibilidad material + color
-      material === "enchapado" && colorData && (colorElegido === "blanco_mate" || colorElegido === "negro_mate" || colorElegido === "gris" || colorElegido === "verde_salvia" || colorElegido === "azul_marino") && `NOTE: Wood veneer (enchapado) with ${colorData.label} means the veneer has been stained or tinted in this tone — the wood grain is still visible but with a ${colorData.label} color wash or stain over it. NOT painted solid.`,
-      material === "madera_solida" && colorData && (colorElegido === "blanco_mate" || colorElegido === "negro_mate" || colorElegido === "gris") && `NOTE: Solid wood in ${colorData.label} means painted solid wood — the wood is painted this color but edges and any exposed end grain may show wood character.`,
+      // Estilo — después del material para no sobreescribirlo
+      `Overall design style: ${estiloData?.label}. ${estiloData?.prompt_hint}. Apply this style to layout, hardware, and proportions — but the cabinet surface material defined above takes absolute priority.`,
 
-      // Estilo — solo forma, proporciones y herrajes. Material y color ya están definidos arriba.
-      `STYLE RULE: Apply ${estiloData?.label} style ONLY to: proportions, hardware style, door profile shape, overall layout composition, and decorative details. Do NOT override the material or color specifications already defined above. Style affects HOW it looks, material and color affect WHAT it is made of.`,
-      `${estiloData?.label} style details: ${estiloData?.prompt_hint}.`,
-
-      // Vida (solo aplica cuando es cocina o baño principalmente)
-      vidaHints && (tipoProyecto === "cocina" || tipoProyecto === "bano") && `Functional household requirements: ${vidaHints}.`,
+      // Vida
+      vidaHints && `Functional requirements: ${vidaHints}.`,
 
       // Cliente
-      descripcion && `Client specific requests: ${descripcion}.`,
+      descripcion && `Client requests: ${descripcion}.`,
 
       // Layout
       foto
-        ? `LAYOUT: preserve the EXACT room geometry, wall positions, window locations, ceiling height from the reference photo. Only replace the ${tipoCtx.subject}.`
-        : `Create a realistic well-proportioned ${tipoCtx.subject} naturally integrated in a Monterrey home.`,
+        ? `LAYOUT: preserve the EXACT room geometry, wall positions, window locations, ceiling height from the reference photo. Only redesign the ${tipoLabel}.`
+        : `Create a realistic well-proportioned ${tipoLabel} naturally integrated in a Mexican home interior.`,
 
       // Calidad final
-      `Final output: professional 3D visualization studio quality, ultra-sharp, perfect warm LED lighting, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
+      `Final render quality: professional 3D visualization studio output, ultra-sharp, perfect lighting balance between warm LED accents and ambient fill light, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
     ].filter(Boolean).join(" ");
 
     try {
@@ -742,7 +553,6 @@ export default function Portal() {
     setStep(0); setTipo(""); setFoto(null); setFotoUrl(null); setDescripcion("");
     setEstilo(""); setColor(""); setAcabado(""); setMaterial(""); setVidaResp({});
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
-    setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision("");
     setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
   };
@@ -1088,30 +898,6 @@ export default function Portal() {
                   )}
                 </div>
 
-                {/* ── BOTONES DESCARGAR Y GUARDAR ── */}
-                <div style={{ display:"flex", gap:8, marginBottom:16 }}>
-                  <button onClick={descargarRender} style={{
-                    flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8,
-                    background:"#0f0f0a", border:"1.5px solid #2a2a20",
-                    borderRadius:12, padding:"12px", cursor:"pointer", transition:"all .2s",
-                    color:"#e8e0d0", fontSize:13, fontWeight:600
-                  }}>
-                    ⬇️ Descargar render
-                  </button>
-                  {tieneCuenta && (
-                    <button onClick={guardarEnPerfil} disabled={guardandoPerfil || guardadoEnPerfil} style={{
-                      flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8,
-                      background: guardadoEnPerfil ? "#0a2a0a" : "#0f0f0a",
-                      border: `1.5px solid ${guardadoEnPerfil ? "#4caf50" : "#2a2a20"}`,
-                      borderRadius:12, padding:"12px", cursor: guardadoEnPerfil ? "default" : "pointer",
-                      transition:"all .2s", color: guardadoEnPerfil ? "#4caf50" : "#e8e0d0",
-                      fontSize:13, fontWeight:600
-                    }}>
-                      {guardandoPerfil ? "Guardando..." : guardadoEnPerfil ? "✓ Guardado en perfil" : "🔖 Guardar en mis proyectos"}
-                    </button>
-                  )}
-                </div>
-
                 {/* ── DESCRIPCIÓN IA ── */}
                 <div style={{ background:"#0f0f0a", border:"1px solid #d4af3720", borderRadius:16, padding:20, marginBottom:16 }}>
                   <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
@@ -1374,18 +1160,6 @@ export default function Portal() {
                 <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:12 }}>🔓 Descarga tu render</div>
                 <p style={{ color:"#888", fontSize:13, lineHeight:1.7, marginBottom:16 }}>Crea una cuenta gratis y descarga sin marca de agua, más 2 renders adicionales.</p>
                 <a href="/app" style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>Crear cuenta gratis →</a>
-              </div>
-            )}
-            {tieneCuenta && (
-              <div style={{ background:"#0f2a0f", border:"1px solid #4caf5030", borderRadius:14, padding:16, marginBottom:16, display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:700, color:"#4caf50", marginBottom:2 }}>¿Quieres ver todos tus proyectos?</div>
-                  <div style={{ fontSize:11, color:"#555" }}>Tus renders guardados están en Mis Proyectos</div>
-                </div>
-                <button onClick={() => { window.location.href = "/app"; sessionStorage.setItem("enkaje_tab", "mis_proyectos"); }} style={{
-                  background:"#4caf50", color:"#000", border:"none", borderRadius:10,
-                  padding:"10px 18px", fontWeight:700, fontSize:13, cursor:"pointer", whiteSpace:"nowrap"
-                }}>Ver mis proyectos →</button>
               </div>
             )}
             <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
