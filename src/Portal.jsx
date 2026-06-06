@@ -445,7 +445,7 @@ export default function Portal() {
       cocina: {
         moderno: "Flat panel doors, handleless or thin bar pulls in matte black, quartz countertop in light grey or white, large format porcelain backsplash slab, integrated hood flush with upper cabinets.",
         minimalista: "Handleless push-open doors with Gola profile, seamless integrated appliances, no visible hardware, monochromatic palette, floating upper cabinets.",
-        contemporaneo: "Mix of lacquered panels and wood veneer sections, porcelain countertop, mixed hardware styles, open shelving section, pendant lights over island.",
+        contemporaneo: "Upper wall cabinets in matte lacquer (beige/cream). ALL lower base cabinets and island in light wood veneer (oak finish) — consistent wood on every lower cabinet and drawer front without exception. Porcelain countertop in white, matte black bar pulls, open wood shelving section, pendant lights over island.",
         industrial: "Open shelving in raw steel, concrete-look countertop, black matte pipe hardware, exposed brick or microcement backsplash, Edison bulb pendants.",
         clasico: "Shaker-style cabinet doors with recessed center panel, cream or white painted finish, farmhouse sink, brass or antique bronze hardware.",
         rustico: "Solid wood doors with visible grain, knotty pine or cedar, hand-forged iron hardware, stone countertop, terracotta tile backsplash.",
