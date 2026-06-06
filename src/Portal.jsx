@@ -1060,9 +1060,9 @@ export default function Portal() {
                     : "Tu cuenta incluye 3 renders. Se renuevan el próximo mes."}
                 </p>
                 {sinCuenta && (
-                  <a href="/app" style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>
-                    Crear cuenta gratis → 3 renders
-                  </a>
+                  <a href="/app" onClick={() => localStorage.removeItem("enkaje_renders")} style={...}>
+                  Crear cuenta gratis → 3 renders
+                 </a>
                 )}
               </div>
             )}
