@@ -1597,7 +1597,7 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
       if (!res.ok) { setMaterialesMsg("❌ HTTP " + res.status + ": " + await res.text()); setMaterialesLoading(false); return; }
       const data = await res.json();
       setMaterialesMsg("⏳ Respuesta recibida, procesando...");
-      const txt = (data.content || data.data?.content)?.[0]?.text;
+      const txt = data.data?.content?.[0]?.text || data.content?.[0]?.text;
       if (!txt) { setMaterialesMsg("❌ Sin respuesta de IA: " + JSON.stringify(data).slice(0,200)); setMaterialesLoading(false); return; }
       const clean = txt.replace(/```json\n?|```\n?/g, "").trim();
       let parsed;
