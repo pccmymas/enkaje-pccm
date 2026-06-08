@@ -91,7 +91,171 @@ const BASE_POR_TIPO = {
   cocina: "/moderno.png", closet: "/tipo-closet.png", puerta: "/tipo-puerta.png",
   mueble: "/tipo-entretenimiento.png", panel: "/tipo-entretenimiento.png", bano: "/tipo-bano.png",
 };
-
+const PREGUNTAS_VIDA_POR_TIPO = {
+  cocina: [
+    {
+      key: "ninos_mascotas", pregunta: "¿Hay niños o mascotas en casa?",
+      opciones: [
+        { value: "si_ninos",    emoji: "👶",    label: "Sí, niños",    prompt: "child-safe design, no sharp island corners, scratch-resistant durable materials, soft-close hinges" },
+        { value: "si_mascotas", emoji: "🐾",    label: "Sí, mascotas", prompt: "pet-friendly materials, easy to clean surfaces, durable scratch-resistant finish" },
+        { value: "ambos",       emoji: "👨‍👩‍👧🐕", label: "Ambos",       prompt: "child and pet safe, no sharp edges, extra durable easy-clean surfaces" },
+        { value: "no",          emoji: "🧑‍💼",   label: "No",           prompt: "" },
+      ]
+    },
+    {
+      key: "cocina_uso", pregunta: "¿Cómo usan la cocina?",
+      opciones: [
+        { value: "cocino_mucho", emoji: "👨‍🍳", label: "Cocinamos seguido",    prompt: "heavy-use kitchen, durable countertop quartz or granite, strong ventilation hood, oil-resistant surfaces" },
+        { value: "basico",       emoji: "🥗",  label: "Uso básico diario",    prompt: "practical everyday kitchen, standard laminate countertop" },
+        { value: "social",       emoji: "🥂",  label: "Para recibir visitas", prompt: "open concept kitchen for entertaining, island or peninsula, aesthetic statement piece" },
+      ]
+    },
+    {
+      key: "limpieza", pregunta: "¿Cuánto tiempo quieres dedicar a limpiar?",
+      opciones: [
+        { value: "minimo",  emoji: "⚡", label: "Lo mínimo",           prompt: "anti-fingerprint matte finish, handleless Gola profile, easy-clean seamless surfaces" },
+        { value: "normal",  emoji: "🧹", label: "Limpieza normal",     prompt: "easy maintenance surfaces, practical finish" },
+        { value: "detalle", emoji: "✨", label: "Me gusta el detalle", prompt: "decorative details acceptable, premium finish" },
+      ]
+    },
+  ],
+  closet: [
+    {
+      key: "usuario", pregunta: "¿Para quién es el closet?",
+      opciones: [
+        { value: "pareja",  emoji: "👫", label: "Pareja",         prompt: "dual-sided wardrobe, his and hers sections, double hanging rails, balanced storage" },
+        { value: "mujer",   emoji: "👗", label: "Solo para mí",   prompt: "feminine wardrobe, shoe display area, accessory drawers, full-length mirror" },
+        { value: "hombre",  emoji: "👔", label: "Para caballero", prompt: "suit hanging section, tie rack, shoe storage, shirt shelving, minimal design" },
+        { value: "nino",    emoji: "👶", label: "Para niño/a",    prompt: "child-height hanging rails, colorful storage bins, adjustable shelving" },
+      ]
+    },
+    {
+      key: "organizacion", pregunta: "¿Cómo organizas tu ropa?",
+      opciones: [
+        { value: "colgada", emoji: "👚", label: "Mucho colgado",   prompt: "maximum hanging space, double rail system, long hang section for dresses" },
+        { value: "doblada", emoji: "📦", label: "Mucho doblado",   prompt: "maximum shelf space, deep shelves, folded clothing storage priority" },
+        { value: "mixto",   emoji: "🔄", label: "Mitad y mitad",   prompt: "balanced hanging and shelving, versatile storage combination" },
+      ]
+    },
+    {
+      key: "estilo_vida", pregunta: "¿Cómo describes tu guardarropa?",
+      opciones: [
+        { value: "minimalista", emoji: "⬜", label: "Minimalista",    prompt: "minimal wardrobe, clean open shelving, few items well organized" },
+        { value: "coleccion",   emoji: "👠", label: "Gran colección", prompt: "extensive wardrobe storage, maximum capacity, shoe wall display" },
+        { value: "practico",    emoji: "🎒", label: "Práctico",       prompt: "functional wardrobe, easy access, practical storage solutions" },
+      ]
+    },
+  ],
+  bano: [
+    {
+      key: "estilo_bano", pregunta: "¿Qué ambiente quieres en tu baño?",
+      opciones: [
+        { value: "spa",      emoji: "🧖", label: "Spa / relax",      prompt: "spa atmosphere, warm LED lighting, floating vanity, clean surfaces, zen feel" },
+        { value: "moderno",  emoji: "⬛", label: "Moderno y limpio",  prompt: "modern clean bathroom, minimal design, matte black fixtures, geometric forms" },
+        { value: "calido",   emoji: "🪵", label: "Cálido con madera", prompt: "warm bathroom, wood veneer accents, brass fixtures, organic textures" },
+        { value: "practico", emoji: "🔧", label: "Práctico",          prompt: "functional bathroom, durable materials, easy clean surfaces" },
+      ]
+    },
+    {
+      key: "uso_bano", pregunta: "¿Cuántas personas usan este baño?",
+      opciones: [
+        { value: "personal", emoji: "🧍",   label: "Solo yo",   prompt: "personal bathroom, single sink, compact design, personalized storage" },
+        { value: "pareja",   emoji: "👫",   label: "En pareja", prompt: "couple bathroom, double sink vanity, his and hers storage, generous counter space" },
+        { value: "familia",  emoji: "👨‍👩‍👧", label: "Familia",  prompt: "family bathroom, durable materials, extra storage, practical and easy to clean" },
+      ]
+    },
+    {
+      key: "almacenamiento_bano", pregunta: "¿Cuánto almacenamiento necesitas?",
+      opciones: [
+        { value: "mucho",  emoji: "📦", label: "Mucho",                    prompt: "maximum storage, tall tower unit, drawers and cabinets, medicine cabinet" },
+        { value: "normal", emoji: "🗄️", label: "Lo normal",               prompt: "standard storage, cabinet below sink, mirror cabinet above" },
+        { value: "minimo", emoji: "✨", label: "Lo mínimo, es para diseño", prompt: "design-forward minimal storage, floating shelf, clean visual impact" },
+      ]
+    },
+  ],
+  puerta: [
+    {
+      key: "uso_puerta", pregunta: "¿Para dónde es la puerta?",
+      opciones: [
+        { value: "principal", emoji: "🏠", label: "Entrada principal",   prompt: "impressive entrance door, statement piece, strong and secure, premium hardware" },
+        { value: "interior",  emoji: "🚪", label: "Interior / recámara", prompt: "interior bedroom door, privacy, sound dampening, quality finish" },
+        { value: "bano",      emoji: "🚿", label: "Baño",               prompt: "bathroom door, moisture resistant materials, privacy" },
+        { value: "closet",    emoji: "👗", label: "Closet",             prompt: "wardrobe door, smooth sliding or swing, integrated with wardrobe design" },
+      ]
+    },
+    {
+      key: "seguridad", pregunta: "¿Qué tan importante es la seguridad?",
+      opciones: [
+        { value: "alta",     emoji: "🔒", label: "Muy importante",     prompt: "security door, solid core construction, premium lock system, reinforced frame" },
+        { value: "normal",   emoji: "🔑", label: "Normal",             prompt: "standard security, quality lock, solid construction" },
+        { value: "estetica", emoji: "🎨", label: "Priorizo el diseño", prompt: "design-forward door, aesthetic priority, statement hardware" },
+      ]
+    },
+    {
+      key: "mantenimiento_puerta", pregunta: "¿Cuánto mantenimiento aceptas?",
+      opciones: [
+        { value: "ninguno", emoji: "⚡", label: "Cero mantenimiento", prompt: "low maintenance door, painted MDF, durable finish" },
+        { value: "poco",    emoji: "🧹", label: "Poco",               prompt: "minimal maintenance, quality lacquer finish, durable coating" },
+        { value: "madera",  emoji: "🪵", label: "Acepto barnizar",    prompt: "natural wood door, visible grain, accepts periodic refinishing" },
+      ]
+    },
+  ],
+  mueble: [
+    {
+      key: "uso_mueble", pregunta: "¿Para qué espacio es el mueble?",
+      opciones: [
+        { value: "sala",     emoji: "🛋️", label: "Sala / comedor",    prompt: "living room furniture, statement piece, entertaining space, social area design" },
+        { value: "recamara", emoji: "🛏️", label: "Recámara",          prompt: "bedroom furniture, personal space, cozy and functional, storage integration" },
+        { value: "oficina",  emoji: "💼", label: "Oficina / estudio",  prompt: "office furniture, productive workspace, cable management, organized storage" },
+        { value: "otro",     emoji: "📦", label: "Otro espacio",       prompt: "custom space furniture, tailored design" },
+      ]
+    },
+    {
+      key: "almacenamiento_mueble", pregunta: "¿Qué prioridad tiene el almacenamiento?",
+      opciones: [
+        { value: "mucho",      emoji: "📦", label: "Necesito mucho espacio",             prompt: "maximum storage furniture, drawers, cabinets, hidden storage solutions" },
+        { value: "equilibrio", emoji: "⚖️", label: "Equilibrio diseño/almacenamiento",   prompt: "balanced furniture, mix of open display and closed storage" },
+        { value: "diseno",     emoji: "✨", label: "Priorizo el diseño",                 prompt: "design-first furniture, minimal storage, visual impact priority" },
+      ]
+    },
+    {
+      key: "uso_diario", pregunta: "¿Qué tan intenso será el uso?",
+      opciones: [
+        { value: "intenso",    emoji: "💪", label: "Uso intenso diario", prompt: "heavy-duty furniture, durable materials, scratch-resistant, practical finish" },
+        { value: "normal",     emoji: "🏠", label: "Uso normal",         prompt: "everyday furniture, standard durability, quality materials" },
+        { value: "decorativo", emoji: "🎨", label: "Más decorativo",     prompt: "decorative furniture, display piece, premium finish, visual statement" },
+      ]
+    },
+  ],
+  panel: [
+    {
+      key: "ambiente_panel", pregunta: "¿Qué ambiente quieres crear?",
+      opciones: [
+        { value: "calido",   emoji: "🪵", label: "Cálido y acogedor",   prompt: "warm panel wall, natural wood tones, cozy atmosphere, organic textures" },
+        { value: "moderno",  emoji: "⬛", label: "Moderno y dramático",  prompt: "dramatic modern panel wall, deep tones, bold geometric pattern, statement wall" },
+        { value: "natural",  emoji: "🌿", label: "Natural y relajado",   prompt: "natural panel wall, light wood grain, calm atmosphere, biophilic design" },
+        { value: "premium",  emoji: "✨", label: "Premium y exclusivo",  prompt: "luxury panel wall, book-matched veneer, dramatic LED lighting, exclusive feel" },
+      ]
+    },
+    {
+      key: "ubicacion_uso", pregunta: "¿En qué espacio va el panel?",
+      opciones: [
+        { value: "sala",     emoji: "🛋️", label: "Sala principal",    prompt: "living room feature wall, focal point, entertaining backdrop" },
+        { value: "recamara", emoji: "🛏️", label: "Recámara",          prompt: "bedroom headboard wall, intimate atmosphere, bedroom focal point" },
+        { value: "comedor",  emoji: "🍽️", label: "Comedor",           prompt: "dining room accent wall, sophisticated backdrop, warm ambient lighting" },
+        { value: "estudio",  emoji: "💼", label: "Estudio / oficina",  prompt: "office feature wall, professional backdrop, productive atmosphere" },
+      ]
+    },
+    {
+      key: "iluminacion_panel", pregunta: "¿Quieres iluminación LED integrada?",
+      opciones: [
+        { value: "si_led",    emoji: "💡", label: "Sí, con LED",         prompt: "LED integrated panel wall, dramatic lighting effect, floating panel appearance" },
+        { value: "indirecta", emoji: "🌙", label: "Luz indirecta sutil", prompt: "subtle indirect LED, soft glow, ambient lighting" },
+        { value: "sin_led",   emoji: "🪵", label: "Sin LED, natural",    prompt: "no LED lighting, natural wood panel, pure material beauty" },
+      ]
+    },
+  ],
+};
 const PREGUNTAS_VIDA_DEFAULT = [
   {
     key: "ninos_mascotas", pregunta: "¿Hay niños o mascotas en casa?",
