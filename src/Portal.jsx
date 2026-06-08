@@ -626,7 +626,7 @@ export default function Portal() {
     setRenderLoading(false);
 
     setDescripcionLoading(true);
-    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion });
+    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion, preguntasVida });
     setDescripcionIA(desc);
     setDescripcionLoading(false);
   };
