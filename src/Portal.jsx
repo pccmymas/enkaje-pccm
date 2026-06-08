@@ -679,6 +679,7 @@ export default function Portal() {
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
     setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision(""); setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
+    setAjusteTexto(""); setRegenerandoConAjuste(false);
   };
 
   const vidaCompleta = PREGUNTAS_VIDA.every(p => vidaResp[p.key]);
