@@ -294,6 +294,8 @@ export default function Portal() {
   const [renderBloqueado, setRenderBloqueado] = useState(false);
   const [guardadoEnPerfil, setGuardadoEnPerfil] = useState(false);
   const [guardandoPerfil, setGuardandoPerfil]   = useState(false);
+  const [ajusteTexto, setAjusteTexto]           = useState("");
+  const [regenerandoConAjuste, setRegenerandoConAjuste] = useState(false);
   const fileRef = useRef();
 
   const tieneCuenta    = !!sessionStorage.getItem("enkaje_token");
