@@ -2967,8 +2967,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         </button>
                      </div>
                   </div>
-               </div>
-             )}
-          </div>
-         );
-       }
+               )}
+             </div>
+           );
+         }
