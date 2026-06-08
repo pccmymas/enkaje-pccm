@@ -92,7 +92,7 @@ const BASE_POR_TIPO = {
   mueble: "/tipo-entretenimiento.png", panel: "/tipo-entretenimiento.png", bano: "/tipo-bano.png",
 };
 
-const PREGUNTAS_VIDA = [
+const PREGUNTAS_VIDA_DEFAULT = [
   {
     key: "ninos_mascotas", pregunta: "¿Hay niños o mascotas en casa?",
     opciones: [
