@@ -628,6 +628,13 @@ export default function Portal() {
     setDescripcionLoading(false);
   };
 
+    const regenerarConAjuste = async () => {
+    if (!ajusteTexto.trim()) return;
+    setRegenerandoConAjuste(true);
+    await generarRender(ajusteTexto);
+    setRegenerandoConAjuste(false);
+  };
+
   const guardarExpediente = async () => {
     setSaving(true);
     const vidaResumen = PREGUNTAS_VIDA.map(p => {
