@@ -304,7 +304,9 @@ export default function Portal() {
   const STORAGE_KEY    = tieneCuenta ? "enkaje_renders_cuenta" : "enkaje_renders";
 
   // Rango dinámico — se recalcula cuando cambian tipo, estilo o material
-  const rango = calcularRango(tipoProyecto, estilo, material);
+    const preguntasVida = tipoProyecto
+    ? (PREGUNTAS_VIDA_POR_TIPO[tipoProyecto] || PREGUNTAS_VIDA_DEFAULT)
+    : PREGUNTAS_VIDA_DEFAULT;
 
   useEffect(() => {
     document.title = "Portal Cliente · EnKaje Pro";
