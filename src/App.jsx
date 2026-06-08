@@ -2231,10 +2231,10 @@ ACABADO: ${arr(f.tipo_acabado) || "Mate"}
 PUERTAS: ${arr(f.tipo_puertas || f.tipo_puerta) || "Lisas"}
 JALADERAS: ${arr(f.jaladeras) || "Perfil Gola"}
 BISAGRAS: ${arr(f.bisagras) || "Cierre lento"}
-CORREDERAS: ${arr(f.correderas) || "Telescópicas"}
+CORREDERAS: ${arr(f.correderas) || "Telescopicas"}
 ACCESORIOS: ${arr(f.accesorios || f.accesorios_closet || f.accesorios_mueble) || "ninguno"}
 CUBIERTA: ${arr(f.material_cubierta) || "ninguna"}
-ELECTRODOMÉSTICOS: ${arr(f.electrodomesticos) || "ninguno"}
+ELECTRODOMESTICOS: ${arr(f.electrodomesticos) || "ninguno"}
 
 REGLAS DE CÁLCULO OBLIGATORIAS:
 1. Lámina MDF/melamina = 1.22m x 2.44m = 2.9768 m². Divide el área total de piezas entre 2.97 para saber cuántas láminas necesitas. Siempre redondea ARRIBA y agrega 15% de desperdicio.
