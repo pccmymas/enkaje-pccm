@@ -378,7 +378,7 @@ export default function Portal() {
     setGuardandoPerfil(false);
   };
 
-  const generarRender = async () => {
+    const generarRender = async (promptAdicional = "") => {
     if (!estilo || !tipoProyecto) return;
     const usados = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
     if (usados >= LIMITE_RENDERS) { setRenderBloqueado(true); return; }
