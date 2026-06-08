@@ -685,7 +685,7 @@ export default function Portal() {
     setAjusteTexto(""); setRegenerandoConAjuste(false);
   };
 
-  const vidaCompleta = PREGUNTAS_VIDA.every(p => vidaResp[p.key]);
+  const vidaCompleta = preguntasVida.every(p => vidaResp[p.key]);
 
   return (
     <>
