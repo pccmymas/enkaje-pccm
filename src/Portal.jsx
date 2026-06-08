@@ -540,7 +540,8 @@ export default function Portal() {
       `${estiloData?.label} style details: ${estiloData?.prompt_hint}.`,
       vidaHints && (tipoProyecto === "cocina" || tipoProyecto === "bano") && `Functional household requirements: ${vidaHints}.`,
       descripcion && `Client specific requests: ${descripcion}.`,
-      foto
+      promptAdicional && `CLIENT ADJUSTMENT: The client wants these specific changes: "${promptAdicional}". Apply exactly as described.`,
+      foto 
         ? `CRITICAL LAYOUT INSTRUCTION: The reference photo shows the ACTUAL room where this project will be installed. You MUST use this exact room as your base — same walls, same floor, same ceiling height, same windows, same proportions, same perspective angle, same lighting direction. DO NOT create a new room. Transform ONLY the ${tipoCtx.subject} in this specific room. Everything else (walls, floor, ceiling, windows) must remain identical to the reference photo.`
         : `Create a realistic well-proportioned ${tipoCtx.subject} naturally integrated in a Monterrey home.`,
       `Final output: professional 3D visualization studio quality, ultra-sharp, perfect warm LED lighting, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
