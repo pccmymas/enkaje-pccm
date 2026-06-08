@@ -1994,11 +1994,6 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
 
   const pad = isMobile ? "16px" : "28px 20px";
 
-  // ── PÁGINAS LEGALES ────────────────────────────────────────────────────────
-  if (legalPage === "privacidad") return <PaginaPrivacidad onBack={() => setLegalPage(null)} />;
-  if (legalPage === "terminos")   return <PaginaTerminos   onBack={() => setLegalPage(null)} />;
-  if (legalPage === "cookies")    return <PaginaCookies    onBack={() => setLegalPage(null)} />;
-
   // ── LOGIN ──────────────────────────────────────────────────────────────────
   if (screen === "login") return (
     <div style={{ minHeight: "100vh", background: "#070708", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
@@ -2095,7 +2090,10 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
     Array.isArray(form.estilo) && form.estilo.length > 0 ? form.estilo[0].toLowerCase() : "",
     Array.isArray(form.material) && form.material.length > 0 ? form.material[0].toLowerCase().replace(/ /g,"_") : ""
   );
-
+  // ── PÁGINAS LEGALES ────────────────────────────────────────────────────────
+  if (legalPage === "privacidad") return <PaginaPrivacidad onBack={() => setLegalPage(null)} />;
+  if (legalPage === "terminos")   return <PaginaTerminos   onBack={() => setLegalPage(null)} />;
+  if (legalPage === "cookies")    return <PaginaCookies    onBack={() => setLegalPage(null)} />;
   return (
     <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", background: "#070708", minHeight: "100vh", color: "#e8e0d0" }}>
       <style>{GLOBAL_CSS}</style>
