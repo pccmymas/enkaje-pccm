@@ -984,7 +984,7 @@ export default function Portal() {
                 {vidaCompleta ? "Elegir estilo →" : "Responde las 3 preguntas"}
               </Btn>
             </div>
-            {!vidaCompleta && <p style={{ fontSize:11, color:"#555", textAlign:"center", marginTop:8 }}>{preguntasVida.filter(p => !vidaResp[p.key]).length} pregunta(s) pendientes
+           {!vidaCompleta && <p style={{ fontSize:11, color:"#555", textAlign:"center", marginTop:8 }}>{preguntasVida.filter(p => !vidaResp[p.key]).length} pregunta(s) pendientes</p>}
           </div>
         )}
 
