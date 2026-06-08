@@ -2288,42 +2288,6 @@ FORMATO DE RESPUESTA — JSON válido únicamente, sin markdown, sin texto:
 
 IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantidad (ej: "3.20m x 0.60m x 2 caras = 3.84m², +15% = 4.42m², 2 láminas"). Máximo 12 materiales. Solo JSON, nada más.`;
 
-Genera una lista de materiales necesarios para fabricar este proyecto. Para cada material incluye:
-1. Nombre exacto del material
-2. Cantidad estimada con unidad (pzas, ml, m2, láminas, etc)
-3. Precio unitario aproximado en pesos mexicanos (MXN) en Monterrey 2024
-4. Total (cantidad x precio)
-
-Genera también un desglose de costos por categoría:
-- precio_fabricacion: costo de materiales y mano de obra de fabricación
-- precio_instalacion: costo de instalación en sitio
-- precio_herrajes: costo de herrajes (bisagras, jaladeras, correderas, etc)
-- precio_acabados: costo de acabados, pintura, lacas, etc
-- precio_otros: otros costos (transporte, ajustes, etc)
-
-Responde SOLO con un JSON válido, sin texto adicional, sin markdown, sin explicaciones. Formato exacto:
-{
-  "materiales": [
-    {"material":"Nombre del material","cantidad":"4 láminas","precio_unitario":850,"total":3400,"unidad":"láminas","notas":"MDF 18mm antihumedad"}
-  ],
-  "desglose": {
-    "precio_fabricacion": 0,
-    "precio_instalacion": 0,
-    "precio_herrajes": 0,
-    "precio_acabados": 0,
-    "precio_otros": 0
-  }
-}
-
-REGLAS CRÍTICAS:
-1. Calcula cantidades EXACTAS basadas en las medidas proporcionadas. Si largo es 3.20m y profundidad 0.60m, calcula m2 reales.
-2. Para láminas de MDF 18mm (1.22x2.44m), calcula cuántas láminas se necesitan según las medidas reales.
-3. Precios realistas Monterrey 2025: MDF 18mm lámina $850-950, MDF 15mm $750-850, melamina lámina $650-750, bisagras cierre lento $45-65 pza, corredera telescópica $85-120 pza, jaladeras $35-80 pza, laca mate litro $280-350, cuarzo m2 $1800-2500, granito m2 $1200-1800.
-4. Mano de obra Monterrey: fabricación cocina $8000-15000, instalación $3000-6000.
-5. NO inventes materiales que no apliquen. NO uses precios de CDMX.
-6. El total de cada material debe ser cantidad x precio_unitario exacto.
-7. El desglose debe sumar coherentemente con la lista de materiales.
-Máximo 10 materiales. JSON válido únicamente, sin texto adicional.`;
 
     try {
       const res = await fetch("/api/common", {
