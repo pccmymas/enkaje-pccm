@@ -2510,7 +2510,7 @@ Formato: Caption completo listo para copiar y pegar.`;
 
   // ─── APP ───────────────────────────────────────────────────────────────────
  const tabs = role === "admin"
-  ? [["bienvenida","Inicio"],
+     [["bienvenida","Inicio"],
      ["formulario","Formulario"],
      ["presupuesto","Presupuesto"],
      ["proyectos","Proyectos"],
