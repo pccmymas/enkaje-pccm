@@ -2280,7 +2280,7 @@ Máximo 10 materiales. JSON válido únicamente, sin texto adicional.`;
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
-      const txt = data.content?.[0]?.text || "{}";
+      const txt = data?.data?.content?.[0]?.text || data?.content?.[0]?.text || "{}";
       const clean = txt.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
       
