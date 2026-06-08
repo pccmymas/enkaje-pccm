@@ -2219,7 +2219,74 @@ ${total>0 ? `
       ? `Ancho: ${f.ancho||"?"}, Alto: ${f.alto||"?"}, Grosor: ${f.grosor_puerta||"?"}, Cantidad: ${f.cantidad||1}`
       : `Largo: ${f.largo||"?"}, Alto: ${f.alto||f.altura||"?"}, Profundidad: ${f.profundidad||"?"}`;
 
-    const prompt = `Eres un maestro carpintero experto en Monterrey, Mexico. Un cliente quiere un(a) ${tipo}.
+    const prompt = `Eres un maestro carpintero y proveedor de materiales en Monterrey, México con 20 años de experiencia. Genera una lista de materiales EXACTA para fabricar este proyecto.
+
+PROYECTO: ${tipo}
+MEDIDAS: ${medidas}
+MATERIAL: ${arr(f.material) || "MDF 18mm"}
+GROSOR: ${arr(f.grosor) || "18mm"}
+ESTILO: ${arr(f.estilo) || "Moderno"}
+COLOR: ${f.color_principal || "Blanco mate"}
+ACABADO: ${arr(f.tipo_acabado) || "Mate"}
+PUERTAS: ${arr(f.tipo_puertas || f.tipo_puerta) || "Lisas"}
+JALADERAS: ${arr(f.jaladeras) || "Perfil Gola"}
+BISAGRAS: ${arr(f.bisagras) || "Cierre lento"}
+CORREDERAS: ${arr(f.correderas) || "Telescópicas"}
+ACCESORIOS: ${arr(f.accesorios || f.accesorios_closet || f.accesorios_mueble) || "ninguno"}
+CUBIERTA: ${arr(f.material_cubierta) || "ninguna"}
+ELECTRODOMÉSTICOS: ${arr(f.electrodomesticos) || "ninguno"}
+
+REGLAS DE CÁLCULO OBLIGATORIAS:
+1. Lámina MDF/melamina = 1.22m x 2.44m = 2.9768 m². Divide el área total de piezas entre 2.97 para saber cuántas láminas necesitas. Siempre redondea ARRIBA y agrega 15% de desperdicio.
+2. Si largo=${f.largo||"?"} y profundidad=${f.profundidad||"?"} y altura=${f.altura||"?"}: calcula el área real de cada cara (frente, lados, fondos, entrepaños, puertas) y suma todo antes de dividir entre 2.97.
+3. Cuenta puertas, cajones y entrepaños individualmente según las medidas.
+4. Para bisagras: 2 bisagras por puerta de hasta 1.20m, 3 si es más alta.
+5. Para correderas: 1 par por cajón.
+6. Para jaladeras: 1 por puerta/cajón.
+
+PRECIOS REALES MONTERREY 2026 (usa estos exactos):
+- Lámina MDF 18mm (1.22x2.44m): $950
+- Lámina MDF 15mm (1.22x2.44m): $820
+- Lámina melamina 18mm (1.22x2.44m): $750
+- Lámina triplay 12mm (1.22x2.44m): $680
+- Bisagra cierre lento Grass/Blum: $55 pza
+- Bisagra normal: $22 pza
+- Corredera telescópica cierre lento 450mm: $110 par
+- Corredera normal 450mm: $65 par
+- Jaladora perfil Gola ml: $180/ml
+- Jaladora metálica negra 128mm: $45 pza
+- Jaladora integrada (push open): $35 pza
+- Laca mate litro: $320
+- Sellador litro: $180
+- Tornillos confirmat caja 100pzas: $85
+- Clavos y materiales menores (estimado): $400
+- Mano de obra fabricación cocina completa: $9,000–$14,000
+- Mano de obra instalación cocina: $3,500–$5,500
+- Mano de obra closet: $4,000–$7,000
+- Mano de obra mueble sencillo: $1,500–$3,000
+- Mano de obra puerta: $800–$1,500
+- Cubierta granito m2: $1,400
+- Cubierta cuarzo m2: $2,200
+- Cubierta melamina m2: $350
+- Tarja acero inoxidable sencilla: $1,200
+- Tarja submontada: $2,800
+- Jaladera Gola: calcula ml totales de puertas y cajones
+
+FORMATO DE RESPUESTA — JSON válido únicamente, sin markdown, sin texto:
+{
+  "materiales": [
+    {"material":"Nombre","cantidad":"X láminas","precio_unitario":950,"total":3800,"unidad":"láminas","notas":"detalle del cálculo"}
+  ],
+  "desglose": {
+    "precio_fabricacion": 0,
+    "precio_instalacion": 0,
+    "precio_herrajes": 0,
+    "precio_acabados": 0,
+    "precio_otros": 0
+  }
+}
+
+IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantidad (ej: "3.20m x 0.60m x 2 caras = 3.84m², +15% = 4.42m², 2 láminas"). Máximo 12 materiales. Solo JSON, nada más.`;
 
 ESPECIFICACIONES:
 - Medidas: ${medidas}
