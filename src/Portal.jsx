@@ -640,7 +640,7 @@ export default function Portal() {
 
   const guardarExpediente = async () => {
     setSaving(true);
-    const vidaResumen = PREGUNTAS_VIDA.map(p => {
+    const vidaResumen = preguntasVida.map(p => {
       const r = vidaResp[p.key];
       const op = p.opciones.find(o => o.value === r);
       return op ? `${p.pregunta}: ${op.label}` : null;
