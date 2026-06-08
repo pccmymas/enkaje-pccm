@@ -783,7 +783,7 @@ export default function Portal() {
             <div style={{ marginBottom:20 }}>
               <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:4 }}>3 preguntas rápidas</div>
               <p style={{ fontSize:12, color:"#555", marginBottom:16 }}>La IA ajusta los materiales y diseño según tus respuestas.</p>
-              {PREGUNTAS_VIDA.map((pregunta) => (
+              {preguntasVida.map((pregunta) => (
                 <div key={pregunta.key} style={{ marginBottom:18 }}>
                   <p style={{ fontSize:14, fontWeight:600, color:"#e8e0d0", marginBottom:10 }}>{pregunta.pregunta}</p>
                   <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
