@@ -2288,21 +2288,6 @@ FORMATO DE RESPUESTA — JSON válido únicamente, sin markdown, sin texto:
 
 IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantidad (ej: "3.20m x 0.60m x 2 caras = 3.84m², +15% = 4.42m², 2 láminas"). Máximo 12 materiales. Solo JSON, nada más.`;
 
-ESPECIFICACIONES:
-- Medidas: ${medidas}
-- Material principal: ${arr(f.material)}
-- Grosor: ${arr(f.grosor)}
-- Estilo: ${arr(f.estilo)}
-- Color: ${f.color_principal||"no especificado"}
-- Acabado: ${arr(f.tipo_acabado)}
-- Tipo puertas: ${arr(f.tipo_puertas||f.tipo_puerta)}
-- Jaladeras: ${arr(f.jaladeras)}
-- Bisagras: ${arr(f.bisagras)}
-- Correderas: ${arr(f.correderas)}
-- Accesorios: ${arr(f.accesorios||f.accesorios_closet||f.accesorios_mueble)}
-- Cubierta: ${arr(f.material_cubierta)||"ninguna"}
-- Electrodomésticos a panelizar: ${arr(f.electrodomesticos)||"ninguno"}
-
 Genera una lista de materiales necesarios para fabricar este proyecto. Para cada material incluye:
 1. Nombre exacto del material
 2. Cantidad estimada con unidad (pzas, ml, m2, láminas, etc)
