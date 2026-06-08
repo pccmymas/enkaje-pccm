@@ -1102,7 +1102,6 @@ const ESTADOS_PROYECTO = [
   { key: "instalando", label: "Instalando",          color: "#ff5722", emoji: "🔧" },
   { key: "entregado",  label: "Entregado",           color: "#4caf50", emoji: "✅" },
 ];
-}
 
 // ============ MAIN APP ============
 export default function App() {
