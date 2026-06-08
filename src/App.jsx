@@ -1590,7 +1590,11 @@ Responde SOLO JSON válido sin texto adicional:
 {"materiales":[{"material":"nombre","cantidad":"4 láminas","precio_unitario":850,"total":3400,"notas":"MDF 18mm"}],"desglose":{"precio_fabricacion":0,"precio_instalacion":0,"precio_herrajes":0,"precio_acabados":0,"precio_otros":0}}
 Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, corredera telescópica $85-120, jaladeras $35-80. Máximo 10 materiales.`;
     try {
-      const res = await fetch("/api/common", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] }) });
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 30000);
+      const res = await fetch("/api/common", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] }), signal: ctrl.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) { setMaterialesMsg("❌ HTTP " + res.status + ": " + await res.text()); setMaterialesLoading(false); return; }
       const data = await res.json();
       setMaterialesMsg("⏳ Respuesta recibida, procesando...");
       const txt = data.content?.[0]?.text;
