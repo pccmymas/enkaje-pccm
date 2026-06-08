@@ -1592,10 +1592,12 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
     try {
       const res = await fetch("/api/common", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] }) });
       const data = await res.json();
-      const txt = data.content?.[0]?.text || data.error?.message || "{}";
-      if (!data.content?.[0]?.text) { setMaterialesMsg("❌ API error: " + JSON.stringify(data)); setMaterialesLoading(false); return; }
+      setMaterialesMsg("⏳ Respuesta recibida, procesando...");
+      const txt = data.content?.[0]?.text;
+      if (!txt) { setMaterialesMsg("❌ Sin respuesta de IA: " + JSON.stringify(data).slice(0,200)); setMaterialesLoading(false); return; }
       const clean = txt.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
+      let parsed;
+      try { parsed = JSON.parse(clean); } catch(pe) { setMaterialesMsg("❌ JSON inválido: " + clean.slice(0,200)); setMaterialesLoading(false); return; }
       const lista = Array.isArray(parsed) ? parsed : (parsed.materiales || []);
       const desglose = parsed.desglose || null;
       setMateriales(lista);
@@ -1611,8 +1613,7 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
         const totalMat = lista.reduce((s,m) => s+(parseFloat(m.total)||0), 0);
         if (totalMat > 0) { setFormField("precio_fabricacion", String(Math.round(totalMat))); setMaterialesMsg(`✅ ${lista.length} materiales · $${totalMat.toLocaleString("es-MX")} MXN`); }
       }
-  } catch(e) {
-      console.error("generarMateriales error:", e, JSON.stringify(e));
+    } catch(e) {
       setMaterialesMsg("❌ Error: " + (e.message || String(e)));
     }
     setMaterialesLoading(false);
