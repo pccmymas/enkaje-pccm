@@ -8,7 +8,12 @@ const sb = async (path, opts = {}) => {
   const url = `${SUPABASE_URL}/rest/v1/${path}${sep}apikey=${SUPABASE_KEY}`;
   const r = await fetch(url, {
     method: opts.method || "GET",
-    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal"
+    },
     body: opts.body
   });
   const text = await r.text();
@@ -16,50 +21,70 @@ const sb = async (path, opts = {}) => {
 };
 
 const TIPOS_PROYECTO = [
-  { key: "cocina",  label: "Cocina",  emoji: "🍳", desc: "Integral, isla, americana",      base: "/moderno.png" },
-  { key: "closet",  label: "Closet",  emoji: "👔", desc: "Walk-in, empotrado, vestidor",   base: "/tipo-closet.png" },
-  { key: "puerta",  label: "Puerta",  emoji: "🚪", desc: "Interior, exterior, cancelería",  base: "/tipo-puerta.png" },
-  { key: "mueble",  label: "Mueble",  emoji: "🛋️", desc: "TV, librero, comedor, bar",      base: "/tipo-entretenimiento.png" },
-  { key: "panel",   label: "Panel",   emoji: "🪵", desc: "Lambrin, decorativo, duela",     base: "/tipo-entretenimiento.png" },
+  { key: "cocina",  label: "Cocina",  emoji: "🍳", desc: "Integral, isla, americana",     base: "/moderno.png" },
+  { key: "closet",  label: "Closet",  emoji: "👔", desc: "Walk-in, empotrado, vestidor",  base: "/tipo-closet.png" },
+  { key: "puerta",  label: "Puerta",  emoji: "🚪", desc: "Interior, exterior, cancelería", base: "/tipo-puerta.png" },
+  { key: "mueble",  label: "Mueble",  emoji: "🛋️", desc: "TV, librero, comedor, bar",     base: "/tipo-entretenimiento.png" },
+  { key: "panel",   label: "Panel",   emoji: "🪵", desc: "Lambrin, decorativo, duela",    base: "/tipo-entretenimiento.png" },
   { key: "bano",    label: "Baño",    emoji: "🚿", desc: "Vanity, mueble flotante, espejo", base: "/tipo-bano.png" },
 ];
 
 const ESTILOS = [
-  { key: "moderno",       label: "Moderno",       desc: "Líneas limpias, sin adornos",      foto: "/moderno.png",       prompt_hint: "modern clean lines, flat panel cabinets, neutral tones, hidden hardware" },
-  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",   foto: "/minimalista.png",   prompt_hint: "minimalist, handleless cabinets, push-open doors, white matte, open space" },
-  { key: "contemporaneo", label: "Contemporáneo", desc: "Mezcla de estilos actuales",       foto: "/contemporaneo.png", prompt_hint: "contemporary style, mix of wood and lacquer, porcelain countertop" },
-  { key: "industrial",    label: "Industrial",    desc: "Metal, madera cruda, urbano",      foto: "/industrial.png",    prompt_hint: "industrial style, raw wood, black matte metal hardware, exposed textures, urban loft" },
-  { key: "clasico",       label: "Clásico",       desc: "Molduras, detalles ornamentales",  foto: "/clasico.png",       prompt_hint: "classic style, raised panel doors, ornamental moldings, solid wood, warm tones" },
-  { key: "rustico",       label: "Rústico",       desc: "Madera natural, texturas orgánicas", foto: "/rustico.png",     prompt_hint: "rustic style, natural pine or cedar wood, visible grain, organic textures, warm earthy tones" },
-  { key: "nordico",       label: "Nórdico",       desc: "Blanco, madera clara, acogedor",   foto: "/nordico.png",       prompt_hint: "scandinavian nordic style, white cabinets, light birch wood accents, cozy warm lighting" },
-  { key: "lujo",          label: "Lujo / Premium", desc: "Materiales nobles, exclusividad", foto: "/lujo.png",          prompt_hint: "luxury premium style, veined marble countertop, gold brass hardware, noble wood veneer, dramatic lighting" },
+  { key: "moderno",       label: "Moderno",       desc: "Líneas limpias, sin adornos",     foto: "/moderno.png",       prompt_hint: "modern clean lines, flat panel cabinets, neutral tones, hidden hardware" },
+  { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",  foto: "/minimalista.png",   prompt_hint: "minimalist, handleless cabinets, push-open doors, white matte, open space" },
+  { key: "contemporaneo", label: "Contemporáneo", desc: "Mezcla de estilos actuales",      foto: "/contemporaneo.png", prompt_hint: "contemporary style, mix of wood and lacquer, porcelain countertop" },
+  { key: "industrial",    label: "Industrial",    desc: "Metal, madera cruda, urbano",     foto: "/industrial.png",    prompt_hint: "industrial style, raw wood, black matte metal hardware, exposed textures, urban loft" },
+  { key: "clasico",       label: "Clásico",       desc: "Molduras, detalles ornamentales", foto: "/clasico.png",       prompt_hint: "classic style, raised panel doors, ornamental moldings, solid wood, warm tones" },
+  { key: "rustico",       label: "Rústico",       desc: "Madera natural, texturas orgánicas", foto: "/rustico.png",    prompt_hint: "rustic style, natural pine or cedar wood, visible grain, organic textures, warm earthy tones" },
+  { key: "nordico",       label: "Nórdico",       desc: "Blanco, madera clara, acogedor",  foto: "/nordico.png",       prompt_hint: "scandinavian nordic style, white cabinets, light birch wood accents, cozy warm lighting" },
+  { key: "lujo",          label: "Lujo / Premium", desc: "Materiales nobles, exclusividad", foto: "/lujo.png",         prompt_hint: "luxury premium style, veined marble countertop, gold brass hardware, noble wood veneer, dramatic lighting" },
 ];
 
 const COLORES = [
-  { key: "blanco_mate",   label: "Blanco mate",   hex: "#F5F5F0", desc: "Limpio, atemporal",    prompt: "white matte cabinets" },
+  { key: "blanco_mate",   label: "Blanco mate",   hex: "#F5F5F0", desc: "Limpio, atemporal",   prompt: "white matte cabinets" },
   { key: "negro_mate",    label: "Negro mate",    hex: "#1a1a1a", desc: "Dramático, elegante",  prompt: "black matte cabinets" },
   { key: "gris",          label: "Gris",          hex: "#888888", desc: "Neutro, versátil",     prompt: "grey cabinets" },
   { key: "madera_clara",  label: "Madera clara",  hex: "#C8A96E", desc: "Cálido, natural",      prompt: "light wood oak finish cabinets" },
   { key: "madera_oscura", label: "Madera oscura", hex: "#5C3D1E", desc: "Rico, sofisticado",    prompt: "dark walnut wood finish cabinets" },
   { key: "verde_salvia",  label: "Verde salvia",  hex: "#8FAF8F", desc: "Fresco, de tendencia", prompt: "sage green cabinets" },
-  { key: "azul_marino",   label: "Azul marino",   hex: "#2C3E6B", desc: "Profundo, premium",    prompt: "navy blue cabinets" },
+  { key: "azul_marino",   label: "Azul marino",   hex: "#2C3E6B", desc: "Profundo, premium",   prompt: "navy blue cabinets" },
   { key: "beige",         label: "Beige",         hex: "#E8D5B0", desc: "Suave, acogedor",      prompt: "warm beige cabinets" },
 ];
 
 const ACABADOS = [
-  { key: "mate",        label: "Mate",        desc: "Sin brillo, antihuella", foto: "/acabados.png", pos: "0% 0%",      prompt: "matte finish, no gloss, fingerprint resistant surface" },
-  { key: "alto_brillo", label: "Alto brillo", desc: "Brillante, moderno",     foto: "/acabados.png", pos: "50% 0%",    prompt: "high gloss finish, reflective shiny surface, lacquered" },
-  { key: "satinado",    label: "Satinado",    desc: "Suave, intermedio",      foto: "/acabados.png", pos: "100% 0%",   prompt: "satin finish, soft sheen, semi-gloss" },
-  { key: "tipo_madera", label: "Tipo madera", desc: "Veta natural visible",   foto: "/acabados.png", pos: "0% 100%",   prompt: "wood grain texture finish, natural veneer look, visible wood grain pattern" },
-  { key: "lacado",      label: "Lacado",      desc: "Color sólido, premium",  foto: "/acabados.png", pos: "50% 100%",  prompt: "lacquered finish, solid color, premium painted surface" },
+  { key: "mate",        label: "Mate",        desc: "Sin brillo, antihuella", foto: "/acabados.png", pos: "0% 0%",     prompt: "matte finish, no gloss, fingerprint resistant surface" },
+  { key: "alto_brillo", label: "Alto brillo", desc: "Brillante, moderno",     foto: "/acabados.png", pos: "50% 0%",   prompt: "high gloss finish, reflective shiny surface, lacquered" },
+  { key: "satinado",    label: "Satinado",    desc: "Suave, intermedio",      foto: "/acabados.png", pos: "100% 0%",  prompt: "satin finish, soft sheen, semi-gloss" },
+  { key: "tipo_madera", label: "Tipo madera", desc: "Veta natural visible",   foto: "/acabados.png", pos: "0% 100%",  prompt: "wood grain texture finish, natural veneer look, visible wood grain pattern" },
+  { key: "lacado",      label: "Lacado",      desc: "Color sólido, premium",  foto: "/acabados.png", pos: "50% 100%", prompt: "lacquered finish, solid color, premium painted surface" },
   { key: "texturizado", label: "Texturizado", desc: "Relieves táctiles",      foto: "/acabados.png", pos: "100% 100%", prompt: "textured finish, embossed surface, tactile relief pattern" },
 ];
 
 const MATERIALES = [
-  { key: "melamina",     label: "Melamina",          desc: "Liso + veta madera · Lo más popular",  badge: "💚 Más económico", badgeColor: "#4caf50", foto: "/mat-melamina.png", color: "#4caf50", prompt: "melamine board finish, smooth uniform surface, economic and durable material", info: "El material más usado en Monterrey. Disponible en cientos de colores. Resistente a la humedad y fácil de limpiar." },
-  { key: "mdf",          label: "MDF lacado",         desc: "Acabado fino · Colores exactos",       badge: "🔵 Precio medio",   badgeColor: "#00bcd4", foto: "/mat-mdf.png",      color: "#00bcd4", prompt: "MDF lacquered finish, smooth painted surface, premium color finish",              info: "Permite colores sólidos perfectamente lisos. Mejor acabado que la melamina — ideal si el color y presentación son prioridad." },
-  { key: "enchapado",    label: "Madera enchapada",   desc: "Aspecto madera · Precio medio-alto",   badge: "🟡 Medio-alto",     badgeColor: "#d4af37", foto: "/mat-enchapado.png", color: "#d4af37", prompt: "wood veneer finish, real wood surface layer on MDF base, natural wood appearance", info: "Capa real de madera sobre MDF. Tiene la calidez de la madera sólida a un costo más accesible." },
-  { key: "madera_solida", label: "Madera sólida",     desc: "Premium · Máxima durabilidad",         badge: "⭐ Premium",        badgeColor: "#f0a500", foto: "/mat-madera.png",   color: "#f0a500", prompt: "solid wood construction, natural grain visible, premium hardwood material",        info: "La opción de mayor valor y durabilidad. Puede restaurarse y repintarse con los años. Inversión que dura décadas." },
+  {
+    key: "melamina", label: "Melamina", desc: "Liso + veta madera · Lo más popular",
+    badge: "💚 Más económico", badgeColor: "#4caf50", foto: "/mat-melamina.png", color: "#4caf50",
+    prompt: "melamine board finish, smooth uniform surface, economic and durable material",
+    info: "El material más usado en Monterrey. Disponible en cientos de colores lisos y también en acabados tipo madera. Resistente a la humedad y fácil de limpiar.",
+  },
+  {
+    key: "mdf", label: "MDF lacado", desc: "Acabado fino · Colores exactos",
+    badge: "🔵 Precio medio", badgeColor: "#00bcd4", foto: "/mat-mdf.png", color: "#00bcd4",
+    prompt: "MDF lacquered finish, smooth painted surface, premium color finish",
+    info: "Permite colores sólidos perfectamente lisos y uniformes. Mejor acabado que la melamina — ideal si el color y la presentación son prioridad.",
+  },
+  {
+    key: "enchapado", label: "Madera enchapada", desc: "Aspecto madera · Precio medio-alto",
+    badge: "🟡 Medio-alto", badgeColor: "#d4af37", foto: "/mat-enchapado.png", color: "#d4af37",
+    prompt: "wood veneer finish, real wood surface layer on MDF base, natural wood appearance",
+    info: "Capa real de madera sobre base de MDF. Tiene la calidez y veta natural de la madera sólida a un costo más accesible.",
+  },
+  {
+    key: "madera_solida", label: "Madera sólida", desc: "Premium · Máxima durabilidad",
+    badge: "⭐ Premium", badgeColor: "#f0a500", foto: "/mat-madera.png", color: "#f0a500",
+    prompt: "solid wood construction, natural grain visible, premium hardwood material",
+    info: "La opción de mayor valor y durabilidad. Cada pieza es única. Puede restaurarse y repintarse con los años. Inversión que dura décadas.",
+  },
 ];
 
 const BASE_POR_TIPO = {
@@ -67,201 +92,36 @@ const BASE_POR_TIPO = {
   mueble: "/tipo-entretenimiento.png", panel: "/tipo-entretenimiento.png", bano: "/tipo-bano.png",
 };
 
-// ── PREGUNTAS DE VIDA AJUSTADAS POR TIPO DE PROYECTO ─────────────────────────
-// Cada tipo tiene sus propias preguntas relevantes
-const PREGUNTAS_VIDA_POR_TIPO = {
-  cocina: [
-    {
-      key: "ninos_mascotas", pregunta: "¿Hay niños o mascotas en casa?",
-      opciones: [
-        { value: "si_ninos",    emoji: "👶",    label: "Sí, niños",    prompt: "child-safe design, no sharp island corners, scratch-resistant durable materials, soft-close hinges" },
-        { value: "si_mascotas", emoji: "🐾",    label: "Sí, mascotas", prompt: "pet-friendly materials, easy to clean surfaces, durable scratch-resistant finish" },
-        { value: "ambos",       emoji: "👨‍👩‍👧🐕", label: "Ambos",       prompt: "child and pet safe, no sharp edges, extra durable easy-clean surfaces" },
-        { value: "no",          emoji: "🧑‍💼",   label: "No",           prompt: "" },
-      ]
-    },
-    {
-      key: "cocina_uso", pregunta: "¿Cómo usan la cocina?",
-      opciones: [
-        { value: "cocino_mucho", emoji: "👨‍🍳", label: "Cocinamos seguido",    prompt: "heavy-use kitchen, durable countertop quartz or granite, strong ventilation hood, oil-resistant surfaces" },
-        { value: "basico",       emoji: "🥗",  label: "Uso básico diario",    prompt: "practical everyday kitchen, standard laminate countertop" },
-        { value: "social",       emoji: "🥂",  label: "Para recibir visitas", prompt: "open concept kitchen for entertaining, island or peninsula, aesthetic statement piece" },
-      ]
-    },
-    {
-      key: "limpieza", pregunta: "¿Cuánto tiempo quieres dedicar a limpiar?",
-      opciones: [
-        { value: "minimo",  emoji: "⚡", label: "Lo mínimo",          prompt: "anti-fingerprint matte finish, handleless Gola profile, easy-clean seamless surfaces, no ornamental moldings" },
-        { value: "normal",  emoji: "🧹", label: "Limpieza normal",    prompt: "easy maintenance surfaces, practical finish" },
-        { value: "detalle", emoji: "✨", label: "Me gusta el detalle", prompt: "decorative details acceptable, premium finish" },
-      ]
-    },
-  ],
-  closet: [
-    {
-      key: "usuario", pregunta: "¿Para quién es el closet?",
-      opciones: [
-        { value: "pareja",   emoji: "👫", label: "Pareja",          prompt: "dual-sided wardrobe, his and hers sections, double hanging rails, balanced storage" },
-        { value: "mujer",    emoji: "👗", label: "Solo para mí",    prompt: "feminine wardrobe, shoe display area, accessory drawers, full-length mirror, jewelry section" },
-        { value: "hombre",   emoji: "👔", label: "Para caballero",  prompt: "suit hanging section, tie rack, shoe storage, shirt shelving, minimal design" },
-        { value: "nino",     emoji: "👶", label: "Para niño/a",     prompt: "child-height hanging rails, colorful storage bins, adjustable shelving, fun and functional design" },
-      ]
-    },
-    {
-      key: "organizacion", pregunta: "¿Cómo organizas tu ropa?",
-      opciones: [
-        { value: "colgada",  emoji: "👚", label: "Mucho colgado",    prompt: "maximum hanging space, double rail system, long hang section for dresses" },
-        { value: "doblada",  emoji: "📦", label: "Mucho doblado",    prompt: "maximum shelf space, deep shelves, folded clothing storage priority" },
-        { value: "mixto",    emoji: "🔄", label: "Mitad y mitad",    prompt: "balanced hanging and shelving, versatile storage combination" },
-      ]
-    },
-    {
-      key: "estilo_vida", pregunta: "¿Cómo describes tu guardarropa?",
-      opciones: [
-        { value: "minimalista", emoji: "⬜", label: "Minimalista",     prompt: "minimal wardrobe, clean open shelving, few items well organized, display-ready" },
-        { value: "coleccion",   emoji: "👠", label: "Gran colección",  prompt: "extensive wardrobe storage, maximum capacity, shoe wall display, accessory organization" },
-        { value: "practico",    emoji: "🎒", label: "Práctico",        prompt: "functional wardrobe, easy access, practical storage solutions" },
-      ]
-    },
-  ],
-  bano: [
-    {
-      key: "estilo_bano", pregunta: "¿Qué ambiente quieres en tu baño?",
-      opciones: [
-        { value: "spa",       emoji: "🧖", label: "Spa / relax",      prompt: "spa atmosphere, warm LED lighting, floating vanity, clean surfaces, zen feel" },
-        { value: "moderno",   emoji: "⬛", label: "Moderno y limpio",  prompt: "modern clean bathroom, minimal design, matte black fixtures, geometric forms" },
-        { value: "calido",    emoji: "🪵", label: "Cálido con madera", prompt: "warm bathroom, wood veneer accents, brass fixtures, organic textures" },
-        { value: "practico",  emoji: "🔧", label: "Práctico",         prompt: "functional bathroom, durable materials, easy clean surfaces, practical layout" },
-      ]
-    },
-    {
-      key: "uso_bano", pregunta: "¿Cuántas personas usan este baño?",
-      opciones: [
-        { value: "personal",  emoji: "🧍", label: "Solo yo",          prompt: "personal bathroom, single sink, compact design, personalized storage" },
-        { value: "pareja",    emoji: "👫", label: "En pareja",        prompt: "couple bathroom, double sink vanity, his and hers storage, generous counter space" },
-        { value: "familia",   emoji: "👨‍👩‍👧", label: "Familia",         prompt: "family bathroom, durable materials, extra storage, practical and easy to clean" },
-      ]
-    },
-    {
-      key: "almacenamiento_bano", pregunta: "¿Cuánto almacenamiento necesitas?",
-      opciones: [
-        { value: "mucho",   emoji: "📦", label: "Mucho",              prompt: "maximum storage, tall tower unit, drawers and cabinets, medicine cabinet with mirror" },
-        { value: "normal",  emoji: "🗄️", label: "Lo normal",          prompt: "standard storage, cabinet below sink, mirror cabinet above" },
-        { value: "minimo",  emoji: "✨", label: "Lo mínimo, es para diseño", prompt: "design-forward minimal storage, floating shelf, clean visual impact" },
-      ]
-    },
-  ],
-  puerta: [
-    {
-      key: "uso_puerta", pregunta: "¿Para dónde es la puerta?",
-      opciones: [
-        { value: "principal",  emoji: "🏠", label: "Entrada principal",   prompt: "impressive entrance door, statement piece, strong and secure, premium hardware" },
-        { value: "interior",   emoji: "🚪", label: "Interior / recámara", prompt: "interior bedroom door, privacy, sound dampening, quality finish" },
-        { value: "bano",       emoji: "🚿", label: "Baño",               prompt: "bathroom door, moisture resistant materials, privacy, compact clearance" },
-        { value: "closet",     emoji: "👗", label: "Closet",             prompt: "wardrobe door, smooth sliding or swing, integrated with wardrobe design" },
-      ]
-    },
-    {
-      key: "seguridad", pregunta: "¿Qué tan importante es la seguridad?",
-      opciones: [
-        { value: "alta",    emoji: "🔒", label: "Muy importante",    prompt: "security door, solid core construction, premium lock system, reinforced frame" },
-        { value: "normal",  emoji: "🔑", label: "Normal",            prompt: "standard security, quality lock, solid construction" },
-        { value: "estetica", emoji: "🎨", label: "Priorizo el diseño", prompt: "design-forward door, aesthetic priority, statement hardware" },
-      ]
-    },
-    {
-      key: "mantenimiento_puerta", pregunta: "¿Cuánto mantenimiento aceptas?",
-      opciones: [
-        { value: "ninguno", emoji: "⚡", label: "Cero mantenimiento", prompt: "low maintenance door, painted MDF, durable finish, no natural wood grain" },
-        { value: "poco",    emoji: "🧹", label: "Poco",               prompt: "minimal maintenance, quality lacquer finish, durable coating" },
-        { value: "madera",  emoji: "🪵", label: "Acepto barnizar",    prompt: "natural wood door, visible grain, accepts periodic refinishing, premium natural material" },
-      ]
-    },
-  ],
-  mueble: [
-    {
-      key: "uso_mueble", pregunta: "¿Para qué espacio es el mueble?",
-      opciones: [
-        { value: "sala",    emoji: "🛋️", label: "Sala / comedor",   prompt: "living room furniture, statement piece, entertaining space, social area design" },
-        { value: "recamara", emoji: "🛏️", label: "Recámara",         prompt: "bedroom furniture, personal space, cozy and functional, storage integration" },
-        { value: "oficina", emoji: "💼",  label: "Oficina / estudio", prompt: "office furniture, productive workspace, cable management, organized storage" },
-        { value: "otro",    emoji: "📦",  label: "Otro espacio",      prompt: "custom space furniture, tailored design" },
-      ]
-    },
-    {
-      key: "almacenamiento_mueble", pregunta: "¿Qué prioridad tiene el almacenamiento?",
-      opciones: [
-        { value: "mucho",    emoji: "📦", label: "Necesito mucho espacio",  prompt: "maximum storage furniture, drawers, cabinets, hidden storage solutions" },
-        { value: "equilibrio", emoji: "⚖️", label: "Equilibrio diseño/almacenamiento", prompt: "balanced furniture, mix of open display and closed storage" },
-        { value: "diseno",   emoji: "✨", label: "Priorizo el diseño",      prompt: "design-first furniture, minimal storage, visual impact priority, display piece" },
-      ]
-    },
-    {
-      key: "uso_diario", pregunta: "¿Qué tan intenso será el uso?",
-      opciones: [
-        { value: "intenso",  emoji: "💪", label: "Uso intenso diario",  prompt: "heavy-duty furniture, durable materials, scratch-resistant, practical finish" },
-        { value: "normal",   emoji: "🏠", label: "Uso normal",          prompt: "everyday furniture, standard durability, quality materials" },
-        { value: "decorativo", emoji: "🎨", label: "Más decorativo",     prompt: "decorative furniture, display piece, premium finish, visual statement" },
-      ]
-    },
-  ],
-  panel: [
-    {
-      key: "ambiente_panel", pregunta: "¿Qué ambiente quieres crear?",
-      opciones: [
-        { value: "calido",    emoji: "🪵", label: "Cálido y acogedor",  prompt: "warm panel wall, natural wood tones, cozy atmosphere, organic textures" },
-        { value: "moderno",   emoji: "⬛", label: "Moderno y dramático", prompt: "dramatic modern panel wall, deep tones, bold geometric pattern, statement wall" },
-        { value: "natural",   emoji: "🌿", label: "Natural y relajado",  prompt: "natural panel wall, light wood grain, calm atmosphere, biophilic design" },
-        { value: "premium",   emoji: "✨", label: "Premium y exclusivo", prompt: "luxury panel wall, book-matched veneer, dramatic LED lighting, exclusive feel" },
-      ]
-    },
-    {
-      key: "ubicacion_uso", pregunta: "¿En qué espacio va el panel?",
-      opciones: [
-        { value: "sala",     emoji: "🛋️", label: "Sala principal",  prompt: "living room feature wall, focal point, entertaining backdrop, design statement" },
-        { value: "recamara", emoji: "🛏️", label: "Recámara",        prompt: "bedroom headboard wall, intimate atmosphere, bedroom focal point" },
-        { value: "comedor",  emoji: "🍽️", label: "Comedor",         prompt: "dining room accent wall, sophisticated backdrop, warm ambient lighting" },
-        { value: "estudio",  emoji: "💼",  label: "Estudio / oficina", prompt: "office feature wall, professional backdrop, productive atmosphere" },
-      ]
-    },
-    {
-      key: "iluminacion_panel", pregunta: "¿Quieres iluminación LED integrada?",
-      opciones: [
-        { value: "si_led",     emoji: "💡", label: "Sí, con LED",        prompt: "LED integrated panel wall, dramatic lighting effect, floating panel appearance, cove lighting" },
-        { value: "indirecta",  emoji: "🌙", label: "Luz indirecta sutil", prompt: "subtle indirect LED, soft glow, ambient lighting, not overpowering" },
-        { value: "sin_led",    emoji: "🪵", label: "Sin LED, natural",    prompt: "no LED lighting, natural wood panel, pure material beauty, daytime feature" },
-      ]
-    },
-  ],
-};
-
-// Fallback para tipos sin preguntas específicas
-const PREGUNTAS_VIDA_DEFAULT = [
+const PREGUNTAS_VIDA = [
   {
     key: "ninos_mascotas", pregunta: "¿Hay niños o mascotas en casa?",
     opciones: [
-      { value: "si",  emoji: "👶🐾", label: "Sí",  prompt: "child and pet safe, durable easy-clean materials" },
-      { value: "no",  emoji: "🧑‍💼",  label: "No",  prompt: "" },
+      { value: "si_ninos",    emoji: "👶",    label: "Sí, niños",    prompt: "child-safe design, no sharp island corners, scratch-resistant durable materials, soft-close hinges" },
+      { value: "si_mascotas", emoji: "🐾",    label: "Sí, mascotas", prompt: "pet-friendly materials, easy to clean surfaces, durable scratch-resistant finish" },
+      { value: "ambos",       emoji: "👨‍👩‍👧🐕", label: "Ambos",       prompt: "child and pet safe, no sharp edges, extra durable easy-clean surfaces" },
+      { value: "no",          emoji: "🧑‍💼",   label: "No",           prompt: "" },
     ]
   },
   {
     key: "limpieza", pregunta: "¿Cuánto tiempo quieres dedicar a limpiar?",
     opciones: [
-      { value: "minimo",  emoji: "⚡", label: "Lo mínimo",       prompt: "easy-clean materials, simple design, low maintenance" },
-      { value: "normal",  emoji: "🧹", label: "Limpieza normal", prompt: "standard maintenance materials" },
-      { value: "detalle", emoji: "✨", label: "Me gusta detallar", prompt: "decorative details, premium materials" },
+      { value: "minimo",  emoji: "⚡", label: "Lo mínimo",          prompt: "anti-fingerprint matte finish, handleless Gola profile, easy-clean seamless surfaces, no ornamental moldings" },
+      { value: "normal",  emoji: "🧹", label: "Limpieza normal",    prompt: "easy maintenance surfaces, practical finish" },
+      { value: "detalle", emoji: "✨", label: "Me gusta el detalle", prompt: "decorative details acceptable, premium finish" },
     ]
   },
   {
-    key: "uso_general", pregunta: "¿Cómo describirías el uso?",
+    key: "cocina_uso", pregunta: "¿Cómo usan la cocina principalmente?",
     opciones: [
-      { value: "intenso",   emoji: "💪", label: "Uso intenso",    prompt: "heavy-duty durable materials, practical finish" },
-      { value: "normal",    emoji: "🏠", label: "Uso normal",     prompt: "standard quality materials, everyday use" },
-      { value: "especial",  emoji: "✨", label: "Ocasional / especial", prompt: "premium materials, design focus, occasional use" },
+      { value: "cocino_mucho", emoji: "👨‍🍳", label: "Cocinamos seguido",    prompt: "heavy-use kitchen, durable countertop quartz or granite, strong ventilation hood, oil-resistant surfaces" },
+      { value: "basico",       emoji: "🥗",  label: "Uso básico diario",    prompt: "practical everyday kitchen, standard laminate countertop" },
+      { value: "social",       emoji: "🥂",  label: "Para recibir visitas", prompt: "open concept kitchen for entertaining, island or peninsula, aesthetic statement piece" },
     ]
   },
 ];
 
+// ── RANGOS DINÁMICOS — Precios reales Monterrey 2025 ─────────────────────────
+// Fuente: ZenHome Monterrey, Habitissimo NL, Cronoshare MX
 const RANGOS_BASE = {
   cocina:  { eco: [35000, 60000],  medio: [55000, 95000],  premium: [90000, 160000] },
   closet:  { eco: [18000, 35000],  medio: [35000, 65000],  premium: [65000, 130000] },
@@ -290,6 +150,7 @@ function calcularRango(tipo, estilo, mat) {
     max: Math.round(base[1] * factor / 1000) * 1000,
   };
 }
+// ─────────────────────────────────────────────────────────────────────────────
 
 const TIEMPOS = {
   cocina: "20 a 35 días hábiles", closet: "15 a 20 días hábiles",
@@ -328,42 +189,29 @@ function scoreLabel(score) {
   return "en_exploracion";
 }
 
-// ── DESCRIPCIÓN IA MEJORADA ───────────────────────────────────────────────────
-async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion, preguntasVida }) {
+async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion }) {
   const estiloData   = ESTILOS.find(e => e.key === estilo);
   const colorData    = COLORES.find(c => c.key === color);
   const acabadoData  = ACABADOS.find(a => a.key === acabado);
   const materialData = MATERIALES.find(m => m.key === material);
   const tipoData     = TIPOS_PROYECTO.find(t => t.key === tipoProyecto);
-
-  // Resumir respuestas de vida con etiquetas específicas
-  const vidaResumen = preguntasVida.map(p => {
+  const vidaResumen  = PREGUNTAS_VIDA.map(p => {
     const r = vidaResp[p.key];
     const op = p.opciones.find(o => o.value === r);
     return op ? op.label : null;
   }).filter(Boolean).join(", ");
 
-  const prompt = `Eres un diseñador de interiores experto en carpintería residencial en Monterrey, México.
-Escribe una descripción de 3-4 oraciones en español, en segunda persona (tú), sobre este proyecto.
-Sé específico, cálido y práctico. Menciona cómo el diseño se adapta a su estilo de vida y necesidades reales.
-Incluye una mención del rango de inversión típico en Monterrey para este tipo de proyecto.
-
-Datos del proyecto:
-- Tipo: ${tipoData?.label}
-- Estilo: ${estiloData?.label} (${estiloData?.desc})
-- Color: ${colorData?.label || "no especificado"}
-- Acabado: ${acabadoData?.label || "no especificado"}  
-- Material: ${materialData?.label || "no especificado"} — ${materialData?.info || ""}
-- Perfil del hogar: ${vidaResumen || "no especificado"}
-- Notas del cliente: ${descripcion || "ninguna"}
-
-Responde SOLO la descripción, sin títulos ni listas. Máximo 4 oraciones naturales y cálidas.`;
+  const prompt = `Eres un diseñador de interiores experto en carpintería residencial en Monterrey, México. 
+Escribe una descripción de 3-4 oraciones en español, en segunda persona (tú), sobre este proyecto de carpintería.
+Sé específico, cálido y práctico. Menciona cómo el diseño se adapta a su estilo de vida.
+Datos: Tipo: ${tipoData?.label}, Estilo: ${estiloData?.label} (${estiloData?.desc}), Color: ${colorData?.label || "no especificado"}, Acabado: ${acabadoData?.label || "no especificado"}, Material: ${materialData?.label || "no especificado"} — ${materialData?.info || ""}, Perfil del hogar: ${vidaResumen || "no especificado"}, Notas: ${descripcion || "ninguna"}
+Responde SOLO la descripción, sin títulos ni listas. Máximo 4 oraciones.`;
 
   try {
     const res = await fetch("/api/common", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 350, messages: [{ role: "user", content: prompt }] })
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 300, messages: [{ role: "user", content: prompt }] })
     });
     const data = await res.json();
     return data.content?.[0]?.text?.trim() || null;
@@ -446,11 +294,6 @@ export default function Portal() {
   const [renderBloqueado, setRenderBloqueado] = useState(false);
   const [guardadoEnPerfil, setGuardadoEnPerfil] = useState(false);
   const [guardandoPerfil, setGuardandoPerfil]   = useState(false);
-
-  // ── NUEVOS ESTADOS: caja de ajuste post-render ────────────────────────────
-  const [ajusteTexto, setAjusteTexto] = useState("");
-  const [regenerandoConAjuste, setRegenerandoConAjuste] = useState(false);
-
   const fileRef = useRef();
 
   const tieneCuenta    = !!sessionStorage.getItem("enkaje_token");
@@ -458,11 +301,7 @@ export default function Portal() {
   const LIMITE_RENDERS = tieneCuenta ? 3 : 1;
   const STORAGE_KEY    = tieneCuenta ? "enkaje_renders_cuenta" : "enkaje_renders";
 
-  // ── Preguntas de vida según tipo de proyecto ──────────────────────────────
-  const preguntasVida = tipoProyecto
-    ? (PREGUNTAS_VIDA_POR_TIPO[tipoProyecto] || PREGUNTAS_VIDA_DEFAULT)
-    : PREGUNTAS_VIDA_DEFAULT;
-
+  // Rango dinámico — se recalcula cuando cambian tipo, estilo o material
   const rango = calcularRango(tipoProyecto, estilo, material);
 
   useEffect(() => {
@@ -472,11 +311,6 @@ export default function Portal() {
     }
   }, []);
 
-  // Resetear respuestas de vida cuando cambia el tipo de proyecto
-  useEffect(() => {
-    setVidaResp({});
-  }, [tipoProyecto]);
-
   const handleFoto = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -485,7 +319,7 @@ export default function Portal() {
   };
 
   const buildVidaPromptHints = () =>
-    preguntasVida.map(p => {
+    PREGUNTAS_VIDA.map(p => {
       const respKey = vidaResp[p.key];
       if (!respKey) return "";
       const opcion = p.opciones.find(o => o.value === respKey);
@@ -513,7 +347,7 @@ export default function Portal() {
     const user  = JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
     const materialData = MATERIALES.find(m => m.key === material);
     const acabadoData  = ACABADOS.find(a => a.key === acabado);
-    const vidaResumen  = preguntasVida.map(p => {
+    const vidaResumen  = PREGUNTAS_VIDA.map(p => {
       const r = vidaResp[p.key];
       const op = p.opciones.find(o => o.value === r);
       return op ? op.label : null;
@@ -542,7 +376,7 @@ export default function Portal() {
     setGuardandoPerfil(false);
   };
 
-  const generarRender = async (promptAdicional = "") => {
+  const generarRender = async () => {
     if (!estilo || !tipoProyecto) return;
     const usados = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
     if (usados >= LIMITE_RENDERS) { setRenderBloqueado(true); return; }
@@ -555,50 +389,159 @@ export default function Portal() {
     const vidaHints    = buildVidaPromptHints();
 
     const TIPO_CONTEXT = {
-      cocina: { subject: "custom kitchen (cocina integral)", elements: "kitchen cabinets, upper and lower cabinet doors, drawer fronts, island if applicable, countertop, backsplash, integrated appliances", layout_hint: "Show full kitchen from a wide angle — upper cabinets, lower cabinets, countertop, backsplash, and appliances all visible.", lighting: "LED strips under upper cabinets illuminating the countertop, recessed ceiling spots, warm 2700K-3000K.", material_target: "cabinet doors and drawer fronts", detail: "Kitchen layout: upper wall cabinets and lower base cabinets with countertop. Island or peninsula if space allows. Countertop in quartz or porcelain slab. Backsplash in large format tile or stone slab.", },
-      closet: { subject: "custom walk-in closet or built-in wardrobe (closet a medida)", elements: "closet door panels or open system, hanging rails at two heights, folded clothing shelves, shoe display area, drawer bank, internal LED strip lighting, full-length mirror panel", layout_hint: "Show the full closet wall or walk-in interior — hanging section, shelving, drawers, and internal lighting all visible.", lighting: "Internal LED strip lighting mounted inside the closet. Warm 2700K glow creating luxury boutique feel.", material_target: "closet door panels, drawer fronts, and shelf edge banding", detail: "Closet interior: double hanging rail, long hang section, open shelving, full-length mirror panel, drawer bank. Interior looks like a luxury boutique fitting room.", },
-      puerta: { subject: "custom interior door (puerta interior a medida)", elements: "full height door panel with design detail, solid door frame and architrave, premium door handle set", layout_hint: "Show the door full height from floor to ceiling visible, with wall context on each side.", lighting: "Dramatic directional side lighting raking across the door surface to reveal texture.", material_target: "door panel face and frame surface", detail: "Full height flush panel OR grooved/slat design — floor-to-ceiling height 2.40m minimum. Premium lever handle.", },
-      mueble: { subject: "custom entertainment center and TV wall (mueble de entretenimiento a medida)", elements: "TV panel with floating TV mount, flanking tall cabinets, floating media console below TV, integrated LED lighting behind TV and inside niches", layout_hint: "Show the full entertainment wall — TV centered, tall flanking units, floating console below.", lighting: "LED strip behind TV panel creating warm halo glow. LED inside open display niches. All warm 2700K.", material_target: "cabinet door panels, floating console faces, and decorative panel surfaces", detail: "TV mounted floating at center, full-height custom millwork. Flanking towers with closed doors (lower) and open display niches (upper).", },
-      panel: { subject: "custom decorative wall panel or lambrin (panel decorativo / lambrin a medida)", elements: "full wall decorative panel system, vertical or horizontal slat design, integrated LED lighting strip", layout_hint: "Show the full decorative wall floor to ceiling, full width visible.", lighting: "Grazing light from ceiling-mounted LED strip washing down the surface revealing every ridge and groove.", material_target: "panel face, slat surfaces, and visible edges", detail: "Vertical fluted/slat design — uniform 3-5cm wide slats with 1-2cm deep shadow gaps. Panel runs floor to ceiling.", },
-      bano: { subject: "custom bathroom vanity and cabinetry (mueble de baño / vanity a medida)", elements: "floating vanity cabinet with doors and drawers, undermount or vessel sink, stone or quartz countertop, large format illuminated mirror, premium faucet set, large format wall tiles", layout_hint: "Show the full vanity wall — mirror above, countertop with sink, cabinet below.", lighting: "LED strip behind mirror creating floating mirror halo effect. Warm 2700K throughout.", material_target: "vanity cabinet door and drawer front surfaces", detail: "Floating vanity at 85cm height. Countertop in Calacatta marble or white quartz. Full-width illuminated mirror with LED behind. The bathroom feels like a 5-star hotel spa.", },
+      cocina: {
+        subject: "custom kitchen (cocina integral)",
+        elements: "kitchen cabinets, upper and lower cabinet doors, drawer fronts, island if applicable, countertop, backsplash, integrated appliances",
+        layout_hint: "Show full kitchen from a wide angle — upper cabinets, lower cabinets, countertop, backsplash, and appliances all visible.",
+        lighting: "LED strips under upper cabinets illuminating the countertop, recessed ceiling spots, warm 2700K-3000K.",
+        material_target: "cabinet doors and drawer fronts",
+        detail: "Kitchen layout: upper wall cabinets and lower base cabinets with countertop. Island or peninsula if space allows. Countertop in quartz or porcelain slab. Backsplash in large format tile or stone slab. Integrated appliances flush with cabinet faces. Hardware: handleless push-open OR matte black bar pulls.",
+      },
+      closet: {
+        subject: "custom walk-in closet or built-in wardrobe (closet a medida)",
+        elements: "closet door panels or open system, hanging rails at two heights, folded clothing shelves, shoe display area, drawer bank, internal LED strip lighting, full-length mirror panel",
+        layout_hint: "Show the full closet wall or walk-in interior — hanging section, shelving, drawers, and internal lighting all visible.",
+        lighting: "Internal LED strip lighting mounted inside the closet. Warm 2700K glow creating luxury boutique feel.",
+        material_target: "closet door panels, drawer fronts, and shelf edge banding",
+        detail: "Closet interior: double hanging rail, long hang section, open shelving, full-length mirror panel, drawer bank. LED strip mounted at top interior edge. Interior looks like a luxury boutique fitting room.",
+      },
+      puerta: {
+        subject: "custom interior door (puerta interior a medida)",
+        elements: "full height door panel with design detail, solid door frame and architrave, premium door handle set",
+        layout_hint: "Show the door full height from floor to ceiling visible, with wall context on each side.",
+        lighting: "Dramatic directional side lighting raking across the door surface to reveal texture.",
+        material_target: "door panel face and frame surface",
+        detail: "Full height flush panel OR grooved/slat design — floor-to-ceiling height 2.40m minimum. Premium lever handle. Hinge detail visible at frame.",
+      },
+      mueble: {
+        subject: "custom entertainment center and TV wall (mueble de entretenimiento a medida)",
+        elements: "TV panel with floating TV mount, flanking tall cabinets, floating media console below TV, integrated LED lighting behind TV and inside niches",
+        layout_hint: "Show the full entertainment wall — TV centered, tall flanking units, floating console below.",
+        lighting: "LED strip behind TV panel creating warm halo glow. LED inside open display niches. All warm 2700K.",
+        material_target: "cabinet door panels, floating console faces, and decorative panel surfaces",
+        detail: "TV mounted floating at center, full-height custom millwork. Flanking towers with closed doors (lower) and open display niches (upper). Floating console at 40cm height.",
+      },
+      panel: {
+        subject: "custom decorative wall panel or lambrin (panel decorativo / lambrin a medida)",
+        elements: "full wall decorative panel system, vertical or horizontal slat design, integrated LED lighting strip",
+        layout_hint: "Show the full decorative wall floor to ceiling, full width visible.",
+        lighting: "Grazing light from ceiling-mounted LED strip washing down the surface revealing every ridge and groove.",
+        material_target: "panel face, slat surfaces, and visible edges",
+        detail: "Vertical fluted/slat design (most popular Monterrey 2024-2026) OR horizontal V-groove panel. If slat: uniform 3-5cm wide slats with 1-2cm deep shadow gaps. Panel runs floor to ceiling.",
+      },
+      bano: {
+        subject: "custom bathroom vanity and cabinetry (mueble de baño / vanity a medida)",
+        elements: "floating vanity cabinet with doors and drawers, undermount or vessel sink, stone or quartz countertop, large format illuminated mirror, premium faucet set, large format wall tiles",
+        layout_hint: "Show the full vanity wall — mirror above, countertop with sink, cabinet below.",
+        lighting: "LED strip behind mirror creating floating mirror halo effect. Warm 2700K throughout.",
+        material_target: "vanity cabinet door and drawer front surfaces",
+        detail: "Floating vanity at 85cm height. Countertop in Calacatta marble or white quartz. Full-width illuminated mirror with LED behind. Large format 60x120 wall tiles. The bathroom feels like a 5-star hotel spa.",
+      },
     };
 
     const tipoCtx = TIPO_CONTEXT[tipoProyecto] || TIPO_CONTEXT.cocina;
 
+    const TIPO_ESTILO_DETAIL = {
+      cocina: {
+        moderno: "Flat panel doors, handleless or thin bar pulls in matte black, quartz countertop in light grey or white, large format porcelain backsplash slab, integrated hood flush with upper cabinets.",
+        minimalista: "Handleless push-open doors with Gola profile, seamless integrated appliances, no visible hardware, monochromatic palette, floating upper cabinets.",
+        contemporaneo: "Upper wall cabinets in matte lacquer (beige/cream). ALL lower base cabinets and island in light wood veneer (oak finish) — consistent wood on every lower cabinet and drawer front without exception. Porcelain countertop in white, matte black bar pulls, open wood shelving section, pendant lights over island.",
+        industrial: "Open shelving in raw steel, concrete-look countertop, black matte pipe hardware, exposed brick or microcement backsplash, Edison bulb pendants.",
+        clasico: "Shaker-style cabinet doors with recessed center panel, cream or white painted finish, farmhouse sink, brass or antique bronze hardware.",
+        rustico: "Solid wood doors with visible grain, knotty pine or cedar, hand-forged iron hardware, stone countertop, terracotta tile backsplash.",
+        nordico: "White or light grey flat panel doors, light birch wood accents, simple brushed nickel hardware, white subway tile backsplash, clean and airy feel.",
+        lujo: "Book-matched stone slab backsplash and countertop in Calacatta marble, wood veneer doors in dark walnut, integrated brass hardware, dramatic pendant lighting.",
+        default: "Clean flat panel doors, quartz countertop, large format backsplash tile, recessed lighting.",
+      },
+      closet: {
+        moderno: "Sliding or hinged flat panel doors in matte lacquer, integrated LED strip, brushed aluminum frame detail, open niches with floating shelves, mirror panel flush with door system.",
+        minimalista: "Full-width sliding doors in white matte, no visible hardware, push-latch system, interior all white. Clean empty luxury feel.",
+        contemporaneo: "Mix of opaque and frosted glass door panels, internal warm LED, combination of open and closed sections.",
+        industrial: "Open system — no doors, exposed black steel pipe hanging rails, raw wood shelves, vintage Edison bulb lighting inside.",
+        clasico: "Paneled door fronts with raised center panel, cream painted, brass cup pulls, interior with cedar-lined shelves.",
+        rustico: "Barn-style sliding doors on black steel track, reclaimed wood panels, rope or iron handles, interior with natural wood shelves.",
+        nordico: "White or light grey sliding doors, interior in light birch wood, simple chrome rails, clean organized shelving with wicker baskets.",
+        lujo: "Full-height glass and metal framed doors showing interior — boutique luxury store feel. Illuminated display shelving for bags and shoes, velvet drawer inserts, mirror wall.",
+        default: "Flat panel doors, internal LED lighting, organized shelving and hanging sections.",
+      },
+      puerta: {
+        moderno: "Full-height flush door in matte lacquer, no visible molding, integrated handle in recessed channel, monolithic appearance from floor to ceiling.",
+        minimalista: "Pivot door OR flush panel door that disappears into wall — handle-less push system, no frame visible.",
+        contemporaneo: "Door with horizontal groove detail or fluted surface pattern, combined materials, architectural lever handle in matte black.",
+        industrial: "Steel-framed glass door OR solid door with black powder-coated steel frame and hardware.",
+        clasico: "Raised panel door with traditional molding profile, cream or white painted, oval or round knob in antique brass, pediment detail at top.",
+        rustico: "Solid wood plank door with visible grain and natural knots, hand-forged iron strap hinges as design feature.",
+        nordico: "Simple flat door in white or light grey, minimal hardware in brushed nickel, clean frame, no ornamentation.",
+        lujo: "Oversized pivot door in book-matched wood veneer, architectural hardware in brushed gold or smoked bronze, full-height 2.80m minimum.",
+        default: "Full-height door, quality hardware, clean frame detail.",
+      },
+      mueble: {
+        moderno: "Floating TV wall with flat panel closed cabinets and open niches above, LED halo behind TV panel, thin console, matte black hardware.",
+        minimalista: "Seamless floating wall system — TV recessed or mounted flush, all storage behind handle-less doors, monolithic wall appearance.",
+        contemporaneo: "Mix of closed lacquered cabinets and open display shelving, background accent wall in fluted wood panel, integrated LED in niches.",
+        industrial: "Open steel and wood shelving system, exposed black pipe frame, Edison bulb strip lighting, raw concrete background wall.",
+        clasico: "Traditional bookcase with cornice detail and raised panel cabinet doors below, cream painted, brass hardware, symmetrical composition.",
+        rustico: "Solid wood built-in entertainment center, barn wood planks as background wall, wrought iron hardware, warm Edison lighting.",
+        nordico: "White floating shelves system, light wood accents, simple TV mount flush to wall, plants and minimal decorative objects.",
+        lujo: "Dramatic full-wall millwork in book-matched dark walnut veneer, TV recessed into panel flush, flanking display niches with museum-quality lighting, floating console in marble slab.",
+        default: "TV wall with floating shelves, integrated LED lighting, mix of open and closed storage.",
+      },
+      panel: {
+        moderno: "Vertical fluted panel in matte lacquer or wood veneer — 4cm wide slats with 1.5cm deep shadow grooves, floor to ceiling, LED strip at top.",
+        minimalista: "Seamless solid panel with subtle horizontal V-groove lines — white or off-white, LED grazing light reveals groove depth.",
+        contemporaneo: "Mix of fluted section and solid panel section on same wall, two materials or two tones, integrated LED in transition.",
+        industrial: "Corrugated metal panel OR raw concrete panel, alternating with raw wood planks, industrial LED strip at top.",
+        clasico: "Traditional wainscoting panel with raised molding profile, chair rail dividing wall, lower panel in painted wood.",
+        rustico: "Rough-sawn wood plank paneling with visible grain and natural gaps between planks, reclaimed or aged wood texture.",
+        nordico: "Horizontal shiplap boards in white or light grey, subtle horizontal rhythm, clean and airy.",
+        lujo: "Book-matched stone slab panel — Calacatta marble, travertine, or quartzite — OR dark smoked oak fluted panel, hidden LED cove at top and bottom creating floating effect.",
+        default: "Vertical slat or fluted panel, floor to ceiling, LED lighting from above.",
+      },
+      bano: {
+        moderno: "Floating vanity in matte lacquer at 85cm, flat panel doors, undermount rectangular sink, quartz countertop, full-width illuminated mirror, large format 60x120 tiles, matte black faucet.",
+        minimalista: "Ultra-minimal floating vanity — single slab countertop extending as shelf, integrated sink, no visible hardware, mirror flush with wall, seamless tile floor-to-ceiling.",
+        contemporaneo: "Floating vanity mixing wood veneer and lacquered panels, vessel sink in white ceramic, framed mirror with integrated LED border.",
+        industrial: "Exposed pipe under vanity, concrete countertop, black steel mirror frame, subway tile wall, matte black faucet.",
+        clasico: "Furniture-style vanity with raised panel doors, marble countertop, undermount oval sink, polished chrome or brass faucet, beveled edge mirror.",
+        rustico: "Vanity in natural wood — live edge countertop, vessel sink in natural stone or ceramic, bronze faucet, round rustic mirror.",
+        nordico: "White floating vanity, light oak wood drawer fronts, white quartz countertop, round mirror in simple wood frame, chrome fixtures, plants on counter.",
+        lujo: "Full book-matched marble slab — wall, countertop, and floor in Calacatta marble, floating vanity in dark wood veneer, backlit mirror full wall width, gold or brushed brass fixtures.",
+        default: "Floating vanity, quartz countertop, undermount sink, illuminated mirror, large format tiles.",
+      },
+    };
+
     const MATERIAL_PROMPT_DETAIL = {
       melamina:      `${tipoCtx.material_target} are MELAMINE (melamina) — smooth solid color panels AND sections with printed wood grain. Flat panel construction, thin ABS edge banding.`,
-      mdf:           `OVERRIDE: ${tipoCtx.material_target} are MDF LACADO (painted MDF). NO wood grain anywhere. Surface is painted solid color, smooth as glass — zero texture, zero grain. Perfectly uniform color.`,
+      mdf:           `OVERRIDE: ${tipoCtx.material_target} are MDF LACADO (painted MDF). NO wood grain anywhere. Surface is painted solid color, smooth as glass — zero texture, zero grain, zero variation. Perfectly uniform color.`,
       enchapado:     `OVERRIDE: ${tipoCtx.material_target} are MADERA ENCHAPADA (real wood veneer on MDF). Surface shows clear natural wood grain in consistent direction. Warm natural wood appearance but perfectly flat.`,
-      madera_solida: `OVERRIDE: ${tipoCtx.material_target} are MADERA SOLIDA MACIZA (solid hardwood). Visibly thick solid wood. Deep rich grain with natural variation. End grain visible at edges.`,
+      madera_solida: `OVERRIDE: ${tipoCtx.material_target} are MADERA SOLIDA MACIZA (solid hardwood). Visibly thick solid wood. Deep rich grain with natural variation. Possible subtle knots. End grain visible at edges.`,
     };
 
     const materialPromptDetail = material ? (MATERIAL_PROMPT_DETAIL[material] || materialData?.prompt) : "";
 
-    // Si hay ajuste del usuario, integrarlo al prompt
-    const ajusteCliente = promptAdicional?.trim()
-      ? `CLIENT ADJUSTMENT REQUEST: The client specifically wants these changes: "${promptAdicional}". Apply these changes exactly as described.`
-      : "";
-
     const prompt = [
       `Professional photorealistic interior design render. Ultra-realistic, indistinguishable from a professional 3D visualization studio output. High quality, detailed, realistic materials, 4K quality, architectural visualization.`,
       `Lighting: ${tipoCtx.lighting}`,
-      `Camera: wide angle lens, eye-level shot. ${tipoCtx.layout_hint} Sharp focus throughout.`,
+      `Camera: wide angle lens, eye-level shot. ${tipoCtx.layout_hint} Sharp focus throughout, no bokeh.`,
       `Setting: luxury residential home in Monterrey, Mexico — San Pedro Garza García or Cumbres style, upper class neighborhood.`,
       `The centerpiece of this render is a brand new ${tipoCtx.subject}.`,
       `Elements to include: ${tipoCtx.elements}.`,
       `Design specification: ${tipoCtx.detail}`,
-      `Style: ${estiloData?.label} — ${estiloData?.prompt_hint}.`,
+      `Style-specific design language for this ${tipoCtx.subject}: ${TIPO_ESTILO_DETAIL[tipoProyecto]?.[estilo] || TIPO_ESTILO_DETAIL[tipoProyecto]?.default || ""}`,
       material === "mdf" && `CRITICAL RULE: NO wood grain on any ${tipoCtx.material_target}. Painted smooth surface ONLY.`,
       materialPromptDetail,
-      colorData && `COLOR RULE: Apply ${colorData.prompt} EXCLUSIVELY to the ${tipoCtx.material_target}. Do NOT apply this color to walls, floor, ceiling, or countertop.`,
-      acabadoData && `FINISH RULE: The ${tipoCtx.material_target} has a ${acabadoData.label} finish (${acabadoData.prompt}).`,
-      vidaHints && `Functional household requirements: ${vidaHints}.`,
+      colorData && `COLOR RULE: Apply ${colorData.prompt} EXCLUSIVELY to the ${tipoCtx.material_target}. Do NOT apply this color to walls, floor, ceiling, countertop, tiles, or any other surface. Everything else keeps its own natural color.`,
+      acabadoData && `FINISH RULE: The ${tipoCtx.material_target} has a ${acabadoData.label} finish (${acabadoData.prompt}). This finish applies ONLY to the ${tipoCtx.material_target}.`,
+      material === "enchapado" && colorData && ["blanco_mate","negro_mate","gris","verde_salvia","azul_marino"].includes(colorElegido) && `NOTE: Wood veneer (enchapado) with ${colorData.label} means the veneer has been stained or tinted in this tone — the wood grain is still visible but with a color wash. NOT painted solid.`,
+      material === "madera_solida" && colorData && ["blanco_mate","negro_mate","gris"].includes(colorElegido) && `NOTE: Solid wood in ${colorData.label} means painted solid wood — edges and any exposed end grain may show wood character.`,
+      `STYLE RULE: Apply ${estiloData?.label} style ONLY to proportions, hardware style, door profile shape, layout composition, and decorative details. Do NOT override the material or color specifications above.`,
+      `${estiloData?.label} style details: ${estiloData?.prompt_hint}.`,
+      vidaHints && (tipoProyecto === "cocina" || tipoProyecto === "bano") && `Functional household requirements: ${vidaHints}.`,
       descripcion && `Client specific requests: ${descripcion}.`,
-      ajusteCliente,
       foto
-        ? `CRITICAL LAYOUT INSTRUCTION: The reference photo shows the ACTUAL room. You MUST use this exact room as your base — same walls, same floor, same ceiling, same proportions. Transform ONLY the ${tipoCtx.subject}. Everything else must remain identical to the reference photo.`
+        ? `CRITICAL LAYOUT INSTRUCTION: The reference photo shows the ACTUAL room where this project will be installed. You MUST use this exact room as your base — same walls, same floor, same ceiling height, same windows, same proportions, same perspective angle, same lighting direction. DO NOT create a new room. Transform ONLY the ${tipoCtx.subject} in this specific room. Everything else (walls, floor, ceiling, windows) must remain identical to the reference photo.`
         : `Create a realistic well-proportioned ${tipoCtx.subject} naturally integrated in a Monterrey home.`,
-      `Final output: professional 3D visualization studio quality, ultra-sharp, perfect warm LED lighting, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text.`,
+      `Final output: professional 3D visualization studio quality, ultra-sharp, perfect warm LED lighting, rich material textures, premium Monterrey residential aesthetic. No watermarks, no text, no artifacts.`,
     ].filter(Boolean).join(" ");
 
     try {
@@ -676,31 +619,22 @@ export default function Portal() {
     } catch(e) { setRenderMsg("❌ " + e.message); }
     setRenderLoading(false);
 
-    // Generar descripción IA mejorada con preguntas del tipo
     setDescripcionLoading(true);
-    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion, preguntasVida });
+    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion });
     setDescripcionIA(desc);
     setDescripcionLoading(false);
   };
 
-  // ── REGENERAR CON AJUSTES (solo usuarios con cuenta) ─────────────────────
-  const regenerarConAjuste = async () => {
-    if (!ajusteTexto.trim() || !tieneCuenta) return;
-    setRegenerandoConAjuste(true);
-    await generarRender(ajusteTexto);
-    setRegenerandoConAjuste(false);
-  };
-
   const guardarExpediente = async () => {
     setSaving(true);
-    const vidaResumen = preguntasVida.map(p => {
+    const vidaResumen = PREGUNTAS_VIDA.map(p => {
       const r = vidaResp[p.key];
       const op = p.opciones.find(o => o.value === r);
       return op ? `${p.pregunta}: ${op.label}` : null;
     }).filter(Boolean).join(" | ");
 
     const materialData = MATERIALES.find(m => m.key === material);
-    const resumen = `🆕 *NUEVO LEAD — EnKaje Pro*\n\n📋 Proyecto: ${tipoProyecto.toUpperCase()}\n🎨 Estilo: ${estilo}\n🪵 Material: ${materialData?.label || "no especificado"}\n🏠 Perfil hogar: ${vidaResumen}\n📝 Descripción: ${descripcion || "no especificada"}\n👤 Nombre: ${nombre}\n📱 Tel: ${telefono}\n📧 Correo: ${correo}\n📅 Fecha deseada: ${fechaInicio}\n🎯 Decisión: ${nivelDecision}\n📐 Medidas: ${medidas || "no especificadas"}\n💰 Rango: $${rango.min.toLocaleString("es-MX")} – $${rango.max.toLocaleString("es-MX")} MXN\n\nenkajepro.com`;
+    const resumen = `🆕 *NUEVO LEAD — EnKaje Pro*\n\n📋 Proyecto: ${tipoProyecto.toUpperCase()}\n🎨 Estilo: ${estilo}\n🎨 Color: ${colorElegido}\n✨ Acabado: ${acabado}\n🪵 Material: ${materialData?.label || "no especificado"}\n🏠 Perfil hogar: ${vidaResumen}\n📝 Descripción: ${descripcion || "no especificada"}\n👤 Nombre: ${nombre}\n📱 Tel: ${telefono}\n📧 Correo: ${correo}\n📅 Fecha deseada: ${fechaInicio}\n🎯 Decisión: ${nivelDecision}\n📐 Medidas: ${medidas || "no especificadas"}\n💰 Rango: $${rango.min.toLocaleString("es-MX")} – $${rango.max.toLocaleString("es-MX")} MXN\n\nenkajepro.com`;
     window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_blank");
 
     try {
@@ -735,10 +669,9 @@ export default function Portal() {
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
     setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision(""); setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
-    setAjusteTexto(""); setRegenerandoConAjuste(false);
   };
 
-  const vidaCompleta = preguntasVida.every(p => vidaResp[p.key]);
+  const vidaCompleta = PREGUNTAS_VIDA.every(p => vidaResp[p.key]);
 
   return (
     <>
@@ -799,15 +732,13 @@ export default function Portal() {
           </div>
         )}
 
-        {/* PASO 1 — FOTO + PREGUNTAS DE VIDA (ajustadas por tipo) */}
+        {/* PASO 1 — FOTO + PREGUNTAS DE VIDA */}
         {step === 1 && (
           <div className="portal-step">
             <StepLabel step={1} total={TOTAL_STEPS} label="Tu espacio y estilo de vida" />
             <ProgressBar step={1} total={TOTAL_STEPS} />
             <div style={{ marginTop:28, marginBottom:20 }}>
-              <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:"#f0e8dc", marginBottom:8 }}>
-                Cuéntanos sobre tu {TIPOS_PROYECTO.find(t=>t.key===tipoProyecto)?.label.toLowerCase() || "proyecto"}
-              </h2>
+              <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:"#f0e8dc", marginBottom:8 }}>Cuéntanos sobre tu espacio</h2>
               <p style={{ color:"#666", fontSize:14, lineHeight:1.7 }}>Esto ayuda a la IA a generar un render que realmente funcione para tu vida diaria.</p>
             </div>
             <div onClick={() => fileRef.current.click()} style={{
@@ -837,8 +768,8 @@ export default function Portal() {
             )}
             <div style={{ marginBottom:20 }}>
               <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:4 }}>3 preguntas rápidas</div>
-              <p style={{ fontSize:12, color:"#555", marginBottom:16 }}>La IA ajusta el diseño según tus respuestas.</p>
-              {preguntasVida.map((pregunta) => (
+              <p style={{ fontSize:12, color:"#555", marginBottom:16 }}>La IA ajusta los materiales y diseño según tus respuestas.</p>
+              {PREGUNTAS_VIDA.map((pregunta) => (
                 <div key={pregunta.key} style={{ marginBottom:18 }}>
                   <p style={{ fontSize:14, fontWeight:600, color:"#e8e0d0", marginBottom:10 }}>{pregunta.pregunta}</p>
                   <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
@@ -851,7 +782,7 @@ export default function Portal() {
                           border: `1.5px solid ${sel ? "#d4af37" : "#1a1a12"}`,
                           borderRadius:12, padding:"10px 16px", cursor:"pointer", transition:"all .2s", flexShrink:0
                         }}>
-                          <span style={{ fontSize:20 }}>{op.emoji}</span>
+                          <span style={{ fontSize:22 }}>{op.emoji}</span>
                           <span style={{ fontSize:13, fontWeight: sel ? 700 : 400, color: sel ? "#d4af37" : "#888" }}>{op.label}</span>
                           {sel && <span style={{ color:"#d4af37", fontSize:12 }}>✓</span>}
                         </button>
@@ -866,22 +797,16 @@ export default function Portal() {
                 ¿Algo más? <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
               </label>
               <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)}
-                placeholder={
-                  tipoProyecto === "cocina" ? "Ej: Quiero isla, iluminación LED, sin manijas..." :
-                  tipoProyecto === "closet" ? "Ej: Con cajones en el centro, puertas de vidrio..." :
-                  tipoProyecto === "bano"   ? "Ej: Vanity flotante con LED inferior, espejo iluminado..." :
-                  tipoProyecto === "puerta" ? "Ej: Puerta de piso a techo, pivotante, madera oscura..." :
-                  tipoProyecto === "panel"  ? "Ej: Panel ranurado vertical en madera nogal con LED..." :
-                  "Describe colores, materiales, dimensiones..."
-                }
+                placeholder={tipoProyecto === "cocina" ? "Ej: Quiero isla, iluminación LED, sin manijas..." : tipoProyecto === "closet" ? "Ej: Con cajones en el centro, puertas de vidrio..." : "Describe colores, materiales, dimensiones..."}
                 rows={3} style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14, resize:"vertical", lineHeight:1.6 }} />
             </div>
             <div style={{ display:"flex", gap:10 }}>
               <Btn onClick={back} outline style={{ flex:1 }}>← Atrás</Btn>
               <Btn onClick={next} disabled={!vidaCompleta} style={{ flex:2 }}>
-                {vidaCompleta ? "Elegir estilo →" : `Responde las ${preguntasVida.filter(p => !vidaResp[p.key]).length} pregunta(s)`}
+                {vidaCompleta ? "Elegir estilo →" : "Responde las 3 preguntas"}
               </Btn>
             </div>
+            {!vidaCompleta && <p style={{ fontSize:11, color:"#555", textAlign:"center", marginTop:8 }}>{PREGUNTAS_VIDA.filter(p => !vidaResp[p.key]).length} pregunta(s) pendientes</p>}
           </div>
         )}
 
@@ -894,6 +819,7 @@ export default function Portal() {
               <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:"#f0e8dc", marginBottom:8 }}>¿Con qué te identificas?</h2>
               <p style={{ color:"#666", fontSize:14 }}>Elige por las fotos — no tienes que saber los nombres.</p>
             </div>
+
             {/* Estilos */}
             <div style={{ marginBottom:24 }}>
               <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>Estilo de diseño</label>
@@ -901,7 +827,11 @@ export default function Portal() {
                 {ESTILOS.map(e => {
                   const sel = estilo === e.key;
                   return (
-                    <button key={e.key} className="estilo-card" onClick={() => setEstilo(e.key)} style={{ background:"#0f0f0a", border:`2px solid ${sel?"#d4af37":"#1a1a12"}`, borderRadius:14, cursor:"pointer", textAlign:"left", overflow:"hidden", transition:"all .25s", boxShadow:sel?"0 0 20px #d4af3830":"none", padding:0 }}>
+                    <button key={e.key} className="estilo-card" onClick={() => setEstilo(e.key)} style={{
+                      background:"#0f0f0a", border:`2px solid ${sel?"#d4af37":"#1a1a12"}`,
+                      borderRadius:14, cursor:"pointer", textAlign:"left", overflow:"hidden",
+                      transition:"all .25s", boxShadow:sel?"0 0 20px #d4af3830":"none", padding:0
+                    }}>
                       <div style={{ position:"relative", width:"100%", height:110, overflow:"hidden" }}>
                         <img src={e.foto} alt={e.label} style={{ width:"100%", height:"100%", objectFit:"cover", display:"block", filter:sel?"brightness(1.05)":"brightness(0.75)" }} onError={ev=>{ev.target.style.display="none";}} />
                         {sel && <div style={{ position:"absolute", top:8, right:8, background:"#d4af37", borderRadius:"50%", width:24, height:24, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:900, color:"#000" }}>✓</div>}
@@ -915,14 +845,21 @@ export default function Portal() {
                 })}
               </div>
             </div>
+
             {/* Material */}
             <div style={{ marginBottom:24 }}>
-              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>Material <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span></label>
+              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>
+                Material <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
+              </label>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                 {MATERIALES.map(m => {
                   const sel = material === m.key;
                   return (
-                    <button key={m.key} className="mat-card" onClick={() => setMaterial(material === m.key ? "" : m.key)} style={{ background:"#0f0f0a", border:`1.5px solid ${sel?m.color:"#1a1a12"}`, borderRadius:12, cursor:"pointer", overflow:"hidden", transition:"all .25s", padding:0, boxShadow:sel?`0 0 16px ${m.color}30`:"none" }}>
+                    <button key={m.key} className="mat-card" onClick={() => setMaterial(material === m.key ? "" : m.key)} style={{
+                      background:"#0f0f0a", border:`1.5px solid ${sel?m.color:"#1a1a12"}`,
+                      borderRadius:12, cursor:"pointer", overflow:"hidden",
+                      transition:"all .25s", padding:0, boxShadow:sel?`0 0 16px ${m.color}30`:"none"
+                    }}>
                       <div style={{ position:"relative", height:72, overflow:"hidden", background:"#1a1a12" }}>
                         <img src={m.foto} alt={m.label} style={{ width:"100%", height:"100%", objectFit:"cover", filter:sel?"brightness(1)":"brightness(0.6)" }} onError={ev=>{ev.target.style.display="none";}} />
                         <div style={{ position:"absolute", top:6, left:6, background:"rgba(7,7,8,0.85)", borderRadius:20, padding:"2px 8px", fontSize:9, fontWeight:700, color:m.badgeColor, whiteSpace:"nowrap" }}>{m.badge}</div>
@@ -942,21 +879,31 @@ export default function Portal() {
                 </div>
               )}
             </div>
-            {/* Rango dinámico */}
+
+            {/* Preview rango dinámico */}
             {estilo && (
               <div style={{ background:"#1a1208", border:"1px solid #d4af3730", borderRadius:12, padding:"12px 16px", marginBottom:20, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                 <div style={{ fontSize:12, color:"#888" }}>Inversión estimada para tu selección</div>
-                <div style={{ fontSize:16, fontWeight:900, color:"#d4af37" }}>${rango.min.toLocaleString("es-MX")} – ${rango.max.toLocaleString("es-MX")} MXN</div>
+                <div style={{ fontSize:16, fontWeight:900, color:"#d4af37" }}>
+                  ${rango.min.toLocaleString("es-MX")} – ${rango.max.toLocaleString("es-MX")} MXN
+                </div>
               </div>
             )}
+
             {/* Colores */}
             <div style={{ marginBottom:20 }}>
-              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>Color principal <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span></label>
+              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>
+                Color principal <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
+              </label>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
                 {COLORES.map(c => {
                   const sel = colorElegido === c.key;
                   return (
-                    <button key={c.key} className="color-chip" onClick={() => setColor(colorElegido===c.key?"":c.key)} style={{ display:"flex", alignItems:"center", gap:12, background:sel?"#d4af3712":"#0f0f0a", border:`1.5px solid ${sel?"#d4af37":"#1a1a12"}`, borderRadius:12, padding:"10px 14px", cursor:"pointer", transition:"all .2s", textAlign:"left" }}>
+                    <button key={c.key} className="color-chip" onClick={() => setColor(colorElegido===c.key?"":c.key)} style={{
+                      display:"flex", alignItems:"center", gap:12,
+                      background:sel?"#d4af3712":"#0f0f0a", border:`1.5px solid ${sel?"#d4af37":"#1a1a12"}`,
+                      borderRadius:12, padding:"10px 14px", cursor:"pointer", transition:"all .2s", textAlign:"left"
+                    }}>
                       <div style={{ width:36, height:36, borderRadius:8, background:c.hex, flexShrink:0, border:"1px solid rgba(255,255,255,0.12)", boxShadow:sel?`0 0 10px ${c.hex}60`:"none" }} />
                       <div>
                         <div style={{ fontSize:13, fontWeight:sel?700:500, color:sel?"#d4af37":"#e8e0d0" }}>{c.label}</div>
@@ -968,16 +915,28 @@ export default function Portal() {
                 })}
               </div>
             </div>
+
             {/* Acabados */}
             <div style={{ marginBottom:28 }}>
-              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>Acabado <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span></label>
+              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>
+                Acabado <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
+              </label>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
                 {ACABADOS.map(a => {
                   const sel = acabado === a.key;
                   return (
-                    <button key={a.key} className="acabado-card" onClick={() => setAcabado(acabado===a.key?"":a.key)} style={{ background:"#0f0f0a", border:`1.5px solid ${sel?"#d4af37":"#1a1a12"}`, borderRadius:12, cursor:"pointer", overflow:"hidden", transition:"all .2s", padding:0, boxShadow:sel?"0 0 14px #d4af3825":"none" }}>
+                    <button key={a.key} className="acabado-card" onClick={() => setAcabado(acabado===a.key?"":a.key)} style={{
+                      background:"#0f0f0a", border:`1.5px solid ${sel?"#d4af37":"#1a1a12"}`,
+                      borderRadius:12, cursor:"pointer", overflow:"hidden", transition:"all .2s", padding:0,
+                      boxShadow:sel?"0 0 14px #d4af3825":"none"
+                    }}>
                       <div style={{ position:"relative", height:64, overflow:"hidden" }}>
-                        <img src={a.foto} alt={a.label} style={{ position:"absolute", width:"300%", height:"200%", top:a.pos.endsWith("100%")?"-100%":"0", left:a.pos.startsWith("100%")?"-200%":a.pos.startsWith("50%")?"-100%":"0", objectFit:"cover", filter:sel?"brightness(1)":"brightness(0.6)" }} onError={ev=>{ev.target.style.background="#1a1a12";ev.target.style.display="none";}} />
+                        <img src={a.foto} alt={a.label} style={{
+                          position:"absolute", width:"300%", height:"200%",
+                          top:a.pos.endsWith("100%")?"-100%":"0",
+                          left:a.pos.startsWith("100%")?"-200%":a.pos.startsWith("50%")?"-100%":"0",
+                          objectFit:"cover", filter:sel?"brightness(1)":"brightness(0.6)"
+                        }} onError={ev=>{ev.target.style.background="#1a1a12";ev.target.style.display="none";}} />
                         {sel && <div style={{ position:"absolute", inset:0, background:"#d4af3715", display:"flex", alignItems:"center", justifyContent:"center" }}><span style={{ color:"#d4af37", fontSize:18, fontWeight:900 }}>✓</span></div>}
                       </div>
                       <div style={{ padding:"8px 10px" }}>
@@ -989,6 +948,7 @@ export default function Portal() {
                 })}
               </div>
             </div>
+
             <div style={{ display:"flex", gap:10 }}>
               <Btn onClick={back} outline style={{ flex:1 }}>← Atrás</Btn>
               <Btn onClick={async () => { next(); await generarRender(); }} disabled={!estilo} style={{ flex:2 }}>
@@ -998,7 +958,7 @@ export default function Portal() {
           </div>
         )}
 
-        {/* PASO 3 — RENDER + CAJA DE AJUSTE */}
+        {/* PASO 3 — RENDER */}
         {step === 3 && (
           <div className="portal-step">
             <StepLabel step={3} total={TOTAL_STEPS} label="Tu render" />
@@ -1045,7 +1005,6 @@ export default function Portal() {
                     </div>
                   )}
                 </div>
-
                 <div style={{ display:"flex", gap:8, marginBottom:16 }}>
                   <button onClick={descargarRender} style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8, background:"#0f0f0a", border:"1.5px solid #2a2a20", borderRadius:12, padding:"12px", cursor:"pointer", color:"#e8e0d0", fontSize:13, fontWeight:600 }}>
                     ⬇️ Descargar render
@@ -1056,52 +1015,6 @@ export default function Portal() {
                     </button>
                   )}
                 </div>
-
-                {/* ── CAJA DE AJUSTE POST-RENDER (solo usuarios con cuenta) ────── */}
-                {tieneCuenta && (
-                  <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:20, marginBottom:16 }}>
-                    <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>
-                      🔧 ¿Qué le cambiarías?
-                    </div>
-                    <p style={{ fontSize:12, color:"#555", marginBottom:12, lineHeight:1.6 }}>
-                      Describe exactamente qué quieres cambiar y regeneramos el render con esos ajustes.
-                    </p>
-                    <textarea
-                      value={ajusteTexto}
-                      onChange={e => setAjusteTexto(e.target.value)}
-                      placeholder="Ej: Cambia el color a blanco mate, agrega isla en el centro, quita las manijas, pon puertas de vidrio..."
-                      rows={3}
-                      style={{ width:"100%", background:"#0a0a08", border:"1px solid #2a2a20", borderRadius:10, padding:"12px 14px", color:"#e8e0d0", fontSize:13, resize:"vertical", fontFamily:"inherit", marginBottom:12 }}
-                    />
-                    <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
-                      <button
-                        onClick={regenerarConAjuste}
-                        disabled={!ajusteTexto.trim() || regenerandoConAjuste || renderLoading}
-                        style={{
-                          background: ajusteTexto.trim() && !regenerandoConAjuste ? "linear-gradient(135deg,#d4af37,#f0c84a)" : "#1a1a12",
-                          color: ajusteTexto.trim() && !regenerandoConAjuste ? "#000" : "#555",
-                          border: "none", borderRadius:10, padding:"11px 22px",
-                          fontWeight:900, fontSize:13,
-                          cursor: ajusteTexto.trim() && !regenerandoConAjuste ? "pointer" : "not-allowed",
-                          display:"flex", alignItems:"center", gap:8
-                        }}
-                      >
-                        {regenerandoConAjuste ? "⏳ Regenerando..." : "✨ Regenerar con ajustes"}
-                      </button>
-                      {ajusteTexto.trim() && (
-                        <button onClick={() => setAjusteTexto("")}
-                          style={{ background:"transparent", border:"1px solid #333", color:"#555", borderRadius:8, padding:"9px 14px", fontSize:12, cursor:"pointer" }}>
-                          Limpiar
-                        </button>
-                      )}
-                    </div>
-                    <div style={{ marginTop:10, fontSize:11, color:"#333" }}>
-                      💡 Los ajustes se aplican exactamente como los escribas — sé específico para mejores resultados.
-                    </div>
-                  </div>
-                )}
-
-                {/* Análisis IA del proyecto */}
                 <div style={{ background:"#0f0f0a", border:"1px solid #d4af3720", borderRadius:16, padding:20, marginBottom:16 }}>
                   <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
                     <span>🤖 Análisis de tu proyecto</span>
@@ -1115,7 +1028,6 @@ export default function Portal() {
                   {descripcionIA && !descripcionLoading && <p style={{ fontSize:14, color:"#aaa", lineHeight:1.85, fontStyle:"italic" }}>"{descripcionIA}"</p>}
                   {!descripcionIA && !descripcionLoading && <p style={{ fontSize:13, color:"#444" }}>No se pudo generar la descripción. El render sí está listo.</p>}
                 </div>
-
                 <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:20, marginBottom:16 }}>
                   <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:14 }}>
                     Detalles · {ESTILOS.find(e=>e.key===estilo)?.label}
@@ -1127,7 +1039,7 @@ export default function Portal() {
                     {[
                       ["Materiales", MATERIALES_SUGERIDOS[estilo]],
                       ["Tiempo estimado", TIEMPOS[tipoProyecto]],
-                      ["Inversión aprox.", `$${rango.min.toLocaleString("es-MX")} – ${rango.max.toLocaleString("es-MX")} MXN`],
+                      ["Inversión aprox.", `$${rango.min.toLocaleString("es-MX")} – $${rango.max.toLocaleString("es-MX")} MXN`],
                       ["Mantenimiento", ["lujo","clasico"].includes(estilo) ? "Alto" : ["rustico","industrial"].includes(estilo) ? "Medio" : "Bajo"],
                     ].map(([l,v],i) => (
                       <div key={i} style={{ background:"#0a0a08", borderRadius:10, padding:12 }}>
@@ -1146,7 +1058,7 @@ export default function Portal() {
             {!renderLoading && !renderUrl && renderMsg && (
               <div style={{ background:"#1a0a0a", border:"1px solid #f4433640", borderRadius:12, padding:20, textAlign:"center", marginBottom:16 }}>
                 <p style={{ color:"#f44336", fontSize:13, marginBottom:12 }}>{renderMsg}</p>
-                <Btn onClick={() => generarRender()}>Reintentar</Btn>
+                <Btn onClick={generarRender} style={{ fontSize:13 }}>Reintentar</Btn>
               </div>
             )}
 
@@ -1214,7 +1126,14 @@ export default function Portal() {
                 { label:"El próximo mes", value:new Date(Date.now()+35*24*60*60*1000).toISOString().split("T")[0], emoji:"🗓️" },
                 { label:"Estoy explorando", value:new Date(Date.now()+90*24*60*60*1000).toISOString().split("T")[0], emoji:"👀" },
               ].map((op,i) => (
-                <button key={i} onClick={() => setFechaInicio(op.value)} style={{ background:fechaInicio===op.value?"#d4af3715":"#0f0f0a", border:`1.5px solid ${fechaInicio===op.value?"#d4af37":"#1a1a12"}`, borderRadius:12, padding:"16px 14px", cursor:"pointer", color:fechaInicio===op.value?"#d4af37":"#888", fontWeight:fechaInicio===op.value?700:400, fontSize:14, transition:"all .2s", textAlign:"left" }}>
+                <button key={i} onClick={() => setFechaInicio(op.value)} style={{
+                  background:fechaInicio===op.value?"#d4af3715":"#0f0f0a",
+                  border:`1.5px solid ${fechaInicio===op.value?"#d4af37":"#1a1a12"}`,
+                  borderRadius:12, padding:"16px 14px", cursor:"pointer",
+                  color:fechaInicio===op.value?"#d4af37":"#888",
+                  fontWeight:fechaInicio===op.value?700:400,
+                  fontSize:14, transition:"all .2s", textAlign:"left"
+                }}>
                   <span style={{ fontSize:20, marginRight:8 }}>{op.emoji}</span>{op.label}
                 </button>
               ))}
@@ -1247,7 +1166,12 @@ export default function Portal() {
                 { value:"decidido",   emoji:"✅", label:"Listo para cotizar", desc:"Ya sé lo que quiero, necesito precio" },
                 { value:"urgente",    emoji:"🔥", label:"Urgente",            desc:"Necesito empezar muy pronto" },
               ].map((op,i) => (
-                <button key={i} onClick={() => setNivelDecision(op.value)} style={{ background:nivelDecision===op.value?"#d4af3715":"#0f0f0a", border:`1.5px solid ${nivelDecision===op.value?"#d4af37":"#1a1a12"}`, borderRadius:12, padding:"16px 18px", cursor:"pointer", display:"flex", alignItems:"center", gap:14, transition:"all .2s" }}>
+                <button key={i} onClick={() => setNivelDecision(op.value)} style={{
+                  background:nivelDecision===op.value?"#d4af3715":"#0f0f0a",
+                  border:`1.5px solid ${nivelDecision===op.value?"#d4af37":"#1a1a12"}`,
+                  borderRadius:12, padding:"16px 18px", cursor:"pointer",
+                  display:"flex", alignItems:"center", gap:14, transition:"all .2s"
+                }}>
                   <span style={{ fontSize:24, flexShrink:0 }}>{op.emoji}</span>
                   <div style={{ flex:1, textAlign:"left" }}>
                     <div style={{ fontWeight:700, color:nivelDecision===op.value?"#d4af37":"#e8e0d0", fontSize:14, marginBottom:2 }}>{op.label}</div>
@@ -1289,13 +1213,7 @@ export default function Portal() {
             <div style={{ marginBottom:20 }}>
               <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:8, letterSpacing:1, textTransform:"uppercase" }}>Medidas aproximadas <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span></label>
               <textarea value={medidas} onChange={e => setMedidas(e.target.value)}
-                placeholder={
-                  tipoProyecto === "cocina" ? "Ej: Largo 3.20m, Alto 2.40m, Profundidad 0.60m" :
-                  tipoProyecto === "closet" ? "Ej: Ancho 2.40m, Alto 2.40m, Profundidad 0.60m" :
-                  tipoProyecto === "bano"   ? "Ej: Ancho 0.90m, Alto 0.55m, Profundidad 0.45m" :
-                  tipoProyecto === "puerta" ? "Ej: Ancho 0.90m, Alto 2.10m" :
-                  "Ej: Largo 1.80m, Alto 2.40m"
-                }
+                placeholder={tipoProyecto === "cocina" ? "Ej: Largo 3.20m, Alto 2.40m, Profundidad 0.60m" : "Ej: Ancho 2.40m, Alto 2.40m, Profundidad 0.60m"}
                 rows={2} style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14, resize:"vertical" }} />
             </div>
             <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:12, padding:14, marginBottom:24, fontSize:12, color:"#555", lineHeight:1.7 }}>
@@ -1336,7 +1254,7 @@ export default function Portal() {
                   ["Estilo", ESTILOS.find(e=>e.key===estilo)?.label],
                   ["Material", MATERIALES.find(m=>m.key===material)?.label || "No especificado"],
                   ["Acabado", ACABADOS.find(a=>a.key===acabado)?.label || "No especificado"],
-                  ["Inversión", `$${rango.min.toLocaleString("es-MX")} – ${rango.max.toLocaleString("es-MX")}`],
+                  ["Inversión", `$${rango.min.toLocaleString("es-MX")} – $${rango.max.toLocaleString("es-MX")}`],
                   ["Tiempo", TIEMPOS[tipoProyecto]],
                 ].map(([l,v],i) => (
                   <div key={i} style={{ background:"#0a0a08", borderRadius:8, padding:10 }}>
