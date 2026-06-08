@@ -516,7 +516,7 @@ export default function Portal() {
     const user  = JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
     const materialData = MATERIALES.find(m => m.key === material);
     const acabadoData  = ACABADOS.find(a => a.key === acabado);
-    const vidaResumen  = PREGUNTAS_VIDA.map(p => {
+    const vidaResumen  = preguntasVida.map(p => {
       const r = vidaResp[p.key];
       const op = p.opciones.find(o => o.value === r);
       return op ? op.label : null;
