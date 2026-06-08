@@ -1652,24 +1652,22 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
   async function generarRenderTecnico() {
     if (!renderPrompt.trim()) return;
     setRenderLoading(true); setRenderMsg(""); setRenderImg(null);
-    try {
-      const res = await fetch("/api/image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: (() => {
-  const f = getForm();
-  const largo = f.largo || f.ancho || "";
-  const alto = f.alto || f.altura || "";
-  const prof = f.profundidad || "";
-  const BASE = "White background. Clean black vector linework. Isometric projection. Visible dimension arrows. Module numbering. No people. No decoration. AutoCAD drafting style.";
-  const prompts = {
-    cocina: "Isometric technical blueprint of integral kitchen. Length: " + largo + ", Height: " + alto + ", Depth: " + prof + ". Show upper cabinets, lower cabinets, sink area, countertop. Dimension arrows, module numbering M-01 M-02, labels Mueble Superior Mueble Inferior Tarja Cubierta. " + BASE,
-    closet: "Isometric technical blueprint of built-in closet. Width: " + largo + ", Height: " + alto + ", Depth: " + prof + ". Show module divisions, drawers, door panels, hanging rod, shelves. Labels Cajones Entrepaños Tubo Colgador, numbering C-01 C-02. " + BASE,
-    puerta: "Technical drawing of residential door. Width: " + (f.ancho||"") + ", Height: " + (f.alto||"") + ", Thickness: " + (f.grosor_puerta||"") + ". Front elevation, side profile, door swing arc, hinges, lock. Labels Marco Hoja Bisagra Cerradura. " + BASE,
-    mueble: "Isometric technical blueprint of TV wall unit. Width: " + largo + ", Height: " + alto + ", Depth: " + prof + ". Show TV panel, niches, lower drawers, LED groove. Labels Panel TV Nicho Cajones, numbering TV-01 TV-02. " + BASE,
-    panel: "Technical elevation of decorative wall panel. Width: " + largo + ", Height: " + alto + ". Show panel pattern, top and bottom rail, vertical battens. Labels Riel Superior Riel Inferior Tablero. " + BASE,
-    bano: "Isometric technical blueprint of bathroom vanity. Width: " + (f.ancho||"") + ", Height: " + (f.alto||"") + ", Depth: " + prof + ". Show countertop, sink, mirror, drawers. Labels Cubierta Lavabo Espejo Cajones, numbering B-01 B-02. " + BASE,
-  };
-  const base = prompts[tipoForm] || ("Technical carpentry blueprint of: " + renderPrompt + ". " + BASE);
-  return renderPrompt.trim().length > 10 ? base + " Additional notes: " + renderPrompt : base;
-})() })
+   try {
+      const f = getForm();
+      const lg = f.largo || f.ancho || "";
+      const al = f.alto || f.altura || "";
+      const pr = f.profundidad || "";
+      const BS = "White background. Clean black vector linework. Isometric projection. Visible dimension arrows. Module numbering. No people. No decoration. AutoCAD drafting style.";
+      const tpMap = {
+        cocina: "Isometric technical blueprint of integral kitchen. Length: " + lg + ", Height: " + al + ", Depth: " + pr + ". Upper cabinets, lower cabinets, sink area, countertop. Dimension arrows, module numbering M-01 M-02, labels Mueble Superior Mueble Inferior Tarja Cubierta. " + BS,
+        closet: "Isometric technical blueprint of built-in closet. Width: " + lg + ", Height: " + al + ", Depth: " + pr + ". Module divisions, drawers, door panels, hanging rod, shelves. Labels Cajones Entrepaños Tubo Colgador, numbering C-01 C-02. " + BS,
+        puerta: "Technical drawing of residential door. Width: " + (f.ancho||"") + ", Height: " + (f.alto||"") + ", Thickness: " + (f.grosor_puerta||"") + ". Front elevation, side profile, door swing arc, hinges, lock. Labels Marco Hoja Bisagra Cerradura. " + BS,
+        mueble: "Isometric technical blueprint of TV wall unit. Width: " + lg + ", Height: " + al + ", Depth: " + pr + ". TV panel, niches, lower drawers, LED groove. Labels Panel TV Nicho Cajones, numbering TV-01 TV-02. " + BS,
+        panel: "Technical elevation of wall panel. Width: " + lg + ", Height: " + al + ". Panel pattern, top and bottom rail, vertical battens. Labels Riel Superior Riel Inferior Tablero. " + BS,
+        bano: "Isometric technical blueprint of bathroom vanity. Width: " + (f.ancho||"") + ", Height: " + (f.alto||"") + ", Depth: " + pr + ". Countertop, sink, mirror, drawers. Labels Cubierta Lavabo Espejo Cajones, numbering B-01 B-02. " + BS,
+      };
+      const tecPrompt = (tpMap[tipoForm] || ("Technical carpentry blueprint of: " + renderPrompt + ". " + BS)) + (renderPrompt.trim().length > 10 ? " Additional notes: " + renderPrompt : "");
+      const res = await fetch("/api/image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: tecPrompt }) });
       const data = await res.json();
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl = imgData?.url;
