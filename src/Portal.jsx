@@ -1015,6 +1015,23 @@ export default function Portal() {
                     </div>
                   )}
                 </div>
+             {tieneCuenta && (
+                  <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:20, marginBottom:16 }}>
+                    <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>🔧 ¿Qué le cambiarías?</div>
+                    <p style={{ fontSize:12, color:"#555", marginBottom:12, lineHeight:1.6 }}>Describe exactamente qué quieres cambiar y regeneramos con esos ajustes.</p>
+                    <textarea value={ajusteTexto} onChange={e => setAjusteTexto(e.target.value)}
+                      placeholder="Ej: Cambia el color a blanco mate, agrega isla, quita las manijas, pon puertas de vidrio..."
+                      rows={3} style={{ width:"100%", background:"#0a0a08", border:"1px solid #2a2a20", borderRadius:10, padding:"12px 14px", color:"#e8e0d0", fontSize:13, resize:"vertical", fontFamily:"inherit", marginBottom:12 }} />
+                    <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+                      <button onClick={regenerarConAjuste} disabled={!ajusteTexto.trim() || regenerandoConAjuste || renderLoading}
+                        style={{ background: ajusteTexto.trim() && !regenerandoConAjuste ? "linear-gradient(135deg,#d4af37,#f0c84a)" : "#1a1a12", color: ajusteTexto.trim() && !regenerandoConAjuste ? "#000" : "#555", border:"none", borderRadius:10, padding:"11px 22px", fontWeight:900, fontSize:13, cursor: ajusteTexto.trim() && !regenerandoConAjuste ? "pointer" : "not-allowed" }}>
+                        {regenerandoConAjuste ? "⏳ Regenerando..." : "✨ Regenerar con ajustes"}
+                      </button>
+                      {ajusteTexto.trim() && <button onClick={() => setAjusteTexto("")} style={{ background:"transparent", border:"1px solid #333", color:"#555", borderRadius:8, padding:"9px 14px", fontSize:12, cursor:"pointer" }}>Limpiar</button>}
+                    </div>
+                    <div style={{ marginTop:10, fontSize:11, color:"#333" }}>💡 Sé específico para mejores resultados.</div>
+                  </div>
+                )}
                 <div style={{ display:"flex", gap:8, marginBottom:16 }}>
                   <button onClick={descargarRender} style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:8, background:"#0f0f0a", border:"1.5px solid #2a2a20", borderRadius:12, padding:"12px", cursor:"pointer", color:"#e8e0d0", fontSize:13, fontWeight:600 }}>
                     ⬇️ Descargar render
