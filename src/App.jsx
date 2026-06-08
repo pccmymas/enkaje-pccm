@@ -1,4 +1,3 @@
-app jsx nuevo nuevo
 import { useState, useEffect } from "react";
 import { LogoInline } from "./Logo.jsx";
 
