@@ -2967,8 +2967,145 @@ Formato: Caption completo listo para copiar y pegar.`;
                          </button>
                         </div>
                     </div>
+                 )}
+          </div>
+        )}
+
+        {/* PROYECTOS TALLER */}
+        {tab === "leads" && role === "taller" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1>
+            {proyectos.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
+            {proyectos.map((p,i) => {
+              const sel = proyectoSel?.created_at === p.created_at;
+              return (
+                <div key={i} onClick={() => setProyectoSel(sel?null:p)}
+                  style={{ background: "#0f0f0a", border: `1px solid ${sel?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: 16, marginBottom: 10, cursor: "pointer" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>Proyecto #{i+1} · {(p.tipo_proyecto||"cocina").toUpperCase()}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{p.created_at?.split("T")[0]}</div>
+                    </div>
+                  </div>
+                  {sel && (
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Cotizar</BTN>
+                      </div>
+                    </div>
                   )}
                 </div>
               );
-            }
+            })}
+          </div>
+        )}
+
+        {/* MEMBRESIAS ADMIN */}
+        {tab === "membresias" && role === "admin" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Talleres</h1>
+            <BTN onClick={() => setShowNuevoTaller(true)}>+ Agregar Taller</BTN>
+            {tallerMsg && <div style={{ marginTop: 12, color: "#4caf50", fontSize: 13 }}>{tallerMsg}</div>}
+            <div style={{ marginTop: 20 }}>
+              {talleresMem.map((t,i) => (
+                <div key={i} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 16, marginBottom: 10 }}>
+                  <div style={{ fontWeight: 700 }}>{t.nombre}</div>
+                  <div style={{ fontSize: 12, color: "#aaa" }}>{t.email} · {t.plan}</div>
+                </div>
+              ))}
+            </div>
+            {showNuevoTaller && (
+              <div style={{ position: "fixed", inset: 0, background: "#000000cc", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }}>
+                <div style={{ background: "#0f0f0a", border: "1px solid #d4af3740", borderRadius: 20, padding: 28, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }}>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 20px" }}>Agregar Taller</h3>
+                  <INPUT label="Nombre" value={nuevoTaller.nombre} onChange={e=>setNuevoTaller(p=>({...p,nombre:e.target.value}))} placeholder="Carpinteria Regia" />
+                  <INPUT label="Email" value={nuevoTaller.email} onChange={e=>setNuevoTaller(p=>({...p,email:e.target.value}))} placeholder="taller@email.com" />
+                  <INPUT label="Telefono" value={nuevoTaller.telefono} onChange={e=>setNuevoTaller(p=>({...p,telefono:e.target.value}))} placeholder="81-1234-5678" />
+                  <INPUT label="Slug" value={nuevoTaller.slug} onChange={e=>setNuevoTaller(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} placeholder="carpinteria-regia" />
+                  <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                    <BTN onClick={() => setShowNuevoTaller(false)} outline color="#555" style={{ flex: 1 }}>Cancelar</BTN>
+                    <BTN onClick={guardarNuevoTaller} style={{ flex: 2 }}>Guardar</BTN>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* IA */}
+        {tab === "ia" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 4px", fontSize: isMobile?20:24 }}>Centro de IA</h1>
+            <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+              {[["asistente","🤖 Asistente"],["renders","🎨 Renders"],["social","📱 Redes"]].map(([k,l]) => (
+                <button key={k} onClick={() => setIaTab(k)} style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${iaTab===k?"#d4af37":"#2a2a20"}`, background: iaTab===k?"#d4af3715":"transparent", color: iaTab===k?"#d4af37":"#aaa", fontSize: 13, cursor: "pointer", fontWeight: iaTab===k?700:400 }}>{l}</button>
+              ))}
+            </div>
+            {iaTab === "asistente" && (
+              <div>
+                <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, overflow: "hidden", marginBottom: 16 }}>
+                  <div style={{ minHeight: 200, maxHeight: 400, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+                    {chatHistory.length === 0 && <div style={{ textAlign: "center", color: "#444", fontSize: 13, padding: "30px 0" }}>Haz una pregunta sobre carpintería, materiales o precios</div>}
+                    {chatHistory.map((m, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: m.role==="user"?"flex-end":"flex-start" }}>
+                        <div style={{ maxWidth: "80%", padding: "10px 14px", borderRadius: 12, background: m.role==="user"?"#d4af3720":"#1a1a12", fontSize: 13, color: "#e8e0d0", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{m.content}</div>
+                      </div>
+                    ))}
+                    {chatLoading && <div style={{ color: "#d4af37", fontSize: 13 }}>✨ Pensando...</div>}
+                  </div>
+                  <div style={{ borderTop: "1px solid #1a1a12", padding: 12, display: "flex", gap: 8 }}>
+                    <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key==="Enter" && !e.shiftKey && enviarChat()} placeholder="Pregunta algo..."
+                      style={{ flex: 1, background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "10px 14px", color: "#e8e0d0", fontSize: 13, fontFamily: "inherit" }} />
+                    <button onClick={enviarChat} disabled={chatLoading || !chatInput.trim()} style={{ background: "#d4af37", border: "none", borderRadius: 10, padding: "10px 16px", color: "#000", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>Enviar →</button>
+                  </div>
+                </div>
+                <TIPO_SELECTOR />
+                <BTN onClick={analizarConIA} disabled={aiLoading} style={{ width: "100%", fontSize: 13 }}>{aiLoading ? "Analizando..." : "🔍 Analizar Proyecto con IA"}</BTN>
+                {aiResult && <div style={{ marginTop: 14, fontSize: 13, color: "#e8e0d0", lineHeight: 1.9, whiteSpace: "pre-wrap", background: "#0a0a08", borderRadius: 10, padding: 14 }}>{aiResult}</div>}
+              </div>
+            )}
+            {iaTab === "renders" && (
+              <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20 }}>
+                <textarea value={renderPrompt} onChange={e => setRenderPrompt(e.target.value)} placeholder="Describe el proyecto para el render..." rows={3}
+                  style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 13, resize: "vertical", fontFamily: "inherit", marginBottom: 12 }} />
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13 }}>{renderLoading ? "⏳ Generando..." : "✨ Render"}</BTN>
+                  <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13 }}>{renderLoading ? "⏳..." : "📐 Técnico"}</BTN>
+                </div>
+                {renderMsg && <div style={{ marginTop: 12, fontSize: 12, color: renderMsg.startsWith("✅")?"#4caf50":"#f44336" }}>{renderMsg}</div>}
+                {renderImg && <img src={renderImg} alt="Render" style={{ width: "100%", borderRadius: 12, marginTop: 16 }} />}
+              </div>
+            )}
+            {iaTab === "social" && (
+              <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20 }}>
+                <TIPO_SELECTOR />
+                <BTN onClick={generarContenidoSocial} disabled={socialLoading} style={{ fontSize: 13, marginTop: 8 }}>{socialLoading ? "⏳ Generando..." : "✨ Generar Caption"}</BTN>
+                {socialCaption && <div style={{ marginTop: 14, fontSize: 13, color: "#e8e0d0", lineHeight: 1.8, whiteSpace: "pre-wrap", background: "#0a0a08", borderRadius: 10, padding: 16 }}>{socialCaption}</div>}
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
+
+      {/* COOKIE BANNER */}
+      <CookieBanner onVerCookies={() => setLegalPage("cookies")} />
+
+      {/* MODAL CONFIRMACIÓN */}
+      {confirmModal && (
+        <div style={{ position: "fixed", inset: 0, background: "#000000cc", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999, padding: 20 }} onClick={() => setConfirmModal(null)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#0f0f0a", border: "1px solid #f4433640", borderRadius: 16, padding: 28, maxWidth: 360, width: "100%", textAlign: "center" }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🗑️</div>
+            <div style={{ fontSize: 15, color: "#e8e0d0", fontWeight: 600, marginBottom: 24 }}>{confirmModal.msg}</div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setConfirmModal(null)} style={{ flex: 1, background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={async () => { try { await confirmModal.onOk(); } catch(e) { alert("Error: " + e.message); } setConfirmModal(null); }} style={{ flex: 1, background: "#f44336", border: "none", color: "#fff", borderRadius: 10, padding: "11px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
                    
