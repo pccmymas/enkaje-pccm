@@ -1907,48 +1907,7 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
 
       const ctx = TIPO_DRAWING[tipoForm] || TIPO_DRAWING.mueble;
 
-      const prompt = [
-        // Estilo visual del dibujo
-        `MILLWORK SHOP DRAWING — professional technical drawing on pure white background, black ink lines only, no color, no shading, no photorealism.`,
-        `Drawing style: precise architectural drafting, clean CAD-quality linework, thin lines for details and thick lines for outlines/cuts.`,
-
-        // Vistas requeridas
-        `REQUIRED VIEWS — arranged on the page in standard drafting layout:`,
-        `1. ${ctx.views}`,
-
-        // Sujeto y componentes
-        `Subject: ${ctx.name}.`,
-        `Show all components clearly labeled: ${ctx.components}.`,
-
-        // Dimensiones exactas
-        `CRITICAL DIMENSIONS — draw and annotate ALL of these measurements with dimension lines, arrows, and numbers:`,
-        `${ctx.notes}`,
-        `Material thickness: ${arr(f.grosor)||"18"}mm panels throughout.`,
-        arr(f.material) && `Material specification callout: ${arr(f.material)}.`,
-        arr(f.tipo_acabado) && `Finish note: ${arr(f.tipo_acabado)}.`,
-        arr(f.jaladeras) && `Hardware: ${arr(f.jaladeras)} handles — mark position on elevation.`,
-        arr(f.bisagras) && `Hinges: ${arr(f.bisagras)} — mark all hinge locations.`,
-
-        // Anotaciones técnicas
-        `ANNOTATIONS — include these on the drawing:`,
-        `- Dimension lines with double-headed arrows and measurements in centimeters (cm) for overall dimensions`,
-        `- Leader lines with callout bubbles identifying each component`,
-        `- Material schedule box in corner: substrate, thickness, finish`,
-        `- Scale indicator: SCALE 1:20`,
-        `- Title block at bottom: project name, date, view name`,
-        `- Section cut symbols where sections are taken`,
-        `- Center lines (CL) for symmetric elements`,
-        `- Hidden lines (dashed) for internal components not visible in elevation`,
-
-        // Instrucción adicional del taller
-        renderPrompt && `Additional specifications: ${renderPrompt}.`,
-
-        // Regla final
-        `QUALITY STANDARD: This drawing must be indistinguishable from a professional shop drawing produced by a licensed Cabinet Vision or AutoCAD operator for fabrication submission. Every dimension must be legible. Every component labeled. White background, black lines, all measurements visible. Flat 2D orthographic projection — no perspective, no artistic rendering, no shadows.`,
-        `IMPORTANT NOTE in drawing: "Referencia visual — verificar todas las medidas en campo antes de fabricación."`,
-      ].filter(Boolean).join(" ");
-
-  async function generarContenidoSocial() {
+    async function generarContenidoSocial() {
     setSocialLoading(true); setSocialCaption("");
     try {
       const tipo = tipoForm === "cocina" ? "cocina" : tipoForm === "closet" ? "closet" : tipoForm === "puerta" ? "puerta" : tipoForm === "bano" ? "baño" : "mueble";
