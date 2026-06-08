@@ -359,7 +359,7 @@ async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, mate
   const acabadoData  = ACABADOS.find(a => a.key === acabado);
   const materialData = MATERIALES.find(m => m.key === material);
   const tipoData     = TIPOS_PROYECTO.find(t => t.key === tipoProyecto);
-  const vidaResumen  = PREGUNTAS_VIDA.map(p => {
+ const vidaResumen  = preguntasVida.map(p => { 
     const r = vidaResp[p.key];
     const op = p.opciones.find(o => o.value === r);
     return op ? op.label : null;
