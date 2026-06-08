@@ -1,3 +1,4 @@
+app jsx nuevo nuevo
 import { useState, useEffect } from "react";
 import { LogoInline } from "./Logo.jsx";
 
@@ -1653,25 +1654,7 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
     if (!renderPrompt.trim()) return;
     setRenderLoading(true); setRenderMsg(""); setRenderImg(null);
     try {
-      
-      const tecnicoPrompt = tipoPrompts[tipoForm] || `Technical carpentry blueprint of: ${renderPrompt}. ${BASE}`;
-      const finalPrompt = renderPrompt.trim().length > 10 ? `${tecnicoPrompt} Additional notes: ${renderPrompt}` : tecnicoPrompt;
-     const f = getForm();
-      const largo = f.largo || f.ancho || "";
-      const alto = f.alto || f.altura || "";
-      const prof = f.profundidad || "";
-      const BASE = "White background. Clean black vector linework. Isometric projection. Visible dimension arrows. Module numbering. No people. No decoration. AutoCAD drafting style.";
-      const tipoPrompts = {
-        cocina: "Isometric technical blueprint of integral kitchen. Length: " + largo + ", Height: " + alto + ", Depth: " + prof + ". Show upper cabinets, lower cabinets, sink area, stove area, countertop. Dimension arrows, module numbering M-01 M-02, labels Mueble Superior Mueble Inferior Tarja Cubierta. " + BASE,
-        closet: "Isometric technical blueprint of built-in closet. Width: " + largo + ", Height: " + alto + ", Depth: " + prof + ". Show module divisions, drawers, door panels, hanging rod, shelves. Dimension callouts, labels Cajones Entrepaños Tubo Colgador, numbering C-01 C-02. " + BASE,
-        puerta: "Technical drawing of residential door. Width: " + (f.ancho||"") + ", Height: " + (f.alto||"") + ", Thickness: " + (f.grosor_puerta||"") + ". Front elevation, side profile, door swing arc, hinge positions, lock. Labels Marco Hoja Bisagra Cerradura. " + BASE,
-        mueble: "Isometric technical blueprint of TV wall unit. Width: " + largo + ", Height: " + alto + ", Depth: " + prof + ". Show TV panel, niches, lower drawers, lateral towers, LED groove. Labels Panel TV Nicho Cajones Torre lateral, numbering TV-01 TV-02. " + BASE,
-        panel: "Technical elevation of decorative wall panel. Width: " + largo + ", Height: " + alto + ". Show panel pattern, top and bottom rail, vertical battens. Labels Riel Superior Riel Inferior Tablero Modulo. " + BASE,
-        bano: "Isometric technical blueprint of bathroom vanity. Width: " + (f.ancho||"") + ", Height: " + (f.alto||"") + ", Depth: " + prof + ". Show countertop, sink cutout, mirror, drawers, doors. Labels Cubierta Lavabo Espejo Cajones, numbering B-01 B-02. " + BASE,
-      };
-      const tecnicoPrompt = tipoPrompts[tipoForm] || ("Technical carpentry blueprint of: " + renderPrompt + ". " + BASE);
-      const finalPrompt = renderPrompt.trim().length > 10 ? tecnicoPrompt + " Additional notes: " + renderPrompt : tecnicoPrompt;
-      const res = await fetch("/api/image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: finalPrompt }) });
+      const res = await fetch("/api/image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: `Technical carpentry blueprint drawing of: ${renderPrompt}. Clean architectural line drawing, white background, precise measurements, front and side view, professional technical drawing style, black lines on white.` }) });
       const data = await res.json();
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl = imgData?.url;
@@ -3108,4 +3091,3 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
     </div>
   );
 }
-
