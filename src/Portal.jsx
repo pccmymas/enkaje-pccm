@@ -1154,9 +1154,12 @@ export default function App() {
   const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "", slug: "" });
   const [tallerMsg, setTallerMsg]   = useState("");
   const [renderPrompt, setRenderPrompt] = useState("");
-  const [renderImg, setRenderImg]   = useState(null);
-  const [renderLoading, setRenderLoading] = useState(false);
-  const [renderMsg, setRenderMsg]   = useState("");
+  const [renderImg, setRenderImg]               = useState(null);
+  const [renderImgTecnico, setRenderImgTecnico] = useState(null);
+  const [renderLoading, setRenderLoading]       = useState(false);
+  const [renderLoadingTecnico, setRenderLoadingTecnico] = useState(false);
+  const [renderMsg, setRenderMsg]               = useState("");
+  const [renderMsgTecnico, setRenderMsgTecnico] = useState("");
   const [socialFoto, setSocialFoto] = useState(null);
   const [socialCaption, setSocialCaption] = useState("");
   const [socialLoading, setSocialLoading] = useState(false);
@@ -1634,8 +1637,8 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
   }
 
   async function generarRender() {
-    if (!renderPrompt.trim()) return;
     setRenderLoading(true); setRenderMsg(""); setRenderImg(null);
+    // NO borrar renderImgTecnico — se mantiene independiente
     try {
       const f = getForm();
       const arr = v => Array.isArray(v) && v.length ? v.join(", ") : "";
@@ -1705,8 +1708,145 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
   }
 
   async function generarRenderTecnico() {
-    if (!renderPrompt.trim() && !tipoForm) return;
-    setRenderLoading(true); setRenderMsg(""); setRenderImg(null);
+    setRenderLoadingTecnico(true); setRenderMsgTecnico(""); setRenderImgTecnico(null);
+    // NO borrar renderImg — se mantiene independiente
+    try {
+      const f = getForm();
+      const arr = v => Array.isArray(v) && v.length ? v.join(", ") : "";
+
+      // Medidas reales del formulario convertidas a cm
+      const largo    = f.largo    || f.ancho  || "?";
+      const alto     = f.altura   || f.alto   || "?";
+      const profundo = f.profundidad || "?";
+      const cantidad = f.cantidad || "1";
+      const largoCM  = parseFloat(largo)   > 0 ? Math.round(parseFloat(largo)   * 100) : "?";
+      const altoCM   = parseFloat(alto)    > 0 ? Math.round(parseFloat(alto)    * 100) : "?";
+      const profCM   = parseFloat(profundo) > 0 ? Math.round(parseFloat(profundo) * 100) : "?";
+
+      // Contexto específico por tipo — terminología Cabinet Vision / AutoCAD
+      const TIPO_DRAWING = {
+        cocina: {
+          name: "Kitchen Cabinet System — Cocina Integral",
+          views: "THREE VIEWS ON WHITE PAGE: (1) FRONT ELEVATION — full width showing all upper wall cabinets with doors, all lower base cabinets with doors and drawers, countertop edge. (2) SIDE SECTION — cut through center showing upper cabinet depth, countertop thickness 3cm, base cabinet depth, toe kick 10cm high. (3) PLAN VIEW — top-down showing cabinet run layout and island if applicable.",
+          dims: `Overall run: ${largoCM}cm W × ${altoCM}cm H floor-to-ceiling × ${profCM}cm D. Upper cabinets: 70cm H × 35cm D, mounted at 155cm from floor. Base cabinets: 85cm H × 60cm D including countertop. Toe kick: 10cm H × 6cm setback. Countertop: 3cm thick.`,
+          components: "Label each: upper cabinet door (with hinge marks), lower cabinet door, drawer fronts (3 drawers typical), countertop, backsplash zone, toe kick, shelf inside upper cabinet, handle/pull location",
+        },
+        closet: {
+          name: "Built-in Wardrobe System — Closet a Medida",
+          views: "THREE VIEWS: (1) FRONT ELEVATION — full width with all door panels. (2) INTERIOR ELEVATION — remove doors to show: double hanging rails, folded shelf section, drawer bank, shoe rack. (3) SIDE SECTION — depth, shelf positions, rail heights.",
+          dims: `Overall: ${largoCM}cm W × ${altoCM}cm H × ${profCM}cm D. Double hang section: 2× 95cm rail height. Long hang: 190cm. Shelf spacing: 38cm. Drawer section: 4 drawers × 18cm each. Shoe rack: 30cm H.`,
+          components: "Label: sliding/hinged door panel, hanging rail (upper + lower), shelf with lip, drawer front, shoe shelf, internal LED strip position, mirror panel",
+        },
+        puerta: {
+          name: "Custom Interior Door — Puerta a Medida",
+          views: "THREE VIEWS: (1) FRONT ELEVATION — full door height with design detail and frame. (2) HORIZONTAL SECTION — plan cut showing door thickness, frame reveal, wall thickness. (3) HINGE DETAIL — enlarged section at hinge location.",
+          dims: `Door leaf: ${f.ancho ? Math.round(parseFloat(f.ancho)*100) : "?"}cm W × ${f.alto ? Math.round(parseFloat(f.alto)*100) : "?"}cm H × ${f.grosor_puerta ? Math.round(parseFloat(f.grosor_puerta)*10) : "45"}mm thick. Frame: 12cm wide × 10cm deep. Reveal: 10mm. Hinges: 3× at 20cm from top, 25cm from bottom, center. Lock block: 100cm from floor.`,
+          components: "Label: door panel face, door frame/jamb, architrave both sides, hinge (×3), lock block, handle height mark, threshold",
+        },
+        mueble: {
+          name: "Custom TV Wall Unit — Mueble a Medida",
+          views: "THREE VIEWS: (1) FRONT ELEVATION — full width TV wall with all elements. (2) SIDE SECTION — depth, shelf positions, back panel. (3) PLAN VIEW — top-down layout.",
+          dims: `Overall: ${largoCM}cm W × ${altoCM}cm H × ${profCM}cm D. TV panel centered. Floating console: 40cm H from floor × full width × 45cm D. Upper closed cabinets: 60cm H. Open display niches: 50cm H each. Material: ${arr(f.grosor)||"18"}mm panels.`,
+          components: "Label: closed cabinet door, open niche, TV mounting panel, floating console, side panel, back panel, LED strip channel, shelf with pin holes, hinge marks on doors",
+        },
+        panel: {
+          name: "Decorative Wall Panel — Panel Decorativo / Lambrin",
+          views: "THREE VIEWS: (1) FRONT ELEVATION — full wall width showing slat/groove pattern. (2) HORIZONTAL SECTION — plan cut showing panel profile, slat width, shadow gap, wall attachment. (3) VERTICAL SECTION — panel height, base trim, top trim, LED channel.",
+          dims: `Panel run: ${largoCM}cm W × ${altoCM}cm H. Material: ${arr(f.material_panel)||arr(f.material)||"MDF"} ${arr(f.grosor)||"18"}mm. Slat width: 4-6cm. Shadow gap: 1.5cm. LED channel at top: 4cm deep. Base trim: 10cm H. Top trim: 6cm H. Wall furring: 4cm.`,
+          components: "Label: individual slat/panel element, shadow gap, wall mounting batten, LED strip in channel, base plinth trim, ceiling trim, panel-to-panel joint",
+        },
+        bano: {
+          name: "Bathroom Vanity Unit — Mueble de Baño / Vanity",
+          views: "THREE VIEWS: (1) FRONT ELEVATION — vanity with doors, drawers, countertop, sink cutout, mirror above. (2) SIDE SECTION — float detail, countertop, wall attachment, plumbing access. (3) PLAN VIEW — countertop with sink position.",
+          dims: `Vanity: ${f.ancho ? Math.round(parseFloat(f.ancho)*100) : "?"}cm W × ${f.alto ? Math.round(parseFloat(f.alto)*100) : "?"}cm H × ${profCM}cm D. Float: 20cm from floor. Countertop: 2cm thick. Sink cutout centered. Mirror: full width × 80cm H above counter. LED behind mirror. Material: ${arr(f.material)||"MDF RH"} ${arr(f.grosor)||"18"}mm.`,
+          components: "Label: cabinet door (with hinge), drawer front (with slide), countertop, sink cutout position, plumbing access panel, float bracket, mirror frame, LED strip behind mirror",
+        },
+      };
+
+      const ctx = TIPO_DRAWING[tipoForm] || TIPO_DRAWING.mueble;
+
+      // Si hay render visual generado, lo mandamos como imagen base para que el técnico analice el diseño
+      let imagenBase64 = null;
+      if (renderImg && renderImg.startsWith("data:image")) {
+        // ya es base64
+        imagenBase64 = renderImg.split(",")[1];
+      } else if (renderImg && !renderImg.startsWith("data:")) {
+        // es URL — intentar convertir
+        try {
+          const imgRes = await fetch(renderImg);
+          const blob = await imgRes.blob();
+          imagenBase64 = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(",")[1]);
+            reader.readAsDataURL(blob);
+          });
+        } catch { imagenBase64 = null; }
+      }
+
+      const prompt = [
+        // Tipo de dibujo
+        `MILLWORK SHOP DRAWING — professional technical drawing style identical to Cabinet Vision or AutoCAD output. Pure white background. Black ink lines only. No color. No shading. No photorealism.`,
+        `Drawing style: precise architectural CAD drafting. Thin lines (0.25mm) for details and internal lines. Medium lines (0.5mm) for visible edges. Thick lines (0.7mm) for cut section outlines. Hidden lines as dashed.`,
+
+        // Si hay render visual como referencia
+        imagenBase64
+          ? `REFERENCE IMAGE PROVIDED: Analyze the attached photorealistic render to understand the exact design, proportions, door configuration, style, and layout. Use this render as the design reference to create the technical shop drawing. Extract all design details from this image.`
+          : `Create the technical shop drawing based on the specifications below.`,
+
+        // Sujeto
+        `Subject: ${ctx.name}.`,
+
+        // Vistas requeridas
+        `REQUIRED VIEWS — arranged professionally on the white page: ${ctx.views}`,
+
+        // Dimensiones exactas del formulario
+        `EXACT DIMENSIONS FROM PROJECT — annotate ALL of these with proper dimension lines, extension lines, arrowheads, and measurements in centimeters (cm): ${ctx.dims}`,
+        arr(f.material) && `Material callout: ${arr(f.material)}, ${arr(f.grosor)||"18"}mm thickness.`,
+        arr(f.tipo_acabado) && `Finish callout: ${arr(f.tipo_acabado)}.`,
+        arr(f.estilo) && `Design style reference: ${arr(f.estilo)}.`,
+        arr(f.jaladeras) && `Hardware: ${arr(f.jaladeras)} — mark location on elevation with leader and callout.`,
+        arr(f.bisagras) && `Hinges: ${arr(f.bisagras)} — mark all hinge positions with × symbol.`,
+        arr(f.correderas) && `Drawer slides: ${arr(f.correderas)} — note on section.`,
+
+        // Componentes a etiquetar
+        `LABEL ALL COMPONENTS with leader lines and text callouts: ${ctx.components}.`,
+
+        // Anotaciones profesionales
+        `REQUIRED ANNOTATIONS:`,
+        `- Continuous dimension lines with double-headed arrows, extension lines, and measurements in cm for ALL overall and sub-dimensions`,
+        `- Leader lines with text callouts identifying each component`,
+        `- Material schedule box (bottom right corner): Item | Material | Thickness | Finish`,
+        `- Scale bar: SCALE 1:20`,
+        `- North arrow if plan view included`,
+        `- Title block (bottom): Project: ${ctx.name} | Scale: 1:20 | Date: ${new Date().toLocaleDateString("es-MX")} | EnKaje Pro`,
+        `- Section cut lines with section reference symbols (A-A, B-B)`,
+        `- Centerlines (CL) as dash-dot lines for symmetric elements`,
+        `- Hidden internal components as dashed lines`,
+        `- Elevation symbol tags linking elevation views`,
+
+        // Instrucción adicional del taller
+        renderPrompt && `Additional specifications from craftsman: ${renderPrompt}.`,
+
+        // Regla de calidad final
+        `QUALITY STANDARD: This drawing must be indistinguishable from a professional shop drawing produced by a licensed Cabinet Vision or AutoCAD operator for fabrication submission. Every dimension must be legible. Every component labeled. White background, black lines, all measurements visible. Flat 2D orthographic projection — no perspective, no artistic rendering, no shadows.`,
+        `IMPORTANT NOTE in drawing: "Referencia visual — verificar todas las medidas en campo antes de fabricación."`,
+      ].filter(Boolean).join(" ");
+
+      const res = await fetch("/api/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, image: imagenBase64 })
+      });
+      const data = await res.json();
+      const imgData = data.data?.data?.[0] || data.data?.[0];
+      const imgUrl = imgData?.url;
+      const imgB64 = imgData?.b64_json;
+      if (imgUrl) { setRenderImgTecnico(imgUrl); setRenderMsgTecnico("✅ Plano técnico generado"); }
+      else if (imgB64) { setRenderImgTecnico("data:image/png;base64," + imgB64); setRenderMsgTecnico("✅ Plano técnico generado"); }
+      else { setRenderMsgTecnico("❌ " + (data?.error?.message || "Error al generar")); }
+    } catch(e) { setRenderMsgTecnico("❌ " + e.message); }
+    setRenderLoadingTecnico(false);
+  }
     try {
       const f = getForm();
       const arr = v => Array.isArray(v) && v.length ? v.join(", ") : "";
@@ -1804,23 +1944,24 @@ Precios Monterrey 2025: MDF 18mm $850-950, bisagras cierre lento $45-65, correde
         renderPrompt && `Additional specifications: ${renderPrompt}.`,
 
         // Regla final
-        `FINAL RULE: This must look exactly like a professional millwork shop drawing produced in AutoCAD or similar CAD software. Pure white background, black lines only, all measurements visible and readable, drafted to scale 1:20. No artistic rendering, no perspective distortion, no shadows — flat 2D orthographic technical drawing only.`,
+        `QUALITY STANDARD: This drawing must be indistinguishable from a professional shop drawing produced by a licensed Cabinet Vision or AutoCAD operator for fabrication submission. Every dimension must be legible. Every component labeled. White background, black lines, all measurements visible. Flat 2D orthographic projection — no perspective, no artistic rendering, no shadows.`,
+        `IMPORTANT NOTE in drawing: "Referencia visual — verificar todas las medidas en campo antes de fabricación."`,
       ].filter(Boolean).join(" ");
 
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt, image: imagenBase64 })
       });
       const data = await res.json();
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl = imgData?.url;
       const imgB64 = imgData?.b64_json;
-      if (imgUrl) { setRenderImg(imgUrl); setRenderMsg("✅ Plano técnico generado"); }
-      else if (imgB64) { setRenderImg("data:image/png;base64," + imgB64); setRenderMsg("✅ Plano técnico generado"); }
-      else { setRenderMsg("❌ " + (data?.error?.message || "Error al generar")); }
-    } catch(e) { setRenderMsg("❌ " + e.message); }
-    setRenderLoading(false);
+      if (imgUrl) { setRenderImgTecnico(imgUrl); setRenderMsgTecnico("✅ Plano técnico generado"); }
+      else if (imgB64) { setRenderImgTecnico("data:image/png;base64," + imgB64); setRenderMsgTecnico("✅ Plano técnico generado"); }
+      else { setRenderMsgTecnico("❌ " + (data?.error?.message || "Error al generar")); }
+    } catch(e) { setRenderMsgTecnico("❌ " + e.message); }
+    setRenderLoadingTecnico(false);
   }
 
   async function generarContenidoSocial() {
@@ -2428,6 +2569,7 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Presupuesto</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setIaTab("renders"); setRenderImg(null); setRenderImgTecnico(null); setTabWithHistory("ia"); }} outline color="#00bcd4" style={{ fontSize: 12 }}>🎨 Renders</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); generarContrato(tallerSel); }} outline color="#4caf50" style={{ fontSize: 12 }}>📄 Contrato</BTN>
                         <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>🗑️</BTN>
                       </div>
@@ -2527,6 +2669,10 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
                           style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
                           📋 Abrir en formulario
                         </button>
+                        <button onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario({...lead, nombre: lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim()}); setIaTab("renders"); setRenderImg(null); setRenderImgTecnico(null); setTabWithHistory("ia"); }}
+                          style={{ background: "transparent", color: "#00bcd4", border: "1.5px solid #00bcd4", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                          🎨 Generar Renders
+                        </button>
                         <button onClick={async e => {
                           e.stopPropagation();
                           setConfirmModal({ msg: `¿Eliminar esta oportunidad?`, onOk: async () => {
@@ -2593,6 +2739,7 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
                       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:8 }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Cotizar</BTN>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setIaTab("renders"); setRenderImg(null); setRenderImgTecnico(null); setTabWithHistory("ia"); }} outline color="#00bcd4" style={{ fontSize: 12 }}>🎨 Renders</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); generarContrato(tallerSel); }} outline color="#4caf50" style={{ fontSize: 12 }}>📄 Contrato</BTN>
                       </div>
                     </div>
@@ -3126,52 +3273,103 @@ Da: 1) Descripción del proyecto en 2-3 oraciones 2) Combinación ideal material
             {iaTab === "renders" && (
               <div>
                 <div style={{ background: "#0f0f0a", border: "1px solid #d4af3720", borderRadius: 16, padding: 20, marginBottom: 16 }}>
-                  <h3 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 13, letterSpacing: 1 }}>🎨 GENERADOR DE RENDERS</h3>
-                  <p style={{ color: "#aaa", fontSize: 12, marginBottom: 16 }}>Describe el proyecto y la IA genera una imagen fotorrealista en segundos</p>
+                  <h3 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: 13, letterSpacing: 1 }}>🎨 RENDER VISUAL FOTORREALISTA</h3>
+                  <p style={{ color: "#aaa", fontSize: 12, marginBottom: 16 }}>Genera una imagen fotorrealista del proyecto con los datos del formulario activo</p>
                   <div style={{ marginBottom: 12 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <label style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1 }}>Descripción del diseño</label>
+                      <label style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1 }}>Descripción adicional (opcional)</label>
                       <button onClick={() => {
                         const f = getForm();
-                        const tipoLabel = tipoForm==="cocina"?"cocina integral":tipoForm==="closet"?"closet":tipoForm==="puerta"?"puerta":tipoForm==="bano"?"baño":"mueble";
-                        const estilo = Array.isArray(f.estilo)&&f.estilo.length ? f.estilo.join(" y ") : "";
-                        const material = Array.isArray(f.material)&&f.material.length ? f.material.join(", ") : "";
-                        const color = f.color_principal || "";
-                        setRenderPrompt([tipoLabel, estilo&&`estilo ${estilo}`, material&&`en ${material}`, color&&`color ${color}`, "en Monterrey, México"].filter(Boolean).join(", "));
+                        const arr = v => Array.isArray(v) && v.length ? v.join(", ") : "";
+                        const tipoLabel = tipoForm==="cocina"?"cocina integral":tipoForm==="closet"?"closet":tipoForm==="puerta"?"puerta":tipoForm==="bano"?"baño":tipoForm==="panel"?"panel":"mueble";
+                        setRenderPrompt([tipoLabel, arr(f.estilo)&&`estilo ${arr(f.estilo)}`, arr(f.material)&&`en ${arr(f.material)}`, f.color_principal&&`color ${f.color_principal}`, "en Monterrey, México"].filter(Boolean).join(", "));
                       }} style={{ background: "transparent", border: "1px solid #d4af3740", color: "#d4af37", borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}>
                         🔄 Usar datos del formulario
                       </button>
                     </div>
                     <textarea value={renderPrompt} onChange={e => setRenderPrompt(e.target.value)}
-                      placeholder="Ej: cocina moderna negra mate con isla y cubierta de cuarzo blanco, iluminación LED, Monterrey..."
-                      rows={3} style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 13, resize: "vertical", fontFamily: "inherit" }} />
+                      placeholder="Ej: cocina negra mate con isla, iluminación LED cálida, Monterrey... (opcional — los datos del formulario ya se aplican)"
+                      rows={2} style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 13, resize: "vertical", fontFamily: "inherit" }} />
                   </div>
                   <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                    <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13, padding: "11px 24px" }}>
-                      {renderLoading ? "⏳ Generando..." : "✨ Generar Render"}
-                    </BTN>
-                    <BTN onClick={generarRenderTecnico} disabled={renderLoading} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
-                      {renderLoading ? "⏳ Generando..." : "📐 Plano Técnico (Shop Drawing)"}
+                    <BTN onClick={generarRender} disabled={renderLoading} style={{ fontSize: 13, padding: "11px 24px" }}>
+                      {renderLoading ? "⏳ Generando render..." : "✨ Generar Render Visual"}
                     </BTN>
                     {renderMsg && <span style={{ fontSize: 12, color: renderMsg.startsWith("✅") ? "#4caf50" : "#f44336" }}>{renderMsg}</span>}
                   </div>
+
                   {renderLoading && (
                     <div style={{ background: "#0a0a08", borderRadius: 12, padding: 32, textAlign: "center", marginTop: 16 }}>
-                      <div style={{ color: "#d4af37", fontSize: 14, marginBottom: 8 }}>✨ Generando render con IA...</div>
-                      <div style={{ color: "#555", fontSize: 12 }}>Esto puede tomar 15-30 segundos</div>
+                      <div style={{ color: "#d4af37", fontSize: 14, marginBottom: 8 }}>✨ Generando render visual...</div>
+                      <div style={{ color: "#555", fontSize: 12 }}>15-30 segundos</div>
                     </div>
                   )}
+
                   {renderImg && !renderLoading && (
                     <div style={{ background: "#0a0a08", border: "1px solid #d4af3730", borderRadius: 16, overflow: "hidden", marginTop: 16 }}>
-                      <img src={renderImg} alt="Render generado" style={{ width: "100%", display: "block" }} />
-                      <div style={{ padding: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                        <a href={renderImg} download="render-enkaje-pro.png" target="_blank" rel="noreferrer"
+                      <div style={{ position: "relative" }}>
+                        <img src={renderImg} alt="Render visual" style={{ width: "100%", display: "block" }} />
+                        <div style={{ position: "absolute", top: 8, left: 8, background: "#0a0a08cc", borderRadius: 8, padding: "4px 10px", fontSize: 11, color: "#d4af37", fontWeight: 700 }}>🎨 Render Visual</div>
+                      </div>
+                      <div style={{ padding: "12px 16px", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                        <a href={renderImg} download="render-visual-enkaje.png" target="_blank" rel="noreferrer"
                           style={{ background: "#d4af37", color: "#000", borderRadius: 10, padding: "9px 20px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
-                          ⬇️ Descargar
+                          ⬇️ Descargar render
                         </a>
-                        <BTN onClick={() => compartir("whatsapp", `Mira el render de tu proyecto generado con IA: ${renderImg}`, "Render EnKaje Pro")} color="#25D366" textColor="#fff" style={{ fontSize: 13 }}>
+                        <BTN onClick={() => compartir("whatsapp", `Render del proyecto generado con IA: ${renderImg}`, "Render EnKaje Pro")} color="#25D366" textColor="#fff" style={{ fontSize: 12 }}>
                           💬 Compartir WA
                         </BTN>
+                        <div style={{ fontSize: 11, color: "#555", flex: 1 }}>
+                          💡 Genera el plano técnico abajo para enviarlo al carpintero
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* PLANO TÉCNICO SEPARADO */}
+                <div style={{ background: "#0f0f0a", border: "1px solid #00bcd430", borderRadius: 16, padding: 20 }}>
+                  <h3 style={{ color: "#00bcd4", margin: "0 0 8px", fontSize: 13, letterSpacing: 1 }}>📐 PLANO TÉCNICO (SHOP DRAWING)</h3>
+                  <p style={{ color: "#aaa", fontSize: 12, marginBottom: 12 }}>
+                    Genera un plano técnico estilo AutoCAD / Cabinet Vision con vistas, cotas y especificaciones para el carpintero.
+                    {renderImg && <span style={{ color: "#4caf50" }}> ✓ Usará el render visual como referencia de diseño.</span>}
+                  </p>
+                  {!renderImg && (
+                    <div style={{ background: "#1a1208", border: "1px solid #d4af3720", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "#888" }}>
+                      💡 Genera primero el render visual para que el plano técnico tome el diseño como referencia. También puedes generarlo directamente con los datos del formulario.
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 8 }}>
+                    <BTN onClick={generarRenderTecnico} disabled={renderLoadingTecnico} outline color="#00bcd4" style={{ fontSize: 13, padding: "11px 24px" }}>
+                      {renderLoadingTecnico ? "⏳ Generando plano..." : "📐 Generar Plano Técnico"}
+                    </BTN>
+                    {renderMsgTecnico && <span style={{ fontSize: 12, color: renderMsgTecnico.startsWith("✅") ? "#4caf50" : "#f44336" }}>{renderMsgTecnico}</span>}
+                  </div>
+
+                  {renderLoadingTecnico && (
+                    <div style={{ background: "#0a0a08", borderRadius: 12, padding: 32, textAlign: "center", marginTop: 8 }}>
+                      <div style={{ color: "#00bcd4", fontSize: 14, marginBottom: 8 }}>📐 Generando plano técnico...</div>
+                      <div style={{ color: "#555", fontSize: 12 }}>Analizando diseño y aplicando medidas — 20-40 segundos</div>
+                    </div>
+                  )}
+
+                  {renderImgTecnico && !renderLoadingTecnico && (
+                    <div style={{ background: "#0a0a08", border: "1px solid #00bcd430", borderRadius: 16, overflow: "hidden", marginTop: 8 }}>
+                      <div style={{ position: "relative" }}>
+                        <img src={renderImgTecnico} alt="Plano técnico" style={{ width: "100%", display: "block" }} />
+                        <div style={{ position: "absolute", top: 8, left: 8, background: "#0a0a08cc", borderRadius: 8, padding: "4px 10px", fontSize: 11, color: "#00bcd4", fontWeight: 700 }}>📐 Plano Técnico</div>
+                      </div>
+                      <div style={{ padding: "12px 16px", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                        <a href={renderImgTecnico} download="plano-tecnico-enkaje.png" target="_blank" rel="noreferrer"
+                          style={{ background: "#00bcd4", color: "#000", borderRadius: 10, padding: "9px 20px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          ⬇️ Descargar plano
+                        </a>
+                        <BTN onClick={() => compartir("whatsapp", `Plano técnico del proyecto: ${renderImgTecnico}`, "Plano Técnico EnKaje Pro")} color="#25D366" textColor="#fff" style={{ fontSize: 12 }}>
+                          💬 Enviar al carpintero
+                        </BTN>
+                      </div>
+                      <div style={{ padding: "0 16px 14px", fontSize: 11, color: "#555" }}>
+                        ⚠️ Referencia visual — verificar todas las medidas en campo antes de fabricación.
                       </div>
                     </div>
                   )}
