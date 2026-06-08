@@ -488,7 +488,7 @@ export default function Portal() {
   };
 
   const buildVidaPromptHints = () =>
-    PREGUNTAS_VIDA.map(p => {
+   preguntasVida.map(p => {
       const respKey = vidaResp[p.key];
       if (!respKey) return "";
       const opcion = p.opciones.find(o => o.value === respKey);
