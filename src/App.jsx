@@ -3130,6 +3130,12 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
         </div>
       )}
+      {imagenAmpliada && (
+  <div onClick={() => setImagenAmpliada(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out", padding: 20 }}>
+    <img src={imagenAmpliada} alt="Render ampliado" style={{ maxWidth: "100%", maxHeight: "90vh", borderRadius: 12 }} />
+    <button onClick={() => setImagenAmpliada(null)} style={{ position: "absolute", top: 20, right: 20, background: "#d4af37", color: "#000", border: "none", borderRadius: "50%", width: 40, height: 40, fontSize: 18, fontWeight: 900, cursor: "pointer" }}>✕</button>
+  </div>
+)}
     </div>
   );
 }
