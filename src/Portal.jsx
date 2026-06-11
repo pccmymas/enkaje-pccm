@@ -519,8 +519,9 @@ const guardarEnPerfil = async () => {
     const materialData = MATERIALES.find(m => m.key === material);
     const acabadoData  = ACABADOS.find(a => a.key === acabado);
     try {
-      const payload = {
+     const payload = {
         tipo_proyecto:  tipoProyecto,
+        render_url:     renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
         estilo:         estilo,
         material:       materialData?.label || material || null,
         color_principal: colorElegido || null,
