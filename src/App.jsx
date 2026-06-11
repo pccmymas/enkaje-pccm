@@ -2755,6 +2755,9 @@ Formato: Caption completo listo para copiar y pegar.`;
                   </div>
                   {sel && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
+                      {p.render_url && (
+      <img src={p.render_url} alt="Render" style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 10, marginBottom: 12 }} />
+    )}
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
                         {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",p.material],["Tiempo",p.tiempo_entrega]].filter(([,v])=>v).map(([l,v],j) => (
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
