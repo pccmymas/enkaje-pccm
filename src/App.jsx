@@ -1753,8 +1753,9 @@ async function cargarLeads() {
     }
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
     if (screen === "app" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
+    if (screen === "app" && tab === "mis_proyectos") cargarProyectos();
     if (screen === "app" && (tab === "membresias" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
