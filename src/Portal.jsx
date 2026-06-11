@@ -551,23 +551,6 @@ const guardarEnPerfil = async () => {
     } catch(e) { console.error("Error guardando en perfil:", e); }
     setGuardandoPerfil(false);
   };
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
-        method: "POST",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify(Object.fromEntries(Object.entries(payload).filter(([,v]) => v !== null)))
-      });
-    console.log("STATUS:", res.status);
-    const txt = await res.text();
-    console.log("BODY:", txt);
-    if (res.ok) setGuardadoEnPerfil(true);
-    else console.error("Error guardando:", txt);
-  };
-
     const generarRender = async (promptAdicional = "") => {
     if (!estilo || !tipoProyecto) return;
     const usados = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
