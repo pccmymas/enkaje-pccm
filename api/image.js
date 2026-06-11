@@ -1,3 +1,6 @@
+export const config = {
+  maxDuration: 60,
+};
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -8,7 +11,7 @@ export default async function handler(req, res) {
   try {
     let body = req.body;
     if (typeof body === "string") body = JSON.parse(body);
-    const prompt = (body?.prompt || "modern kitchen interior").slice(0, 4000);
+    const prompt = (body?.prompt || "modern kitchen interior").slice(0, 1500);
     const imageBase64 = body?.image;
 
     if (imageBase64) {
