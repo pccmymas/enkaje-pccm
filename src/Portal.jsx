@@ -543,12 +543,10 @@ const guardarEnPerfil = async () => {
         },
         body: JSON.stringify(clean)
       });
-      console.log("STATUS:", res.status);
       const txt = await res.text();
-      console.log("BODY:", txt);
       if (res.ok) setGuardadoEnPerfil(true);
-      else console.error("Error guardando:", txt);
-    } catch(e) { console.error("Error guardando en perfil:", e); }
+      else alert("Error al guardar: " + res.status + " — " + txt);
+    } catch(e) { alert("Error al guardar: " + e.message); }
     setGuardandoPerfil(false);
   };
     const generarRender = async (promptAdicional = "") => {
