@@ -519,7 +519,6 @@ export default function Portal() {
     try {
       const payload = {
         tipo_proyecto:        tipoProyecto,
-        render_url:           renderUrl.startsWith("data:") ? null : renderUrl,
         estilo:               estilo,
         material:             materialData?.label || material || null,
         color_principal:      colorElegido || null,
