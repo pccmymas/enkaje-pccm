@@ -1164,7 +1164,7 @@ export default function Portal() {
   </a>
 )}
 
-            {renderLoading && (
+            {renderLoading && ( </div>
               <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:"60px 24px", textAlign:"center" }}>
                 <div style={{ width:40, height:40, border:"3px solid #d4af3730", borderTop:"3px solid #d4af37", borderRadius:"50%", animation:"spin 1s linear infinite", margin:"0 auto 20px" }} />
                 <p style={{ color:"#d4af37", fontWeight:700, fontSize:14, marginBottom:8 }}>Generando tu render personalizado...</p>
@@ -1173,7 +1173,7 @@ export default function Portal() {
               </div>
             )}
 
-            {!renderLoading && renderUrl && (</div>
+            {!renderLoading && renderUrl && ( </div>
               <>
                 <div style={{ position:"relative", borderRadius:16, overflow:"hidden", border:"1px solid #d4af3730", marginBottom:16 }}>
                   <img src={renderUrl} alt="Render" style={{ width:"100%", display:"block" }} />
