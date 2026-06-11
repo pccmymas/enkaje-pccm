@@ -378,7 +378,7 @@ Responde SOLO la descripción, sin títulos ni listas. Máximo 4 oraciones.`;
       body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 300, messages: [{ role: "user", content: prompt }] })
     });
     const data = await res.json();
-    return data.content?.[0]?.text?.trim() || null;
+    return data?.data?.content?.[0]?.text?.trim() || null;
   } catch { return null; }
 }
 
