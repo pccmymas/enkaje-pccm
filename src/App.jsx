@@ -1356,6 +1356,7 @@ export default function App() {
   const [proyectos, setProyectos] = useState([]);
   const [leadSel, setLeadSel] = useState(null);
   const [proyectoSel, setProyectoSel] = useState(null);
+  const [imagenAmpliada, setImagenAmpliada] = useState(null);
   const [talleresMem, setTalleresMem] = useState([]);
   const [tallerSel, setTallerSel] = useState(null);
   const [showNuevoTaller, setShowNuevoTaller] = useState(false);
