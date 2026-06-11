@@ -1173,7 +1173,7 @@ export default function Portal() {
               </div>
             )}
 
-            {!renderLoading && renderUrl && (
+            {!renderLoading && renderUrl && (</div>
               <>
                 <div style={{ position:"relative", borderRadius:16, overflow:"hidden", border:"1px solid #d4af3730", marginBottom:16 }}>
                   <img src={renderUrl} alt="Render" style={{ width:"100%", display:"block" }} />
