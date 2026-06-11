@@ -1160,7 +1160,7 @@ export default function Portal() {
                 {sinCuenta && (
                   <a href="/app" onClick={() => { 
   localStorage.removeItem("enkaje_renders"); 
-  localStorage.setItem("enkaje_renders_cuenta", "0"); 
+  localStorage.setItem("enkaje_renders_cuenta", "0"); window.location.href = "/app";
 }}
                     Crear cuenta gratis → 3 renders
                   </a>
