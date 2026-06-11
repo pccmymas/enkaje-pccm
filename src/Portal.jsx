@@ -756,6 +756,8 @@ export default function Portal() {
         body: JSON.stringify({ prompt, image: fotoBase64 })
       });
       const data = await res.json();
+      console.log("IMAGE RESPONSE:", JSON.stringify(data));
+      const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl  = imgData?.url;
       const imgB64  = imgData?.b64_json;
