@@ -475,8 +475,9 @@ export default function Portal() {
 
   useEffect(() => {
     document.title = "Portal Cliente · EnKaje Pro";
-    if (tieneCuenta && !localStorage.getItem("enkaje_renders_cuenta")) {
-      localStorage.setItem("enkaje_renders_cuenta", "0");
+   if (tieneCuenta) {
+  const stored = parseInt(localStorage.getItem("enkaje_renders_cuenta") || "0", 10);
+  if (stored >= 3) localStorage.setItem("enkaje_renders_cuenta", "0");
     }
   }, []);
 
