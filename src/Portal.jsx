@@ -516,31 +516,34 @@ export default function Portal() {
     const user  = JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
     const materialData = MATERIALES.find(m => m.key === material);
     const acabadoData  = ACABADOS.find(a => a.key === acabado);
-    const vidaResumen  = preguntasVida.map(p => {
-      const r = vidaResp[p.key];
-      const op = p.opciones.find(o => o.value === r);
-      return op ? op.label : null;
-    }).filter(Boolean).join(", ");
     try {
       const payload = {
         tipo_proyecto:        tipoProyecto,
         render_url:           renderUrl.startsWith("data:") ? null : renderUrl,
-        estilo_elegido:       estilo,
-        materiales_sugeridos: [MATERIALES_SUGERIDOS[estilo], colorElegido && `Color: ${colorElegido}`, acabadoData && `Acabado: ${acabadoData.label}`, materialData && `Material: ${materialData.label}`].filter(Boolean).join(" | "),
-        rango_inversion_min:  rango.min,
-        rango_inversion_max:  rango.max,
-        tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
-        nivel_decision:       "explorando",
-        observaciones:        `Guardado desde portal | Vida: ${vidaResumen} | Desc: ${descripcion} | DescIA: ${descripcionIA || ""}`,
-        score: 30, score_label: "evaluando", estado_lead: "guardado",
-        user_id: user?.id || null, created_at: new Date().toISOString(),
+        estilo:               estilo,
+        material:             materialData?.label || material || null,
+        color_principal:      colorElegido || null,
+        tipo_acabado:         acabadoData?.label || acabado || null,
+        observaciones:        descripcion || null,
+        nombre:               null,
+        telefono:             null,
+        correo:               user?.email || null,
+        user_email:           user?.email || null,
+        estado:               "guardado",
+        created_at:           new Date().toISOString(),
       };
-      await fetch(`${SUPABASE_URL}/rest/v1/expedientes?apikey=${SUPABASE_KEY}`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
         method: "POST",
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
-        body: JSON.stringify(payload)
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(Object.fromEntries(Object.entries(payload).filter(([,v]) => v !== null)))
       });
-      setGuardadoEnPerfil(true);
+      if (res.ok) setGuardadoEnPerfil(true);
+      else console.error("Error guardando:", await res.text());
     } catch(e) { console.error("Error guardando en perfil:", e); }
     setGuardandoPerfil(false);
   };
