@@ -353,7 +353,7 @@ function scoreLabel(score) {
   return "en_exploracion";
 }
 
-async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion }) {
+async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion, preguntasVida }) {
   const estiloData   = ESTILOS.find(e => e.key === estilo);
   const colorData    = COLORES.find(c => c.key === color);
   const acabadoData  = ACABADOS.find(a => a.key === acabado);
