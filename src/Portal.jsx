@@ -543,10 +543,11 @@ export default function Portal() {
         },
         body: JSON.stringify(Object.fromEntries(Object.entries(payload).filter(([,v]) => v !== null)))
       });
-      if (res.ok) setGuardadoEnPerfil(true);
-      else console.error("Error guardando:", await res.text());
-    } catch(e) { console.error("Error guardando en perfil:", e); }
-    setGuardandoPerfil(false);
+    console.log("STATUS:", res.status);
+    const txt = await res.text();
+    console.log("BODY:", txt);
+    if (res.ok) setGuardadoEnPerfil(true);
+    else console.error("Error guardando:", txt);
   };
 
     const generarRender = async (promptAdicional = "") => {
