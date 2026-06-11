@@ -1154,9 +1154,7 @@ export default function Portal() {
                 <h3 style={{ fontFamily:"'Playfair Display',serif", color:"#f0e8dc", fontSize:20, marginBottom:8 }}>
                   {sinCuenta ? "Ya usaste tu render gratuito" : "Usaste tus 3 renders del mes"}
                 </h3>
-              <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
-  {sinCuenta ? "Crea una cuenta gratis y obtén 3 renders sin marca de agua." : "Tu cuenta incluye 3 renders. Se renuevan el próximo mes."}
-</p>
+
 {sinCuenta && (
   <a href="/app" onClick={() => { 
     localStorage.removeItem("enkaje_renders"); 
