@@ -511,7 +511,7 @@ export default function Portal() {
     } catch { window.open(renderUrl, "_blank"); }
   };
 
-  const guardarEnPerfil = async () => {
+const guardarEnPerfil = async () => {
     if (!tieneCuenta || !renderUrl || guardadoEnPerfil) return;
     setGuardandoPerfil(true);
     const token = sessionStorage.getItem("enkaje_token");
@@ -520,19 +520,37 @@ export default function Portal() {
     const acabadoData  = ACABADOS.find(a => a.key === acabado);
     try {
       const payload = {
-        tipo_proyecto:        tipoProyecto,
-        estilo:               estilo,
-        material:             materialData?.label || material || null,
-        color_principal:      colorElegido || null,
-        tipo_acabado:         acabadoData?.label || acabado || null,
-        observaciones:        descripcion || null,
-        nombre:               null,
-        telefono:             null,
-        correo:               user?.email || null,
-        user_email:           user?.email || null,
-        estado:               "guardado",
-        created_at:           new Date().toISOString(),
+        tipo_proyecto:  tipoProyecto,
+        estilo:         estilo,
+        material:       materialData?.label || material || null,
+        color_principal: colorElegido || null,
+        tipo_acabado:   acabadoData?.label || acabado || null,
+        observaciones:  descripcion || null,
+        correo:         user?.email || null,
+        user_email:     user?.email || null,
+        estado:         "guardado",
+        created_at:     new Date().toISOString(),
       };
+      const clean = Object.fromEntries(Object.entries(payload).filter(([,v]) => v !== null));
+      console.log("PAYLOAD:", JSON.stringify(clean));
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(clean)
+      });
+      console.log("STATUS:", res.status);
+      const txt = await res.text();
+      console.log("BODY:", txt);
+      if (res.ok) setGuardadoEnPerfil(true);
+      else console.error("Error guardando:", txt);
+    } catch(e) { console.error("Error guardando en perfil:", e); }
+    setGuardandoPerfil(false);
+  };
       const res = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
         method: "POST",
         headers: {
