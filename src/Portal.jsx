@@ -1158,7 +1158,10 @@ export default function Portal() {
                   {sinCuenta ? "Crea una cuenta gratis y obtén 3 renders sin marca de agua." : "Tu cuenta incluye 3 renders. Se renuevan el próximo mes."}
                 </p>
                 {sinCuenta && (
-                  <a href="/app" onClick={() => { localStorage.removeItem("enkaje_renders"); localStorage.removeItem("enkaje_renders_cuenta"); }} style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>
+                  <a href="/app" onClick={() => { 
+  localStorage.removeItem("enkaje_renders"); 
+  localStorage.setItem("enkaje_renders_cuenta", "0"); 
+}}
                     Crear cuenta gratis → 3 renders
                   </a>
                 )}
