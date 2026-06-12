@@ -2900,7 +2900,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <div style={{ fontSize: 12, color: "#333", marginTop: 8 }}>Cuando un cliente llene el portal aparecerá aquí</div>
               </div>
             )}
-            {leads.map((lead, i) => {
+         {leads.filter(l => filtroLeadEstado === "todos" || (l.estado_lead || "nuevo") === filtroLeadEstado).map((lead, i) => {
               const sel = leadSel?.id === lead.id;
               const editando = false;
               const scoreColor = lead.score >= 80 ? "#d4af37" : lead.score >= 55 ? "#4caf50" : lead.score >= 30 ? "#f0a500" : "#666";
