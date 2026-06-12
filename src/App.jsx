@@ -2982,6 +2982,9 @@ Formato: Caption completo listo para copiar y pegar.`;
                   )}
                 </div>
               );
+              })}
+          </div>
+        )}
         {/* PROYECTOS TALLER */}
         {tab === "leads" && role === "taller" && (
           <div>
