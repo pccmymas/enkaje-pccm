@@ -1463,9 +1463,10 @@ async function login() {
       sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
       const r = data.user?.user_metadata?.role || "cliente";
       sessionStorage.setItem("enkaje_role", r);
-      setRole(r); setScreen("app"); setTab("bienvenida");
-      sessionStorage.setItem("enkaje_tab", "bienvenida");
-      history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
+      const tabInicial = r === "cliente" ? "mis_proyectos" : "bienvenida";
+      setRole(r); setScreen("app"); setTab(tabInicial);
+      sessionStorage.setItem("enkaje_tab", tabInicial);
+      history.replaceState({ tab: tabInicial }, "", window.location.pathname);
       if (r === "cliente") {
         try {
           const proyData = await sb(`proyectos?user_email=eq.${data.user.email}&order=created_at.desc&limit=4`);
