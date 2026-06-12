@@ -2893,6 +2893,20 @@ Formato: Caption completo listo para copiar y pegar.`;
           <div>
             <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:26 }}>Leads del Portal</h1>
             <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Clientes que llenaron el portal público con render de IA</p>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+  <button onClick={() => setFiltroLeadEstado("todos")} style={{ background: filtroLeadEstado === "todos" ? "#d4af3725" : "transparent", border: `1.5px solid ${filtroLeadEstado === "todos" ? "#d4af37" : "#2a2a20"}`, color: filtroLeadEstado === "todos" ? "#d4af37" : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+    Todos ({leads.length})
+  </button>
+  {ESTADOS_LEAD.map(est => {
+    const count = leads.filter(l => (l.estado_lead || "nuevo") === est.key).length;
+    if (count === 0) return null;
+    return (
+      <button key={est.key} onClick={() => setFiltroLeadEstado(est.key)} style={{ background: filtroLeadEstado === est.key ? `${est.color}25` : "transparent", border: `1.5px solid ${filtroLeadEstado === est.key ? est.color : "#2a2a20"}`, color: filtroLeadEstado === est.key ? est.color : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+        {est.emoji} {est.label} ({count})
+      </button>
+    );
+  })}
+</div>
             {leads.length === 0 && (
               <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 32, textAlign: "center", color: "#555" }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>📭</div>
