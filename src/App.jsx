@@ -2977,11 +2977,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                           style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
                           📋 Formulario
                         </button>
-                      
-                       <button onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario({...lead, nombre: lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim()}); setTabWithHistory("formulario"); }}
-                          style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                          📋 Formulario
-                        </button>
                       </div>
                     </div>
                   )}
