@@ -2769,7 +2769,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
-                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} style={{ fontSize: 12 }} outline color="#d4af37">💰 Ver presupuesto</BTN>
                         <BTN
                           onClick={async e => {
                             e.stopPropagation();
