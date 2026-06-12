@@ -1352,6 +1352,7 @@ export default function App() {
   const [formPuerta, setFormPuerta] = useState(FORM_PUERTA_INIT);
   const [formMueble, setFormMueble] = useState(FORM_MUEBLE_INIT);
   const [formBano, setFormBano] = useState(FORM_BANO_INIT);
+  const [formPanel, setFormPanel] = useState(FORM_PANEL_INIT);
   const [leads, setLeads] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [leadSel, setLeadSel] = useState(null);
