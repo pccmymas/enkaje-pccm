@@ -2085,7 +2085,7 @@ table{width:100%;border-collapse:collapse;border:1px solid #e8e0d0;border-radius
     <div class="folio">Fecha: ${fecha}</div>
     ${planBasico ? "" : `<div class="folio" style="margin-top:4px"><span class="badge-enkaje">via EnKaje Pro</span></div>`}
 </div>
-
+</div>
 <div class="banner">
   <div class="bt">${icon} Objeto del contrato</div>
   <div class="bn">Fabricación e Instalación de ${tipo.toUpperCase()}</div>
