@@ -2970,6 +2970,23 @@ Formato: Caption completo listo para copiar y pegar.`;
                           {lead.observaciones.split("|").map((l,i) => <div key={i}>{l.trim()}</div>)}
                         </div>
                       )}
+                      <div style={{ marginBottom: 14 }}>
+  <div style={{ fontSize: 10, color: "#555", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Estado del lead</div>
+  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+    {ESTADOS_LEAD.map(est => {
+      const activo = (lead.estado_lead || "nuevo") === est.key;
+      return (
+        <button key={est.key} onClick={async e => {
+          e.stopPropagation();
+          await sb(`expedientes?id=eq.${lead.id}`, { method: "PATCH", token, body: JSON.stringify({ estado_lead: est.key }) });
+          cargarLeads();
+        }} style={{ background: activo ? `${est.color}25` : "transparent", border: `1.5px solid ${activo ? est.color : "#2a2a20"}`, color: activo ? est.color : "#666", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+          {est.emoji} {est.label}
+        </button>
+      );
+    })}
+  </div>
+</div>
          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                         {lead.observaciones?.includes("Tel:") && (
                           <button onClick={e => {
