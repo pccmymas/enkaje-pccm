@@ -1310,6 +1310,14 @@ const ESTADOS_PROYECTO = [
   { key: "instalando", label: "Instalando",          color: "#ff5722", emoji: "🔧" },
   { key: "entregado",  label: "Entregado",           color: "#4caf50", emoji: "✅" },
 ];
+const ESTADOS_LEAD = [
+  { key: "nuevo",       label: "Nuevo",       emoji: "🆕", color: "#00bcd4" },
+  { key: "contactado",  label: "Contactado",  emoji: "📞", color: "#d4af37" },
+  { key: "cotizado",    label: "Cotizado",    emoji: "💰", color: "#9c27b0" },
+  { key: "cerrado",     label: "Cerrado",     emoji: "✅", color: "#4caf50" },
+  { key: "descartado",  label: "Descartado",  emoji: "🚫", color: "#666" },
+  { key: "recontactar", label: "Recontactar", emoji: "🔄", color: "#f0a500" },
+];
 
 // ============ MAIN APP ============
 export default function App() {
