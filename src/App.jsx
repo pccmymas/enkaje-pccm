@@ -2978,22 +2978,15 @@ Formato: Caption completo listo para copiar y pegar.`;
                           📋 Formulario
                         </button>
                       
-                        <button onClick={async e => {
-                          e.stopPropagation();
-                          setConfirmModal({ msg: `¿Eliminar el lead de ${lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim() || "este cliente"}?`, onOk: async () => {
-                            await sb(`expedientes?id=eq.${lead.id}`, { method: "DELETE", token });
-                            cargarLeads();
-                            setLeadSel(null);
-                          }});
-                       
-                        </div>
+                       <button onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario({...lead, nombre: lead.observaciones?.split("Nombre:")[1]?.split("|")[0]?.trim()}); setTabWithHistory("formulario"); }}
+                          style={{ background: "transparent", color: "#d4af37", border: "1.5px solid #d4af37", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                          📋 Formulario
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
               );
-            })}
-          </div>
-        )}
         {/* PROYECTOS TALLER */}
         {tab === "leads" && role === "taller" && (
           <div>
