@@ -2874,16 +2874,18 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
-                      <div style={{ marginBottom: 10 }}>
-                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Estado</div>
+     <div style={{ marginBottom: 10 }}>
+                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto <span style={{ color:"#444", textTransform:"none", letterSpacing:0 }}>(controlada por el taller)</span></div>
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          {ESTADOS_PROYECTO.map(est => (
-                            <button key={est.key}
-                              onClick={async e => { e.stopPropagation(); await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"PATCH", token, body:JSON.stringify({estado:est.key})}); cargarProyectos(); }}
-                              style={{ padding:"5px 10px", borderRadius:20, border:`1px solid ${(p.estado||"nuevo")===est.key?est.color:"#333"}`, background:(p.estado||"nuevo")===est.key?`${est.color}25`:"transparent", color:(p.estado||"nuevo")===est.key?est.color:"#666", fontSize:11, cursor:"pointer", fontWeight:(p.estado||"nuevo")===est.key?700:400, whiteSpace:"nowrap" }}>
-                              {est.emoji} {est.label}
-                            </button>
-                          ))}
+                          {ETAPAS_SEGUIMIENTO.map(et => {
+                            const activa = (p.etapa_seguimiento||"anticipo")===et.key;
+                            return (
+                              <span key={et.key}
+                                style={{ padding:"5px 10px", borderRadius:20, border:`1px solid ${activa?et.color:"#333"}`, background:activa?`${et.color}25`:"transparent", color:activa?et.color:"#555", fontSize:11, fontWeight:activa?700:400, whiteSpace:"nowrap" }}>
+                                {et.emoji} {et.label}
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
