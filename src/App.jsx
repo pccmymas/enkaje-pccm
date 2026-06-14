@@ -3096,8 +3096,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                       <div style={{ marginBottom: 12 }}>
                         <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto</div>
-                      <div style={{ marginBottom: 12 }}>
-                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto</div>
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           {ETAPAS_SEGUIMIENTO.map(et => (
                             <button key={et.key}
