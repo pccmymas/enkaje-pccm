@@ -2760,6 +2760,28 @@ Formato: Caption completo listo para copiar y pegar.`;
     onClick={e => { e.stopPropagation(); setImagenAmpliada(p.render_url); }}
     style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 10, marginBottom: 12, cursor: "zoom-in" }} />
 )}
+                      <div style={{ marginBottom: 16 }}>
+  <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Seguimiento de tu proyecto</div>
+  <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+    {ETAPAS_SEGUIMIENTO.map((etapa, idx) => {
+      const etapaActual = ETAPAS_SEGUIMIENTO.findIndex(e => e.key === (p.etapa_seguimiento || "anticipo"));
+      const completada = idx <= etapaActual;
+      const esActual = idx === etapaActual;
+      return (
+        <div key={etapa.key} style={{ display: "flex", alignItems: "center", gap: 12, opacity: completada ? 1 : 0.35 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: completada ? `${etapa.color}25` : "#1a1a12", border: `2px solid ${completada ? etapa.color : "#2a2a20"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>{completada ? etapa.emoji : "○"}</div>
+            {idx < ETAPAS_SEGUIMIENTO.length - 1 && <div style={{ width: 2, height: 20, background: idx < etapaActual ? etapa.color : "#2a2a20" }} />}
+          </div>
+          <div style={{ paddingBottom: idx < ETAPAS_SEGUIMIENTO.length - 1 ? 20 : 0 }}>
+            <div style={{ fontSize: 13, fontWeight: esActual ? 700 : 500, color: esActual ? etapa.color : completada ? "#e8e0d0" : "#555" }}>{etapa.label}</div>
+            {esActual && <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{etapa.msg}</div>}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
                         {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",p.material],["Tiempo",p.tiempo_entrega]].filter(([,v])=>v).map(([l,v],j) => (
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
