@@ -2991,14 +2991,13 @@ Formato: Caption completo listo para copiar y pegar.`;
     {ESTADOS_LEAD.map(est => {
       const activo = (lead.estado_lead || "nuevo") === est.key;
       return (
-       <button key={est.key} onClick={async e => {
+   <button key={est.key} onClick={async e => {
           e.stopPropagation();
-          const r = await fetch(`${SUPABASE_URL}/rest/v1/expedientes?id=eq.${lead.id}&apikey=${SUPABASE_KEY}`, {
+          await fetch(`${SUPABASE_URL}/rest/v1/expedientes?id=eq.${lead.id}&apikey=${SUPABASE_KEY}`, {
             method: "PATCH",
-            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=representation" },
+            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
             body: JSON.stringify({ estado_lead: est.key })
           });
-          alert("STATUS: " + r.status + " — " + await r.text());
           cargarLeads();
         }}style={{ background: activo ? `${est.color}25` : "transparent", border: `1.5px solid ${activo ? est.color : "#2a2a20"}`, color: activo ? est.color : "#666", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
           {est.emoji} {est.label}
