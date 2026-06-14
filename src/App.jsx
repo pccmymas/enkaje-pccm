@@ -2399,28 +2399,7 @@ IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantid
     }
     setRenderLoading(false);
   }
-async function generarRenderTecnico() {
-  if (!renderPrompt.trim()) return;
-  setRenderLoading(true);
-  setRenderMsg("");
-  setRenderImg(null);
-  const promptTecnico = `Technical carpentry blueprint drawing of: ${renderPrompt}. Style: clean architectural line drawing, white background, precise measurements annotated, front view and side view, exploded view showing all components, labels for each part (doors, drawers, shelves, hardware), dimensions in meters, professional technical drawing style, no colors, black lines on white, 2D orthographic projection.`;
-  try {
-    const res = await fetch("/api/image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: promptTecnico })
-    });
-    const data = await res.json();
-    const imgData = data.data?.data?.[0] || data.data?.[0];
-    const imgUrl = imgData?.url;
-    const imgB64 = imgData?.b64_json;
-    if (imgUrl) { setRenderImg(imgUrl); setRenderMsg("✅ Render técnico generado"); }
-    else if (imgB64) { setRenderImg("data:image/png;base64," + imgB64); setRenderMsg("✅ Render técnico generado"); }
-    else { setRenderMsg("❌ " + (data?.error?.message || "Error al generar")); }
-  } catch(e) { setRenderMsg("❌ " + e.message); }
-  setRenderLoading(false);
-}
+
   async function generarContenidoSocial() {
     if (!socialFoto && !renderImg) return;
     setSocialLoading(true);
