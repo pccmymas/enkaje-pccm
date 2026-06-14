@@ -3110,8 +3110,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                   style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 13, resize: "vertical", fontFamily: "inherit", marginBottom: 12 }} />
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   <BTN onClick={generarRender} disabled={renderLoading || !renderPrompt.trim()} style={{ fontSize: 13 }}>{renderLoading ? "⏳ Generando..." : "✨ Render"}</BTN>
-                  <BTN onClick={generarRenderTecnico} disabled={renderLoading || !renderPrompt.trim()} outline color="#00bcd4" style={{ fontSize: 13 }}>{renderLoading ? "⏳..." : "📐 Técnico"}</BTN>
-                </div>
+                 </div>
                 {renderMsg && <div style={{ marginTop: 12, fontSize: 12, color: renderMsg.startsWith("✅")?"#4caf50":"#f44336" }}>{renderMsg}</div>}
                 {renderImg && <img src={renderImg} alt="Render" style={{ width: "100%", borderRadius: 12, marginTop: 16 }} />}
               </div>
