@@ -3065,11 +3065,22 @@ Formato: Caption completo listo para copiar y pegar.`;
               return (
                 <div key={i} onClick={() => setProyectoSel(sel?null:p)}
                   style={{ background: "#0f0f0a", border: `1px solid ${sel?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: 16, marginBottom: 10, cursor: "pointer" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                    <div>
-                      <div style={{ fontWeight: 700 }}>Proyecto #{i+1} · {(p.tipo_proyecto||"cocina").toUpperCase()}</div>
-                      <div style={{ fontSize: 12, color: "#aaa" }}>{p.created_at?.split("T")[0]}</div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 10, background: "#1a1a12", overflow: "hidden", flexShrink: 0 }}>
+                        {p.render_url
+                          ? <img src={p.render_url} alt="render" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{p.tipo_proyecto==="cocina"?"🍳":p.tipo_proyecto==="closet"?"👔":p.tipo_proyecto==="puerta"?"🚪":p.tipo_proyecto==="bano"?"🚿":"🛋️"}</div>}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{p.nombre || "Cliente sin nombre"}</div>
+                        <div style={{ fontSize: 12, color: "#aaa" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
+                      </div>
                     </div>
+                    {(() => {
+                      const et = ETAPAS_SEGUIMIENTO.find(e => e.key === (p.etapa_seguimiento||"anticipo")) || ETAPAS_SEGUIMIENTO[0];
+                      return <span style={{ background: `${et.color}20`, border: `1px solid ${et.color}50`, color: et.color, borderRadius: 20, padding: "3px 10px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{et.emoji} {et.label}</span>;
+                    })()}
                   </div>
                   {sel && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
