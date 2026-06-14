@@ -3082,8 +3082,20 @@ Formato: Caption completo listo para copiar y pegar.`;
                       return <span style={{ background: `${et.color}20`, border: `1px solid ${et.color}50`, color: et.color, borderRadius: 20, padding: "3px 10px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{et.emoji} {et.label}</span>;
                     })()}
                   </div>
-                  {sel && (
+                      {sel && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
+                      {p.render_url && (
+                        <img src={p.render_url} alt="Render" 
+                          onClick={e => { e.stopPropagation(); setImagenAmpliada(p.render_url); }}
+                          style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 10, marginBottom: 12, cursor: "zoom-in" }} />
+                      )}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
+                        {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",Array.isArray(p.material)?p.material.join(", "):p.material],["Color",p.color_principal],["Acabado",p.tipo_acabado]].filter(([,v])=>v).map(([l,v],j) => (
+                          <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
+                        ))}
+                      </div>
+                      <div style={{ marginBottom: 12 }}>
+                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto</div>
                       <div style={{ marginBottom: 12 }}>
                         <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto</div>
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
