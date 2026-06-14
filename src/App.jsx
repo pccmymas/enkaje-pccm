@@ -1310,6 +1310,13 @@ const ESTADOS_PROYECTO = [
   { key: "instalando", label: "Instalando",          color: "#ff5722", emoji: "🔧" },
   { key: "entregado",  label: "Entregado",           color: "#4caf50", emoji: "✅" },
 ];
+const ETAPAS_SEGUIMIENTO = [
+  { key: "anticipo",    label: "Anticipo recibido", emoji: "💰", color: "#d4af37", msg: "Recibimos tu anticipo. ¡Arrancamos con tu proyecto!" },
+  { key: "fabricacion", label: "En fabricación",    emoji: "🪚", color: "#00bcd4", msg: "Tu proyecto ya está en fabricación en el taller." },
+  { key: "listo",       label: "Listo en taller",   emoji: "✅", color: "#9c27b0", msg: "¡Tu proyecto está terminado y listo para instalación!" },
+  { key: "instalacion", label: "En instalación",    emoji: "🔧", color: "#f0a500", msg: "Vamos en camino a instalar tu proyecto." },
+  { key: "entregado",   label: "Entregado",         emoji: "🎉", color: "#4caf50", msg: "¡Proyecto entregado! Gracias por tu confianza. 🙏" },
+];
 const ESTADOS_LEAD = [
   { key: "nuevo",       label: "Nuevo",       emoji: "🆕", color: "#00bcd4" },
   { key: "contactado",  label: "Contactado",  emoji: "📞", color: "#d4af37" },
