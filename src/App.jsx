@@ -3042,7 +3042,22 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
         )}
         {/* PROYECTOS TALLER */}
-        {sel && (
+        {tab === "leads" && role === "taller" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1>
+            {proyectos.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
+            {proyectos.map((p,i) => {
+              const sel = proyectoSel?.created_at === p.created_at;
+              return (
+                <div key={i} onClick={() => setProyectoSel(sel?null:p)}
+                  style={{ background: "#0f0f0a", border: `1px solid ${sel?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: 16, marginBottom: 10, cursor: "pointer" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>Proyecto #{i+1} · {(p.tipo_proyecto||"cocina").toUpperCase()}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{p.created_at?.split("T")[0]}</div>
+                    </div>
+                  </div>
+                  {sel && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
                       <div style={{ marginBottom: 12 }}>
                         <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto</div>
@@ -3073,6 +3088,11 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                     </div>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        )}
         {/* MEMBRESIAS ADMIN */}
         {tab === "membresias" && role === "admin" && (
           <div>
