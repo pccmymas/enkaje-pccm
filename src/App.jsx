@@ -3045,7 +3045,20 @@ Formato: Caption completo listo para copiar y pegar.`;
         {/* PROYECTOS TALLER */}
         {tab === "leads" && role === "taller" && (
           <div>
-            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1><div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+  <button onClick={() => setFiltroProyectoEtapa("todos")} style={{ background: filtroProyectoEtapa === "todos" ? "#d4af3725" : "transparent", border: `1.5px solid ${filtroProyectoEtapa === "todos" ? "#d4af37" : "#2a2a20"}`, color: filtroProyectoEtapa === "todos" ? "#d4af37" : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+    Todos ({proyectos.length})
+  </button>
+  {ETAPAS_SEGUIMIENTO.map(et => {
+    const count = proyectos.filter(p => (p.etapa_seguimiento || "anticipo") === et.key).length;
+    if (count === 0) return null;
+    return (
+      <button key={et.key} onClick={() => setFiltroProyectoEtapa(et.key)} style={{ background: filtroProyectoEtapa === et.key ? `${et.color}25` : "transparent", border: `1.5px solid ${filtroProyectoEtapa === et.key ? et.color : "#2a2a20"}`, color: filtroProyectoEtapa === et.key ? et.color : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+        {et.emoji} {et.label} ({count})
+      </button>
+    );
+  })}
+</div>
             {proyectos.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
             {proyectos.map((p,i) => {
               const sel = proyectoSel?.created_at === p.created_at;
