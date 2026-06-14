@@ -1399,6 +1399,7 @@ export default function App() {
   const [materialesLoading, setMaterialesLoading] = useState(false);
   const [materialesMsg, setMaterialesMsg] = useState("");
   const [filtroLeadEstado, setFiltroLeadEstado] = useState("todos");
+  const [filtroProyectoEtapa, setFiltroProyectoEtapa] = useState("todos");
   useEffect(() => {
   const token = sessionStorage.getItem("enkaje_token");
   const user  = sessionStorage.getItem("enkaje_user");
