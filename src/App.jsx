@@ -3040,35 +3040,37 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
         )}
         {/* PROYECTOS TALLER */}
-        {tab === "leads" && role === "taller" && (
-          <div>
-            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1>
-            {proyectos.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
-            {proyectos.map((p,i) => {
-              const sel = proyectoSel?.created_at === p.created_at;
-              return (
-                <div key={i} onClick={() => setProyectoSel(sel?null:p)}
-                  style={{ background: "#0f0f0a", border: `1px solid ${sel?"#d4af37":"#ffffff08"}`, borderRadius: 12, padding: 16, marginBottom: 10, cursor: "pointer" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                    <div>
-                      <div style={{ fontWeight: 700 }}>Proyecto #{i+1} · {(p.tipo_proyecto||"cocina").toUpperCase()}</div>
-                      <div style={{ fontSize: 12, color: "#aaa" }}>{p.created_at?.split("T")[0]}</div>
-                    </div>
-                  </div>
-                  {sel && (
+        {sel && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+                      <div style={{ marginBottom: 12 }}>
+                        <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto</div>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {ETAPAS_SEGUIMIENTO.map(et => (
+                            <button key={et.key}
+                              onClick={async e => { e.stopPropagation(); await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"PATCH", token, body:JSON.stringify({etapa_seguimiento:et.key})}); cargarProyectos(); }}
+                              style={{ padding:"5px 10px", borderRadius:20, border:`1px solid ${(p.etapa_seguimiento||"anticipo")===et.key?et.color:"#333"}`, background:(p.etapa_seguimiento||"anticipo")===et.key?`${et.color}25`:"transparent", color:(p.etapa_seguimiento||"anticipo")===et.key?et.color:"#666", fontSize:11, cursor:"pointer", fontWeight:(p.etapa_seguimiento||"anticipo")===et.key?700:400, whiteSpace:"nowrap" }}>
+                              {et.emoji} {et.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      {p.telefono && (
+                        <button onClick={e => {
+                          e.stopPropagation();
+                          const et = ETAPAS_SEGUIMIENTO.find(x => x.key === (p.etapa_seguimiento||"anticipo"));
+                          const tel = String(p.telefono).replace(/\D/g,"");
+                          const msg = `Hola ${p.nombre||""}! ${et?.msg||""} — EnKaje Pro`;
+                          window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(msg)}`, "_blank");
+                        }} style={{ background:"#25D366", color:"#fff", border:"none", borderRadius:10, padding:"9px 16px", fontWeight:700, fontSize:12, cursor:"pointer", marginBottom:12 }}>
+                          💬 Notificar al cliente por WhatsApp
+                        </button>
+                      )}
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Cotizar</BTN>
                       </div>
                     </div>
                   )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {/* MEMBRESIAS ADMIN */}
         {tab === "membresias" && role === "admin" && (
           <div>
