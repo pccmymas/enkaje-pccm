@@ -3060,7 +3060,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   })}
 </div>
             {proyectos.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
-            {proyectos.map((p,i) => {
+            {proyectos.filter(p => filtroProyectoEtapa === "todos" || (p.etapa_seguimiento || "anticipo") === filtroProyectoEtapa).map((p,i) => {
               const sel = proyectoSel?.created_at === p.created_at;
               return (
                 <div key={i} onClick={() => setProyectoSel(sel?null:p)}
