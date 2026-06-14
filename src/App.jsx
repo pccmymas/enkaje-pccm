@@ -2877,7 +2877,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar Formulario</BTN>
-                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Presupuesto</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); generarContrato(tallerSel); }} outline color="#4caf50" style={{ fontSize: 12 }}>📄 Contrato</BTN>
                         <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto?", onOk: async () => { await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); cargarProyectos(); }});}} outline color="#f44336" style={{ fontSize: 12 }}>🗑️ Eliminar</BTN>
                       </div>
