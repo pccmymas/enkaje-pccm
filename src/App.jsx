@@ -2720,17 +2720,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 onShare={key => compartirFormulario(key)}
                 label="Compartir levantamiento"
               />
-            </div>
-            <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
-                <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
-                <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
-              </div>
-              <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} setMateriales={setMateriales} setMaterialesMsg={setMaterialesMsg} />
-         </div> 
-        </div> 
-        )}
+      <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
         {/* MIS PROYECTOS — cliente */}
         {tab === "mis_proyectos" && role === "cliente" && (
           <div>
