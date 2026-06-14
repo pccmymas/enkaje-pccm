@@ -2716,11 +2716,24 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <BTN onClick={guardarFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, padding:"13px 20px", fontSize:14, letterSpacing:.5 }}>💾 Guardar Levantamiento</BTN>
                 <button onClick={imprimirFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"13px 20px", fontWeight:900, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>🖨️ Imprimir / PDF Formulario</button>
               </div>
-              <ShareMenu
+             <ShareMenu
                 onShare={key => compartirFormulario(key)}
                 label="Compartir levantamiento"
               />
-      <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
+              {role !== "cliente" && (
+              <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                  <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
+                  <span style={{ fontSize: 11, color: "#d4af37", letterSpacing: 3, textTransform: "uppercase", fontWeight: 700 }}>Presupuesto y Compartir</span>
+                  <div style={{ height: 1, flex: 1, background: "#1a1a12" }} />
+                </div>
+                <Presupuesto form={getForm()} setF={setFormField} isMobile={isMobile} tipoProyecto={tipoForm} role={role} generarMateriales={generarMateriales} materiales={materiales} materialesLoading={materialesLoading} materialesMsg={materialesMsg} generarContrato={generarContrato} tallerData={tallerSel} imprimirHoja={imprimirHojaProfesional} setMateriales={setMateriales} setMaterialesMsg={setMaterialesMsg} />
+              </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* MIS PROYECTOS — cliente */}
         {tab === "mis_proyectos" && role === "cliente" && (
           <div>
