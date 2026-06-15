@@ -3052,13 +3052,46 @@ Formato: Caption completo listo para copiar y pegar.`;
     {ESTADOS_LEAD.map(est => {
       const activo = (lead.estado_lead || "nuevo") === est.key;
       return (
-   <button key={est.key} onClick={async e => {
+ <button key={est.key} onClick={async e => {
           e.stopPropagation();
           await fetch(`${SUPABASE_URL}/rest/v1/expedientes?id=eq.${lead.id}&apikey=${SUPABASE_KEY}`, {
             method: "PATCH",
             headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
             body: JSON.stringify({ estado_lead: est.key })
           });
+          // Si se marca como CERRADO, convertir el lead en proyecto
+          if (est.key === "cerrado" && !lead.convertido_proyecto) {
+            const obs = lead.observaciones || "";
+            const nombreCli = obs.split("Nombre:")[1]?.split("|")[0]?.trim() || "";
+            const telCli = obs.split("Tel:")[1]?.split("|")[0]?.trim() || "";
+            const correoCli = obs.split("Correo:")[1]?.split("|")[0]?.trim() || "";
+            const proyectoNuevo = {
+              nombre: nombreCli,
+              telefono: telCli,
+              correo: correoCli,
+              tipo_proyecto: lead.tipo_proyecto || "cocina",
+              estilo: lead.estilo_elegido || null,
+              render_url: lead.render_url || null,
+              observaciones: obs,
+              estado: "nuevo",
+              etapa_seguimiento: "anticipo",
+              user_email: correoCli || null,
+              created_at: new Date().toISOString(),
+            };
+            const limpio = Object.fromEntries(Object.entries(proyectoNuevo).filter(([,v]) => v !== null && v !== ""));
+            await fetch(`${SUPABASE_URL}/rest/v1/proyectos?apikey=${SUPABASE_KEY}`, {
+              method: "POST",
+              headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
+              body: JSON.stringify(limpio)
+            });
+            await fetch(`${SUPABASE_URL}/rest/v1/expedientes?id=eq.${lead.id}&apikey=${SUPABASE_KEY}`, {
+              method: "PATCH",
+              headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
+              body: JSON.stringify({ convertido_proyecto: true })
+            });
+            setSavedMsg("✅ Lead cerrado y convertido en proyecto");
+            setTimeout(() => setSavedMsg(""), 4000);
+          }
           cargarLeads();
         }}style={{ background: activo ? `${est.color}25` : "transparent", border: `1.5px solid ${activo ? est.color : "#2a2a20"}`, color: activo ? est.color : "#666", borderRadius: 20, padding: "5px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
           {est.emoji} {est.label}
