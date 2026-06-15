@@ -1663,7 +1663,11 @@ async function cargarLeads() {
       const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
       const pass = Array.from({length: 10}, () => chars[Math.floor(Math.random()*chars.length)]).join("") + "!";
       
-      await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0, created_at: new Date().toISOString() }) });
+     const tallerLimpio = Object.fromEntries(
+  Object.entries({ ...nuevoTaller, estado: "activo", leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0, created_at: new Date().toISOString() })
+    .filter(([,v]) => v !== "" && v !== null && v !== undefined)
+);
+await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify(tallerLimpio) });
       setTallerMsg("✅ Taller agregado");
       
       const planLabel = nuevoTaller.plan === "premium" ? "Premium $2,999/mes" : nuevoTaller.plan === "pro" ? "Pro $1,499/mes" : "Básico $699/mes";
