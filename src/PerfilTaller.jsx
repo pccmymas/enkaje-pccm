@@ -200,56 +200,23 @@ export default function PerfilTaller() {
           </div>
         </div>
 
-        {/* REDES SOCIALES Y DATOS */}
-        {(taller.facebook || taller.instagram || taller.tiktok || taller.google_maps || taller.anos_experiencia || taller.horario) && (
+       {/* DATOS DE CONFIANZA */}
+        {(taller.anos_experiencia || taller.horario) && (
           <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-            {(taller.anos_experiencia || taller.horario) && (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: taller.facebook||taller.instagram||taller.tiktok||taller.google_maps ? 20 : 0 }}>
-                {taller.anos_experiencia && (
-                  <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px", textAlign: "center" }}>
-                    <div style={{ fontSize: 28, fontWeight: 900, color: GOLD }}>{taller.anos_experiencia}</div>
-                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1 }}>años de experiencia</div>
-                  </div>
-                )}
-                {taller.horario && (
-                  <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}>
-                    <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>🕐 Horario</div>
-                    <div style={{ fontSize: 13, color: "#e8e0d0", fontWeight: 600, lineHeight: 1.5 }}>{taller.horario}</div>
-                  </div>
-                )}
-              </div>
-            )}
-            {(taller.facebook || taller.instagram || taller.tiktok || taller.google_maps) && (
-              <div>
-                <div style={{ fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Síguenos</div>
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  {taller.facebook && (
-                    <a href={taller.facebook} target="_blank" rel="noreferrer"
-                      style={{ background: "#1877F220", border: "1px solid #1877F240", color: "#1877F2", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-                      📘 Facebook
-                    </a>
-                  )}
-                  {taller.instagram && (
-                    <a href={`https://instagram.com/${taller.instagram.replace("@","")}`} target="_blank" rel="noreferrer"
-                      style={{ background: "#E1306C20", border: "1px solid #E1306C40", color: "#E1306C", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-                      📸 {taller.instagram}
-                    </a>
-                  )}
-                  {taller.tiktok && (
-                    <a href={`https://tiktok.com/@${taller.tiktok.replace("@","")}`} target="_blank" rel="noreferrer"
-                      style={{ background: "#ee1d5220", border: "1px solid #ee1d5240", color: "#ee1d52", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-                      🎵 {taller.tiktok}
-                    </a>
-                  )}
-                  {taller.google_maps && (
-                    <a href={taller.google_maps} target="_blank" rel="noreferrer"
-                      style={{ background: "#4caf5020", border: "1px solid #4caf5040", color: "#4caf50", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-                      📍 Google Maps
-                    </a>
-                  )}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {taller.anos_experiencia && (
+                <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px", textAlign: "center" }}>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: GOLD }}>{taller.anos_experiencia}</div>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1 }}>años de experiencia</div>
                 </div>
-              </div>
-            )}
+              )}
+              {taller.horario && (
+                <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}>
+                  <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>🕐 Horario</div>
+                  <div style={{ fontSize: 13, color: "#e8e0d0", fontWeight: 600, lineHeight: 1.5 }}>{taller.horario}</div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 {/* PORTAFOLIO */}
