@@ -1819,13 +1819,20 @@ async function guardarEdicionTaller() {
       // Limpiar el parámetro del URL sin recargar
       window.history.replaceState({}, "", window.location.pathname);
     }
-  }, []);
-
-  useEffect(() => {
+  }, []); 
+  
+useEffect(() => {
     if (screen === "app" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
     if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos")) cargarProyectos();
     if (screen === "app" && (tab === "membresias" || tab === "mi_perfil" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
+
+  useEffect(() => {
+    if (tab === "mi_perfil" && role === "taller" && talleresMem.length > 0) {
+      const miTaller = talleresMem.find(t => t.email === user?.email);
+      if (miTaller && !tallerEdit) setTallerEdit({...miTaller});
+    }
+  }, [tab, talleresMem]);
 
   function compartirFormulario(canal) {
     const f = getForm();
