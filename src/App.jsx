@@ -2054,7 +2054,7 @@ ${detalles.length>0?`<div class="card"><div class="ch">📋 Especificaciones</di
 ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><div class="cb"><p style="font-size:12px;color:#444;font-style:italic">${f.observaciones}</p></div></div>`:""}
 <div class="nota"><b>NOTA:</b> Este presupuesto tiene vigencia de 15 días.${planBasicoPresup ? " EnKaje Pro actúa como intermediario; la ejecución es responsabilidad del taller." : ""}</div>
 <div class="fir"><div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${f.atencion_por||"Felipe Santiago"}</div><div class="fc">EnKaje Pro · Asesor</div></div><div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Aprobación</div></div></div>
-<div class="ftr"><div class="flogo">EnKaje Pro</div><div class="finfo">enkajepro.com · Monterrey, NL<br>Folio: ${folio}</div></div>
+<div class="ftr"><div class="flogo">${nombreTaller}</div><div class="finfo">${planBasicoPresup ? "enkajepro.com · " : ""}Monterrey, NL<br>Folio: ${folio}</div></div>
 </div><script>window.onload=function(){window.print()}</script></body></html>`);
     w.document.close();
   }
