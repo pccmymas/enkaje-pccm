@@ -2016,7 +2016,7 @@ ${tallerHTML}
 
 
   function imprimirHojaProfesional() {
-    const tallerDataPresup = tallerSel;
+    const tallerDataPresup = role === "taller" ? (talleresMem.find(t => t.email === user?.email) || tallerSel) : tallerSel;
     const f = getForm();
     const tipoLabel = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
     const tipoIcon  = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
