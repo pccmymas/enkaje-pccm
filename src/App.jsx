@@ -1337,6 +1337,8 @@ export default function App() {
   const [loginMode, setLoginMode] = useState("login");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [tallerEdit, setTallerEdit] = useState(null);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [tab, setTab] = useState(() => {
     // Restaurar tab del historial si existe
     const saved = sessionStorage.getItem("enkaje_tab");
