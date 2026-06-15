@@ -1824,7 +1824,7 @@ async function guardarEdicionTaller() {
   
 useEffect(() => {
     if (screen === "app" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
-    if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos")) cargarProyectos();
+    if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos" || tab === "bienvenida")) cargarProyectos();
     if (screen === "app" && (tab === "membresias" || tab === "mi_perfil" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
