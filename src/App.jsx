@@ -2071,7 +2071,7 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
     // Datos del taller según plan
     const planBasico = !tallerData || tallerData?.plan === "basico";
     const tallerNombre = tallerData?.nombre_legal || tallerData?.nombre || "Taller de Carpintería";
-    const tallerRep = tallerData?.representante || tallerData?.atencion_por || f.atencion_por || "Felipe Santiago";
+    const tallerRep = tallerData?.representante || tallerData?.atencion_por || tallerData?.nombre || "Representante del taller";
     const tallerRFC = tallerData?.rfc || "";
     const tallerDir = tallerData?.direccion_fiscal || tallerData?.zona || "Monterrey, Nuevo León";
     const tallerTel = tallerData?.telefono_legal || tallerData?.telefono || "";
