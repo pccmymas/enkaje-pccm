@@ -2037,8 +2037,8 @@ ${tallerHTML}
     const preciosRows = [["Fabricación",f.precio_fabricacion],["Instalación",f.precio_instalacion],["Acabados / Cubierta",f.precio_cubierta],["Herrajes",f.precio_herrajes],["Otros",f.precio_otros]].filter(([,v])=>v&&parseFloat(v)>0).map(([l,v])=>`<tr><td>${l}</td><td>$${parseFloat(v).toLocaleString("es-MX")} MXN</td></tr>`).join("");
     const detallesHTML = detalles.map(([l,v])=>`<div class="di"><span class="dl">${l}</span><span class="dv">${v}</span></div>`).join("");
     const logoHTML = tallerDataPresup?.logo_url && tallerDataPresup?.plan!=="basico" ? `<img src="${window.location.origin}${tallerDataPresup.logo_url}" style="height:60px;width:60px;object-fit:cover;border-radius:50%;margin-bottom:4px" alt="logo" onerror="this.style.display='none'"/>` : "";
-    const nombreTaller = tallerDataPresup?.plan!=="basico" && tallerDataPresup?.nombre ? tallerDataPresup.nombre : "EnKaje Pro";
-    const subTaller = tallerDataPresup?.plan!=="basico" && tallerDataPresup?.nombre ? "Carpintería · Ebanistería" : "Intermediación · Carpintería · Monterrey";
+    const nombreTaller = tallerDataPresup?.nombre || "EnKaje Pro";
+    const subTaller = tallerDataPresup?.nombre ? "Carpintería · Ebanistería" : "Intermediación · Carpintería · Monterrey";
     const repPresup = tallerDataPresup?.representante || tallerDataPresup?.atencion_por || tallerDataPresup?.nombre || "Representante del taller";
     const planBasicoPresup = !tallerDataPresup || tallerDataPresup?.plan === "basico";
     w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Presupuesto EnKaje Pro - ${tipoLabel}</title>
