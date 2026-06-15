@@ -3232,6 +3232,54 @@ Formato: Caption completo listo para copiar y pegar.`;
             })}
           </div>
         )}
+        {/* MI PERFIL — taller */}
+        {tab === "mi_perfil" && role === "taller" && tallerEdit && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
+              <h1 style={{ color: "#d4af37", margin: 0, fontSize: isMobile?20:26 }}>Mi Perfil</h1>
+              <a href={`/taller/${tallerEdit.slug}`} target="_blank" rel="noreferrer">
+                <BTN outline color="#00bcd4" style={{ fontSize: 12 }}>👁️ Ver mi perfil público</BTN>
+              </a>
+            </div>
+            {tallerMsg && <div style={{ marginBottom: 16, color: "#4caf50", fontSize: 13, background: "#0a2a0a", border: "1px solid #4caf5040", borderRadius: 8, padding: "10px 14px" }}>{tallerMsg}</div>}
+
+            <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+              <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>Datos del Taller</h3>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12 }}>
+                <INPUT label="Nombre del taller" value={tallerEdit.nombre||""} onChange={e=>setTallerEdit(p=>({...p,nombre:e.target.value}))} />
+                <INPUT label="Especialidad" value={tallerEdit.especialidad||""} onChange={e=>setTallerEdit(p=>({...p,especialidad:e.target.value}))} placeholder="Cocinas, closets, madera sólida..." />
+                <INPUT label="Municipio" value={tallerEdit.municipio||""} onChange={e=>setTallerEdit(p=>({...p,municipio:e.target.value}))} />
+                <INPUT label="Zona / Colonia" value={tallerEdit.zona||""} onChange={e=>setTallerEdit(p=>({...p,zona:e.target.value}))} />
+                <INPUT label="Años de experiencia" value={tallerEdit.anos_experiencia||""} onChange={e=>setTallerEdit(p=>({...p,anos_experiencia:e.target.value}))} placeholder="10" />
+                <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm" />
+                <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} placeholder="https://..." />
+              </div>
+            </div>
+
+            <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+              <h3 style={{ color: "#d4af37", margin: "0 0 6px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>📷 Mi Portafolio</h3>
+              <p style={{ fontSize: 12, color: "#888", margin: "0 0 16px" }}>Sube fotos de tus mejores trabajos. Aparecerán en tu perfil público.</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px,1fr))", gap: 8, marginBottom: 12 }}>
+                {(tallerEdit.portafolio_urls ? tallerEdit.portafolio_urls.split(",").map(u=>u.trim()).filter(Boolean) : []).map((url, idx) => (
+                  <div key={idx} style={{ position: "relative", aspectRatio: "1", borderRadius: 8, overflow: "hidden", border: "1px solid #1a1a12" }}>
+                    <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <button onClick={() => {
+                      const arr = tallerEdit.portafolio_urls.split(",").map(u=>u.trim()).filter(Boolean);
+                      arr.splice(idx, 1);
+                      setTallerEdit(p=>({...p, portafolio_urls: arr.join(",")}));
+                    }} style={{ position: "absolute", top: 4, right: 4, background: "#f44336", color: "#fff", border: "none", borderRadius: "50%", width: 24, height: 24, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✕</button>
+                  </div>
+                ))}
+              </div>
+              <label style={{ display: "inline-block", background: "#1a1a12", border: "1px dashed #2a2a20", borderRadius: 10, padding: "10px 16px", fontSize: 12, color: "#aaa", cursor: "pointer" }}>
+                {subiendoFoto ? "⏳ Subiendo..." : "+ Agregar foto"}
+                <input type="file" accept="image/*" onChange={e => e.target.files[0] && subirFotoPortafolio(e.target.files[0])} style={{ display: "none" }} disabled={subiendoFoto} />
+              </label>
+            </div>
+
+            <BTN onClick={guardarEdicionTaller} style={{ width: "100%", padding: "14px", fontSize: 14 }}>💾 Guardar mi perfil</BTN>
+          </div>
+        )}
         {/* MEMBRESIAS ADMIN */}
         {tab === "membresias" && role === "admin" && (
           <div>
