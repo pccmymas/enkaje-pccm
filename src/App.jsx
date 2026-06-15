@@ -1778,6 +1778,7 @@ async function guardarEdicionTaller() {
       especialidad: tallerEdit.especialidad, zona: tallerEdit.zona, municipio: tallerEdit.municipio,
       plan: tallerEdit.plan, estado: tallerEdit.estado, slug: tallerEdit.slug,
       anos_experiencia: tallerEdit.anos_experiencia, horario: tallerEdit.horario,
+      representante: tallerEdit.representante,
       instagram: tallerEdit.instagram, facebook: tallerEdit.facebook, tiktok: tallerEdit.tiktok,
       logo_url: tallerEdit.logo_url, portafolio_urls: tallerEdit.portafolio_urls,
     };
