@@ -2006,7 +2006,7 @@ tr:nth-child(even){background:#0a0a08}
 ${f.observaciones?`<div class="obs"><b>Observaciones:</b> ${f.observaciones}</div>`:""}
 ${tallerHTML}
 <div class="fir">
-  <div class="fi"><div style="height:48px"></div><div class="fl"></div><div class="fn">${f.atencion_por||"Felipe Santiago"}</div><div class="fc">EnKaje Pro · Asesor</div></div>
+  <div class="fi"><div style="height:48px"></div><div class="fl"></div><div class="fn">${repForm}</div><div class="fc">${nombreTallerForm} · Prestador</div></div>
   <div class="fi"><div style="height:48px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Conformidad</div></div>
 </div>
 <div class="ftr">
