@@ -2010,8 +2010,8 @@ ${tallerHTML}
   <div class="fi"><div style="height:48px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Conformidad</div></div>
 </div>
 <div class="ftr">
-  <div class="flogo">EnKaje Pro</div>
-  <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México</div>
+  <div class="flogo">${nombreTallerForm}</div>
+  <div class="finfo">${planBasicoForm ? "enkajepro.com · " : ""}Monterrey, Nuevo León, México</div>
 </div>
 </div><script>window.onload=function(){window.print()}</script></body></html>`);
     w.document.close();
