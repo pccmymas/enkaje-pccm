@@ -3100,7 +3100,22 @@ Formato: Caption completo listo para copiar y pegar.`;
     })}
   </div>
 </div>
-         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                        {lead.estado_lead === "cerrado" && (
+                          <button onClick={async e => {
+                            e.stopPropagation();
+                            await fetch(`${SUPABASE_URL}/rest/v1/expedientes?id=eq.${lead.id}&apikey=${SUPABASE_KEY}`, {
+                              method: "PATCH",
+                              headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
+                              body: JSON.stringify({ estado_lead: "nuevo", convertido_proyecto: false })
+                            });
+                            setSavedMsg("✅ Lead reabierto. Si creaste el proyecto por error, bórralo en Proyectos.");
+                            setTimeout(() => setSavedMsg(""), 6000);
+                            cargarLeads();
+                          }} style={{ background: "transparent", color: "#f0a500", border: "1.5px solid #f0a500", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                            🔄 Reabrir lead
+                          </button>
+                        )}
                         {lead.observaciones?.includes("Tel:") && (
                           <button onClick={e => {
                             e.stopPropagation();
