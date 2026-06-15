@@ -86,7 +86,7 @@ export default function PerfilTaller() {
       });
       // Incrementar leads
       await fetch(
-        `${SUPABASE_URL}/rest/v1/talleres_membresia?enkaje=eq.${taller.enkaje}`,
+        `${SUPABASE_URL}/rest/v1/talleres_membresia?id=eq.${taller.id}`,
         {
           method: "PATCH",
           headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
