@@ -1979,7 +1979,7 @@ tr:nth-child(even){background:#0a0a08}
 }
 </style></head><body><div class="page">
 <div class="hdr">
-  <div><div class="logo">EnKaje Pro</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
+  <div><div class="logo">${nombreTallerForm}</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
   <div class="doc-r"><div class="doc-t">Levantamiento</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Atendido por: ${repForm}</div>
 <div class="banner">
   <div class="bt">${icon} Tipo de proyecto</div>
