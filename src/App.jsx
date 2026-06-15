@@ -3213,9 +3213,10 @@ Formato: Caption completo listo para copiar y pegar.`;
                           💬 Notificar al cliente por WhatsApp
                         </button>
                       )}
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar</BTN>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnPresupuesto(p); setTabWithHistory("presupuesto"); }} outline color="#d4af37" style={{ fontSize: 12 }}>💰 Cotizar</BTN>
+                        <BTN onClick={async e => { e.stopPropagation(); setConfirmModal({ msg: "¿Eliminar este proyecto? No se puede deshacer.", onOk: async () => { await sb(`proyectos?enkaje=eq.${p.enkaje}`, {method:"DELETE", token}); cargarProyectos(); setProyectoSel(null); }});}} outline color="#f44336" style={{ fontSize: 12 }}>🗑️ Eliminar</BTN>
                       </div>
                     </div>
                   )}
