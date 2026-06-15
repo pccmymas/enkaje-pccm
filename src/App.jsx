@@ -1771,7 +1771,45 @@ await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify(tal
     console.log("PATCH result:", JSON.stringify(res), "id:", id, "cambios:", JSON.stringify(cambios));
     cargarTalleres();
   }
+async function guardarEdicionTaller() {
+    if (!tallerEdit) return;
+    const campos = {
+      nombre: tallerEdit.nombre, email: tallerEdit.email, telefono: tallerEdit.telefono,
+      especialidad: tallerEdit.especialidad, zona: tallerEdit.zona, municipio: tallerEdit.municipio,
+      plan: tallerEdit.plan, estado: tallerEdit.estado, slug: tallerEdit.slug,
+      anos_experiencia: tallerEdit.anos_experiencia, horario: tallerEdit.horario,
+      instagram: tallerEdit.instagram, facebook: tallerEdit.facebook, tiktok: tallerEdit.tiktok,
+      logo_url: tallerEdit.logo_url, portafolio_urls: tallerEdit.portafolio_urls,
+    };
+    const limpio = Object.fromEntries(Object.entries(campos).filter(([,v]) => v !== undefined && v !== null && v !== ""));
+    await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
+    setTallerMsg("✅ Taller actualizado");
+    setTallerEdit(null);
+    cargarTalleres();
+    setTimeout(() => setTallerMsg(""), 4000);
+  }
 
+  async function subirFotoPortafolio(file) {
+    if (!file || !tallerEdit) return;
+    setSubiendoFoto(true);
+    try {
+      const fileName = `portafolio_${tallerEdit.id}_${Date.now()}.${file.name.split('.').pop()}`;
+      const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/renders/${fileName}`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "x-upsert": "true" },
+        body: file
+      });
+      if (uploadRes.ok) {
+        const url = `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`;
+        const actuales = tallerEdit.portafolio_urls ? tallerEdit.portafolio_urls.split(",").map(u=>u.trim()).filter(Boolean) : [];
+        const nuevas = [...actuales, url].join(",");
+        setTallerEdit(p => ({...p, portafolio_urls: nuevas}));
+      } else {
+        setTallerMsg("❌ Error al subir foto");
+      }
+    } catch(e) { setTallerMsg("❌ " + e.message); }
+    setSubiendoFoto(false);
+  }
   // Leer parámetro ?legal= del URL al cargar (viene desde el landing)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
