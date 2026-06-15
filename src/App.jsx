@@ -1873,6 +1873,10 @@ useEffect(() => {
 
   function imprimirFormulario() {
     const f = getForm();
+    const tallerDataForm = role === "taller" ? (talleresMem.find(t => t.email === user?.email) || tallerSel) : tallerSel;
+    const nombreTallerForm = tallerDataForm?.nombre || "EnKaje Pro";
+    const repForm = tallerDataForm?.representante || tallerDataForm?.atencion_por || tallerDataForm?.nombre || "Representante del taller";
+    const planBasicoForm = !tallerDataForm || tallerDataForm?.plan === "basico";
     const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v||"");
     const has  = v => Array.isArray(v) ? v.length > 0 : (v && String(v).trim() !== "");
     const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
