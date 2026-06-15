@@ -48,7 +48,7 @@ export default function PerfilTaller() {
           setTaller(data[0]);
           // Registrar visita con canal de referencia
           await fetch(
-            `${SUPABASE_URL}/rest/v1/talleres_membresia?enkaje=eq.${data[0].enkaje}`,
+           `${SUPABASE_URL}/rest/v1/talleres_membresia?id=eq.${data[0].id}`,
             {
               method: "PATCH",
               headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
