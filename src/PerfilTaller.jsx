@@ -252,7 +252,20 @@ export default function PerfilTaller() {
             )}
           </div>
         )}
-
+{/* PORTAFOLIO */}
+        {taller.portafolio_urls && taller.portafolio_urls.trim() && (
+          <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+            <h3 style={{ fontSize: 13, color: GOLD, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>📷 Trabajos Realizados</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
+              {taller.portafolio_urls.split(",").map(u => u.trim()).filter(Boolean).map((url, i) => (
+                <div key={i} style={{ position: "relative", borderRadius: 12, overflow: "hidden", aspectRatio: "1", border: "1px solid #1a1a12" }}>
+                  <img src={url} alt={`Trabajo ${i+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    onError={e => { e.target.parentNode.style.display = "none"; }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         {/* CTA */}
         {!formStep && !sent && (
           <div style={{ background: "linear-gradient(135deg,#1a1208,#0f0f0a)", border: `1px solid ${GOLD}40`, borderRadius: 20, padding: 32, textAlign: "center" }}>
