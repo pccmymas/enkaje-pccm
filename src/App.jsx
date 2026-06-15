@@ -3242,11 +3242,11 @@ Formato: Caption completo listo para copiar y pegar.`;
               </a>
             </div>
             {tallerMsg && <div style={{ marginBottom: 16, color: "#4caf50", fontSize: 13, background: "#0a2a0a", border: "1px solid #4caf5040", borderRadius: 8, padding: "10px 14px" }}>{tallerMsg}</div>}
-
-            <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+<div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
               <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>Datos del Taller</h3>
               <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12 }}>
                 <INPUT label="Nombre del taller" value={tallerEdit.nombre||""} onChange={e=>setTallerEdit(p=>({...p,nombre:e.target.value}))} />
+                <INPUT label="Nombre del representante / dueño" value={tallerEdit.representante||""} onChange={e=>setTallerEdit(p=>({...p,representante:e.target.value}))} placeholder="Quien firma los contratos" />
                 <INPUT label="Especialidad" value={tallerEdit.especialidad||""} onChange={e=>setTallerEdit(p=>({...p,especialidad:e.target.value}))} placeholder="Cocinas, closets, madera sólida..." />
                 <INPUT label="Municipio" value={tallerEdit.municipio||""} onChange={e=>setTallerEdit(p=>({...p,municipio:e.target.value}))} />
                 <INPUT label="Zona / Colonia" value={tallerEdit.zona||""} onChange={e=>setTallerEdit(p=>({...p,zona:e.target.value}))} />
