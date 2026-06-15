@@ -3144,11 +3144,85 @@ Formato: Caption completo listo para copiar y pegar.`;
             <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Talleres</h1>
             <BTN onClick={() => setShowNuevoTaller(true)}>+ Agregar Taller</BTN>
             {tallerMsg && <div style={{ marginTop: 12, color: "#4caf50", fontSize: 13 }}>{tallerMsg}</div>}
-            <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: 8, marginBottom: 16, fontSize: 13, color: "#888" }}>
+              {talleresMem.filter(t => t.estado === "activo").length} activos · {talleresMem.length} total
+            </div>
+            <div style={{ marginTop: 8 }}>
               {talleresMem.map((t,i) => (
                 <div key={i} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 16, marginBottom: 10 }}>
-                  <div style={{ fontWeight: 700 }}>{t.nombre}</div>
-                  <div style={{ fontSize: 12, color: "#aaa" }}>{t.email} · {t.plan}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>{t.nombre}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{t.email} · {t.plan} · {t.estado || "activo"}</div>
+                    </div>
+                    <BTN onClick={() => setTallerEdit(tallerEdit?.id === t.id ? null : {...t})} outline style={{ fontSize: 12 }}>
+                      {tallerEdit?.id === t.id ? "Cerrar" : "✏️ Editar"}
+                    </BTN>
+                  </div>
+
+                  {tallerEdit?.id === t.id && (
+                    <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1a1a12" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12 }}>
+                        <INPUT label="Nombre" value={tallerEdit.nombre||""} onChange={e=>setTallerEdit(p=>({...p,nombre:e.target.value}))} />
+                        <INPUT label="Email" value={tallerEdit.email||""} onChange={e=>setTallerEdit(p=>({...p,email:e.target.value}))} />
+                        <INPUT label="Teléfono" value={tallerEdit.telefono||""} onChange={e=>setTallerEdit(p=>({...p,telefono:e.target.value}))} />
+                        <INPUT label="Slug" value={tallerEdit.slug||""} onChange={e=>setTallerEdit(p=>({...p,slug:e.target.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")}))} />
+                        <INPUT label="Especialidad" value={tallerEdit.especialidad||""} onChange={e=>setTallerEdit(p=>({...p,especialidad:e.target.value}))} />
+                        <INPUT label="Municipio" value={tallerEdit.municipio||""} onChange={e=>setTallerEdit(p=>({...p,municipio:e.target.value}))} />
+                        <INPUT label="Zona" value={tallerEdit.zona||""} onChange={e=>setTallerEdit(p=>({...p,zona:e.target.value}))} />
+                        <INPUT label="Años experiencia" value={tallerEdit.anos_experiencia||""} onChange={e=>setTallerEdit(p=>({...p,anos_experiencia:e.target.value}))} />
+                        <INPUT label="Instagram" value={tallerEdit.instagram||""} onChange={e=>setTallerEdit(p=>({...p,instagram:e.target.value}))} />
+                        <INPUT label="Facebook" value={tallerEdit.facebook||""} onChange={e=>setTallerEdit(p=>({...p,facebook:e.target.value}))} />
+                        <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} />
+                        <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} />
+                      </div>
+
+                      <div style={{ marginTop: 12, marginBottom: 12 }}>
+                        <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {["basico","pro","premium"].map(pl => (
+                            <button key={pl} onClick={() => setTallerEdit(p=>({...p,plan:pl}))} style={{ padding:"8px 16px", borderRadius:10, border:`1.5px solid ${tallerEdit.plan===pl?"#d4af37":"#2a2a20"}`, background:tallerEdit.plan===pl?"#d4af3720":"transparent", color:tallerEdit.plan===pl?"#d4af37":"#888", fontSize:12, fontWeight:700, cursor:"pointer", textTransform:"capitalize" }}>{pl}</button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Estado</label>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {["activo","inactivo"].map(es => (
+                            <button key={es} onClick={() => setTallerEdit(p=>({...p,estado:es}))} style={{ padding:"8px 16px", borderRadius:10, border:`1.5px solid ${tallerEdit.estado===es?"#4caf50":"#2a2a20"}`, background:tallerEdit.estado===es?"#4caf5020":"transparent", color:tallerEdit.estado===es?"#4caf50":"#888", fontSize:12, fontWeight:700, cursor:"pointer", textTransform:"capitalize" }}>{es}</button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ marginBottom: 14 }}>
+                        <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>📷 Portafolio de fotos</label>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px,1fr))", gap: 8, marginBottom: 10 }}>
+                          {(tallerEdit.portafolio_urls ? tallerEdit.portafolio_urls.split(",").map(u=>u.trim()).filter(Boolean) : []).map((url, idx) => (
+                            <div key={idx} style={{ position: "relative", aspectRatio: "1", borderRadius: 8, overflow: "hidden", border: "1px solid #1a1a12" }}>
+                              <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              <button onClick={() => {
+                                const arr = tallerEdit.portafolio_urls.split(",").map(u=>u.trim()).filter(Boolean);
+                                arr.splice(idx, 1);
+                                setTallerEdit(p=>({...p, portafolio_urls: arr.join(",")}));
+                              }} style={{ position: "absolute", top: 4, right: 4, background: "#f44336", color: "#fff", border: "none", borderRadius: "50%", width: 22, height: 22, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✕</button>
+                            </div>
+                          ))}
+                        </div>
+                        <label style={{ display: "inline-block", background: "#1a1a12", border: "1px dashed #2a2a20", borderRadius: 10, padding: "10px 16px", fontSize: 12, color: "#aaa", cursor: "pointer" }}>
+                          {subiendoFoto ? "⏳ Subiendo..." : "+ Agregar foto"}
+                          <input type="file" accept="image/*" onChange={e => e.target.files[0] && subirFotoPortafolio(e.target.files[0])} style={{ display: "none" }} disabled={subiendoFoto} />
+                        </label>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 10 }}>
+                        <BTN onClick={guardarEdicionTaller} style={{ flex: 1 }}>💾 Guardar cambios</BTN>
+                        <a href={`/taller/${t.slug}`} target="_blank" rel="noreferrer" style={{ flex: 1 }}>
+                          <BTN outline color="#00bcd4" style={{ width: "100%" }}>👁️ Ver perfil</BTN>
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
