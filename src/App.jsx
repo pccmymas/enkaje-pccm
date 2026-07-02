@@ -1781,6 +1781,7 @@ async function guardarEdicionTaller() {
       representante: tallerEdit.representante,
       instagram: tallerEdit.instagram, facebook: tallerEdit.facebook, tiktok: tallerEdit.tiktok,
       logo_url: tallerEdit.logo_url, portafolio_urls: tallerEdit.portafolio_urls,
+      niveles_precio: tallerEdit.niveles_precio,
     };
     const limpio = Object.fromEntries(Object.entries(campos).filter(([,v]) => v !== undefined && v !== null && v !== ""));
     await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
