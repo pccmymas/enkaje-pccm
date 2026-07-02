@@ -196,9 +196,14 @@ export default function PerfilTaller() {
             {taller.municipio && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>MUNICIPIO</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.municipio}</div></div>}
             {taller.zona && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>ZONA / COLONIA</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.zona}</div></div>}
             {taller.garantia_default && <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>GARANTÍA</div><div style={{ fontSize: 14, color: "#e8e0d0", fontWeight: 600 }}>{taller.garantia_default}</div></div>}
-            <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}><div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>PLAN</div><div style={{ fontSize: 14, color: planColor, fontWeight: 700 }}>{planLabel}</div></div>
-          </div>
-        </div>
+           {taller.nivel_precio && (
+  <div style={{ background: "#1a1208", borderRadius: 10, padding: "12px 16px" }}>
+    <div style={{ fontSize: 11, color: "#999", marginBottom: 4 }}>TIPO DE TRABAJO</div>
+    <div style={{ fontSize: 14, color: GOLD, fontWeight: 700 }}>
+      {{ economico: "Económico", medio: "Medio", alto: "Alto", premium: "Premium" }[taller.nivel_precio] || taller.nivel_precio}
+    </div>
+  </div>
+)}
 
        {/* DATOS DE CONFIANZA */}
         {(taller.anos_experiencia || taller.horario) && (
