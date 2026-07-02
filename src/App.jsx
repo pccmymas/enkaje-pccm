@@ -3261,28 +3261,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm" />
                <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} placeholder="https://..." />
               </div>
-              <div style={{ marginTop: 16 }}>
-                <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>Tipo de trabajo que aceptas</label>
-                <p style={{ fontSize: 12, color: "#666", margin: "0 0 10px" }}>Marca todos los rangos que manejas. El cliente podrá filtrar por esto.</p>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {[["economico","Económico"],["medio","Medio"],["alto","Alto"],["premium","Premium"]].map(([key,label]) => {
-                    const actuales = tallerEdit.niveles_precio ? tallerEdit.niveles_precio.split(",").map(s=>s.trim()).filter(Boolean) : [];
-                    const checked = actuales.includes(key);
-                    return (
-                      <button key={key} type="button" onClick={() => {
-                        const nuevo = checked ? actuales.filter(x=>x!==key) : [...actuales, key];
-                        setTallerEdit(p=>({...p, niveles_precio: nuevo.join(",")}));
-                      }} style={{
-                        padding: "8px 14px", borderRadius: 50, border: `1.5px solid ${checked?"#d4af37":"#2a2a20"}`,
-                        background: checked ? "#d4af3720" : "#0d0d0a", color: checked ? "#d4af37" : "#aaa",
-                        fontSize: 13, cursor: "pointer", fontWeight: checked ? 700 : 400
-                      }}>
-                        {checked ? "✓ " : ""}{label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
 
             <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
