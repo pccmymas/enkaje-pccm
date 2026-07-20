@@ -2941,7 +2941,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Etapa del proyecto <span style={{ color:"#444", textTransform:"none", letterSpacing:0 }}>(controlada por el taller)</span></div>
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           {ETAPAS_SEGUIMIENTO.map(et => {
-                            const activa = (p.etapa_seguimiento||"anticipo")===et.key;
+                            const activa = (p.etapa_seguimiento||"solicitud")===et.key;
                             return (
                               <span key={et.key}
                                 style={{ padding:"5px 10px", borderRadius:20, border:`1px solid ${activa?et.color:"#333"}`, background:activa?`${et.color}25`:"transparent", color:activa?et.color:"#555", fontSize:11, fontWeight:activa?700:400, whiteSpace:"nowrap" }}>
