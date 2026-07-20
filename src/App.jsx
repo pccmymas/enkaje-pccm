@@ -1560,6 +1560,7 @@ async function login() {
         user_id:            user?.id || null,
         user_email:         user?.email || null,
         estado:             "nuevo",
+        etapa_seguimiento:  "solicitud",
         created_at:         new Date().toISOString(),
         tipo_proyecto:      val(f.tipo_proyecto) || "cocina",
         nombre:             val(f.nombre),
