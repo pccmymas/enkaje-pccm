@@ -2827,7 +2827,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Seguimiento de tu proyecto</div>
   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
     {ETAPAS_SEGUIMIENTO.map((etapa, idx) => {
-      const etapaActual = ETAPAS_SEGUIMIENTO.findIndex(e => e.key === (p.etapa_seguimiento || "anticipo"));
+      const etapaActual = ETAPAS_SEGUIMIENTO.findIndex(e => e.key === (p.etapa_seguimiento || "solicitud"));
       const completada = idx <= etapaActual;
       const esActual = idx === etapaActual;
       return (
