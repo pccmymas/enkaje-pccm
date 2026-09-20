@@ -3097,10 +3097,10 @@ Formato: Caption completo listo para copiar y pegar.`;
                         ))}
                       </div>
                       {lead.observaciones && (
-                        <div style={{ background: "#0a0a08", borderRadius: 8, padding: 10, marginBottom: 14, fontSize: 12, color: "#888" }}>
-                          {lead.observaciones.split("|").map((l,i) => <div key={i}>{l.trim()}</div>)}
-                        </div>
-                      )}
+  <div style={{ background: "#0a0a08", borderRadius: 8, padding: 10, marginBottom: 14, fontSize: 12, color: "#888" }}>
+    {lead.observaciones.split("|").filter(l => role === "admin" || (!l.includes("Tel:") && !l.includes("Correo:"))).map((l,i) => <div key={i}>{l.trim()}</div>)}
+  </div>
+)}
                       <div style={{ marginBottom: 14 }}>
   <div style={{ fontSize: 10, color: "#555", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Estado del lead</div>
   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
