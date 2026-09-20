@@ -3279,6 +3279,29 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm" />
                <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} placeholder="https://..." />
               </div>
+   {p.etapa_seguimiento === "guardado" && (
+  <div style={{ marginBottom: 14 }}>
+    {solicitandoZona?.created_at === p.created_at ? (
+      <div>
+        <div style={{ fontSize: 12, color: "#d4af37", marginBottom: 8, fontWeight: 700 }}>¿En qué zona te encuentras?</div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {ZONAS.map(z => (
+            <button key={z} onClick={async e => {
+              e.stopPropagation();
+              await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ etapa_seguimiento: "solicitud", zona: z }) });
+              setSolicitandoZona(null);
+              cargarProyectos();
+            }} style={{ padding: "6px 12px", borderRadius: 20, border: "1px solid #d4af3750", background: "transparent", color: "#d4af37", fontSize: 12, cursor: "pointer" }}>
+              {z}
+            </button>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <BTN onClick={e => { e.stopPropagation(); setSolicitandoZona(p); }} style={{ fontSize: 12 }}>📨 Solicitar cotización</BTN>
+    )}
+  </div>
+)}
             </div>
 
             <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
