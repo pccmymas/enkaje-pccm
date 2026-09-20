@@ -2869,6 +2869,36 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
+                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
+                        {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",p.material],["Tiempo",p.tiempo_entrega]].filter(([,v])=>v).map(([l,v],j) => (
+                          <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
+                        ))}
+                      </div>
+                      {p.etapa_seguimiento === "guardado" && (
+                        <div style={{ marginBottom: 14 }}>
+                          {solicitandoZona?.created_at === p.created_at ? (
+                            <div>
+                              <div style={{ fontSize: 12, color: "#d4af37", marginBottom: 8, fontWeight: 700 }}>¿En qué zona te encuentras?</div>
+                              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                                {ZONAS.map(z => (
+                                  <button key={z} onClick={async e => {
+                                    e.stopPropagation();
+                                    await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ etapa_seguimiento: "solicitud", zona: z }) });
+                                    setSolicitandoZona(null);
+                                    cargarProyectos();
+                                  }} style={{ padding: "6px 12px", borderRadius: 20, border: "1px solid #d4af3750", background: "transparent", color: "#d4af37", fontSize: 12, cursor: "pointer" }}>
+                                    {z}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <BTN onClick={e => { e.stopPropagation(); setSolicitandoZona(p); }} style={{ fontSize: 12 }}>📨 Solicitar cotización</BTN>
+                          )}
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
                         <BTN
