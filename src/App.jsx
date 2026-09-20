@@ -2869,10 +2869,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
-                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
-                        {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",p.material],["Tiempo",p.tiempo_entrega]].filter(([,v])=>v).map(([l,v],j) => (
-                          <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
-                        ))}
                       </div>
                       {p.etapa_seguimiento === "guardado" && (
                         <div style={{ marginBottom: 14 }}>
