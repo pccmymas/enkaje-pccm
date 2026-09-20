@@ -1383,6 +1383,7 @@ export default function App() {
   const [tallerSel, setTallerSel] = useState(null);
   const [showNuevoTaller, setShowNuevoTaller] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null); // { msg, onOk }
+  const [solicitandoZona, setSolicitandoZona] = useState(null);
   const [nuevoTaller, setNuevoTaller] = useState({ nombre: "", email: "", telefono: "", especialidad: "", zona: "", municipio: "", plan: "basico", fecha_vencimiento: "", notas: "", slug: "" });
   const [tallerMsg, setTallerMsg] = useState("");
   const [renderPrompt, setRenderPrompt] = useState("");
