@@ -1643,6 +1643,7 @@ async function cargarLeads() {
   async function cargarProyectos() {
     let url = "proyectos?order=created_at.desc";
     if (role === "cliente") url += `&user_email=eq.${user?.email}`;
+    if (role === "taller" || role === "admin") url += `&etapa_seguimiento=neq.guardado`;
     const data = await sb(url, { token });
     if (Array.isArray(data)) setProyectos(data);
     else console.warn("cargarProyectos:", data);
