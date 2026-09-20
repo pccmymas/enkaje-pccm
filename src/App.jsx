@@ -1650,9 +1650,19 @@ async function cargarLeads() {
     if (role === "cliente") url += `&user_email=eq.${user?.email}`;
     if (role === "taller" || role === "admin") url += `&etapa_seguimiento=neq.guardado`;
     const data = await sb(url, { token });
-    if (Array.isArray(data)) setProyectos(data);
-    else console.warn("cargarProyectos:", data);
-  }
+    if (!Array.isArray(data)) { console.warn("cargarProyectos:", data); return; }
+    if (role === "taller") {
+      const miTaller = talleresMem.find(t => t.email === user?.email) || tallerSel;
+      const zonasTaller = (miTaller?.zonas_cobertura || miTaller?.municipio || "")
+        .split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+      const filtrados = zonasTaller.length > 0
+        ? data.filter(p => !p.zona || zonasTaller.includes((p.zona || "").trim().toLowerCase()))
+        : data;
+      setProyectos(filtrados);
+    } else {
+      setProyectos(data);
+    }
+}
 
   async function cargarTalleres() {
     const data = await sb("talleres_membresia?order=created_at.desc", { token });
