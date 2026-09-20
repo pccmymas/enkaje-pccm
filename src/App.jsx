@@ -3301,30 +3301,28 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <INPUT label="Años de experiencia" value={tallerEdit.anos_experiencia||""} onChange={e=>setTallerEdit(p=>({...p,anos_experiencia:e.target.value}))} placeholder="10" />
                 <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm" />
                <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} placeholder="https://..." />
+                           </div>
+              <div style={{ marginTop: 16 }}>
+                <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>
+                  Zonas de cobertura <span style={{ color: "#444", fontWeight: 400 }}>(donde recibes solicitudes)</span>
+                </label>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {ZONAS.map(z => {
+                    const actuales = tallerEdit.zonas_cobertura ? tallerEdit.zonas_cobertura.split(",").map(s => s.trim()) : [];
+                    const sel = actuales.includes(z);
+                    return (
+                      <button key={z} onClick={() => {
+                        const nuevas = sel ? actuales.filter(x => x !== z) : [...actuales, z];
+                        setTallerEdit(p => ({ ...p, zonas_cobertura: nuevas.join(", ") }));
+                      }} style={{
+                        padding: "8px 14px", borderRadius: 50, border: `1.5px solid ${sel ? "#d4af37" : "#2a2a20"}`,
+                        background: sel ? "#d4af3720" : "#0d0d0a", color: sel ? "#d4af37" : "#aaa",
+                        fontSize: 13, cursor: "pointer", fontWeight: sel ? 700 : 400,
+                      }}>{sel && "✓ "}{z}</button>
+                    );
+                  })}
+                </div>
               </div>
-   {p.etapa_seguimiento === "guardado" && (
-  <div style={{ marginBottom: 14 }}>
-    {solicitandoZona?.created_at === p.created_at ? (
-      <div>
-        <div style={{ fontSize: 12, color: "#d4af37", marginBottom: 8, fontWeight: 700 }}>¿En qué zona te encuentras?</div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {ZONAS.map(z => (
-            <button key={z} onClick={async e => {
-              e.stopPropagation();
-              await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ etapa_seguimiento: "solicitud", zona: z }) });
-              setSolicitandoZona(null);
-              cargarProyectos();
-            }} style={{ padding: "6px 12px", borderRadius: 20, border: "1px solid #d4af3750", background: "transparent", color: "#d4af37", fontSize: 12, cursor: "pointer" }}>
-              {z}
-            </button>
-          ))}
-        </div>
-      </div>
-    ) : (
-      <BTN onClick={e => { e.stopPropagation(); setSolicitandoZona(p); }} style={{ fontSize: 12 }}>📨 Solicitar cotización</BTN>
-    )}
-  </div>
-)}
             </div>
 
             <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
