@@ -530,7 +530,7 @@ const guardarEnPerfil = async () => {
         correo:         user?.email || null,
         user_email:     user?.email || null,
         estado:         "guardado",
-        etapa_seguimiento: "solicitud",
+        etapa_seguimiento: "guardado",
         created_at:     new Date().toISOString(),
       };
       const clean = Object.fromEntries(Object.entries(payload).filter(([,v]) => v !== null));
