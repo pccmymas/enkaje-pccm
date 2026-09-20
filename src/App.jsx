@@ -2869,7 +2869,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
-                      </div>
                       {p.etapa_seguimiento === "guardado" && (
                         <div style={{ marginBottom: 14 }}>
                           {solicitandoZona?.created_at === p.created_at ? (
@@ -2895,8 +2894,6 @@ Formato: Caption completo listo para copiar y pegar.`;
                       )}
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
                         <BTN
                           onClick={async e => {
                             e.stopPropagation();
@@ -2914,7 +2911,6 @@ Formato: Caption completo listo para copiar y pegar.`;
             })}
           </div>
         )}
-
         {/* ESTILOS */}
         {tab === "estilos" && (
           <div>
