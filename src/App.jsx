@@ -3171,8 +3171,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                             🔄 Reabrir lead
                           </button>
                         )}
-                        {lead.observaciones?.includes("Tel:") && (
-                          <button onClick={e => {
+                       {role === "admin" && lead.observaciones?.includes("Tel:") && (
+                            <button onClick={e => {
                             e.stopPropagation();
                             const tel = lead.observaciones.split("Tel:")[1]?.split("|")[0]?.trim()?.replace(/\D/g,"");
                             const msg = `Hola! Te contacto de EnKaje Pro por tu proyecto de ${lead.tipo_proyecto} estilo ${lead.estilo_elegido}. ¿Cuándo podemos hablar para darte una cotización?`;
