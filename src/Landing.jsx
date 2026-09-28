@@ -592,7 +592,7 @@ export default function Landing() {
             <>
               <div className="pill" style={{ marginBottom:20 }}>ÚNETE A ENKAJE PRO</div>
               <h2 style={{ fontSize:44, fontWeight:900, lineHeight:1.15, marginBottom:20, color:"#f0e8dc" }}>Lleva tu taller al<br /><span style={{ color:"#d4af37" }}>siguiente nivel</span></h2>
-              <p style={{ fontSize:16, color:"#555", marginBottom:40, lineHeight:1.7 }}>Sé parte de los talleres fundadores en Monterrey. Primer mes gratis, sin permanencia, sin tarjeta de crédito.</p>
+              <p style={{ fontSize:16, color:"#555", marginBottom:40, lineHeight:1.7 }}>Sé parte de los talleres fundadores en Monterrey. Registro gratuito, sin mensualidad, sin tarjeta de crédito.</p>
               <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:24 }}>
                 <button onClick={goApp} className="btn-gold" style={{ fontSize:16, padding:"16px 36px" }}>🚀 Quiero más clientes →</button>
                 <a href="https://wa.me/528127176786" target="_blank" rel="noreferrer" className="btn-wa" style={{ fontSize:16, padding:"16px 28px" }}>💬 Hablar con Felipe</a>
