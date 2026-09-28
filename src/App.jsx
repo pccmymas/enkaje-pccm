@@ -2572,12 +2572,12 @@ Formato: Caption completo listo para copiar y pegar.`;
             style={{ width: "100%", background: "#d4af37", color: "#000", border: "none", borderRadius: 12, padding: "14px", fontWeight: 700, fontSize: 15, cursor: "pointer", letterSpacing: 1 }}>
             {loginLoading ? "..." : loginMode==="login" ? "ENTRAR" : "CREAR CUENTA"}
           </button>
-          {loginMode === "register" && (
-            <div style={{ marginTop: 12, textAlign: "center", fontSize: 11, color: "#444", lineHeight: 1.6 }}>
-              Las cuentas de taller son activadas por el equipo EnKaje Pro.<br/>
-              ¿Eres un taller? Escríbenos a <span style={{ color: "#d4af37" }}>hola@enkajepro.com</span>
-            </div>
-          )}
+         {loginMode === "register" && (
+  <div style={{ marginTop: 12, textAlign: "center", fontSize: 11, color: "#444", lineHeight: 1.6 }}>
+    Las cuentas de taller son activadas por el equipo EnKaje Pro.<br/>
+    ¿Eres un taller? Escríbenos a <a href="mailto:hola@enkajepro.com" style={{ color: "#d4af37", textDecoration: "underline" }}>hola@enkajepro.com</a>
+  </div>
+)}
         </div>
         <div style={{ marginTop: 20, textAlign: "center", display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           {[["privacidad","Privacidad"],["terminos","Términos"],["cookies","Cookies"]].map(([k,l]) => (
