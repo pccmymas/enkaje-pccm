@@ -188,10 +188,10 @@ export default function Landing() {
                 )}
               </div>
               <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
-                {(audiencia==="cliente"
-                  ? ["✓ Gratis","✓ Sin registro","✓ Render en segundos"]
-                  : ["✓ 1er mes gratis","✓ Sin permanencia","✓ Leads calificados"]
-                ).map((t,i) => <span key={i} style={{ fontSize:13, color:"#444", fontWeight:500 }}>{t}</span>)}
+               {(audiencia==="cliente"
+               ? ["✓ Gratis","✓ Sin registro","✓ Render en segundos"]
+               : ["✓ Registro gratis","✓ Sin mensualidad","✓ Leads calificados"]
+               ).map((t,i) => <span key={i} style={{ fontSize:13, color:"#444", fontWeight:500 }}>{t}</span>)}
               </div>
             </div>
 
