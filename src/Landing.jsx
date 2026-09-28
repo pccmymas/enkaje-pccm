@@ -82,12 +82,6 @@ const FUNCIONES_TALLER = [
 
 const ZONAS = ["San Pedro Garza García","Monterrey Centro","San Nicolás de los Garza","Guadalupe","Santa Catarina","Apodaca","Escobedo","García"];
 
-const PLANES = [
-  { nombre:"Básico", precio:"699", color:"#888", features:["Hasta 5 leads/mes","Formularios de levantamiento","Presupuesto en PDF","Perfil en el directorio","Soporte por email"] },
-  { nombre:"Pro", precio:"1,499", color:"#00bcd4", popular:true, features:["Leads ilimitados","Scoring de leads visible","Contratos digitales","IA cotizadora de materiales","Renders de diseño","Contenido para redes sociales","Soporte prioritario"] },
-  { nombre:"Premium", precio:"2,999", color:"#d4af37", features:["Todo el Plan Pro","Expediente completo del cliente","Leads prioritarios primero","IA sugiere respuesta al lead","Perfil destacado en directorio","Onboarding personal","Soporte 24/7"] },
-];
-
 // ── Ejemplo de render para sección IA ─────────────────────────────────────
 const RENDER_EJEMPLO = {
   img: "/lujo.png",
