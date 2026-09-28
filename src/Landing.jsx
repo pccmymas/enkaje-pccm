@@ -134,7 +134,7 @@ export default function Landing() {
           <div className="nav-links" style={{ display:"flex", gap:32, alignItems:"center" }}>
             <a href="#como-funciona" className="nav-link">Cómo funciona</a>
             <a href="#directorio" className="nav-link">Talleres</a>
-            {audiencia === "taller" && <a href="#precios" className="nav-link">Precios</a>}
+          
           </div>
           <div style={{ display:"flex", gap:8, alignItems:"center" }}>
             <button onClick={goApp} className="btn-outline" style={{ padding:"9px 18px", fontSize:13 }}>Iniciar sesión</button>
