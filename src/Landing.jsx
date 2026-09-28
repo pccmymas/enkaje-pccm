@@ -568,34 +568,7 @@ export default function Landing() {
             <button onClick={goPortal} className="btn-gold" style={{ fontSize:15, padding:"14px 32px" }}>Solicitar cotización gratis →</button>
           </div>
         </div>
-      </section>
-
-      {/* PRECIOS TALLER */}
-      {audiencia==="taller" && (
-        <section id="precios" style={{ padding:"80px 24px", background:"#0f0f0a" }}>
-          <div style={{ maxWidth:1100, margin:"0 auto" }}>
-            <div style={{ textAlign:"center", marginBottom:56 }}>
-              <div className="pill" style={{ marginBottom:16 }}>PLANES Y PRECIOS</div>
-              <h2 style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>Elige el plan <span style={{ color:"#d4af37" }}>perfecto para tu taller</span></h2>
-              <p style={{ fontSize:15, color:"#555" }}>Primer mes gratis. Sin permanencia. Cancelas cuando quieras.</p>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20, alignItems:"start" }} className="grid-mobile-1">
-              {PLANES.map((p,i) => (
-                <div key={i} style={{ background:"#070708", border:`2px solid ${p.popular?p.color:"#1a1a12"}`, borderRadius:20, padding:28, position:"relative", boxShadow:p.popular?`0 0 48px ${p.color}18`:"none" }}>
-                  {p.popular && <div style={{ position:"absolute", top:-14, left:"50%", transform:"translateX(-50%)", background:p.color, color:"#000", borderRadius:50, padding:"4px 18px", fontSize:11, fontWeight:900, letterSpacing:1, whiteSpace:"nowrap" }}>MÁS POPULAR</div>}
-                  <div style={{ fontSize:13, color:p.color, fontWeight:700, letterSpacing:1, marginBottom:8 }}>PLAN {p.nombre.toUpperCase()}</div>
-                  <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:4 }}><span style={{ fontSize:13, color:"#555" }}>$</span><span style={{ fontFamily:"'Playfair Display',serif", fontSize:44, fontWeight:900, color:p.color }}>{p.precio}</span><span style={{ fontSize:13, color:"#555" }}>MXN/mes</span></div>
-                  <div style={{ fontSize:12, color:"#444", marginBottom:24 }}>Primer mes gratis</div>
-                  <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:28 }}>
-                    {p.features.map((f,j) => (<div key={j} style={{ display:"flex", gap:10, alignItems:"flex-start" }}><span style={{ color:p.color, fontSize:13, fontWeight:900, flexShrink:0, marginTop:1 }}>✓</span><span style={{ fontSize:13, color:"#aaa", lineHeight:1.5 }}>{f}</span></div>))}
-                  </div>
-                  <button onClick={goApp} style={{ width:"100%", background:p.popular?p.color:"transparent", color:p.popular?"#000":p.color, border:`1.5px solid ${p.color}`, borderRadius:12, padding:"13px", fontWeight:700, fontSize:14, cursor:"pointer", transition:"all .2s", fontFamily:"'DM Sans',sans-serif" }}>Comenzar gratis</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      </section> 
 
       {/* CTA FINAL */}
       <section style={{ padding:"100px 24px", textAlign:"center", position:"relative", overflow:"hidden" }}>
