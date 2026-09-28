@@ -598,7 +598,7 @@ export default function Landing() {
                 <a href="https://wa.me/528127176786" target="_blank" rel="noreferrer" className="btn-wa" style={{ fontSize:16, padding:"16px 28px" }}>💬 Hablar con Felipe</a>
               </div>
               <div style={{ display:"flex", gap:24, justifyContent:"center", flexWrap:"wrap" }}>
-                {["✓ Primer mes gratis","✓ Sin permanencia","✓ Leads calificados","✓ Soporte directo"].map((t,i) => <span key={i} style={{ fontSize:13, color:"#444" }}>{t}</span>)}
+               {["✓ Gratis para siempre","✓ Sin tarjeta de crédito","✓ Leads calificados","✓ Soporte directo"].map((t,i) => <span key={i} style={{ fontSize:13, color:"#444" }}>{t}</span>)}
               </div>
             </>
           )}
