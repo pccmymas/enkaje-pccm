@@ -550,7 +550,8 @@ export default function Landing() {
                 </div>
                 <div style={{ fontSize:12, color:"#555", marginBottom:10 }}>📍 {t.zona}</div>
                 <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}><span>⏱️ {t.anos} de experiencia</span><span style={{ color:t.plan==="premium"?"#d4af37":"#00bcd4", fontWeight:700, textTransform:"uppercase", fontSize:10 }}>{t.plan}</span></div>
-                <div style={{ display:"flex", gap:3 }}>{[1,2,3,4,5].map(s => <span key={s} style={{ color:"#d4af37", fontSize:12 }}>★</span>)}<span style={{ fontSize:11, color:"#555", marginLeft:4 }}>5.0</span></div>
+              <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:11, color:"#d4af37", fontWeight:700 }}>
+  <span>✓</span><span>Verificado por EnKaje Pro</span></div>
               </div>
             ))}
           </div>
