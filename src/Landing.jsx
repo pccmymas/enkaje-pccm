@@ -556,7 +556,7 @@ export default function Landing() {
             ))}
           </div>
           <div style={{ marginTop:32, background:"linear-gradient(135deg,#1a1208,#0f0f0a)", border:"1px solid #d4af3730", borderRadius:16, padding:"28px 32px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
-            <div><div style={{ fontWeight:700, fontSize:16, color:"#f0e8dc", marginBottom:6 }}>¿Tienes un taller en Monterrey?</div><div style={{ fontSize:13, color:"#666" }}>Sé parte de los talleres fundadores. Primer mes completamente gratis.</div></div>
+           <div><div style={{ fontWeight:700, fontSize:16, color:"#f0e8dc", marginBottom:6 }}>¿Tienes un taller en Monterrey?</div><div style={{ fontSize:13, color:"#666" }}>Sé parte de los talleres fundadores. Registro gratuito y sin mensualidad.</div></div>
             <button onClick={goApp} className="btn-gold" style={{ fontSize:14, padding:"12px 24px", whiteSpace:"nowrap" }}>Unirme al directorio →</button>
           </div>
           <div style={{ marginTop:24, background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:24 }}>
