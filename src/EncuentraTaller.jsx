@@ -59,45 +59,12 @@ const sb = async (path, opts = {}) => {
   try { return JSON.parse(text); } catch { return text; }
 };
 
-// ─── LÓGICA DE MATCH ────────────────────────────────────────────────────
-function elegirTaller(talleres, respuestas) {
-  let candidatos = talleres.filter(t => t.estado === "activo");
-  if (candidatos.length === 0) return null;
-
-  // Filtrar por zona — si nadie coincide, se abre a todas
-  const porZona = candidatos.filter(t => (t.municipio || "").trim().toLowerCase() === respuestas.zona.toLowerCase());
-  if (porZona.length > 0) candidatos = porZona;
-
-  // Filtrar por nivel de precio — si nadie coincide, se abre a todos
-  const porPrecio = candidatos.filter(t => (t.niveles_precio || "").split(",").map(s => s.trim()).includes(respuestas.precio));
-  if (porPrecio.length > 0) candidatos = porPrecio;
-
-  const tipoInfo = TIPOS.find(t => t.key === respuestas.tipo);
-  const planScore = { premium: 3, pro: 2, basico: 1 };
-
-  const puntuados = candidatos.map(t => {
-    let score = 0;
-    const esp = (t.especialidad || "").toLowerCase();
-    if (tipoInfo && tipoInfo.keywords.some(k => esp.includes(k))) score += 10;
-    score += planScore[t.plan] || 0;
-    return { taller: t, score };
-  });
-
-  puntuados.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
-    return (a.taller.leads_recibidos || 0) - (b.taller.leads_recibidos || 0);
-  });
-
-  return puntuados[0]?.taller || null;
-}
-
 export default function EncuentraTaller() {
   const [paso, setPaso] = useState(0); // 0=tipo, 1=zona, 2=precio, 3=contacto, 4=resultado
   const [respuestas, setRespuestas] = useState({ tipo: "", zona: "", precio: "" });
   const [contacto, setContacto] = useState({ nombre: "", telefono: "" });
   const [enviando, setEnviando] = useState(false);
   const [tallerAsignado, setTallerAsignado] = useState(null);
-  const [sinMatch, setSinMatch] = useState(false);
   const [error, setError] = useState("");
 
   const avanzar = () => setPaso(p => p + 1);
@@ -110,42 +77,29 @@ export default function EncuentraTaller() {
     setError("");
     setEnviando(true);
     try {
-      const talleres = await sb("talleres_membresia?estado=eq.activo");
-      const match = Array.isArray(talleres) ? elegirTaller(talleres, respuestas) : null;
-
-      const tipoLabel = TIPOS.find(t => t.key === respuestas.tipo)?.label.replace(/^[^\s]+\s/, "") || respuestas.tipo;
       const nivelLabel = NIVELES.find(n => n.key === respuestas.precio)?.label || respuestas.precio;
 
       const payload = {
         nombre: contacto.nombre,
         telefono: contacto.telefono,
         tipo_proyecto: respuestas.tipo,
-        observaciones: `Lead desde cuestionario · Zona: ${respuestas.zona} · Presupuesto: ${nivelLabel}`,
+        zona: respuestas.zona,
+        observaciones: `Lead desde cuestionario · Presupuesto: ${nivelLabel}`,
         estado: "nuevo",
-        atencion_por: match?.nombre || "Sin asignar",
+        etapa_seguimiento: "solicitud",
         canal_origen: "cuestionario",
-        taller_slug: match?.slug || null,
         created_at: new Date().toISOString(),
       };
       const limpio = Object.fromEntries(Object.entries(payload).filter(([, v]) => v !== null && v !== ""));
       await sb("proyectos", { method: "POST", body: JSON.stringify(limpio), prefer: "return=minimal" });
 
-      if (match) {
-        await sb(`talleres_membresia?id=eq.${match.id}`, {
-          method: "PATCH",
-          body: JSON.stringify({ leads_recibidos: (match.leads_recibidos || 0) + 1 }),
-          prefer: "return=minimal",
-        });
-        const telTaller = (match.telefono || "").replace(/\D/g, "");
-        if (telTaller) {
-          const sep = "━".repeat(22);
-          const msg = `🔔 *NUEVA SOLICITUD — Cuestionario*\n${sep}\n👤 *Cliente:* ${contacto.nombre}\n📱 *Tel:* ${contacto.telefono}\n🔨 *Proyecto:* ${tipoLabel}\n📍 *Zona:* ${respuestas.zona}\n💰 *Presupuesto:* ${nivelLabel}\n${sep}\nenkajepro.com`;
-          window.open(`https://wa.me/52${telTaller}?text=${encodeURIComponent(msg)}`, "_blank");
-        }
-        setTallerAsignado(match);
-      } else {
-        setSinMatch(true);
-      }
+      // Contar talleres activos que cubren esta zona, solo para el mensaje de confirmación
+      const talleres = await sb("talleres_membresia?estado=eq.activo");
+      const count = Array.isArray(talleres)
+        ? talleres.filter(t => (t.zonas_cobertura || t.municipio || "").toLowerCase().includes(respuestas.zona.toLowerCase())).length
+        : 0;
+
+      setTallerAsignado({ count, zona: respuestas.zona });
       setPaso(4);
     } catch (e) {
       setError("Error al enviar: " + e.message);
@@ -229,7 +183,7 @@ export default function EncuentraTaller() {
               width: "100%", background: enviando ? "#1a1a10" : GOLD, color: enviando ? "#555" : "#000",
               border: "none", borderRadius: 12, padding: "15px", fontWeight: 900, fontSize: 15, cursor: enviando ? "not-allowed" : "pointer",
             }}>
-              {enviando ? "Buscando tu taller..." : "Ver mi taller recomendado →"}
+              {enviando ? "Enviando..." : "Enviar solicitud →"}
             </button>
           </div>
         )}
@@ -237,20 +191,13 @@ export default function EncuentraTaller() {
         {paso === 4 && tallerAsignado && (
           <div className="fade-up" style={{ textAlign: "center" }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
-            <h2 style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginBottom: 8 }}>¡Encontramos tu taller!</h2>
-            <p style={{ color: "#ccc", fontSize: 15, marginBottom: 4 }}>{tallerAsignado.nombre}</p>
-            <p style={{ color: "#888", fontSize: 13, marginBottom: 24 }}>te contactará muy pronto al {contacto.telefono}</p>
-            <a href={`/taller/${tallerAsignado.slug}`} style={{ display: "inline-block", background: "transparent", border: `1.5px solid ${GOLD}`, color: GOLD, borderRadius: 10, padding: "12px 24px", fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
-              Ver perfil del taller →
-            </a>
-          </div>
-        )}
-
-        {paso === 4 && sinMatch && (
-          <div className="fade-up" style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🙌</div>
-            <h2 style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginBottom: 8 }}>¡Recibimos tu solicitud!</h2>
-            <p style={{ color: "#ccc", fontSize: 15 }}>Aún no tenemos un taller activo en tu zona, pero te contactaremos personalmente en menos de 24 horas.</p>
+            <h2 style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginBottom: 8 }}>¡Solicitud enviada!</h2>
+            <p style={{ color: "#ccc", fontSize: 15, marginBottom: 4 }}>
+              {tallerAsignado.count > 0
+                ? `${tallerAsignado.count} taller${tallerAsignado.count > 1 ? "es" : ""} verificado${tallerAsignado.count > 1 ? "s" : ""} en ${tallerAsignado.zona} recibirá${tallerAsignado.count > 1 ? "n" : ""} tu solicitud`
+                : `Aún no tenemos talleres activos en ${tallerAsignado.zona}, pero te contactaremos personalmente`}
+            </p>
+            <p style={{ color: "#888", fontSize: 13 }}>Te contactarán directamente al {contacto.telefono}</p>
           </div>
         )}
       </div>
