@@ -1760,7 +1760,7 @@ async function login() {
       history.replaceState({ tab: tabInicial }, "", window.location.pathname);
       if (r === "cliente") {
         try {
-          const proyData = await sb(`proyectos?user_email=eq.${data.user.email}&order=created_at.desc&limit=4`);
+         const proyData = await sb(`proyectos?user_email=eq.${data.user.email}&order=created_at.desc&limit=4`, { token: data.access_token });
           if (Array.isArray(proyData)) {
             proyData.forEach(p => {
               if (p.tipo_proyecto === "cocina")       setFormCocina(prev => ({...FORM_INIT, ...p}));
