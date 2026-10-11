@@ -1385,6 +1385,7 @@ function RegistroTaller({ onBack }) {
     if (!f.municipio.trim()) return setMsg("❌ Escribe el municipio donde está tu taller");
     if (!f.direccion_taller.trim()) return setMsg("❌ Escribe la dirección del taller (la necesitamos para la verificación)");
     if (zonas.length === 0) return setMsg("❌ Elige al menos una zona donde das servicio");
+    if (tipos.length === 0) return setMsg("❌ Elige al menos un tipo de proyecto en el que te especializas");
     if (fotos.length < 5) return setMsg(`❌ Sube mínimo 5 fotos de trabajos reales (llevas ${fotos.length})`);
     if (!acepto) return setMsg("❌ Debes aceptar los Términos y el Aviso de Privacidad");
 
