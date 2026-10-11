@@ -1306,6 +1306,10 @@ const ZONAS = [
   "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
   "Apodaca", "Santa Catarina", "Escobedo", "García", "Juárez", "Cadereyta Jiménez",
 ];
+const TIPOS_PROYECTO = [
+  ["cocina", "🍳 Cocinas"], ["closet", "👔 Closets"], ["puerta", "🚪 Puertas"],
+  ["mueble", "🛋️ Muebles"], ["panel", "🪵 Paneles"], ["bano", "🚿 Baños"],
+];
 const ESTADOS_PROYECTO = [
   { key: "nuevo",      label: "Nuevo",              color: "#00bcd4", emoji: "🆕" },
   { key: "proceso",    label: "En proceso",          color: "#f0a500", emoji: "🔨" },
