@@ -3785,6 +3785,22 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
 
                       <div style={{ marginTop: 12, marginBottom: 12 }}>
+                         <div style={{ marginBottom: 16 }}>
+                          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Especialidad (tipos de proyecto que recibe)</label>
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            {TIPOS_PROYECTO.map(([k, l]) => {
+                              const actuales = (tallerEdit.tipos_proyecto || "").split(",").map(s => s.trim()).filter(Boolean);
+                              const sel = actuales.includes(k);
+                              return (
+                                <PILL key={k} label={l} checked={sel} onChange={() => {
+                                  if (sel && actuales.length === 1) return;
+                                  const nuevas = sel ? actuales.filter(x => x !== k) : [...actuales, k];
+                                  setTallerEdit(p => ({ ...p, tipos_proyecto: nuevas.join(",") }));
+                                }} />
+                              );
+                            })}
+                          </div>
+                        </div>
                         <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           {["basico","pro","premium"].map(pl => (
