@@ -1329,6 +1329,234 @@ const ESTADOS_LEAD = [
   { key: "descartado",  label: "Descartado",  emoji: "🚫", color: "#666" },
   { key: "recontactar", label: "Recontactar", emoji: "🔄", color: "#f0a500" },
 ];
+// Reduce las fotos del celular (de ~6 MB a ~300 KB) antes de subirlas
+const comprimirFoto = (file) => new Promise((resolve) => {
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const max = 1600;
+    const esc = Math.min(1, max / Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.width * esc);
+    c.height = Math.round(img.height * esc);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    c.toBlob(b => { URL.revokeObjectURL(url); resolve(b || file); }, "image/jpeg", 0.82);
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+  img.src = url;
+});
+
+function RegistroTaller({ onBack }) {
+  const isMobile = useIsMobile();
+  const [f, setF] = useState({
+    nombre: "", representante: "", telefono: "", email: "", password: "", password2: "",
+    especialidad: "", municipio: "", zona: "", direccion_taller: "",
+    anos_experiencia: "", horario: "", instagram: "", facebook: "",
+  });
+  const [zonas, setZonas] = useState([]);
+  const [fotos, setFotos] = useState([]);
+  const [acepto, setAcepto] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+  const set = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const legalHref = (k) => `${window.location.pathname}?legal=${k}`;
+
+  const agregarFotos = (e) => {
+    const nuevas = Array.from(e.target.files || []);
+    setFotos(prev => [...prev, ...nuevas].slice(0, 8));
+    e.target.value = "";
+  };
+
+  async function enviar() {
+    setMsg("");
+    const email = f.email.trim().toLowerCase();
+    if (!f.nombre.trim()) return setMsg("❌ Escribe el nombre de tu taller");
+    if (!f.representante.trim()) return setMsg("❌ Escribe el nombre del dueño o representante");
+    if (f.telefono.replace(/\D/g, "").length < 10) return setMsg("❌ Escribe un teléfono de 10 dígitos (de preferencia con WhatsApp)");
+    if (!email.includes("@")) return setMsg("❌ Correo inválido");
+    if (f.password.length < 6) return setMsg("❌ La contraseña debe tener al menos 6 caracteres");
+    if (f.password !== f.password2) return setMsg("❌ Las contraseñas no coinciden");
+    if (!f.municipio.trim()) return setMsg("❌ Escribe el municipio donde está tu taller");
+    if (!f.direccion_taller.trim()) return setMsg("❌ Escribe la dirección del taller (la necesitamos para la verificación)");
+    if (zonas.length === 0) return setMsg("❌ Elige al menos una zona donde das servicio");
+    if (fotos.length < 5) return setMsg(`❌ Sube mínimo 5 fotos de trabajos reales (llevas ${fotos.length})`);
+    if (!acepto) return setMsg("❌ Debes aceptar los Términos y el Aviso de Privacidad");
+
+    setLoading(true);
+    try {
+      // 1) Subir fotos
+      setMsg("Subiendo fotos...");
+      const urls = [];
+      for (let i = 0; i < fotos.length; i++) {
+        const blob = await comprimirFoto(fotos[i]);
+        const fileName = `registro_${Date.now()}_${i}.jpg`;
+        const up = await fetch(`${SUPABASE_URL}/storage/v1/object/renders/${fileName}`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "x-upsert": "true", "Content-Type": blob.type || "image/jpeg" },
+          body: blob,
+        });
+        if (!up.ok) throw new Error("No se pudo subir una de las fotos. Revisa tu conexión e intenta de nuevo.");
+        urls.push(`${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`);
+      }
+
+      // 2) Crear la cuenta
+      setMsg("Creando tu cuenta...");
+      const auth = await authFetch("signup", {
+        email, password: f.password,
+        data: { nombre: f.representante.trim(), role: "taller" },
+      });
+      if (!(auth.user || auth.id)) {
+        const m = auth.error_description || auth.msg || auth.message || "";
+        if (m.includes("already registered")) throw new Error("Este correo ya tiene cuenta. Si ya te registraste, espera nuestra llamada de verificación.");
+        throw new Error(m || "No se pudo crear la cuenta");
+      }
+
+      // 3) Guardar la solicitud como PENDIENTE
+      setMsg("Enviando tu solicitud...");
+      const slug = (f.nombre.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "taller")
+        + "-" + Math.random().toString(36).slice(2, 6);
+      const fila = {
+        nombre: f.nombre.trim(), representante: f.representante.trim(),
+        telefono: f.telefono.trim(), email,
+        especialidad: f.especialidad.trim(), municipio: f.municipio.trim(), zona: f.zona.trim(),
+        direccion_taller: f.direccion_taller.trim(),
+        anos_experiencia: f.anos_experiencia.trim(), horario: f.horario.trim(),
+        instagram: f.instagram.trim(), facebook: f.facebook.trim(),
+        zonas_cobertura: zonas.join(", "),
+        portafolio_urls: urls.join(","),
+        slug, plan: "basico", estado: "pendiente", verificacion_estado: "por_agendar",
+        leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0,
+        created_at: new Date().toISOString(),
+      };
+      const limpio = Object.fromEntries(Object.entries(fila).filter(([, v]) => v !== "" && v !== null && v !== undefined));
+      const ins = await fetch(`${SUPABASE_URL}/rest/v1/talleres_membresia?apikey=${SUPABASE_KEY}`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
+        body: JSON.stringify(limpio),
+      });
+      if (!ins.ok) {
+        const t = await ins.text();
+        throw new Error("Tu cuenta se creó pero no se pudo guardar la solicitud. Escríbenos a hola@enkajepro.com. Detalle: " + t.slice(0, 120));
+      }
+      setEnviado(true);
+      setMsg("");
+    } catch (e) {
+      setMsg("❌ " + e.message);
+    }
+    setLoading(false);
+  }
+
+  if (enviado) return (
+    <div style={{ minHeight: "100vh", background: "#070708", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <style>{GLOBAL_CSS}</style>
+      <div style={{ maxWidth: 440, textAlign: "center", background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 20, padding: 32 }}>
+        <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+        <h2 style={{ color: "#d4af37", margin: "0 0 12px" }}>Solicitud enviada</h2>
+        <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>
+          Gracias por registrar tu taller. Nos pondremos en contacto contigo por teléfono o WhatsApp para
+          agendar una <b style={{ color: "#e8e0d0" }}>visita o videollamada</b> de verificación.
+          Cuando quedes aprobado, podrás entrar con tu correo y contraseña.
+        </p>
+        <BTN onClick={onBack} style={{ width: "100%" }}>Volver al inicio de sesión</BTN>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#070708", color: "#e8e0d0", padding: isMobile ? "20px 14px 60px" : "32px 20px 80px" }}>
+      <style>{GLOBAL_CSS}</style>
+      <div style={{ maxWidth: 720, margin: "0 auto" }}>
+        <button onClick={onBack} style={{ background: "transparent", border: "none", color: "#555", cursor: "pointer", fontSize: 13, padding: "8px 0", marginBottom: 12 }}>← Volver</button>
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <LogoInline size="md" />
+          <h1 style={{ color: "#d4af37", fontSize: isMobile ? 22 : 28, margin: "14px 0 6px" }}>Registra tu taller</h1>
+          <p style={{ color: "#aaa", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
+            Recibe clientes con el proyecto ya definido. Antes de aparecer en la plataforma verificamos
+            cada taller con una visita o una videollamada.
+          </p>
+        </div>
+
+        <SECTION title="Tu taller" icon="🏭">
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
+            <INPUT label="Nombre del taller *" value={f.nombre} onChange={e => set("nombre", e.target.value)} placeholder="Carpintería Regia" />
+            <INPUT label="Dueño o representante *" value={f.representante} onChange={e => set("representante", e.target.value)} placeholder="Nombre de quien firma" />
+            <INPUT label="Teléfono / WhatsApp *" value={f.telefono} onChange={e => set("telefono", e.target.value)} placeholder="81-1234-5678" />
+            <INPUT label="Especialidad" value={f.especialidad} onChange={e => set("especialidad", e.target.value)} placeholder="Cocinas, closets, madera sólida..." />
+            <INPUT label="Años de experiencia" value={f.anos_experiencia} onChange={e => set("anos_experiencia", e.target.value)} placeholder="10" />
+            <INPUT label="Horario" value={f.horario} onChange={e => set("horario", e.target.value)} placeholder="Lun-Sáb 9am-6pm" />
+            <INPUT label="Instagram (opcional)" value={f.instagram} onChange={e => set("instagram", e.target.value)} placeholder="@mitaller" />
+            <INPUT label="Facebook (opcional)" value={f.facebook} onChange={e => set("facebook", e.target.value)} placeholder="facebook.com/mitaller" />
+          </div>
+        </SECTION>
+
+        <SECTION title="Ubicación" icon="📍" subtitle="La dirección es solo para la verificación, no se publica.">
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
+            <INPUT label="Municipio *" value={f.municipio} onChange={e => set("municipio", e.target.value)} placeholder="Apodaca" />
+            <INPUT label="Colonia / zona" value={f.zona} onChange={e => set("zona", e.target.value)} placeholder="Colonia" />
+          </div>
+          <INPUT label="Dirección del taller *" value={f.direccion_taller} onChange={e => set("direccion_taller", e.target.value)} placeholder="Calle, número, colonia" />
+          <label style={{ fontSize: 11, color: "#999", display: "block", margin: "6px 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>
+            Zonas donde das servicio * <span style={{ color: "#444", textTransform: "none", letterSpacing: 0 }}>(recibes solicitudes de estas zonas)</span>
+          </label>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {ZONAS.map(z => (
+              <PILL key={z} label={z} checked={zonas.includes(z)}
+                onChange={() => setZonas(p => p.includes(z) ? p.filter(x => x !== z) : [...p, z])} />
+            ))}
+          </div>
+        </SECTION>
+
+        <SECTION title="Fotos de tus trabajos" icon="📷" subtitle="Mínimo 5 y máximo 8 fotos de trabajos reales tuyos. Esto es lo que más pesa en la verificación.">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px,1fr))", gap: 8, marginBottom: 12 }}>
+            {fotos.map((file, i) => (
+              <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 8, overflow: "hidden", border: "1px solid #1a1a12" }}>
+                <img src={URL.createObjectURL(file)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <button onClick={() => setFotos(p => p.filter((_, j) => j !== i))}
+                  style={{ position: "absolute", top: 4, right: 4, background: "#f44336", color: "#fff", border: "none", borderRadius: "50%", width: 22, height: 22, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✕</button>
+              </div>
+            ))}
+          </div>
+          {fotos.length < 8 && (
+            <label style={{ display: "inline-block", background: "#1a1a12", border: "1px dashed #2a2a20", borderRadius: 10, padding: "10px 16px", fontSize: 12, color: "#aaa", cursor: "pointer" }}>
+              + Agregar fotos ({fotos.length}/8)
+              <input type="file" accept="image/*" multiple onChange={agregarFotos} style={{ display: "none" }} />
+            </label>
+          )}
+        </SECTION>
+
+        <SECTION title="Tu cuenta" icon="🔐">
+          <INPUT label="Correo electrónico *" value={f.email} onChange={e => set("email", e.target.value)} placeholder="taller@correo.com" type="email" />
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
+            <INPUT label="Contraseña *" value={f.password} onChange={e => set("password", e.target.value)} placeholder="Mínimo 6 caracteres" type="password" />
+            <INPUT label="Repite la contraseña *" value={f.password2} onChange={e => set("password2", e.target.value)} placeholder="••••••••" type="password" />
+          </div>
+        </SECTION>
+
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 16 }}>
+          <button onClick={() => setAcepto(a => !a)} style={{ width: 22, height: 22, borderRadius: 6, border: `1.5px solid ${acepto ? "#d4af37" : "#444"}`, background: acepto ? "#d4af37" : "transparent", color: "#000", fontWeight: 900, cursor: "pointer", flexShrink: 0, marginTop: 1 }}>{acepto ? "✓" : ""}</button>
+          <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.6 }}>
+            Acepto los <a href={legalHref("terminos")} target="_blank" rel="noreferrer" style={{ color: "#d4af37" }}>Términos y Condiciones</a> y el{" "}
+            <a href={legalHref("privacidad")} target="_blank" rel="noreferrer" style={{ color: "#d4af37" }}>Aviso de Privacidad</a>, y entiendo que mi taller será verificado antes de activarse.
+          </div>
+        </div>
+
+        {msg && (
+          <div style={{ background: msg.startsWith("❌") ? "#1a0a0a" : "#0a1a0a", border: `1px solid ${msg.startsWith("❌") ? "#f4433640" : "#4caf5040"}`, color: msg.startsWith("❌") ? "#f44336" : "#4caf50", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13 }}>{msg}</div>
+        )}
+        <BTN onClick={enviar} disabled={loading} style={{ width: "100%", padding: 15, fontSize: 15 }}>
+          {loading ? "Enviando..." : "ENVIAR SOLICITUD"}
+        </BTN>
+        <p style={{ fontSize: 11, color: "#666", textAlign: "center", lineHeight: 1.6, margin: "12px 0 0" }}>
+          Al enviar tu solicitud confirmas que has leído y aceptas los{" "}
+          <a href={legalHref("terminos")} target="_blank" rel="noreferrer" style={{ color: "#d4af37" }}>Términos y Condiciones</a> y el{" "}
+          <a href={legalHref("privacidad")} target="_blank" rel="noreferrer" style={{ color: "#d4af37" }}>Aviso de Privacidad</a> de EnKaje Pro.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 // ============ MAIN APP ============
 export default function App() {
