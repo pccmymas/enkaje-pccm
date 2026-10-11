@@ -1918,12 +1918,21 @@ async function cargarLeads() {
     const data = await sb(url, { token });
     if (!Array.isArray(data)) { console.warn("cargarProyectos:", data); return; }
     if (role === "taller") {
-      const miTaller = talleresMem.find(t => t.email === user?.email) || tallerSel;
-      const zonasTaller = (miTaller?.zonas_cobertura || miTaller?.municipio || "")
-        .split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
-      const filtrados = zonasTaller.length > 0
-        ? data.filter(p => !p.zona || zonasTaller.includes((p.zona || "").trim().toLowerCase()))
-        : data;
+      const miEmail = (user?.email || "").toLowerCase();
+      const filas = await sb(`talleres_membresia?email=eq.${encodeURIComponent(miEmail)}&select=zonas_cobertura,municipio,tipos_proyecto`, { token });
+      const mio = Array.isArray(filas) ? filas[0] : null;
+      const lista = s => (s || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+      const zonasTaller = lista(mio?.zonas_cobertura || mio?.municipio);
+      const tiposTaller = lista(mio?.tipos_proyecto);
+      const filtrados = data.filter(p => {
+        // Siempre ve los suyos
+        const esMio = (p.user_email || "").toLowerCase() === miEmail || (p.taller_email || "").toLowerCase() === miEmail;
+        if (esMio) return true;
+        // Sin zona, sin zonas o sin especialidades configuradas: no ve nada
+        if (!p.zona || zonasTaller.length === 0 || tiposTaller.length === 0) return false;
+        return zonasTaller.includes((p.zona || "").trim().toLowerCase())
+          && tiposTaller.includes((p.tipo_proyecto || "").trim().toLowerCase());
+      });
       setProyectos(filtrados);
     } else {
       setProyectos(data);
