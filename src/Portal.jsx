@@ -1443,7 +1443,7 @@ const guardarEnPerfil = async () => {
             </div>
             <div style={{ display:"flex", gap:10 }}>
               <Btn onClick={back} outline style={{ flex:1 }}>← Atrás</Btn>
-              <Btn onClick={async () => { await guardarExpediente(); next(); }} disabled={!nombre || !telefono || saving} style={{ flex:2 }}>
+              <Btn onClick={async () => { await guardarExpediente(); next(); }}disabled={!nombre || !telefono || !zona || saving} style={{ flex:2 }}>
                 {saving ? "Guardando..." : "Solicitar cotizaciones →"}
               </Btn>
             </div>
