@@ -3250,6 +3250,11 @@ Formato: Caption completo listo para copiar y pegar.`;
                   </div>
                   {sel && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #ffffff08" }}>
+                        {p.render_url && (
+                        <img src={p.render_url} alt="Render"
+                          onClick={e => { e.stopPropagation(); setImagenAmpliada(p.render_url); }}
+                          style={{ width: "100%", maxHeight: 400, objectFit: "contain", background: "#000", borderRadius: 10, marginBottom: 12, cursor: "zoom-in", display: "block" }} />
+                      )}
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 12 }}>
                         {[["Tel",p.telefono],["Email",p.correo],["Material",Array.isArray(p.material)?p.material.join(", "):p.material],["Nivel",p.nivel_calidad]].filter(([,v])=>v).map(([l,v],j) => (
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
