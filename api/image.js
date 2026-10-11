@@ -14,9 +14,8 @@ export default async function handler(req, res) {
     if (imageBase64) {
       // CON FOTO — usar edits para transformar la imagen real
       const imageBuffer = Buffer.from(imageBase64, "base64");
-      const FormData = (await import("formdata-node")).FormData;
-      const { Blob } = await import("buffer");
 
+      // FormData y Blob vienen integrados en Node (no hace falta importarlos)
       const formData = new FormData();
       formData.append("model", "gpt-image-1");
       formData.append("prompt", prompt);
