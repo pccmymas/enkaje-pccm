@@ -29,6 +29,11 @@ const TIPOS_PROYECTO = [
   { key: "bano",    label: "Baño",    emoji: "🚿", desc: "Vanity, mueble flotante, espejo", base: "/tipo-bano.png" },
 ];
 
+const ZONAS = [
+  "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
+  "Apodaca", "Santa Catarina", "Escobedo", "García", "Juárez", "Cadereyta Jiménez",
+];
+
 const ESTILOS = [
   { key: "moderno",       label: "Moderno",       desc: "Líneas limpias, sin adornos",     foto: "/moderno.png",       prompt_hint: "modern clean lines, flat panel cabinets, neutral tones, hidden hardware" },
   { key: "minimalista",   label: "Minimalista",   desc: "Lo esencial, espacios abiertos",  foto: "/minimalista.png",   prompt_hint: "minimalist, handleless cabinets, push-open doors, white matte, open space" },
