@@ -1516,6 +1516,15 @@ function RegistroTaller({ onBack }) {
           </div>
         </SECTION>
 
+               <SECTION title="¿En qué te especializas? *" icon="🪚" subtitle="Elige todos los tipos de proyecto que fabricas. Solo recibirás solicitudes de estos tipos.">
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {TIPOS_PROYECTO.map(([k, l]) => (
+              <PILL key={k} label={l} checked={tipos.includes(k)}
+                onChange={() => setTipos(p => p.includes(k) ? p.filter(x => x !== k) : [...p, k])} />
+            ))}
+          </div>
+        </SECTION>
+
         <SECTION title="Fotos de tus trabajos" icon="📷" subtitle="Mínimo 5 y máximo 8 fotos de trabajos reales tuyos. Esto es lo que más pesa en la verificación.">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px,1fr))", gap: 8, marginBottom: 12 }}>
             {fotos.map((file, i) => (
