@@ -1723,6 +1723,31 @@ export default function App() {
 
   const nombreUsuario = user?.user_metadata?.nombre || user?.email?.split("@")[0] || "Usuario";
 
+async function guardarRenderPendiente(tok, usr) {
+  try {
+    const raw = localStorage.getItem("enkaje_render_pendiente");
+    if (!raw) return;
+    const p = JSON.parse(raw);
+    if (!p?.render_url || Date.now() - (p.ts || 0) > 24 * 60 * 60 * 1000) {
+      localStorage.removeItem("enkaje_render_pendiente");
+      return;
+    }
+    const payload = {
+      tipo_proyecto: p.tipo_proyecto, render_url: p.render_url, estilo: p.estilo,
+      material: p.material, color_principal: p.color_principal, tipo_acabado: p.tipo_acabado,
+      observaciones: p.observaciones, correo: usr?.email, user_email: usr?.email,
+      estado: "guardado", etapa_seguimiento: "guardado", created_at: new Date().toISOString(),
+    };
+    const limpio = Object.fromEntries(Object.entries(payload).filter(([, v]) => v !== null && v !== undefined && v !== ""));
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/proyectos?apikey=${SUPABASE_KEY}`, {
+      method: "POST",
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${tok}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
+      body: JSON.stringify(limpio),
+    });
+    if (r.ok) localStorage.removeItem("enkaje_render_pendiente");
+  } catch {}
+}
+
 async function login() {
   setLoginLoading(true); setLoginError("");
   try {
