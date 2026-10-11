@@ -384,7 +384,7 @@ export default function Landing() {
             ))}
           </div>
           <div style={{ textAlign:"center", marginTop:40 }}>
-            <button onClick={audiencia==="cliente" ? goPortal : goApp} className="btn-gold" style={{ fontSize:15, padding:"14px 36px" }}>
+            <button onClick={audiencia==="cliente" ? goPortal : goRegistro} className="btn-gold" style={{ fontSize:15, padding:"14px 36px" }}>
               {audiencia==="cliente" ? "Probar gratis ahora →" : "Quiero empezar →"}
             </button>
           </div>
