@@ -2822,12 +2822,12 @@ Formato: Caption completo listo para copiar y pegar.`;
             style={{ width: "100%", background: "#d4af37", color: "#000", border: "none", borderRadius: 12, padding: "14px", fontWeight: 700, fontSize: 15, cursor: "pointer", letterSpacing: 1 }}>
             {loginLoading ? "..." : loginMode==="login" ? "ENTRAR" : "CREAR CUENTA"}
           </button>
-         {loginMode === "register" && (
-  <div style={{ marginTop: 12, textAlign: "center", fontSize: 11, color: "#444", lineHeight: 1.6 }}>
-    Las cuentas de taller son activadas por el equipo EnKaje Pro.<br/>
-    ¿Eres un taller? Escríbenos a <a href="mailto:hola@enkajepro.com" style={{ color: "#d4af37", textDecoration: "underline" }}>hola@enkajepro.com</a>
-  </div>
-)}
+                  <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid #1a1a12", textAlign: "center" }}>
+            <div style={{ fontSize: 12, color: "#666", marginBottom: 8 }}>¿Tienes un taller de carpintería?</div>
+            <button onClick={() => setScreen("registro_taller")} style={{ background: "transparent", border: "1.5px solid #d4af37", color: "#d4af37", borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+              Registra tu taller →
+            </button>
+          </div>
         </div>
         <div style={{ marginTop: 20, textAlign: "center", display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           {[["privacidad","Privacidad"],["terminos","Términos"],["cookies","Cookies"]].map(([k,l]) => (
