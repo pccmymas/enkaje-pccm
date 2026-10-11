@@ -94,9 +94,13 @@ export default function EncuentraTaller() {
       await sb("proyectos", { method: "POST", body: JSON.stringify(limpio), prefer: "return=minimal" });
 
       // Contar talleres activos que cubren esta zona, solo para el mensaje de confirmación
-      const talleres = await sb("talleres_membresia?estado=eq.activo");
+      const talleres = await sb("talleres_publicos?select=zonas_cobertura,municipio,tipos_proyecto");
+      const lista = s => (s || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
       const count = Array.isArray(talleres)
-        ? talleres.filter(t => (t.zonas_cobertura || t.municipio || "").toLowerCase().includes(respuestas.zona.toLowerCase())).length
+        ? talleres.filter(t =>
+            lista(t.zonas_cobertura || t.municipio).includes(respuestas.zona.toLowerCase())
+            && lista(t.tipos_proyecto).includes(respuestas.tipo)
+          ).length
         : 0;
 
       setTallerAsignado({ count, zona: respuestas.zona });
