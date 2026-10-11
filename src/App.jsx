@@ -2110,6 +2110,10 @@ async function guardarEdicionTaller() {
   // Leer parámetro ?legal= del URL al cargar (viene desde el landing)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+      if (params.get("registro") === "taller") {
+      setScreen("registro_taller");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
     const legal = params.get("legal");
     if (legal && ["privacidad","terminos","cookies"].includes(legal)) {
       setLegalPage(legal);
