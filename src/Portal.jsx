@@ -488,6 +488,23 @@ export default function Portal() {
     }
   }, []);
 
+   // Guardar el render en el navegador si no hay cuenta, para pasarlo al perfil al registrarse
+  useEffect(() => {
+    if (!sinCuenta || !renderUrl || !/^https?:/.test(renderUrl)) return;
+    try {
+      localStorage.setItem("enkaje_render_pendiente", JSON.stringify({
+        render_url: renderUrl,
+        tipo_proyecto: tipoProyecto,
+        estilo: estilo,
+        material: MATERIALES.find(m => m.key === material)?.label || material || null,
+        color_principal: colorElegido || null,
+        tipo_acabado: ACABADOS.find(a => a.key === acabado)?.label || acabado || null,
+        observaciones: descripcion || null,
+        ts: Date.now(),
+      }));
+    } catch {}
+  }, [renderUrl]);
+
   const handleFoto = (e) => {
     const file = e.target.files[0];
     if (!file) return;
