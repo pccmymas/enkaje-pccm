@@ -3355,7 +3355,9 @@ Formato: Caption completo listo para copiar y pegar.`;
                       {lead.foto_url && (
                         <div style={{ borderRadius: 10, overflow: "hidden", marginBottom: 14 }}>
                           <div style={{ fontSize: 10, color: "#555", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>📸 Foto original del cliente</div>
-                          <img src={lead.foto_url} alt="Foto cliente" style={{ width: "100%", maxHeight: 160, objectFit: "cover", borderRadius: 8 }} />
+                            <img src={lead.foto_url} alt="Foto cliente"
+                            onClick={e => { e.stopPropagation(); setImagenAmpliada(lead.foto_url); }}
+                            style={{ width: "100%", maxHeight: 220, objectFit: "contain", background: "#000", borderRadius: 8, cursor: "zoom-in" }} />
                         </div>
                       )}
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
