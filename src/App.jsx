@@ -1431,6 +1431,7 @@ function RegistroTaller({ onBack }) {
         anos_experiencia: f.anos_experiencia.trim(), horario: f.horario.trim(),
         instagram: f.instagram.trim(), facebook: f.facebook.trim(),
         zonas_cobertura: zonas.join(", "),
+        tipos_proyecto: tipos.join(","),
         portafolio_urls: urls.join(","),
         slug, plan: "basico", estado: "pendiente", verificacion_estado: "por_agendar",
         leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0,
