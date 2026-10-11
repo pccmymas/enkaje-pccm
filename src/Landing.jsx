@@ -477,7 +477,7 @@ export default function Landing() {
               </div>
             </div>
             <div style={{ textAlign:"center", marginTop:32, display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
-              <button onClick={goApp} className="btn-gold" style={{ fontSize:15, padding:"14px 32px" }}>Quiero más clientes →</button>
+              <button onClick={goRegistro} className="btn-gold" style={{ fontSize:15, padding:"14px 32px" }}>Quiero más clientes →</button>
               <a href="https://wa.me/528127176786" target="_blank" rel="noreferrer" className="btn-wa" style={{ fontSize:15, padding:"14px 24px" }}>💬 Hablar con Felipe</a>
             </div>
           </div>
