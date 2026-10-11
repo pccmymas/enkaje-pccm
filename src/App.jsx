@@ -1710,7 +1710,28 @@ async function login() {
   setLoginLoading(true); setLoginError("");
   try {
     const data = await authFetch("token?grant_type=password", { email: loginForm.email, password: loginForm.password });
-    if (data.access_token) {
+       if (data.access_token) {
+      // Talleres: solo entran si ya fueron aprobados
+      const rolLogin = data.user?.user_metadata?.role || "cliente";
+      if (rolLogin === "taller") {
+        const filas = await sb(`talleres_membresia?email=eq.${encodeURIComponent((data.user.email || "").toLowerCase())}&select=estado`, { token: data.access_token });
+        if (!Array.isArray(filas)) {
+          setLoginError("No pudimos verificar el estado de tu taller. Intenta de nuevo en un momento.");
+          setLoginLoading(false);
+          return;
+        }
+        const estTaller = filas[0]?.estado;
+        if (estTaller === "pendiente") {
+          setLoginError("⏳ Tu solicitud sigue en revisión. Te contactaremos para agendar la visita o videollamada de verificación.");
+          setLoginLoading(false);
+          return;
+        }
+        if (estTaller === "rechazado") {
+          setLoginError("Tu solicitud no fue aprobada. Para más información escríbenos a hola@enkajepro.com");
+          setLoginLoading(false);
+          return;
+        }
+      }
       setToken(data.access_token); setUser(data.user);
       sessionStorage.setItem("enkaje_token", data.access_token);
       sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
