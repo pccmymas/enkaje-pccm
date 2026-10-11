@@ -1779,6 +1779,7 @@ async function login() {
       sessionStorage.setItem("enkaje_user", JSON.stringify(data.user));
       const r = data.user?.user_metadata?.role || "cliente";
       sessionStorage.setItem("enkaje_role", r);
+      if (r === "cliente") await guardarRenderPendiente(data.access_token, data.user);
       const tabInicial = r === "cliente" ? "mis_proyectos" : "bienvenida";
       setRole(r); setScreen("app"); setTab(tabInicial);
       sessionStorage.setItem("enkaje_tab", tabInicial);
