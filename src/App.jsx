@@ -3346,7 +3346,9 @@ Formato: Caption completo listo para copiar y pegar.`;
                     <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1a1a12" }}>
                       {lead.render_url && (
                         <div style={{ borderRadius: 10, overflow: "hidden", marginBottom: 14, position: "relative" }}>
-                          <img src={lead.render_url} alt="Render IA" style={{ width: "100%", maxHeight: 400 , objectFit: "cover" }} />
+                            <img src={lead.render_url} alt="Render IA"
+                            onClick={e => { e.stopPropagation(); setImagenAmpliada(lead.render_url); }}
+                            style={{ width: "100%", maxHeight: 400, objectFit: "contain", background: "#000", cursor: "zoom-in", display: "block" }} />
                           <div style={{ position: "absolute", top: 8, left: 8, background: "#0a0a08cc", borderRadius: 8, padding: "4px 10px", fontSize: 11, color: "#d4af37", fontWeight: 700 }}>🤖 Render IA</div>
                         </div>
                       )}
