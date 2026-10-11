@@ -1474,7 +1474,8 @@ function RegistroTaller({ onBack }) {
           <h1 style={{ color: "#d4af37", fontSize: isMobile ? 22 : 28, margin: "14px 0 6px" }}>Registra tu taller</h1>
           <p style={{ color: "#aaa", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
             Recibe clientes con el proyecto ya definido. Antes de aparecer en la plataforma verificamos
-            cada taller con una visita o una videollamada.
+            cada taller con una visita o una videollamada. En esa verificación te pediremos mostrar una
+            identificación oficial; solo la revisamos, no la guardamos.
           </p>
         </div>
 
