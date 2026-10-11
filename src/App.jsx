@@ -1823,6 +1823,7 @@ async function login() {
       localStorage.removeItem("enkaje_renders_cuenta");
       setUser(data.user);
       const r = data.user?.user_metadata?.role || loginForm.role || "cliente";
+      await guardarRenderPendiente(data.session.access_token, data.user);
       setRole(r); setScreen("app"); setTab("bienvenida");
       sessionStorage.setItem("enkaje_tab", "bienvenida");
       history.replaceState({ tab: "bienvenida" }, "", window.location.pathname);
