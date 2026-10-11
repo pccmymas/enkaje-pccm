@@ -2067,6 +2067,7 @@ async function guardarEdicionTaller() {
       logo_url: tallerEdit.logo_url, portafolio_urls: tallerEdit.portafolio_urls,
       niveles_precio: tallerEdit.niveles_precio,
       zonas_cobertura: tallerEdit.zonas_cobertura,
+      tipos_proyecto: tallerEdit.tipos_proyecto,
     };
     const limpio = Object.fromEntries(Object.entries(campos).filter(([,v]) => v !== undefined && v !== null && v !== ""));
     await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
