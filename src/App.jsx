@@ -3557,7 +3557,24 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <BTN outline color="#00bcd4" style={{ fontSize: 12 }}>👁️ Ver mi perfil público</BTN>
               </a>
             </div>
-            {tallerMsg && <div style={{ marginBottom: 16, color: "#4caf50", fontSize: 13, background: "#0a2a0a", border: "1px solid #4caf5040", borderRadius: 8, padding: "10px 14px" }}>{tallerMsg}</div>}
+              {tallerMsg && <div style={{ marginBottom: 16, color: "#4caf50", fontSize: 13, background: "#0a2a0a", border: "1px solid #4caf5040", borderRadius: 8, padding: "10px 14px" }}>{tallerMsg}</div>}
+            <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+              <h3 style={{ color: "#d4af37", margin: "0 0 6px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>🪚 Mi especialidad</h3>
+              <p style={{ fontSize: 12, color: "#888", margin: "0 0 14px" }}>Solo recibirás solicitudes de los tipos de proyecto que marques aquí, dentro de tus zonas de cobertura.</p>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {TIPOS_PROYECTO.map(([k, l]) => {
+                  const actuales = (tallerEdit.tipos_proyecto || "").split(",").map(s => s.trim()).filter(Boolean);
+                  const sel = actuales.includes(k);
+                  return (
+                    <PILL key={k} label={l} checked={sel} onChange={() => {
+                      if (sel && actuales.length === 1) return;
+                      const nuevas = sel ? actuales.filter(x => x !== k) : [...actuales, k];
+                      setTallerEdit(p => ({ ...p, tipos_proyecto: nuevas.join(",") }));
+                    }} />
+                  );
+                })}
+              </div>
+            </div>
 <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
               <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>Datos del Taller</h3>
               <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12 }}>
