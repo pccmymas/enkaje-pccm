@@ -438,6 +438,7 @@ const Watermark = () => (
 );
 
 export default function Portal() {
+  const [zona, setZona] = useState("");
   const TOTAL_STEPS = 8;
   const [step, setStep]               = useState(0);
   const [tipoProyecto, setTipo]       = useState("");
