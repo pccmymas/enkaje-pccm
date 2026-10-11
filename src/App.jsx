@@ -3525,7 +3525,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                       {p.render_url && (
                         <img src={p.render_url} alt="Render" 
                           onClick={e => { e.stopPropagation(); setImagenAmpliada(p.render_url); }}
-                          style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 10, marginBottom: 12, cursor: "zoom-in" }} />
+                          style={{ width: "100%", maxHeight: 320, objectFit: "contain", background: "#000", borderRadius: 10, marginBottom: 12, cursor: "zoom-in" }} />
                       )}
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12, color: "#aaa", marginBottom: 14 }}>
                         {[["Tel",p.telefono],["Correo",p.correo],["Estilo",p.estilo],["Material",Array.isArray(p.material)?p.material.join(", "):p.material],["Color",p.color_principal],["Acabado",p.tipo_acabado]].filter(([,v])=>v).map(([l,v],j) => (
