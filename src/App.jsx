@@ -3615,6 +3615,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 ["fotos", "Fotos reales de proyectos revisadas (5 a 8)"],
                 ["contacto", "Contacto y ubicación confirmados"],
                 ["antecedentes", "Antecedentes verificables"],
+                ["identidad", "Identidad confirmada (INE vista en visita o videollamada, sin guardarla)"],
               ];
               const VERIF_ESTADOS = [["por_agendar", "Por agendar"], ["agendada", "Agendada"], ["completada", "Completada"]];
               const chip = (activo, color) => ({ padding: "6px 12px", borderRadius: 20, border: `1.5px solid ${activo ? color : "#2a2a20"}`, background: activo ? `${color}20` : "transparent", color: activo ? color : "#777", fontSize: 12, fontWeight: activo ? 700 : 400, cursor: "pointer" });
