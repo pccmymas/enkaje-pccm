@@ -1358,6 +1358,7 @@ function RegistroTaller({ onBack }) {
     anos_experiencia: "", horario: "", instagram: "", facebook: "",
   });
   const [zonas, setZonas] = useState([]);
+  const [tipos, setTipos] = useState([]);
   const [fotos, setFotos] = useState([]);
   const [acepto, setAcepto] = useState(false);
   const [msg, setMsg] = useState("");
