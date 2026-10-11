@@ -844,6 +844,7 @@ const guardarEnPerfil = async () => {
         nivel_decision:       nivelDecision,
         medidas_sketch_url:   medidas || null,
         observaciones:        `Nombre: ${nombre} | Tel: ${telefono} | Correo: ${correo} | Desc: ${descripcion} | Vida: ${vidaResumen} | DescIA: ${descripcionIA || ""}`,
+        zona: zona || null,
         score, score_label: label, estado_lead: "nuevo", created_at: new Date().toISOString(),
       };
       await sb("expedientes", { method: "POST", body: JSON.stringify(payload) });
