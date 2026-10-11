@@ -1428,6 +1428,16 @@ const guardarEnPerfil = async () => {
                 placeholder={tipoProyecto === "cocina" ? "Ej: Largo 3.20m, Alto 2.40m, Profundidad 0.60m" : "Ej: Ancho 2.40m, Alto 2.40m, Profundidad 0.60m"}
                 rows={2} style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14, resize:"vertical" }} />
             </div>
+            <div style={{ marginBottom:20 }}>
+              <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:8, letterSpacing:1, textTransform:"uppercase" }}>¿En qué zona será el proyecto?</label>
+              <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                {ZONAS.map(z => (
+                  <button key={z} onClick={() => setZona(z)} style={{ background: zona===z ? "#d4af3718" : "#0f0f0a", border:`1.5px solid ${zona===z ? "#d4af37" : "#1a1a12"}`, color: zona===z ? "#d4af37" : "#888", borderRadius:50, padding:"9px 14px", fontSize:13, cursor:"pointer", fontWeight: zona===z ? 700 : 400 }}>
+                    {zona===z && "✓ "}{z}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:12, padding:14, marginBottom:24, fontSize:12, color:"#555", lineHeight:1.7 }}>
               🔒 Tu información solo se comparte con talleres verificados de EnKaje Pro. No la vendemos ni la usamos para publicidad.
             </div>
