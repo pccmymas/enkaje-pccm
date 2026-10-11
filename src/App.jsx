@@ -3117,7 +3117,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                      {p.render_url && (
   <img src={p.render_url} alt="Render" 
     onClick={e => { e.stopPropagation(); setImagenAmpliada(p.render_url); }}
-    style={{ width: "100%", maxHeight: 320, objectFit: "contain", background: "#000", borderRadius: 10, marginBottom: 12, cursor: "zoom-in"} />
+    style={{ width: "100%", maxHeight: 320, objectFit: "contain", background: "#000", borderRadius: 10, marginBottom: 12, cursor: "zoom-in"}}/>
 )}
                       <div style={{ marginBottom: 16 }}>
   <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Seguimiento de tu proyecto</div>
