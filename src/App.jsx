@@ -3609,7 +3609,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               {talleresMem.filter(t => t.estado === "activo").length} activos · {talleresMem.length} total
             </div>
             <div style={{ marginTop: 8 }}>
-              {talleresMem.map((t,i) => (
+              {talleresMem.filter(t => t.estado !== "pendiente").map((t,i) => (
                 <div key={i} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 16, marginBottom: 10 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <div>
