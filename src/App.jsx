@@ -3710,7 +3710,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         </div>
                         {!completa && (
                           <div style={{ fontSize: 11, color: "#777", marginTop: 8 }}>
-                            Para aprobar: verificación en "Completada" y las 3 casillas de revisión marcadas.
+                           Para aprobar: verificación en "Completada" y las 4 casillas de revisión marcadas.
                           </div>
                         )}
                       </div>
