@@ -859,7 +859,7 @@ const guardarEnPerfil = async () => {
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
     setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision(""); setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
-    setAjusteTexto(""); setRegenerandoConAjuste(false);
+    setAjusteTexto(""); setRegenerandoConAjuste(false); setZona("");
   };
 
   const vidaCompleta = preguntasVida.every(p => vidaResp[p.key]);
