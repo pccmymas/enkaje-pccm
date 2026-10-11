@@ -2794,6 +2794,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   if (legalPage === "privacidad") return <PaginaPrivacidad onBack={() => setLegalPage(null)} />;
   if (legalPage === "terminos")   return <PaginaTerminos   onBack={() => setLegalPage(null)} />;
   if (legalPage === "cookies")    return <PaginaCookies    onBack={() => setLegalPage(null)} />;
+  if (screen === "registro_taller") return <RegistroTaller onBack={() => setScreen("login")} />;
 
   // ─── LOGIN ─────────────────────────────────────────────────────────────────
   if (screen === "login") return (
