@@ -3408,6 +3408,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               estado: "nuevo",
               etapa_seguimiento: "anticipo",
               user_email: correoCli || null,
+              taller_email: role === "taller" ? user?.email : null,
               created_at: new Date().toISOString(),
             };
             const limpio = Object.fromEntries(Object.entries(proyectoNuevo).filter(([,v]) => v !== null && v !== ""));
