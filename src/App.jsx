@@ -3606,8 +3606,118 @@ Formato: Caption completo listo para copiar y pegar.`;
             <BTN onClick={() => setShowNuevoTaller(true)}>+ Agregar Taller</BTN>
             {tallerMsg && <div style={{ marginTop: 12, color: "#4caf50", fontSize: 13 }}>{tallerMsg}</div>}
         <div style={{ marginTop: 8, marginBottom: 16, fontSize: 13, color: "#888" }}>
-              {talleresMem.filter(t => t.estado === "activo").length} activos · {talleresMem.length} total
+                            {talleresMem.filter(t => t.estado === "activo").length} activos · {talleresMem.length} total
             </div>
+            {(() => {
+              const pendientes = talleresMem.filter(t => t.estado === "pendiente");
+              if (pendientes.length === 0) return null;
+              const CHECK = [
+                ["fotos", "Fotos reales de proyectos revisadas (5 a 8)"],
+                ["contacto", "Contacto y ubicación confirmados"],
+                ["antecedentes", "Antecedentes verificables"],
+              ];
+              const VERIF_ESTADOS = [["por_agendar", "Por agendar"], ["agendada", "Agendada"], ["completada", "Completada"]];
+              const chip = (activo, color) => ({ padding: "6px 12px", borderRadius: 20, border: `1.5px solid ${activo ? color : "#2a2a20"}`, background: activo ? `${color}20` : "transparent", color: activo ? color : "#777", fontSize: 12, fontWeight: activo ? 700 : 400, cursor: "pointer" });
+              return (
+                <div style={{ marginBottom: 24 }}>
+                  <div style={{ fontSize: 12, color: "#f0a500", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>
+                    🕵️ Solicitudes por verificar ({pendientes.length})
+                  </div>
+                  {pendientes.map(t => {
+                    const checks = (t.verificacion_checklist || "").split(",").filter(Boolean);
+                    const fotosT = (t.portafolio_urls || "").split(",").map(u => u.trim()).filter(Boolean);
+                    const verifEst = t.verificacion_estado || "por_agendar";
+                    const completa = verifEst === "completada" && CHECK.every(([k]) => checks.includes(k));
+                    const tel = String(t.telefono || "").replace(/\D/g, "");
+                    const metodoTxt = t.verificacion_metodo === "visita" ? "una visita a tu taller" : t.verificacion_metodo === "videollamada" ? "una videollamada por cámara" : "una visita o una videollamada por cámara";
+                    return (
+                      <div key={t.id} style={{ background: "#0f0f0a", border: "1px solid #f0a50040", borderRadius: 14, padding: 16, marginBottom: 12 }}>
+                        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{t.nombre}</div>
+                        <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8, marginBottom: 12 }}>
+                          {t.representante && <div><b style={{ color: "#d4af37" }}>Representante:</b> {t.representante}</div>}
+                          <div><b style={{ color: "#d4af37" }}>Tel:</b> {t.telefono} · <b style={{ color: "#d4af37" }}>Correo:</b> {t.email}</div>
+                          {t.direccion_taller && <div><b style={{ color: "#d4af37" }}>Dirección:</b> {t.direccion_taller}{t.municipio ? `, ${t.municipio}` : ""}</div>}
+                          {t.zonas_cobertura && <div><b style={{ color: "#d4af37" }}>Da servicio en:</b> {t.zonas_cobertura}</div>}
+                          {t.especialidad && <div><b style={{ color: "#d4af37" }}>Especialidad:</b> {t.especialidad}</div>}
+                          {t.anos_experiencia && <div><b style={{ color: "#d4af37" }}>Experiencia:</b> {t.anos_experiencia} años</div>}
+                          {(t.instagram || t.facebook) && <div><b style={{ color: "#d4af37" }}>Redes:</b> {[t.instagram, t.facebook].filter(Boolean).join(" · ")}</div>}
+                        </div>
+
+                        {fotosT.length > 0 && (
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(70px,1fr))", gap: 6, marginBottom: 14 }}>
+                            {fotosT.map((u, i) => (
+                              <img key={i} src={u} alt="" onClick={() => setImagenAmpliada(u)}
+                                style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: 8, cursor: "zoom-in", border: "1px solid #1a1a12" }} />
+                            ))}
+                          </div>
+                        )}
+
+                        <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>¿Cómo lo vas a verificar?</div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+                          <button onClick={() => actualizarTaller(t.id, { verificacion_metodo: "visita" })} style={chip(t.verificacion_metodo === "visita", "#00bcd4")}>🏭 Visita al taller</button>
+                          <button onClick={() => actualizarTaller(t.id, { verificacion_metodo: "videollamada" })} style={chip(t.verificacion_metodo === "videollamada", "#00bcd4")}>📹 Videollamada por cámara</button>
+                        </div>
+
+                        <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Estado de la verificación</div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+                          {VERIF_ESTADOS.map(([k, l]) => (
+                            <button key={k} onClick={() => actualizarTaller(t.id, { verificacion_estado: k })} style={chip(verifEst === k, "#d4af37")}>{l}</button>
+                          ))}
+                        </div>
+
+                        <div style={{ marginBottom: 12 }}>
+                          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Fecha de la visita / llamada</label>
+                          <input type="date" defaultValue={t.verificacion_fecha || ""}
+                            onChange={e => actualizarTaller(t.id, { verificacion_fecha: e.target.value || null })}
+                            style={{ background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 10, padding: "10px 12px", color: "#e8e0d0", fontSize: 14 }} />
+                        </div>
+
+                        <div style={{ fontSize: 11, color: "#999", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Revisión (marca lo que ya confirmaste)</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+                          {CHECK.map(([k, l]) => {
+                            const on = checks.includes(k);
+                            return (
+                              <button key={k} onClick={() => actualizarTaller(t.id, { verificacion_checklist: (on ? checks.filter(x => x !== k) : [...checks, k]).join(",") })}
+                                style={{ display: "flex", alignItems: "center", gap: 10, background: "transparent", border: "none", color: on ? "#4caf50" : "#aaa", fontSize: 13, cursor: "pointer", textAlign: "left", padding: "4px 0" }}>
+                                <span style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${on ? "#4caf50" : "#444"}`, background: on ? "#4caf5020" : "transparent", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0 }}>{on ? "✓" : ""}</span>
+                                {l}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Notas de la verificación</label>
+                        <textarea defaultValue={t.verificacion_notas || ""} rows={2} placeholder="Qué viste en la visita o llamada..."
+                          onBlur={e => { if ((e.target.value || "") !== (t.verificacion_notas || "")) actualizarTaller(t.id, { verificacion_notas: e.target.value }); }}
+                          style={{ width: "100%", background: "#0d0d0a", border: "1px solid #2a2a20", borderRadius: 10, padding: "10px 12px", color: "#e8e0d0", fontSize: 13, boxSizing: "border-box", resize: "vertical", marginBottom: 14 }} />
+
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {tel && (
+                            <BTN outline color="#25D366" style={{ fontSize: 12 }}
+                              onClick={() => window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(`Hola ${t.representante || ""}, soy Felipe de EnKaje Pro. Recibimos la solicitud de ${t.nombre}. Para verificar tu taller necesitamos ${metodoTxt}. ¿Qué día y a qué hora te queda bien?`)}`, "_blank")}>
+                              💬 Coordinar por WhatsApp
+                            </BTN>
+                          )}
+                          <BTN disabled={!completa} style={{ fontSize: 12 }}
+                            onClick={async () => { await actualizarTaller(t.id, { estado: "activo" }); setTallerMsg(`✅ ${t.nombre} aprobado. Ya puede entrar con su correo y contraseña.`); setTimeout(() => setTallerMsg(""), 8000); }}>
+                            ✅ Aprobar taller
+                          </BTN>
+                          <BTN outline color="#f44336" style={{ fontSize: 12 }}
+                            onClick={async () => { if (window.confirm(`¿Rechazar la solicitud de ${t.nombre}?`)) { await actualizarTaller(t.id, { estado: "rechazado" }); setTallerMsg("Solicitud rechazada"); setTimeout(() => setTallerMsg(""), 6000); } }}>
+                            ✕ Rechazar
+                          </BTN>
+                        </div>
+                        {!completa && (
+                          <div style={{ fontSize: 11, color: "#777", marginTop: 8 }}>
+                            Para aprobar: verificación en "Completada" y las 3 casillas de revisión marcadas.
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
             <div style={{ marginTop: 8 }}>
               {talleresMem.filter(t => t.estado !== "pendiente").map((t,i) => (
                 <div key={i} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 16, marginBottom: 10 }}>
