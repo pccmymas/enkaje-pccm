@@ -93,13 +93,7 @@ export default function PerfilTaller() {
           body: JSON.stringify({ leads_recibidos: (taller.leads_recibidos || 0) + 1 })
         }
       );
-      // WhatsApp automático al taller
-      const telTaller = (taller.telefono || "").replace(/\D/g, "");
-      if (telTaller) {
-        const sep = "━".repeat(22);
-        const msg = `🔔 *NUEVA SOLICITUD*\n${sep}\n👤 *Cliente:* ${form.nombre}\n📱 *Tel:* ${form.telefono}\n${form.correo?`📧 *Correo:* ${form.correo}\n`:""}${form.proyecto?`🔨 *Proyecto:* ${form.proyecto}\n`:""}${form.mensaje?`💬 *Mensaje:* ${form.mensaje}\n`:""}${sep}\nCanal: ${ref} · enkajepro.com`;
-        window.open(`https://wa.me/52${telTaller}?text=${encodeURIComponent(msg)}`, "_blank");
-      }
+     // El taller recibe la solicitud dentro de la plataforma (pestaña Proyectos)
       setSent(true);
     } catch(e) { alert("Error al enviar: " + e.message); }
     setSending(false);
