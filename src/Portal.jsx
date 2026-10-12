@@ -802,7 +802,7 @@ const guardarEnPerfil = async () => {
 
       if (imgUrl) {
         setRenderUrl(imgUrl);
-        localStorage.setItem(STORAGE_KEY, String(usados + 1));
+        localStorage.setItem(STORAGE_KEY, String(usados + 1)); cargarRestantes();
         setRenderMsg("✅ Render generado");
       } else if (imgB64) {
         try {
@@ -821,7 +821,7 @@ const guardarEnPerfil = async () => {
             ? `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`
             : "data:image/png;base64," + imgB64;
           setRenderUrl(publicUrl);
-          localStorage.setItem(STORAGE_KEY, String(usados + 1));
+          localStorage.setItem(STORAGE_KEY, String(usados + 1)); cargarRestantes();
           setRenderMsg("✅ Render generado");
         } catch {
           setRenderUrl("data:image/png;base64," + imgB64);
