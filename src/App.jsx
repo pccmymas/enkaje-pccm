@@ -59,7 +59,7 @@ function PaginaPrivacidad({ onBack }) {
         <p style={LEGAL_S.p}>EnKaje Pro retiene los derechos sobre los renders generados por sus sistemas. El usuario obtiene una licencia de uso personal, no comercial, sobre el render asociado a su proyecto.</p>
 
         <h2 style={LEGAL_S.h2}>5. Transferencia de Datos</h2>
-        <p style={LEGAL_S.p}>Sus datos, incluyendo fotografías del proyecto y renders generados, podrán ser compartidos con los talleres registrados y verificados en la plataforma, únicamente para la gestión y cotización de su proyecto. Esta transferencia es necesaria para la prestación del servicio y se considera aceptada al usar la plataforma.</p>
+        <p style={LEGAL_S.p}>Sus datos, incluyendo fotografías del proyecto, renders generados, tipo de proyecto y zona, podrán ser compartidos únicamente con los talleres verificados que atienden esa zona y ese tipo de proyecto, para la gestión y cotización de su solicitud. Sus datos de contacto se comparten solo con los talleres que reciben su solicitud y solo para esa finalidad. Esta transferencia es necesaria para la prestación del servicio y se considera aceptada al usar la plataforma.</p>
         <p style={LEGAL_S.p}>No vendemos ni comercializamos sus datos personales a terceros con fines publicitarios o de mercadotecnia.</p>
 
         <h2 style={LEGAL_S.h2}>6. Derechos ARCO</h2>
