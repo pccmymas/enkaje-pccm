@@ -591,7 +591,7 @@ const guardarEnPerfil = async () => {
     const generarRender = async (promptAdicional = "") => {
     if (!estilo || !tipoProyecto) return;
     const usados = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
-    if (usados >= LIMITE_RENDERS) { setRenderBloqueado(true); return; }
+    if (!tieneCuenta && usados >= LIMITE_RENDERS) { setRenderBloqueado(true); return; }
     setRenderLoading(true); setRenderMsg(""); setRenderUrl(null); setDescripcionIA(null);
 
     const estiloData   = ESTILOS.find(e => e.key === estilo);
