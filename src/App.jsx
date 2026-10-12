@@ -3364,7 +3364,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                           {lead.observaciones?.split("|")[0]?.replace("Nombre:","")?.trim() || "Cliente anónimo"}
                         </div>
                         <div style={{ fontSize: 12, color: "#555" }}>
-                          {(lead.tipo_proyecto||"").toUpperCase()} · {lead.estilo_elegido} · {lead.created_at?.split("T")[0]}
+                         {(lead.tipo_proyecto||"").toUpperCase()}{lead.zona ? ` · 📍 ${lead.zona}` : ""} · {lead.estilo_elegido} · {lead.created_at?.split("T")[0]}
                         </div>
                       </div>
                     </div>
