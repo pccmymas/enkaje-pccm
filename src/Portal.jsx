@@ -791,7 +791,7 @@ const guardarEnPerfil = async () => {
 
       const res = await fetch("/api/image", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(sessionStorage.getItem("enkaje_token") ? { "Authorization": `Bearer ${sessionStorage.getItem("enkaje_token")}` } : {}) },
         body: JSON.stringify({ prompt, image: fotoBase64 })
       });
       const data = await res.json();
