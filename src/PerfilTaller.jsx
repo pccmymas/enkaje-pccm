@@ -245,3 +245,53 @@ export default function PerfilTaller() {
             </button>
           </div>
         )}
+
+        {/* FORMULARIO DE SOLICITUD */}
+        {formStep && !sent && (
+          <div id="cotizar-form" className="fade-up" style={{ background: "#0f0f0a", border: `1px solid ${GOLD}30`, borderRadius: 20, padding: 28 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 900, color: "#e8e0d0", marginBottom: 6 }}>Solicitar Cotización</h3>
+            <p style={{ fontSize: 13, color: "#aaa", marginBottom: 24 }}>El taller te contactará en menos de 24 horas.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }} className="grid-2">
+              {[["Nombre completo *","nombre","Tu nombre"],["Teléfono *","telefono","81-1234-5678"],["Correo","correo","correo@ejemplo.com"],["Tipo de proyecto","proyecto","Cocina, Closet, Puerta..."]].map(([label, key, ph]) => (
+                <div key={key}>
+                  <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>
+                  <input value={form[key]} onChange={e => setForm(p => ({...p, [key]: e.target.value}))} placeholder={ph}
+                    style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, outline: "none" }} />
+                </div>
+              ))}
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Mensaje adicional</label>
+              <textarea value={form.mensaje} onChange={e => setForm(p => ({...p, mensaje: e.target.value}))} placeholder="Cuéntanos más sobre tu proyecto..."
+                rows={3} style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, resize: "vertical" }} />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setFormStep(false)} style={{ background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "11px 20px", cursor: "pointer", fontSize: 13 }}>Cancelar</button>
+              <button onClick={enviarSolicitud} disabled={sending || !form.nombre || !form.telefono}
+                style={{ flex: 1, background: sending ? "#1a1a10" : GOLD, color: sending ? "#555" : "#000", border: "none", borderRadius: 10, padding: "11px", fontWeight: 900, fontSize: 14, cursor: sending ? "not-allowed" : "pointer" }}>
+                {sending ? "Enviando..." : "Enviar solicitud →"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* CONFIRMACIÓN */}
+        {sent && (
+          <div className="fade-up" style={{ background: "#0a2a0a", border: "1px solid #4caf5040", borderRadius: 20, padding: 32, textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+            <h3 style={{ fontSize: 20, fontWeight: 900, color: "#4caf50", marginBottom: 8 }}>¡Solicitud enviada!</h3>
+            <p style={{ color: "#aaa", fontSize: 14 }}>{taller.nombre} recibió tu solicitud y te contactará en menos de 24 horas al número {form.telefono}.</p>
+          </div>
+        )}
+
+      </div>
+
+      {/* FOOTER */}
+      <footer style={{ borderTop: "1px solid #1a1a12", padding: "20px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "#888" }}>
+          Powered by <span style={{ color: GOLD, fontWeight: 700 }}>EnKaje Pro</span> · enkajepro.com
+        </div>
+      </footer>
+    </div>
+  );
+}
