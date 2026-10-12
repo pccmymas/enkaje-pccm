@@ -140,7 +140,7 @@ function PaginaCookies({ onBack }) {
       <div style={LEGAL_S.wrap}>
         <div style={LEGAL_S.badge}>LEGAL</div>
         <h1 style={LEGAL_S.h1}>Política de Cookies</h1>
-        <p style={LEGAL_S.meta}>Última actualización: enero 2025 · Monterrey, Nuevo León, México</p>
+        <p style={LEGAL_S.meta}>Última actualización: octubre 2026 · Monterrey, Nuevo León, México</p>
         <h2 style={LEGAL_S.h2}>¿Qué son las Cookies?</h2>
         <p style={LEGAL_S.p}>Pequeños archivos de texto que se almacenan en tu dispositivo para que la plataforma funcione correctamente, recuerde tus preferencias y mejore continuamente.</p>
         <h2 style={LEGAL_S.h2}>Tipos de Cookies que Usamos</h2>
