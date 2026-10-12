@@ -1384,6 +1384,7 @@ function RegistroTaller({ onBack }) {
     if (f.password.length < 6) return setMsg("❌ La contraseña debe tener al menos 6 caracteres");
     if (f.password !== f.password2) return setMsg("❌ Las contraseñas no coinciden");
     if (!f.municipio.trim()) return setMsg("❌ Escribe el municipio donde está tu taller");
+    if (!f.zona.trim()) return setMsg("❌ Escribe la colonia donde está tu taller");
     if (!f.direccion_taller.trim()) return setMsg("❌ Escribe la dirección del taller (la necesitamos para la verificación)");
     if (zonas.length === 0) return setMsg("❌ Elige al menos una zona donde das servicio");
     if (tipos.length === 0) return setMsg("❌ Elige al menos un tipo de proyecto en el que te especializas");
