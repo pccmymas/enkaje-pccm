@@ -39,22 +39,20 @@ export default function PerfilTaller() {
     async function cargar() {
       if (!slug) { setNotFound(true); setLoading(false); return; }
       try {
+        // Vista pública: solo talleres activos y sin datos de contacto
         const r = await fetch(
-          `${SUPABASE_URL}/rest/v1/talleres_membresia?slug=eq.${slug}&apikey=${SUPABASE_KEY}`,
+          `${SUPABASE_URL}/rest/v1/talleres_publicos?slug=eq.${encodeURIComponent(slug)}&apikey=${SUPABASE_KEY}`,
           { headers: { "Authorization": `Bearer ${SUPABASE_KEY}` } }
         );
         const data = await r.json();
-        if (Array.isArray(data) && data.length > 0 && data[0].estado === "activo") {
+        if (Array.isArray(data) && data.length > 0) {
           setTaller(data[0]);
-          // Registrar visita con canal de referencia
-          await fetch(
-           `${SUPABASE_URL}/rest/v1/talleres_membresia?id=eq.${data[0].id}`,
-            {
-              method: "PATCH",
-              headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
-              body: JSON.stringify({ visitas: (data[0].visitas || 0) + 1 })
-            }
-          );
+          // Registrar visita
+          fetch(`${SUPABASE_URL}/rest/v1/rpc/registrar_visita`, {
+            method: "POST",
+            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ p_slug: slug })
+          }).catch(() => {});
         } else {
           setNotFound(true);
         }
@@ -68,7 +66,7 @@ export default function PerfilTaller() {
     if (!form.nombre || !form.telefono) return;
     setSending(true);
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
+      const rp = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
         method: "POST",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
         body: JSON.stringify({
@@ -77,6 +75,7 @@ export default function PerfilTaller() {
           correo: form.correo,
           observaciones: `${form.proyecto}${form.mensaje ? " — " + form.mensaje : ""}`,
           estado: "nuevo",
+          etapa_seguimiento: "solicitud",
           user_email: form.correo,
           atencion_por: taller?.nombre || slug,
           canal_origen: ref,
@@ -84,16 +83,16 @@ export default function PerfilTaller() {
           created_at: new Date().toISOString(),
         })
       });
-      // Incrementar leads
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/talleres_membresia?id=eq.${taller.id}`,
-        {
-          method: "PATCH",
-          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
-          body: JSON.stringify({ leads_recibidos: (taller.leads_recibidos || 0) + 1 })
-        }
-      );
-     // El taller recibe la solicitud dentro de la plataforma (pestaña Proyectos)
+      if (!rp.ok) throw new Error("No se pudo guardar la solicitud. Intenta de nuevo.");
+
+      // Contar el lead
+      fetch(`${SUPABASE_URL}/rest/v1/rpc/registrar_lead_taller`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_slug: slug })
+      }).catch(() => {});
+
+      // El taller recibe la solicitud dentro de la plataforma (pestaña Proyectos)
       setSent(true);
     } catch(e) { alert("Error al enviar: " + e.message); }
     setSending(false);
@@ -201,7 +200,7 @@ export default function PerfilTaller() {
           </div>
         </div>
 
-       {/* DATOS DE CONFIANZA */}
+        {/* DATOS DE CONFIANZA */}
         {(taller.anos_experiencia || taller.horario) && (
           <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 24, marginBottom: 20 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -220,7 +219,8 @@ export default function PerfilTaller() {
             </div>
           </div>
         )}
-{/* PORTAFOLIO */}
+
+        {/* PORTAFOLIO */}
         {taller.portafolio_urls && taller.portafolio_urls.trim() && (
           <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 24, marginBottom: 20 }}>
             <h3 style={{ fontSize: 13, color: GOLD, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>📷 Trabajos Realizados</h3>
@@ -234,6 +234,7 @@ export default function PerfilTaller() {
             </div>
           </div>
         )}
+
         {/* CTA */}
         {!formStep && !sent && (
           <div style={{ background: "linear-gradient(135deg,#1a1208,#0f0f0a)", border: `1px solid ${GOLD}40`, borderRadius: 20, padding: 32, textAlign: "center" }}>
@@ -244,53 +245,3 @@ export default function PerfilTaller() {
             </button>
           </div>
         )}
-
-        {/* FORMULARIO DE SOLICITUD */}
-        {formStep && !sent && (
-          <div id="cotizar-form" className="fade-up" style={{ background: "#0f0f0a", border: `1px solid ${GOLD}30`, borderRadius: 20, padding: 28 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 900, color: "#e8e0d0", marginBottom: 6 }}>Solicitar Cotización</h3>
-            <p style={{ fontSize: 13, color: "#aaa", marginBottom: 24 }}>El taller te contactará en menos de 24 horas.</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }} className="grid-2">
-              {[["Nombre completo *","nombre","Tu nombre"],["Teléfono *","telefono","81-1234-5678"],["Correo","correo","correo@ejemplo.com"],["Tipo de proyecto","proyecto","Cocina, Closet, Puerta..."]].map(([label, key, ph]) => (
-                <div key={key}>
-                  <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>
-                  <input value={form[key]} onChange={e => setForm(p => ({...p, [key]: e.target.value}))} placeholder={ph}
-                    style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, outline: "none" }} />
-                </div>
-              ))}
-            </div>
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Mensaje adicional</label>
-              <textarea value={form.mensaje} onChange={e => setForm(p => ({...p, mensaje: e.target.value}))} placeholder="Cuéntanos más sobre tu proyecto..."
-                rows={3} style={{ width: "100%", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 10, padding: "11px 14px", color: "#e8e0d0", fontSize: 14, resize: "vertical" }} />
-            </div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setFormStep(false)} style={{ background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "11px 20px", cursor: "pointer", fontSize: 13 }}>Cancelar</button>
-              <button onClick={enviarSolicitud} disabled={sending || !form.nombre || !form.telefono}
-                style={{ flex: 1, background: sending ? "#1a1a10" : GOLD, color: sending ? "#555" : "#000", border: "none", borderRadius: 10, padding: "11px", fontWeight: 900, fontSize: 14, cursor: sending ? "not-allowed" : "pointer" }}>
-                {sending ? "Enviando..." : "Enviar solicitud →"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* CONFIRMACIÓN */}
-        {sent && (
-          <div className="fade-up" style={{ background: "#0a2a0a", border: "1px solid #4caf5040", borderRadius: 20, padding: 32, textAlign: "center" }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
-            <h3 style={{ fontSize: 20, fontWeight: 900, color: "#4caf50", marginBottom: 8 }}>¡Solicitud enviada!</h3>
-            <p style={{ color: "#aaa", fontSize: 14 }}>{taller.nombre} te contactará en menos de 24 horas al número {form.telefono}.</p>
-          </div>
-        )}
-
-      </div>
-
-      {/* FOOTER */}
-      <footer style={{ borderTop: "1px solid #1a1a12", padding: "20px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 12, color: "#888" }}>
-          Powered by <span style={{ color: GOLD, fontWeight: 700 }}>EnKaje Pro</span> · enkajepro.com
-        </div>
-      </footer>
-    </div>
-  );
-}
