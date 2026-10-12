@@ -3431,7 +3431,8 @@ Formato: Caption completo listo para copiar y pegar.`;
     {ESTADOS_LEAD.map(est => {
       const activo = (lead.estado_lead || "nuevo") === est.key;
       return (
- <button key={est.key} onClick={async e => {
+   <button key={est.key} onClick={async e => {
+          if (role !== "admin") { e.stopPropagation(); setSavedMsg("Las cotizaciones por lead llegan muy pronto"); setTimeout(() => setSavedMsg(""), 4000); return; }
           e.stopPropagation();
           await fetch(`${SUPABASE_URL}/rest/v1/expedientes?id=eq.${lead.id}&apikey=${SUPABASE_KEY}`, {
             method: "PATCH",
