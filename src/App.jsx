@@ -1504,7 +1504,7 @@ function RegistroTaller({ onBack }) {
         <SECTION title="Ubicación" icon="📍" subtitle="La dirección es solo para la verificación, no se publica.">
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
             <INPUT label="Municipio *" value={f.municipio} onChange={e => set("municipio", e.target.value)} placeholder="Apodaca" />
-            <INPUT label="Colonia / zona" value={f.zona} onChange={e => set("zona", e.target.value)} placeholder="Colonia" />
+            <INPUT label="Colonia / zona *" value={f.zona} onChange={e => set("zona", e.target.value)} placeholder="Colonia" />
           </div>
           <INPUT label="Dirección del taller *" value={f.direccion_taller} onChange={e => set("direccion_taller", e.target.value)} placeholder="Calle, número, colonia" />
           <label style={{ fontSize: 11, color: "#999", display: "block", margin: "6px 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>
