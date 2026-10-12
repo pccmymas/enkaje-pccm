@@ -3638,7 +3638,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <INPUT label="Nombre del representante / dueño" value={tallerEdit.representante||""} onChange={e=>setTallerEdit(p=>({...p,representante:e.target.value}))} placeholder="Quien firma los contratos" />
                 <INPUT label="Especialidad" value={tallerEdit.especialidad||""} onChange={e=>setTallerEdit(p=>({...p,especialidad:e.target.value}))} placeholder="Cocinas, closets, madera sólida..." />
                 <INPUT label="Municipio" value={tallerEdit.municipio||""} onChange={e=>setTallerEdit(p=>({...p,municipio:e.target.value}))} />
-                <INPUT label="Zona / Colonia" value={tallerEdit.zona||""} onChange={e=>setTallerEdit(p=>({...p,zona:e.target.value}))} />
+                <INPUT label="Zona / Colonia (la cambia EnKaje Pro)" value={tallerEdit.zona||""} onChange={()=>{}} style={{ opacity: 0.5, pointerEvents: "none" }} />
                 <INPUT label="Años de experiencia" value={tallerEdit.anos_experiencia||""} onChange={e=>setTallerEdit(p=>({...p,anos_experiencia:e.target.value}))} placeholder="10" />
                 <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm" />
                <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} placeholder="https://..." />
