@@ -38,7 +38,7 @@ function PaginaPrivacidad({ onBack }) {
       <div style={LEGAL_S.wrap}>
         <div style={LEGAL_S.badge}>LEGAL</div>
         <h1 style={LEGAL_S.h1}>Aviso de Privacidad</h1>
-        <p style={LEGAL_S.meta}>Última actualización: junio 2026 · Monterrey, Nuevo León, México</p>
+        <p style={LEGAL_S.meta}>Última actualización: octubre 2026 · Monterrey, Nuevo León, México</p>
         <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>En cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de Particulares (LFPDPPP), EnKaje Pro pone a disposición el presente Aviso de Privacidad.</p></div>
 
         <h2 style={LEGAL_S.h2}>1. Responsable del Tratamiento</h2>
@@ -85,7 +85,7 @@ function PaginaTerminos({ onBack }) {
       <div style={LEGAL_S.wrap}>
         <div style={LEGAL_S.badge}>LEGAL</div>
         <h1 style={LEGAL_S.h1}>Términos y Condiciones</h1>
-        <p style={LEGAL_S.meta}>Última actualización: junio 2026 · Monterrey, Nuevo León, México</p>
+        <p style={LEGAL_S.meta}>Última actualización: octubre 2026 · Monterrey, Nuevo León, México</p>
         <div style={LEGAL_S.box}><p style={{...LEGAL_S.p,color:"#d4af37",margin:0,fontWeight:600}}>Al usar EnKaje Pro, aceptas estos términos en su totalidad. Si no estás de acuerdo, te pedimos no usar la plataforma.</p></div>
 
         <h2 style={LEGAL_S.h2}>1. Descripción del Servicio</h2>
