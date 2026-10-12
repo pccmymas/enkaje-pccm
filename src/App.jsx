@@ -3399,6 +3399,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
                         {[
                           ["Proyecto", lead.tipo_proyecto],
+                          ["Zona", lead.zona],
                           ["Estilo", lead.estilo_elegido],
                           ["Decisión", lead.nivel_decision],
                           ["Fecha deseada", lead.fecha_inicio_deseada],
