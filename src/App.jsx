@@ -2774,7 +2774,7 @@ IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantid
     try {
       const res = await fetch("/api/image", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+       headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
        body: JSON.stringify({ prompt: `Professional photorealistic interior design render of a ${renderPrompt}. High quality, detailed, realistic materials, professional lighting, modern Mexican home, 4K quality, architectural visualization.` })
       });
       const data = await res.json();
