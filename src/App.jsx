@@ -114,8 +114,9 @@ function PaginaTerminos({ onBack }) {
         <h2 style={LEGAL_S.h2}>8. Limitación de Responsabilidad</h2>
         <p style={LEGAL_S.p}>EnKaje Pro no garantiza la disponibilidad ininterrumpida del servicio ni la exactitud de los renders o estimaciones generadas por IA.</p>
         <div style={LEGAL_S.warn}><p style={{...LEGAL_S.p,margin:0,color:"#f44336",fontWeight:600}}>Limitación de Responsabilidad</p><p style={{...LEGAL_S.p,margin:"6px 0 0"}}>La responsabilidad máxima de EnKaje Pro ante cualquier reclamación se limita al monto de la suscripción mensual pagada por el usuario en el mes en que ocurrió el evento reclamado. EnKaje Pro no será responsable por daños indirectos, pérdida de negocio, pérdida de datos ni cualquier daño consecuente.</p></div>
-        <h2 style={LEGAL_S.h2}>9. Suscripciones y Pagos</h2>
-        <LegalUL items={["Planes: Básico $699, Pro $1,499 y Premium $2,999 MXN/mes","Pagos mensuales anticipados","Sin reembolsos por períodos parciales","Puedes cancelar en cualquier momento desde tu panel — el acceso continúa hasta el fin del período pagado","Los precios pueden cambiar con al menos 30 días de aviso previo"]} />
+        <h2 style={LEGAL_S.h2}>9. Precios y Pagos</h2>
+        <p style={LEGAL_S.p}>Durante el periodo de lanzamiento, el uso de la plataforma es gratuito tanto para clientes como para talleres. EnKaje Pro podrá introducir planes de pago, cobros por servicios adicionales o cargos por solicitud recibida en el futuro.</p>
+        <LegalUL items={["Te avisaremos con al menos 60 días de anticipación antes de cobrar cualquier función que hoy sea gratuita","Los nuevos precios se publicarán en la plataforma antes de entrar en vigor","Si no estás de acuerdo con los nuevos precios, puedes cerrar tu cuenta sin costo","Los pagos que se realicen por servicios de pago no son reembolsables por periodos parciales ya utilizados"]} />
         <h2 style={LEGAL_S.h2}>10. Propiedad Intelectual</h2>
         <p style={LEGAL_S.p}>Todo el contenido, diseño, código, marca, renders generados por IA y materiales de EnKaje Pro son propiedad de EnKaje Pro y están protegidos por las leyes de propiedad intelectual mexicanas. Queda prohibida su reproducción, distribución o uso sin autorización escrita previa.</p>
         <h2 style={LEGAL_S.h2}>11. Ley Aplicable</h2>
