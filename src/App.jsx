@@ -2107,6 +2107,9 @@ async function guardarEdicionTaller() {
       tipos_proyecto: tallerEdit.tipos_proyecto,
       tipos_proyecto: tallerEdit.tipos_proyecto,
     };
+        if (role !== "admin") {
+      ["especialidad","municipio","zona","zonas_cobertura","tipos_proyecto","plan","estado","slug","email","niveles_precio"].forEach(k => delete campos[k]);
+    }
     const limpio = Object.fromEntries(Object.entries(campos).filter(([,v]) => v !== undefined && v !== null && v !== ""));
     await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
     setTallerMsg("✅ Taller actualizado");
