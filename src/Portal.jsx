@@ -828,7 +828,8 @@ const guardarEnPerfil = async () => {
           setRenderMsg("✅ Render generado");
         }
       } else {
-        setRenderMsg("❌ " + (data?.error?.message || "Error al generar"));
+        if (data?.limite) { setRenderBloqueado(true); cargarRestantes(); }
+        else setRenderMsg("❌ " + (data?.error?.message || "Error al generar"));
       }
     } catch(e) { setRenderMsg("❌ " + e.message); }
     setRenderLoading(false);
