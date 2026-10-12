@@ -1196,7 +1196,7 @@ const guardarEnPerfil = async () => {
   <div style={{ background:"#1a0808", border:"1px solid #d4af3740", borderRadius:16, padding:32, textAlign:"center", marginBottom:16 }}>
     <div style={{ fontSize:36, marginBottom:12 }}>🔒</div>
     <h3 style={{ fontFamily:"'Playfair Display',serif", color:"#f0e8dc", fontSize:20, marginBottom:8 }}>
-      {sinCuenta ? "Ya usaste tu render gratuito" : "Usaste tus 3 renders del mes"}
+    {sinCuenta ? "Ya usaste tus renders gratis de hoy" : "Ya usaste tus renders de este mes"}
     </h3>
     <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
       {sinCuenta ? "Crea una cuenta gratis y obtén 3 renders sin marca de agua." : "Tu cuenta incluye 3 renders. Se renuevan el próximo mes."}
