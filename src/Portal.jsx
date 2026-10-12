@@ -498,6 +498,7 @@ export default function Portal() {
    if (tieneCuenta) {
   const stored = parseInt(localStorage.getItem("enkaje_renders_cuenta") || "0", 10);
   if (stored >= 3) localStorage.setItem("enkaje_renders_cuenta", "0");
+  cargarRestantes();
     }
   }, []);
 
