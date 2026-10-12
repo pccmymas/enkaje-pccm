@@ -473,6 +473,19 @@ export default function Portal() {
   const sinCuenta      = !tieneCuenta;
   const LIMITE_RENDERS = tieneCuenta ? 3 : 1;
   const STORAGE_KEY    = tieneCuenta ? "enkaje_renders_cuenta" : "enkaje_renders";
+  const [restantes, setRestantes] = useState(null);
+  const cargarRestantes = async () => {
+    const t = sessionStorage.getItem("enkaje_token");
+    if (!t) return;
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/render_restantes`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${t}`, "Content-Type": "application/json" },
+        body: "{}"
+      });
+      if (r.ok) setRestantes(await r.json());
+    } catch {}
+  };
 
   // Rango dinámico — se recalcula cuando cambian tipo, estilo o material
    const rango = calcularRango(tipoProyecto, estilo, material);
