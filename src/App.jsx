@@ -1993,7 +1993,7 @@ async function cargarLeads() {
 await sb("talleres_membresia", { method: "POST", token, body: JSON.stringify(tallerLimpio) });
       setTallerMsg("✅ Taller agregado");
       
-      const planLabel = nuevoTaller.plan === "premium" ? "Premium $2,999/mes" : nuevoTaller.plan === "pro" ? "Pro $1,499/mes" : "Básico $699/mes";
+      const planLabel = "Gratis durante el lanzamiento";
       
       // Email con credenciales e instrucciones para crear cuenta en Supabase
       const emailBody = [
