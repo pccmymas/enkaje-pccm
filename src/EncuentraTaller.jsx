@@ -93,13 +93,13 @@ export default function EncuentraTaller() {
       const limpio = Object.fromEntries(Object.entries(payload).filter(([, v]) => v !== null && v !== ""));
       await sb("proyectos", { method: "POST", body: JSON.stringify(limpio), prefer: "return=minimal" });
 
-      // Contar talleres activos que cubren esta zona, solo para el mensaje de confirmación
+           // Contar talleres activos que cubren esta zona Y este tipo de proyecto
       const talleres = await sb("talleres_publicos?select=zonas_cobertura,municipio,tipos_proyecto");
-      const lista = s => (s || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
+      const lista = (s) => (s || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
       const count = Array.isArray(talleres)
         ? talleres.filter(t =>
-            lista(t.zonas_cobertura || t.municipio).includes(respuestas.zona.toLowerCase())
-            && lista(t.tipos_proyecto).includes(respuestas.tipo)
+            lista(t.zonas_cobertura || t.municipio).includes(respuestas.zona.toLowerCase()) &&
+            lista(t.tipos_proyecto).includes(respuestas.tipo.toLowerCase())
           ).length
         : 0;
 
