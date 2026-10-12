@@ -99,7 +99,7 @@ function PaginaTerminos({ onBack }) {
         <p style={LEGAL_S.p}>EnKaje Pro no es responsable por actos, omisiones, incumplimientos o daños causados por los talleres registrados. La relación contractual por cualquier trabajo realizado es exclusivamente entre el cliente y el taller.</p>
         <h2 style={LEGAL_S.h2}>4. Contenido e Imágenes Subidas</h2>
         <p style={LEGAL_S.p}>Al subir fotografías u otro contenido a la plataforma, el usuario declara y garantiza que:</p>
-        <LegalUL items={["Tiene derechos legales sobre las imágenes subidas o ha obtenido la autorización correspondiente","El contenido no viola derechos de terceros ni contiene material ilegal","Autoriza expresamente a EnKaje Pro a procesar dichas imágenes mediante sistemas de inteligencia artificial para generar la propuesta visual solicitada","Autoriza a EnKaje Pro a compartir las imágenes con los talleres asignados para fines de cotización"]} />
+        <LegalUL items={["Tiene derechos legales sobre las imágenes subidas o ha obtenido la autorización correspondiente","El contenido no viola derechos de terceros ni contiene material ilegal","Autoriza expresamente a EnKaje Pro a procesar dichas imágenes mediante sistemas de inteligencia artificial para generar la propuesta visual solicitada","Autoriza a EnKaje Pro a compartir las imágenes, el tipo de proyecto y la zona con los talleres verificados que atienden esa zona y ese tipo de proyecto, para fines de cotización"]} />
         <p style={LEGAL_S.p}>EnKaje Pro no es responsable por el contenido de imágenes subidas por usuarios ni por reclamaciones de terceros relacionadas con dicho contenido.</p>
         <div style={LEGAL_S.div}/>
         <h2 style={LEGAL_S.h2}>5. Inteligencia Artificial y Renders</h2>
