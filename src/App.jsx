@@ -1982,6 +1982,29 @@ async function cargarLeads() {
     }
 }
 
+  async function cargarCotsCliente(lista) {
+    if (role !== "cliente") return;
+    const mapa = {};
+    for (const p of lista) {
+      if (p.etapa_seguimiento === "solicitud") {
+        const r = await sb("rpc/cotizaciones_de_proyecto", { method: "POST", token, body: JSON.stringify({ p_enkaje: p.enkaje }) });
+        if (Array.isArray(r)) mapa[p.enkaje] = r;
+      }
+    }
+    setCotsCliente(mapa);
+  }
+
+  function elegirTaller(cot) {
+    setConfirmModal({
+      msg: `¿Elegir a ${cot.taller_nombre}? Se compartirán tus datos de contacto con este taller y avisaremos a los demás.`,
+      onOk: async () => {
+        const r = await sb("rpc/elegir_taller", { method: "POST", token, body: JSON.stringify({ p_cotizacion: cot.id }) });
+        if (r?.message) alert(r.message);
+        cargarProyectos();
+      }
+    });
+  }
+
   const esOportunidad = p => role === "taller" && p.etapa_seguimiento === "solicitud" && !p.taller_email && (p.user_email || "").toLowerCase() !== (user?.email || "").toLowerCase();
 
   async function cargarCotizaciones() {
