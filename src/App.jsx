@@ -1869,6 +1869,7 @@ async function login() {
         etapa_seguimiento:  "solicitud",
         created_at:         new Date().toISOString(),
         tipo_proyecto:      val(f.tipo_proyecto) || "cocina",
+        zona:               val(f.zona),
         nombre:             val(f.nombre),
         telefono:           val(f.telefono),
         correo:             val(f.correo),
