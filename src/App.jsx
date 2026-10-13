@@ -2004,7 +2004,7 @@ async function cargarLeads() {
     cargarCotizaciones();
   }
 
-  async function cargarTalleres() {async function cargarTalleres() {
+ async function cargarTalleres() {
     const data = await sb("talleres_membresia?order=created_at.desc", { token });
     if (Array.isArray(data)) {
       setTalleresMem(data);
