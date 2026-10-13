@@ -3614,7 +3614,47 @@ Formato: Caption completo listo para copiar y pegar.`;
     );
   })}
 </div>
-            {proyectos.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
+            {(() => {
+              const ops = proyectos.filter(esOportunidad);
+              if (ops.length === 0) return null;
+              return (
+                <div style={{ marginBottom: 24 }}>
+                  <div style={{ color: "#d4af37", fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>🆕 Oportunidades abiertas ({ops.length})</div>
+                  {cotMsg && <div style={{ fontSize: 12, color: "#d4af37", marginBottom: 8 }}>{cotMsg}</div>}
+                  {ops.map(p => {
+                    const ya = cotizaciones.find(c => String(c.proyecto_enkaje) === String(p.enkaje));
+                    const f = cotForm[p.enkaje] || {};
+                    const setC = (k, v) => setCotForm(prev => ({ ...prev, [p.enkaje]: { ...(prev[p.enkaje] || {}), [k]: v } }));
+                    return (
+                      <div key={p.enkaje} style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 12, padding: 16, marginBottom: 10 }}>
+                        <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
+                          {p.render_url && <img src={p.render_url} alt="render" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />}
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}</div>
+                            <div style={{ fontSize: 12, color: "#aaa" }}>{[p.estilo, Array.isArray(p.material) ? p.material.join(", ") : p.material, p.color_principal].filter(Boolean).join(" · ")}</div>
+                            {p.observaciones && <div style={{ fontSize: 12, color: "#777", marginTop: 4 }}>{String(p.observaciones).slice(0, 160)}</div>}
+                          </div>
+                        </div>
+                        {ya ? (
+                          <div style={{ fontSize: 13, color: "#8bc34a" }}>✅ Ya cotizaste: ${Number(ya.monto_min).toLocaleString("es-MX")} – ${Number(ya.monto_max).toLocaleString("es-MX")} · {ya.estado}</div>
+                        ) : (
+                          <div>
+                            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
+                              <INPUT label="Monto mínimo (MXN)" value={f.min || ""} onChange={e => setC("min", e.target.value)} placeholder="25000" />
+                              <INPUT label="Monto máximo (MXN)" value={f.max || ""} onChange={e => setC("max", e.target.value)} placeholder="32000" />
+                              <INPUT label="Tiempo estimado" value={f.tiempo || ""} onChange={e => setC("tiempo", e.target.value)} placeholder="3 a 4 semanas" />
+                              <INPUT label="Notas (qué incluye)" value={f.notas || ""} onChange={e => setC("notas", e.target.value)} placeholder="Incluye instalación; el precio final se confirma en la visita" />
+                            </div>
+                            <BTN onClick={() => enviarCotizacion(p)} style={{ fontSize: 12, marginTop: 10 }}>📨 Enviar cotización en rango</BTN>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+            {proyectos.filter(p => !esOportunidad(p)).length === 0 && proyectos.filter(esOportunidad).length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
            {proyectos.filter(p => !esOportunidad(p) && (filtroProyectoEtapa === "todos" || (p.etapa_seguimiento || "anticipo") === filtroProyectoEtapa)).map((p,i) => {
               const sel = proyectoSel?.created_at === p.created_at;
               return (
