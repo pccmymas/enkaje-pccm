@@ -841,6 +841,7 @@ function FormularioBano({ form, setF, role, isMobile }) {
           <INPUT label="Teléfono" value={form.telefono} onChange={e=>setF("telefono",e.target.value)} placeholder="81-1234-5678" />
           <INPUT label="Correo electrónico" value={form.correo} onChange={e=>setF("correo",e.target.value)} placeholder="correo@ejemplo.com" />
           <INPUT label="Dirección" value={form.direccion} onChange={e=>setF("direccion",e.target.value)} placeholder="Calle, Colonia, Ciudad" />
+          <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={form.zona||""} onChange={e=>setF("zona",e.target.value)} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
           <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
           <INPUT label="Atención por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
         </div>
