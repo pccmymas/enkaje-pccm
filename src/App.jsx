@@ -1980,7 +1980,31 @@ async function cargarLeads() {
     }
 }
 
-  async function cargarTalleres() {
+  const esOportunidad = p => role === "taller" && p.etapa_seguimiento === "solicitud" && !p.taller_email && (p.user_email || "").toLowerCase() !== (user?.email || "").toLowerCase();
+
+  async function cargarCotizaciones() {
+    if (role !== "taller") return;
+    const data = await sb("cotizaciones?order=created_at.desc", { token });
+    if (Array.isArray(data)) setCotizaciones(data);
+  }
+
+  async function enviarCotizacion(p) {
+    const f = cotForm[p.enkaje] || {};
+    const min = Number(String(f.min || "").replace(/[^0-9.]/g, ""));
+    const max = Number(String(f.max || "").replace(/[^0-9.]/g, ""));
+    if (!min || !max) { setCotMsg("❌ Escribe el monto mínimo y el máximo"); return; }
+    if (max < min) { setCotMsg("❌ El máximo no puede ser menor que el mínimo"); return; }
+    setCotMsg("Enviando...");
+    const r = await sb("cotizaciones", { method: "POST", token, body: JSON.stringify({
+      proyecto_enkaje: p.enkaje, taller_email: user?.email,
+      monto_min: min, monto_max: max, tiempo_estimado: f.tiempo || null, notas: f.notas || null }) });
+    if (r?.code || r?.message) { setCotMsg("❌ " + (r.code === "23505" ? "Ya cotizaste este proyecto" : (r.message || "No se pudo enviar"))); return; }
+    setCotMsg("✅ Cotización enviada");
+    setTimeout(() => setCotMsg(""), 3000);
+    cargarCotizaciones();
+  }
+
+  async function cargarTalleres() {async function cargarTalleres() {
     const data = await sb("talleres_membresia?order=created_at.desc", { token });
     if (Array.isArray(data)) {
       setTalleresMem(data);
