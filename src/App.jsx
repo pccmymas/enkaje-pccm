@@ -1856,6 +1856,7 @@ async function login() {
       // Validación de campos obligatorios
       if (!f.nombre?.trim()) { setSavedMsg("❌ Falta el nombre del cliente"); setTimeout(()=>setSavedMsg(""),4000); return; }
       if (!f.telefono?.trim()) { setSavedMsg("❌ Falta el teléfono del cliente"); setTimeout(()=>setSavedMsg(""),4000); return; }
+      if (!f.zona?.trim()) { setSavedMsg("❌ Elige la zona del proyecto"); setTimeout(()=>setSavedMsg(""),4000); return; }
       const tieneMedida = f.largo?.trim() || f.ancho?.trim() || f.alto?.trim() || f.altura?.trim();
       if (!tieneMedida) { setSavedMsg("❌ Agrega al menos una medida (desarrollo lineal, ancho o alto)"); setTimeout(()=>setSavedMsg(""),4000); return; }
       const arr = v => Array.isArray(v) && v.length ? v.join(", ") : "";
