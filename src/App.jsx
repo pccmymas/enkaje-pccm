@@ -1975,6 +1975,7 @@ async function cargarLeads() {
           && tiposTaller.includes((p.tipo_proyecto || "").trim().toLowerCase());
       });
       setProyectos(filtrados);
+      cargarCotizaciones();
     } else {
       setProyectos(data);
     }
