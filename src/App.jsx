@@ -3246,6 +3246,35 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
+                     {p.etapa_seguimiento === "solicitud" && (() => {
+                        const cots = cotsCliente[p.enkaje] || [];
+                        const elegida = cots.find(c => c.estado === "elegida");
+                        const visibles = elegida ? [elegida] : cots;
+                        return (
+                          <div style={{ marginBottom: 14 }} onClick={e => e.stopPropagation()}>
+                            <div style={{ fontSize: 11, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>
+                              {elegida ? "Taller elegido" : `Cotizaciones recibidas (${cots.length})`}
+                            </div>
+                            {cots.length === 0 && <div style={{ fontSize: 12, color: "#888", lineHeight: 1.6 }}>Tu solicitud está con los talleres de tu zona. Te avisaremos cuando lleguen cotizaciones.</div>}
+                            {visibles.map(c => (
+                              <div key={c.id} style={{ background: "#0a0a08", border: `1px solid ${c.estado === "elegida" ? "#8bc34a60" : "#d4af3730"}`, borderRadius: 12, padding: 14, marginBottom: 8 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                                  <div>
+                                    <div style={{ fontWeight: 700, fontSize: 14 }}>{c.taller_nombre}</div>
+                                    <div style={{ fontSize: 16, color: "#d4af37", fontWeight: 700, marginTop: 2 }}>${Number(c.monto_min).toLocaleString("es-MX")} – ${Number(c.monto_max).toLocaleString("es-MX")} MXN</div>
+                                  </div>
+                                  {c.estado === "elegida"
+                                    ? <span style={{ color: "#8bc34a", fontSize: 12, fontWeight: 700 }}>✅ Elegido</span>
+                                    : <BTN onClick={() => elegirTaller(c)} style={{ fontSize: 12 }}>Elegir este taller</BTN>}
+                                </div>
+                                {c.tiempo_estimado && <div style={{ fontSize: 12, color: "#aaa", marginTop: 6 }}>⏱️ {c.tiempo_estimado}</div>}
+                                {c.notas && <div style={{ fontSize: 12, color: "#888", marginTop: 4, lineHeight: 1.5 }}>{c.notas}</div>}
+                              </div>
+                            ))}
+                            {cots.length > 0 && <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Los montos son un rango estimado. El precio final se confirma después de la visita al sitio. Tus datos de contacto solo se comparten con el taller que elijas.</div>}
+                          </div>
+                        );
+                      })()}
                       {p.etapa_seguimiento === "guardado" && (
                         <div style={{ marginBottom: 14 }}>
                           {solicitandoZona?.created_at === p.created_at ? (
