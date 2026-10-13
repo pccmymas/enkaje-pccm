@@ -1662,6 +1662,7 @@ export default function App() {
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cotForm, setCotForm] = useState({});
   const [cotMsg, setCotMsg] = useState("");
+  const [cotsCliente, setCotsCliente] = useState({});
   useEffect(() => {
   const token = sessionStorage.getItem("enkaje_token");
   const user  = sessionStorage.getItem("enkaje_user");
