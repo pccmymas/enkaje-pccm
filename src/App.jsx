@@ -1683,6 +1683,7 @@ export default function App() {
       telefono: p.telefono || "",
       correo: p.correo || "",
       direccion: p.direccion || "",
+      zona: p.zona || "",
       observaciones: p.observaciones || "",
       atencion_por: p.atencion_por || "Felipe Santiago",
       fecha: p.fecha || new Date().toISOString().split("T")[0],
@@ -1702,6 +1703,7 @@ export default function App() {
       nombre: p.nombre || "",
       telefono: p.telefono || "",
       correo: p.correo || "",
+      zona: p.zona || "",
       direccion: p.direccion || "",
       observaciones: p.observaciones || "",
     };
