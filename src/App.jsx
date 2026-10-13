@@ -1979,6 +1979,7 @@ async function cargarLeads() {
       cargarCotizaciones();
     } else {
       setProyectos(data);
+      cargarCotsCliente(data);
     }
 }
 
