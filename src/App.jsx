@@ -3021,7 +3021,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                     <INPUT label="Nombre" value={formPanel.nombre} onChange={e=>setFormPanel(p=>({...p,nombre:e.target.value}))} placeholder="Nombre completo" />
                     <INPUT label="Teléfono" value={formPanel.telefono} onChange={e=>setFormPanel(p=>({...p,telefono:e.target.value}))} placeholder="81-1234-5678" />
                     <INPUT label="Correo" value={formPanel.correo} onChange={e=>setFormPanel(p=>({...p,correo:e.target.value}))} placeholder="correo@email.com" />
-                    <INPUT label="Dirección / Obra" value={formPanel.direccion} onChange={e=>setFormPanel(p=>({...p,direccion:e.target.value}))} placeholder="Calle, Colonia, Monterrey" />
+                    <INPUT label="Dirección / Obra" value={formPanel.direccion} onChange={e=>setFormPanel(p=>({...p,direccion:e.target.value}))}placeholder="Calle, Colonia, Monterrey" />
+                    <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={formPanel.zona||""} onChange={e=>setFormPanel(p=>({...p,zona:e.target.value}))} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
                   </div>
                 </div>
                 <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
