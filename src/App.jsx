@@ -3381,7 +3381,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
                           {p.render_url && <img src={p.render_url} alt="render" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 96, height: 96, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />}
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}</div>
+                         <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}{p.nombre ? ` · ${p.nombre}` : ""}</div>
                             <div style={{ fontSize: 12, color: "#aaa" }}>{[p.estilo, Array.isArray(p.material) ? p.material.join(", ") : p.material, p.color_principal].filter(Boolean).join(" · ")}</div>
                            {(() => {
   const medidas = [p.largo && `largo ${p.largo}`, p.ancho && `ancho ${p.ancho}`, p.alto && `alto ${p.alto}`, p.altura && `altura ${p.altura}`, p.profundidad && `prof. ${p.profundidad}`].filter(Boolean).join(" · ");
