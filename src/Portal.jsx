@@ -521,6 +521,7 @@ export default function Portal() {
         color_principal: colorElegido || null,
         tipo_acabado: ACABADOS.find(a => a.key === acabado)?.label || acabado || null,
         observaciones: descripcion || null,
+        descripcion_ia: descripcionIA || null,
         ts: Date.now(),
       }));
     } catch {}
