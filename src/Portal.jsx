@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-
+import { buildRenderPrompt } from "./renderPrompt.js";
 const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
 
