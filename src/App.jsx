@@ -1748,7 +1748,7 @@ async function guardarRenderPendiente(tok, usr) {
     const payload = {
       tipo_proyecto: p.tipo_proyecto, render_url: p.render_url, estilo: p.estilo,
       material: p.material, color_principal: p.color_principal, tipo_acabado: p.tipo_acabado,
-      observaciones: p.observaciones, descripcion_ia: p.descripcion_ia, correo: usr?.email, user_email: usr?.email,
+      observaciones: p.observaciones, descripcion_ia: p.descripcion_ia, nombre: usr?.user_metadata?.nombre, correo: usr?.email, user_email: usr?.email,
       estado: "guardado", etapa_seguimiento: "guardado", created_at: new Date().toISOString(),
     };
     const limpio = Object.fromEntries(Object.entries(payload).filter(([, v]) => v !== null && v !== undefined && v !== ""));
