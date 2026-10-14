@@ -2974,7 +2974,7 @@ Formato: Caption completo listo para copiar y pegar.`;
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["leads_portal","Leads"],["membresias","Talleres"],["ia","IA"]]
   : role === "taller"
     ? [["bienvenida","Inicio"],["oportunidades","Oportunidades"],["leads","Proyectos"],["presupuesto","Cotizar"],["formulario","Formulario"],["mi_perfil","Mi Perfil"],["ia","IA"]]
-  : [["bienvenida","Inicio"],["formulario","Formulario"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["ia","IA"]]
+  : [["bienvenida","Inicio"],["mis_proyectos","Mis Proyectos"],["formulario","Formulario detallado"],["estilos","Estilos"],["ia","IA"]]
   const form = getForm();
 
   const TIPO_SELECTOR = () => (
@@ -3030,7 +3030,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 {role==="taller" && talleresMem.find(t=>t.email===user?.email)?.slug && (
                   <BTN onClick={() => window.open(`https://enkajepro.com/taller/${talleresMem.find(t=>t.email===user?.email).slug}`, "_blank")} outline color="#d4af37">🔗 Ver mi link público</BTN>
                 )}
-                {role==="cliente" && <><BTN onClick={() => setTabWithHistory("formulario")}>Iniciar mi Proyecto</BTN><BTN onClick={() => setTabWithHistory("estilos")} outline color="#d4af37">Ver Estilos</BTN></>}
+                {role==="cliente" && <><BTN onClick={() => { window.location.href = "/portal"; }}>Iniciar mi Proyecto</BTN><BTN onClick={() => setTabWithHistory("estilos")} outline color="#d4af37">Ver Estilos</BTN></>}
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr 1fr":"repeat(4,1fr)", gap: 12 }}>
@@ -3040,8 +3040,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                   <div style={{ fontSize: isMobile?26:32, fontWeight: 900, color: c }}>{v}</div>
                 </div>
               ))}
-              {role==="cliente" && [["Mi Proyecto","Llena el formulario","formulario","#d4af37"],["Estilos","Elige tu estilo","estilos","#00bcd4"],["Presupuesto","Ve el costo","presupuesto","#4caf50"],["IA Asesora","Recomendaciones","ia","#f0a500"]].map(([t,d,tab_,c],i) => (
-                <div key={i} onClick={() => setTab(tab_)} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
+              {role==="cliente" && [["Mi Proyecto","Diseña tu render y pide cotizaciones","portal","#d4af37"],["Estilos","Elige tu estilo","estilos","#00bcd4"],["Presupuesto","Ve el costo","presupuesto","#4caf50"],["IA Asesora","Recomendaciones","ia","#f0a500"]].map(([t,d,tab_,c],i) => (
+                <div key={i} onClick={() => { if (tab_ === "portal") window.location.href = "/portal"; else setTab(tab_); }} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: c, marginBottom: 4 }}>{t}</div>
                   <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>{d}</div>
                 </div>
