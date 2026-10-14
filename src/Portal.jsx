@@ -573,6 +573,7 @@ const guardarEnPerfil = async () => {
         tipo_acabado:   acabadoData?.label || acabado || null,
         observaciones:  descripcion || null,
         descripcion_ia: descripcionIA || null,
+        nombre:         user?.user_metadata?.nombre || null,
         correo:         user?.email || null,
         user_email:     user?.email || null,
         estado:         "guardado",
