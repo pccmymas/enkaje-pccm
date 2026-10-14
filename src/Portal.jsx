@@ -437,6 +437,68 @@ const Watermark = () => (
   </div>
 );
 
+// ─── Registro / login dentro del portal (sin salir a /app) ───────────────
+function AuthInline({ titulo, onSuccess }) {
+  const [modo, setModo] = useState("registro");
+  const [nom, setNom] = useState("");
+  const [mail, setMail] = useState("");
+  const [pass, setPass] = useState("");
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const inp = { width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"12px 14px", color:"#e8e0d0", fontSize:14, marginBottom:10 };
+  const enviar = async () => {
+    setErr("");
+    if (modo === "registro" && !nom.trim()) { setErr("Escribe tu nombre."); return; }
+    if (!mail.includes("@")) { setErr("Correo inválido."); return; }
+    if (pass.length < 6) { setErr("La contraseña debe tener al menos 6 caracteres."); return; }
+    setLoading(true);
+    try {
+      const path = modo === "registro" ? "signup" : "token?grant_type=password";
+      const body = modo === "registro"
+        ? { email: mail.trim(), password: pass, data: { nombre: nom.trim(), role: "cliente" } }
+        : { email: mail.trim(), password: pass };
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const d = await r.json();
+      const token = d.access_token || d.session?.access_token;
+      const user = d.user;
+      if (token && user) {
+        const rol = user.user_metadata?.role || "cliente";
+        if (rol !== "cliente") { setErr("Esta cuenta es de taller o administrador. Entra desde enkajepro.com/app."); setLoading(false); return; }
+        await onSuccess({ token, user });
+      } else if (modo === "registro" && d.user && !d.session) {
+        setErr("Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión aquí.");
+        setModo("login");
+      } else {
+        const m = d.error_description || d.msg || d.message || "No se pudo continuar";
+        setErr(/already registered/i.test(m) ? "Ese correo ya tiene cuenta. Inicia sesión." : /invalid login/i.test(m) ? "Correo o contraseña incorrectos." : m);
+        if (/already registered/i.test(m)) setModo("login");
+      }
+    } catch { setErr("Error de conexión. Intenta de nuevo."); }
+    setLoading(false);
+  };
+  return (
+    <div style={{ background:"linear-gradient(135deg,#1a1208,#0f0f0a)", border:"1px solid #d4af3740", borderRadius:16, padding:20, textAlign:"left", marginBottom:16 }}>
+      <div style={{ fontSize:13, fontWeight:700, color:"#d4af37", marginBottom:12 }}>{titulo}</div>
+      {modo === "registro" && <input value={nom} onChange={e => setNom(e.target.value)} placeholder="Tu nombre" style={inp} />}
+      <input type="email" value={mail} onChange={e => setMail(e.target.value)} placeholder="Correo electrónico" style={inp} />
+      <input type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="Contraseña (mínimo 6 caracteres)" style={inp} onKeyDown={e => { if (e.key === "Enter") enviar(); }} />
+      {err && <div style={{ color:"#ff8a80", fontSize:12, marginBottom:10 }}>{err}</div>}
+      <button onClick={enviar} disabled={loading} style={{ width:"100%", background:"#d4af37", color:"#000", border:"none", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, cursor: loading ? "wait" : "pointer" }}>
+        {loading ? "Un momento..." : modo === "registro" ? "Crear cuenta y continuar →" : "Iniciar sesión y continuar →"}
+      </button>
+      <div style={{ textAlign:"center", marginTop:10 }}>
+        <button onClick={() => { setModo(modo === "registro" ? "login" : "registro"); setErr(""); }} style={{ background:"none", border:"none", color:"#888", fontSize:12, cursor:"pointer", textDecoration:"underline" }}>
+          {modo === "registro" ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Créala gratis"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Portal() {
   const [zona, setZona] = useState("");
   const TOTAL_STEPS = 8;
@@ -468,6 +530,10 @@ export default function Portal() {
   const [ajusteTexto, setAjusteTexto]           = useState("");
   const [regenerandoConAjuste, setRegenerandoConAjuste] = useState(false);
   const fileRef = useRef();
+  const [authTick, setAuthTick] = useState(0);
+  const [restaurado, setRestaurado] = useState(false);
+  const [errSolicitud, setErrSolicitud] = useState("");
+  const draftListo = useRef(false);
 
   const tieneCuenta    = !!sessionStorage.getItem("enkaje_token");
   const sinCuenta      = !tieneCuenta;
@@ -502,6 +568,29 @@ export default function Portal() {
 
   useEffect(() => {
     document.title = "Portal Cliente · EnKaje Pro";
+    try {
+      const d = JSON.parse(localStorage.getItem("enkaje_portal_draft") || "null");
+      if (d && Date.now() - d.ts < 7*24*3600*1000 && d.tipoProyecto) {
+        setTipo(d.tipoProyecto); setEstilo(d.estilo || ""); setColor(d.colorElegido || ""); setAcabado(d.acabado || "");
+        setMaterial(d.material || ""); setVidaResp(d.vidaResp || {}); setDescripcion(d.descripcion || "");
+        setRenderUrl(d.renderUrl || null); setDescripcionIA(d.descripcionIA || null);
+        setFechaInicio(d.fechaInicio || ""); setNivelDecision(d.nivelDecision || ""); setMedidas(d.medidas || "");
+        setZona(d.zona || ""); setTelefono(d.telefono || "");
+        setStep(Math.min(d.step || 0, 7));
+        if ((d.step || 0) > 0) setRestaurado(true);
+      }
+    } catch {}
+    draftListo.current = true;
+    try {
+      const u = JSON.parse(sessionStorage.getItem("enkaje_user") || "null");
+      if (sessionStorage.getItem("enkaje_token") && u) {
+        const m = u.user_metadata || {};
+        if (m.nombre) setNombre(m.nombre);
+        if (u.email) setCorreo(u.email);
+        if (m.zona) setZona(z => z || m.zona);
+        if (m.telefono) setTelefono(t => t || m.telefono);
+      }
+    } catch {}
    if (tieneCuenta) {
   const stored = parseInt(localStorage.getItem("enkaje_renders_cuenta") || "0", 10);
   if (stored >= 3) localStorage.setItem("enkaje_renders_cuenta", "0");
@@ -526,6 +615,95 @@ export default function Portal() {
       }));
     } catch {}
    }, [renderUrl, descripcionIA]);
+
+  // Borrador: para que el cliente pueda volver donde se quedó
+  useEffect(() => {
+    if (!draftListo.current || !tipoProyecto || step >= TOTAL_STEPS) return;
+    try {
+      localStorage.setItem("enkaje_portal_draft", JSON.stringify({
+        ts: Date.now(), step, tipoProyecto, estilo, colorElegido, acabado, material, vidaResp, descripcion,
+        renderUrl: renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
+        descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono,
+      }));
+    } catch {}
+  }, [step, tipoProyecto, estilo, colorElegido, acabado, material, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
+
+  // Tras registrarse / iniciar sesión dentro del portal
+  const alAutenticar = ({ token, user }) => {
+    sessionStorage.setItem("enkaje_token", token);
+    sessionStorage.setItem("enkaje_user", JSON.stringify(user));
+    sessionStorage.setItem("enkaje_role", "cliente");
+    localStorage.removeItem("enkaje_renders");
+    localStorage.setItem("enkaje_renders_cuenta", "0");
+    const m = user.user_metadata || {};
+    if (m.nombre) setNombre(m.nombre);
+    if (user.email) setCorreo(user.email);
+    if (m.zona) setZona(z => z || m.zona);
+    if (m.telefono) setTelefono(t => t || m.telefono);
+    setRenderBloqueado(false);
+    setAuthTick(t => t + 1);
+    cargarRestantes();
+  };
+
+  // Crea la solicitud (etapa "solicitud") para que llegue a Oportunidades
+  const enviarSolicitud = async (ses) => {
+    const token = ses?.token || sessionStorage.getItem("enkaje_token");
+    const user  = ses?.user  || JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
+    if (!token || !user?.email) { setErrSolicitud("Necesitas una cuenta para enviar la solicitud."); return false; }
+    setSaving(true); setErrSolicitud("");
+    const nom = user.user_metadata?.nombre || nombre || "";
+    const materialData = MATERIALES.find(m => m.key === material);
+    const acabadoData  = ACABADOS.find(a => a.key === acabado);
+    const notas = [medidas && `Medidas aprox.: ${medidas}`, fechaInicio && `Inicio deseado: ${fechaInicio}`].filter(Boolean).join(" · ");
+    const base = {
+      tipo_proyecto: tipoProyecto,
+      render_url: renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
+      estilo,
+      material: materialData?.label || material || null,
+      color_principal: colorElegido || null,
+      tipo_acabado: acabadoData?.label || acabado || null,
+      observaciones: descripcion || null,
+      descripcion_ia: descripcionIA || null,
+      nombre: nom || null,
+      correo: user.email,
+      telefono: telefono || null,
+      zona: zona || null,
+      comentarios_tecnicos: notas || null,
+      estado: "nuevo",
+      etapa_seguimiento: "solicitud",
+    };
+    const clean = Object.fromEntries(Object.entries(base).filter(([,v]) => v !== null));
+    const headers = { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
+    let ok = false, detalle = "";
+    try {
+      // Si ya la había guardado en su perfil, la convertimos en solicitud (sin duplicar)
+      if (clean.render_url) {
+        const rp = await fetch(`${SUPABASE_URL}/rest/v1/proyectos?user_email=eq.${encodeURIComponent(user.email)}&etapa_seguimiento=eq.guardado&render_url=eq.${encodeURIComponent(clean.render_url)}`, {
+          method: "PATCH", headers: { ...headers, "Prefer": "return=representation" }, body: JSON.stringify(clean)
+        });
+        if (rp.ok) { const arr = await rp.json(); if (Array.isArray(arr) && arr.length > 0) ok = true; }
+      }
+      if (!ok) {
+        const rp = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, {
+          method: "POST", headers: { ...headers, "Prefer": "return=minimal" },
+          body: JSON.stringify({ ...clean, user_email: user.email, created_at: new Date().toISOString() })
+        });
+        ok = rp.ok; if (!ok) detalle = await rp.text();
+      }
+    } catch (e) { detalle = e.message; }
+    if (!ok) { setSaving(false); setErrSolicitud("No pudimos enviar tu solicitud. Intenta de nuevo. " + detalle.slice(0, 120)); return false; }
+    // Recordar zona y teléfono en la cuenta (best-effort)
+    try {
+      const ru = await fetch(`${SUPABASE_URL}/auth/v1/user`, { method: "PUT", headers, body: JSON.stringify({ data: { zona, telefono } }) });
+      if (ru.ok) { const u2 = await ru.json(); if (u2?.email) sessionStorage.setItem("enkaje_user", JSON.stringify(u2)); }
+    } catch {}
+    await guardarExpediente({ nombre: nom, correo: user.email });
+    localStorage.removeItem("enkaje_portal_draft");
+    localStorage.removeItem("enkaje_render_pendiente");
+    setGuardadoEnPerfil(true);
+    setSaving(false);
+    return true;
+  };
 
   const handleFoto = (e) => {
     const file = e.target.files[0];
@@ -857,8 +1035,8 @@ const guardarEnPerfil = async () => {
     setRegenerandoConAjuste(false);
   };
 
-  const guardarExpediente = async () => {
-    setSaving(true);
+  const guardarExpediente = async (ov = {}) => {
+    const nom = ov.nombre ?? nombre; const cor = ov.correo ?? correo;
     const vidaResumen = preguntasVida.map(p => {
       const r = vidaResp[p.key];
       const op = p.opciones.find(o => o.value === r);
@@ -866,8 +1044,6 @@ const guardarEnPerfil = async () => {
     }).filter(Boolean).join(" | ");
 
     const materialData = MATERIALES.find(m => m.key === material);
-    const resumen = `🆕 *NUEVO LEAD — EnKaje Pro*\n\n📋 Proyecto: ${tipoProyecto.toUpperCase()}\n🎨 Estilo: ${estilo}\n🎨 Color: ${colorElegido}\n✨ Acabado: ${acabado}\n🪵 Material: ${materialData?.label || "no especificado"}\n🏠 Perfil hogar: ${vidaResumen}\n📝 Descripción: ${descripcion || "no especificada"}\n👤 Nombre: ${nombre}\n📱 Tel: ${telefono}\n📧 Correo: ${correo}\n📅 Fecha deseada: ${fechaInicio}\n🎯 Decisión: ${nivelDecision}\n📐 Medidas: ${medidas || "no especificadas"}\n💰 Rango: $${rango.min.toLocaleString("es-MX")} – $${rango.max.toLocaleString("es-MX")} MXN\n\nenkajepro.com`;
-    window.open(`https://wa.me/528127176786?text=${encodeURIComponent(resumen)}`, "_blank");
 
     try {
       const score = calcularScore({ nivel_decision: nivelDecision, foto_url: fotoUrl, medidas, fecha_inicio: fechaInicio, descripcion });
@@ -885,13 +1061,12 @@ const guardarEnPerfil = async () => {
         fecha_inicio_deseada: fechaInicio || null,
         nivel_decision:       nivelDecision,
         medidas_sketch_url:   medidas || null,
-        observaciones:        `Nombre: ${nombre} | Tel: ${telefono} | Correo: ${correo} | Desc: ${descripcion} | Vida: ${vidaResumen} | DescIA: ${descripcionIA || ""}`,
+        observaciones:        `Nombre: ${nom} | Tel: ${telefono} | Correo: ${cor} | Desc: ${descripcion} | Vida: ${vidaResumen} | DescIA: ${descripcionIA || ""}`,
         zona: zona || null,
         score, score_label: label, estado_lead: "nuevo", created_at: new Date().toISOString(),
       };
       await sb("expedientes", { method: "POST", body: JSON.stringify(payload) });
     } catch(e) { console.error("ERROR:", e); }
-    setSaving(false);
   };
 
   const next  = () => setStep(s => Math.min(s+1, TOTAL_STEPS));
@@ -902,7 +1077,8 @@ const guardarEnPerfil = async () => {
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
     setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision(""); setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
-    setAjusteTexto(""); setRegenerandoConAjuste(false); setZona("");
+    setAjusteTexto(""); setRegenerandoConAjuste(false); setZona(""); setRestaurado(false); setErrSolicitud("");
+    try { localStorage.removeItem("enkaje_portal_draft"); } catch {}
   };
 
   const vidaCompleta = preguntasVida.every(p => vidaResp[p.key]);
@@ -926,6 +1102,12 @@ const guardarEnPerfil = async () => {
       </div>
 
       <div style={{ maxWidth:680, margin:"0 auto", padding:"32px 20px 80px" }}>
+        {restaurado && step > 0 && step < TOTAL_STEPS && (
+          <div style={{ background:"#0f2a0f", border:"1px solid #4caf5030", borderRadius:12, padding:"10px 14px", marginBottom:16, display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, fontSize:12, color:"#8bc34a" }}>
+            <span>↩️ Retomamos tu proyecto donde te quedaste.</span>
+            <button onClick={reset} style={{ background:"none", border:"1px solid #4caf5050", color:"#8bc34a", borderRadius:8, padding:"4px 10px", fontSize:11, cursor:"pointer" }}>Empezar de nuevo</button>
+          </div>
+        )}
 
         {/* PASO 0 — INTRO + TIPO */}
         {step === 0 && (
@@ -1033,6 +1215,7 @@ const guardarEnPerfil = async () => {
               <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)}
                 placeholder={tipoProyecto === "cocina" ? "Ej: Quiero isla, iluminación LED, sin manijas..." : tipoProyecto === "closet" ? "Ej: Con cajones en el centro, puertas de vidrio..." : "Describe colores, materiales, dimensiones..."}
                 rows={3} style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14, resize:"vertical", lineHeight:1.6 }} />
+              <div style={{ fontSize:11, color:"#555", marginTop:6 }}>🔒 No escribas teléfono ni correo aquí: los talleres ven esta descripción antes de que los elijas.</div>
             </div>
             <div style={{ display:"flex", gap:10 }}>
               <Btn onClick={back} outline style={{ flex:1 }}>← Atrás</Btn>
@@ -1211,14 +1394,7 @@ const guardarEnPerfil = async () => {
     <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
       "Se renuevan el próximo mes. Si envías una solicitud de cotización a los talleres desde Mis Proyectos, ganas 1 render más (máximo 2 extra al mes)."
     </p>
-    {sinCuenta && (
-      <a href="/app" onClick={() => { 
-        localStorage.removeItem("enkaje_renders"); 
-        localStorage.setItem("enkaje_renders_cuenta", "0");
-      }} style={{ display:"block", background:"#d4af37", color:"#000", borderRadius:12, padding:"13px 24px", fontWeight:900, fontSize:14, textDecoration:"none" }}>
-        Crear cuenta gratis → 3 renders
-      </a>
-    )}
+    {sinCuenta && <AuthInline titulo="Crea tu cuenta gratis y sigue con 3 renders al mes" onSuccess={alAutenticar} />}
   </div>
 )}
 
@@ -1442,34 +1618,20 @@ const guardarEnPerfil = async () => {
           </div>
         )}
 
-        {/* PASO 7 — CONTACTO */}
+        {/* PASO 7 — ENVIAR SOLICITUD */}
         {step === 7 && (
           <div className="portal-step">
-            <StepLabel step={7} total={TOTAL_STEPS} label="Contacto" />
+            <StepLabel step={7} total={TOTAL_STEPS} label="Solicitud" />
             <ProgressBar step={7} total={TOTAL_STEPS} />
             <div style={{ marginTop:28, marginBottom:24 }}>
-              <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:"#f0e8dc", marginBottom:8 }}>¿A dónde te mandamos las cotizaciones?</h2>
-              <p style={{ color:"#666", fontSize:14 }}>Los talleres te contactarán directamente. Sin spam, prometido.</p>
+              <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:"#f0e8dc", marginBottom:8 }}>Último paso: ¿dónde será el proyecto?</h2>
+              <p style={{ color:"#666", fontSize:14 }}>Con esto los talleres de tu zona te mandan su cotización en rango.</p>
             </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:14, marginBottom:16 }}>
-              {[
-                { label:"Nombre", value:nombre, set:setNombre, placeholder:"Tu nombre", type:"text" },
-                { label:"WhatsApp / Teléfono", value:telefono, set:setTelefono, placeholder:"81-1234-5678", type:"tel" },
-                { label:"Correo electrónico", value:correo, set:setCorreo, placeholder:"correo@ejemplo.com", type:"email" },
-              ].map(({ label, value, set, placeholder, type }) => (
-                <div key={label}>
-                  <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>{label}</label>
-                  <input type={type} value={value} onChange={e => set(e.target.value)} placeholder={placeholder}
-                    style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14 }} />
-                </div>
-              ))}
-            </div>
-            <div style={{ marginBottom:20 }}>
-              <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:8, letterSpacing:1, textTransform:"uppercase" }}>Medidas aproximadas <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span></label>
-              <textarea value={medidas} onChange={e => setMedidas(e.target.value)}
-                placeholder={tipoProyecto === "cocina" ? "Ej: Largo 3.20m, Alto 2.40m, Profundidad 0.60m" : "Ej: Ancho 2.40m, Alto 2.40m, Profundidad 0.60m"}
-                rows={2} style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14, resize:"vertical" }} />
-            </div>
+            {tieneCuenta && (
+              <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:12, padding:"10px 14px", marginBottom:16, fontSize:13, color:"#aaa" }}>
+                👤 {nombre || "Tu cuenta"}{correo ? ` · ${correo}` : ""}
+              </div>
+            )}
             <div style={{ marginBottom:20 }}>
               <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:8, letterSpacing:1, textTransform:"uppercase" }}>¿En qué zona será el proyecto?</label>
               <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
@@ -1480,14 +1642,33 @@ const guardarEnPerfil = async () => {
                 ))}
               </div>
             </div>
-            <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:12, padding:14, marginBottom:24, fontSize:12, color:"#555", lineHeight:1.7 }}>
-              🔒 Tu información solo se comparte con talleres verificados de EnKaje Pro. No la vendemos ni la usamos para publicidad.
+            <div style={{ marginBottom:20 }}>
+              <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:6, letterSpacing:1, textTransform:"uppercase" }}>WhatsApp / Teléfono</label>
+              <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="81-1234-5678"
+                style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14 }} />
+              <div style={{ fontSize:11, color:"#555", marginTop:6 }}>🔒 Los talleres NO ven tu teléfono ni tu correo. Solo lo compartimos con el taller que tú elijas.</div>
             </div>
+            <div style={{ marginBottom:20 }}>
+              <label style={{ fontSize:11, color:"#555", display:"block", marginBottom:8, letterSpacing:1, textTransform:"uppercase" }}>Medidas aproximadas <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span></label>
+              <textarea value={medidas} onChange={e => setMedidas(e.target.value)}
+                placeholder={tipoProyecto === "cocina" ? "Ej: Largo 3.20m, Alto 2.40m, Profundidad 0.60m" : "Ej: Ancho 2.40m, Alto 2.40m, Profundidad 0.60m"}
+                rows={2} style={{ width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14, resize:"vertical" }} />
+            </div>
+            {errSolicitud && <div style={{ color:"#ff8a80", fontSize:13, marginBottom:12 }}>{errSolicitud}</div>}
+            {sinCuenta && (zona && telefono.replace(/\D/g,"").length >= 10 ? (
+              <AuthInline titulo="Crea tu cuenta gratis para enviar tu solicitud y ver las cotizaciones" onSuccess={async ses => { alAutenticar(ses); const ok = await enviarSolicitud(ses); if (ok) next(); }} />
+            ) : (
+              <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:12, padding:14, marginBottom:20, fontSize:12, color:"#666", lineHeight:1.7 }}>
+                Elige tu zona y escribe tu teléfono; después creas tu cuenta gratis (nombre, correo y contraseña) y se envía tu solicitud.
+              </div>
+            ))}
             <div style={{ display:"flex", gap:10 }}>
               <Btn onClick={back} outline style={{ flex:1 }}>← Atrás</Btn>
-              <Btn onClick={async () => { await guardarExpediente(); next(); }}disabled={!nombre || !telefono || !zona || saving} style={{ flex:2 }}>
-                {saving ? "Guardando..." : "Solicitar cotizaciones →"}
-              </Btn>
+              {tieneCuenta && (
+                <Btn onClick={async () => { const ok = await enviarSolicitud(); if (ok) next(); }} disabled={!zona || telefono.replace(/\D/g,"").length < 10 || saving} style={{ flex:2 }}>
+                  {saving ? "Enviando..." : "Solicitar cotizaciones →"}
+                </Btn>
+              )}
             </div>
           </div>
         )}
@@ -1496,8 +1677,8 @@ const guardarEnPerfil = async () => {
         {step === 8 && (
           <div className="portal-step" style={{ textAlign:"center", paddingTop:32 }}>
             <div style={{ fontSize:56, marginBottom:20 }}>🎉</div>
-            <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:30, fontWeight:900, color:"#f0e8dc", marginBottom:12 }}>¡Expediente enviado!</h2>
-            <p style={{ color:"#888", fontSize:15, lineHeight:1.8, maxWidth:440, margin:"0 auto 32px" }}>Los talleres verificados de EnKaje Pro en Monterrey recibirán tu proyecto y te contactarán pronto.</p>
+            <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:30, fontWeight:900, color:"#f0e8dc", marginBottom:12 }}>¡Solicitud enviada!</h2>
+            <p style={{ color:"#888", fontSize:15, lineHeight:1.8, maxWidth:440, margin:"0 auto 32px" }}>Los talleres verificados de tu zona ya pueden ver tu proyecto y te enviarán su cotización en rango. Tú eliges con cuál trabajar y solo entonces compartimos tu contacto.</p>
             <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:24, textAlign:"left", marginBottom:24 }}>
               <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>Tu expediente</div>
               {renderUrl && (
@@ -1538,10 +1719,10 @@ const guardarEnPerfil = async () => {
             {tieneCuenta && (
               <div style={{ background:"#0f2a0f", border:"1px solid #4caf5030", borderRadius:14, padding:16, marginBottom:16, display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
                 <div>
-                  <div style={{ fontSize:13, fontWeight:700, color:"#4caf50", marginBottom:2 }}>¿Quieres ver todos tus proyectos?</div>
-                  <div style={{ fontSize:11, color:"#555" }}>Tus renders guardados están en Mis Proyectos</div>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#4caf50", marginBottom:2 }}>¿Quieres ver tus cotizaciones?</div>
+                  <div style={{ fontSize:11, color:"#555" }}>Aquí verás las cotizaciones que lleguen</div>
                 </div>
-                <button onClick={() => { window.location.href = "/app"; sessionStorage.setItem("enkaje_tab", "mis_proyectos"); }} style={{ background:"#4caf50", color:"#000", border:"none", borderRadius:10, padding:"10px 18px", fontWeight:700, fontSize:13, cursor:"pointer", whiteSpace:"nowrap" }}>Ver mis proyectos →</button>
+                <button onClick={() => { window.location.href = "/app"; sessionStorage.setItem("enkaje_tab", "mis_proyectos"); }} style={{ background:"#4caf50", color:"#000", border:"none", borderRadius:10, padding:"10px 18px", fontWeight:700, fontSize:13, cursor:"pointer", whiteSpace:"nowrap" }}>Ver mis cotizaciones →</button>
               </div>
             )}
             <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
@@ -1549,7 +1730,7 @@ const guardarEnPerfil = async () => {
               <Btn onClick={() => {
                 const msg = `Hola! Acabo de solicitar cotización en EnKaje Pro para mi proyecto de ${TIPOS_PROYECTO.find(t=>t.key===tipoProyecto)?.label} estilo ${ESTILOS.find(e=>e.key===estilo)?.label}. ¿Me pueden ayudar?`;
                 window.open(`https://wa.me/528127176786?text=${encodeURIComponent(msg)}`, "_blank");
-              }} color="#25D366" style={{ fontSize:13 }}>💬 Hablar por WhatsApp</Btn>
+              }} color="#25D366" style={{ fontSize:13 }}>💬 ¿Dudas? Escríbenos</Btn>
             </div>
           </div>
         )}
