@@ -525,7 +525,7 @@ export default function Portal() {
         ts: Date.now(),
       }));
     } catch {}
-  }, [renderUrl]);
+   }, [renderUrl, descripcionIA]);
 
   const handleFoto = (e) => {
     const file = e.target.files[0];
