@@ -3379,7 +3379,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                     return (
                       <div key={p.enkaje} style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 12, padding: 16, marginBottom: 10 }}>
                         <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
-                          {p.render_url && <img src={p.render_url} alt="render" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />}
+                          {p.render_url && <img src={p.render_url} alt="render" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 96, height: 96, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />}
                           <div>
                             <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}</div>
                             <div style={{ fontSize: 12, color: "#aaa" }}>{[p.estilo, Array.isArray(p.material) ? p.material.join(", ") : p.material, p.color_principal].filter(Boolean).join(" · ")}</div>
