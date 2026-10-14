@@ -474,6 +474,7 @@ export default function Portal() {
   const LIMITE_RENDERS = tieneCuenta ? 3 : 1;
   const STORAGE_KEY    = tieneCuenta ? "enkaje_renders_cuenta" : "enkaje_renders";
   const [restantes, setRestantes] = useState(null);
+  const [ajustesLibres, setAjustesLibres] = useState(null);
   const cargarRestantes = async () => {
     const t = sessionStorage.getItem("enkaje_token");
     if (!t) return;
