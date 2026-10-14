@@ -3700,7 +3700,17 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div>
                             <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}</div>
                             <div style={{ fontSize: 12, color: "#aaa" }}>{[p.estilo, Array.isArray(p.material) ? p.material.join(", ") : p.material, p.color_principal].filter(Boolean).join(" · ")}</div>
-                            {p.observaciones && <div style={{ fontSize: 12, color: "#777", marginTop: 4 }}>{String(p.observaciones).slice(0, 160)}</div>}
+                           {(() => {
+  const medidas = [p.largo && `largo ${p.largo}`, p.ancho && `ancho ${p.ancho}`, p.alto && `alto ${p.alto}`, p.altura && `altura ${p.altura}`, p.profundidad && `prof. ${p.profundidad}`].filter(Boolean).join(" · ");
+  const det = [["Medidas", medidas], ["Área", p.area], ["Cantidad", p.cantidad], ["Isla", p.medidas_isla], ["Altura superiores", p.altura_superiores], ["Acabado", p.tipo_acabado], ["Textura", p.textura], ["Color secundario", p.color_secundario], ["Calidad", p.nivel_calidad], ["Tipo", p.tipo_cocina || p.tipo_closet || p.tipo_puerta || p.tipo_mueble]].filter(([, v]) => v);
+  return (
+    <>
+      {det.length > 0 && <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 12, color: "#aaa", marginTop: 6 }}>{det.map(([l, v]) => <div key={l}><b style={{ color: "#d4af37" }}>{l}:</b> {v}</div>)}</div>}
+      {p.observaciones && <div style={{ fontSize: 12, color: "#999", marginTop: 6, whiteSpace: "pre-wrap" }}><b style={{ color: "#d4af37" }}>Descripción:</b> {String(p.observaciones)}</div>}
+      {p.comentarios_tecnicos && <div style={{ fontSize: 12, color: "#999", marginTop: 4, whiteSpace: "pre-wrap" }}><b style={{ color: "#d4af37" }}>Notas:</b> {String(p.comentarios_tecnicos)}</div>}
+    </>
+  );
+})()}
                           </div>
                         </div>
                         {ya ? (
