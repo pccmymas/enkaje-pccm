@@ -792,7 +792,7 @@ const guardarEnPerfil = async () => {
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(sessionStorage.getItem("enkaje_token") ? { "Authorization": `Bearer ${sessionStorage.getItem("enkaje_token")}` } : {}) },
-        body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, acabadoData, material, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64 })
+        body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, acabadoData, material, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64, ajuste: !!promptAdicional })
       });
       const data = await res.json();
       console.log("IMAGE RESPONSE:", JSON.stringify(data));
