@@ -1659,6 +1659,7 @@ export default function App() {
   const [materialesMsg, setMaterialesMsg] = useState("");
   const [filtroLeadEstado, setFiltroLeadEstado] = useState("todos");
   const [filtroProyectoEtapa, setFiltroProyectoEtapa] = useState("todos");
+  const [filtroOp, setFiltroOp] = useState("porcotizar");
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cotForm, setCotForm] = useState({});
   const [cotMsg, setCotMsg] = useState("");
@@ -2222,7 +2223,7 @@ async function guardarEdicionTaller() {
   }, []); 
   
 useEffect(() => {
-    if (screen === "app" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
+    if (screen === "app" && role === "admin" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
     if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos" || tab === "bienvenida")) cargarProyectos();
     if (screen === "app" && (tab === "membresias" || tab === "mi_perfil" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
@@ -2972,7 +2973,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   const tabs = role === "admin"
     ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["leads_portal","Leads"],["membresias","Talleres"],["ia","IA"]]
   : role === "taller"
-    ? [["bienvenida","Inicio"],["formulario","Formulario"],["leads","Proyectos"],["leads_portal","Leads"],["presupuesto","Cotizar"],["mi_perfil","Mi Perfil"],["ia","IA"]]
+    ? [["bienvenida","Inicio"],["oportunidades","Oportunidades"],["leads","Proyectos"],["presupuesto","Cotizar"],["formulario","Formulario"],["mi_perfil","Mi Perfil"],["ia","IA"]]
   : [["bienvenida","Inicio"],["formulario","Formulario"],["mis_proyectos","Mis Proyectos"],["estilos","Estilos"],["ia","IA"]]
   const form = getForm();
 
@@ -3025,7 +3026,7 @@ Formato: Caption completo listo para copiar y pegar.`;
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {role==="admin" && <><BTN onClick={() => setTabWithHistory("formulario")}>Nuevo Levantamiento</BTN><BTN onClick={() => setTabWithHistory("proyectos")} outline color="#d4af37">Ver Proyectos ({proyectos.length})</BTN></>}
-                {role==="taller" && <BTN onClick={() => setTabWithHistory("leads")}>Ver Proyectos ({proyectos?.length || 0})</BTN>} 
+                {role==="taller" && <><BTN onClick={() => setTabWithHistory("oportunidades")}>Ver Oportunidades ({proyectos.filter(esOportunidad).filter(p => !cotizaciones.find(c => String(c.proyecto_enkaje) === String(p.enkaje))).length})</BTN><BTN onClick={() => setTabWithHistory("leads")} outline color="#d4af37">Mis Proyectos</BTN></>}
                 {role==="taller" && talleresMem.find(t=>t.email===user?.email)?.slug && (
                   <BTN onClick={() => window.open(`https://enkajepro.com/taller/${talleresMem.find(t=>t.email===user?.email).slug}`, "_blank")} outline color="#d4af37">🔗 Ver mi link público</BTN>
                 )}
@@ -3045,8 +3046,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                   <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>{d}</div>
                 </div>
               ))}
-              {role==="taller" && [["Proyectos nuevos",(proyectos||[]).filter(p=>p.estado==="nuevo").length,"#d4af37"],["Total",(proyectos||[]).length,"#00bcd4"]].map(([l,v,c],i) => (
-                <div key={i} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18 }}>
+              {role==="taller" && [["Por cotizar",(proyectos||[]).filter(esOportunidad).filter(p=>!cotizaciones.find(c=>String(c.proyecto_enkaje)===String(p.enkaje))).length,"#d4af37","oportunidades"],["Cotizadas",cotizaciones.length,"#00bcd4","oportunidades"],["Te eligieron",(proyectos||[]).filter(p=>!esOportunidad(p)&&(p.taller_email||"").toLowerCase()===(user?.email||"").toLowerCase()&&(p.user_email||"").toLowerCase()!==(user?.email||"").toLowerCase()).length,"#4caf50","leads"]].map(([l,v,c,tb],i) => (
+                <div key={i} onClick={() => setTabWithHistory(tb)} style={{ cursor: "pointer", background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18 }}>
                   <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>{l}</div>
                   <div style={{ fontSize: 32, fontWeight: 900, color: c }}>{v}</div>
                 </div>
@@ -3470,7 +3471,7 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
         )}
 {/* LEADS DEL PORTAL */}
-        {tab === "leads_portal" && (role === "taller" || role === "admin") && (
+        {tab === "leads_portal" && role === "admin" && (
           <div>
             <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:26 }}>Leads del Portal</h1>
             <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Clientes que llenaron el portal público con render de IA</p>
@@ -3665,30 +3666,30 @@ Formato: Caption completo listo para copiar y pegar.`;
               })}
           </div>
         )}
-        {/* PROYECTOS TALLER */}
-        {tab === "leads" && role === "taller" && (
-          <div>
-            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1><div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
-  <button onClick={() => setFiltroProyectoEtapa("todos")} style={{ background: filtroProyectoEtapa === "todos" ? "#d4af3725" : "transparent", border: `1.5px solid ${filtroProyectoEtapa === "todos" ? "#d4af37" : "#2a2a20"}`, color: filtroProyectoEtapa === "todos" ? "#d4af37" : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-    Todos ({proyectos.length})
-  </button>
-  {ETAPAS_SEGUIMIENTO.map(et => {
-    const count = proyectos.filter(p => (p.etapa_seguimiento || "anticipo") === et.key).length;
-    if (count === 0) return null;
-    return (
-      <button key={et.key} onClick={() => setFiltroProyectoEtapa(et.key)} style={{ background: filtroProyectoEtapa === et.key ? `${et.color}25` : "transparent", border: `1.5px solid ${filtroProyectoEtapa === et.key ? et.color : "#2a2a20"}`, color: filtroProyectoEtapa === et.key ? et.color : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-        {et.emoji} {et.label} ({count})
-      </button>
-    );
-  })}
-</div>
-            {(() => {
-              const ops = proyectos.filter(esOportunidad);
-              if (ops.length === 0) return null;
-              return (
-                <div style={{ marginBottom: 24 }}>
-                  <div style={{ color: "#d4af37", fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>🆕 Oportunidades abiertas ({ops.length})</div>
-                  {cotMsg && <div style={{ fontSize: 12, color: "#d4af37", marginBottom: 8 }}>{cotMsg}</div>}
+        {/* OPORTUNIDADES — taller */}
+        {tab === "oportunidades" && role === "taller" && (() => {
+          const todas = proyectos.filter(esOportunidad);
+          const cotDe = p => cotizaciones.find(c => String(c.proyecto_enkaje) === String(p.enkaje));
+          const porCotizar = todas.filter(p => !cotDe(p));
+          const cotizadas = todas.filter(p => cotDe(p));
+          const abiertas = new Set(todas.map(p => String(p.enkaje)));
+          const cerradas = cotizaciones.filter(c => !abiertas.has(String(c.proyecto_enkaje)));
+          const ops = filtroOp === "porcotizar" ? porCotizar : filtroOp === "cotizadas" ? cotizadas : [];
+          const chip = (k, label, n, color) => (
+            <button key={k} onClick={() => setFiltroOp(k)} style={{ background: filtroOp === k ? `${color}25` : "transparent", border: `1.5px solid ${filtroOp === k ? color : "#2a2a20"}`, color: filtroOp === k ? color : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{label} ({n})</button>
+          );
+          return (
+            <div>
+              <h1 style={{ color: "#d4af37", margin: "0 0 6px", fontSize: isMobile?20:26 }}>Oportunidades</h1>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Solicitudes de clientes en tu zona. El contacto del cliente se comparte solo si te elige.</div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                {chip("porcotizar", "🆕 Por cotizar", porCotizar.length, "#d4af37")}
+                {chip("cotizadas", "📨 Cotizadas", cotizadas.length, "#00bcd4")}
+                {chip("cerradas", "🔒 Cerradas", cerradas.length, "#666")}
+              </div>
+              {cotMsg && <div style={{ fontSize: 12, color: "#d4af37", marginBottom: 8 }}>{cotMsg}</div>}
+              {filtroOp !== "cerradas" && ops.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>{filtroOp === "porcotizar" ? "No hay oportunidades nuevas por ahora." : "Aún no has cotizado ninguna oportunidad abierta."}</div>}
+              {filtroOp !== "cerradas" && (<div>
                   {ops.map(p => {
                     const ya = cotizaciones.find(c => String(c.proyecto_enkaje) === String(p.enkaje));
                     const f = cotForm[p.enkaje] || {};
@@ -3698,7 +3699,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
                           {p.render_url && <img src={p.render_url} alt="render" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 96, height: 96, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />}
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}{p.nombre ? ` · ${p.nombre}` : ""}</div>
+                            <div style={{ fontWeight: 700, fontSize: 14 }}>{(Date.now() - new Date(p.created_at).getTime()) < 86400000 && <span style={{ background: "#d4af37", color: "#000", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 800, marginRight: 6 }}>NUEVA</span>}{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}{p.nombre ? ` · ${p.nombre}` : ""}</div>
                             <div style={{ fontSize: 12, color: "#aaa" }}>{[p.estilo, Array.isArray(p.material) ? p.material.join(", ") : p.material, p.color_principal].filter(Boolean).join(" · ")}</div>
                            {(() => {
   const medidas = [p.largo && `largo ${p.largo}`, p.ancho && `ancho ${p.ancho}`, p.alto && `alto ${p.alto}`, p.altura && `altura ${p.altura}`, p.profundidad && `prof. ${p.profundidad}`].filter(Boolean).join(" · ");
@@ -3729,10 +3730,43 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                     );
                   })}
+              </div>)}
+              {filtroOp === "cerradas" && (
+                <div>
+                  {cerradas.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>Aquí aparecerán las oportunidades que ya se cerraron.</div>}
+                  {cerradas.map(c => {
+                    const eligio = proyectos.find(p => String(p.enkaje) === String(c.proyecto_enkaje) && (p.taller_email || "").toLowerCase() === (user?.email || "").toLowerCase());
+                    return (
+                      <div key={c.id} style={{ background: "#0f0f0a", border: "1px solid #ffffff10", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{(c.tipo_proyecto || "Proyecto").toUpperCase()}{c.zona ? ` · ${c.zona}` : ""}</div>
+                        <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>Tu cotización: ${Number(c.monto_min).toLocaleString("es-MX")} – ${Number(c.monto_max).toLocaleString("es-MX")}</div>
+                        <div style={{ fontSize: 12, marginTop: 6, color: eligio ? "#8bc34a" : "#888" }}>{eligio ? "🎉 Te eligieron — míralo en Proyectos" : "Cerrada: el cliente eligió otro taller o canceló"}</div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })()}
-            {proyectos.filter(p => !esOportunidad(p)).length === 0 && proyectos.filter(esOportunidad).length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay proyectos aún</div>}
+              )}
+            </div>
+          );
+        })()}
+        {/* PROYECTOS TALLER */}
+        {tab === "leads" && role === "taller" && (
+          <div>
+            <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Mis Proyectos</h1><div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+  <button onClick={() => setFiltroProyectoEtapa("todos")} style={{ background: filtroProyectoEtapa === "todos" ? "#d4af3725" : "transparent", border: `1.5px solid ${filtroProyectoEtapa === "todos" ? "#d4af37" : "#2a2a20"}`, color: filtroProyectoEtapa === "todos" ? "#d4af37" : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+    Todos ({proyectos.filter(p => !esOportunidad(p)).length})
+  </button>
+  {ETAPAS_SEGUIMIENTO.map(et => {
+    const count = proyectos.filter(p => (p.etapa_seguimiento || "anticipo") === et.key).length;
+    if (count === 0) return null;
+    return (
+      <button key={et.key} onClick={() => setFiltroProyectoEtapa(et.key)} style={{ background: filtroProyectoEtapa === et.key ? `${et.color}25` : "transparent", border: `1.5px solid ${filtroProyectoEtapa === et.key ? et.color : "#2a2a20"}`, color: filtroProyectoEtapa === et.key ? et.color : "#666", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+        {et.emoji} {et.label} ({count})
+      </button>
+    );
+  })}
+</div>
+            {proyectos.filter(p => !esOportunidad(p)).length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>Aún no tienes proyectos. Cuando un cliente te elija, aparecerá aquí 🎉</div>}
            {proyectos.filter(p => !esOportunidad(p) && (filtroProyectoEtapa === "todos" || (p.etapa_seguimiento || "anticipo") === filtroProyectoEtapa)).map((p,i) => {
               const sel = proyectoSel?.created_at === p.created_at;
               return (
@@ -3747,7 +3781,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                       </div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 14 }}>{p.nombre || "Cliente sin nombre"}</div>
-                        <div style={{ fontSize: 12, color: "#aaa" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}</div>
+                        <div style={{ fontSize: 12, color: "#aaa" }}>{(p.tipo_proyecto||"cocina").toUpperCase()} · {p.created_at?.split("T")[0]}{(p.taller_email||"").toLowerCase()===(user?.email||"").toLowerCase() && (p.user_email||"").toLowerCase()!==(user?.email||"").toLowerCase() ? " · 🎉 Te eligieron" : ""}</div>
                       </div>
                     </div>
                     {(() => {
