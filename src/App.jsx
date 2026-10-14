@@ -1968,14 +1968,18 @@ async function cargarLeads() {
       const tiposTaller = lista(mio?.tipos_proyecto);
       const filtrados = data.filter(p => {
         // Siempre ve los suyos
-        const esMio = (p.user_email || "").toLowerCase() === miEmail || (p.taller_email || "").toLowerCase() === miEmail;
+      const esMio = (p.user_email || "").toLowerCase() === miEmail || (p.taller_email || "").toLowerCase() === miEmail;
         if (esMio) return true;
         // Sin zona, sin zonas o sin especialidades configuradas: no ve nada
         if (!p.zona || zonasTaller.length === 0 || tiposTaller.length === 0) return false;
         return zonasTaller.includes((p.zona || "").trim().toLowerCase())
           && tiposTaller.includes((p.tipo_proyecto || "").trim().toLowerCase());
       });
-      setProyectos(filtrados);
+        let ops = [];
+      const rOps = await sb("rpc/oportunidades_taller", { method: "POST", token, body: "{}" });
+      if (Array.isArray(rOps)) ops = rOps;
+      const yaIds = new Set(filtrados.map(p => String(p.enkaje)));
+      setProyectos([...filtrados, ...ops.filter(o => !yaIds.has(String(o.enkaje)))]);
       cargarCotizaciones();
     } else {
       setProyectos(data);
