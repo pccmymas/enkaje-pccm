@@ -1199,7 +1199,7 @@ const guardarEnPerfil = async () => {
     {sinCuenta ? "Ya usaste tus renders gratis de hoy" : "Ya usaste tus renders de este mes"}
     </h3>
     <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
-      "Se renuevan el próximo mes. Si envías una solicitud de cotización a los talleres desde Mis Proyectos, ganas 2 renders más."
+      "Se renuevan el próximo mes. Si envías una solicitud de cotización a los talleres desde Mis Proyectos, ganas 1 render más (máximo 2 extra al mes)."
     </p>
     {sinCuenta && (
       <a href="/app" onClick={() => { 
