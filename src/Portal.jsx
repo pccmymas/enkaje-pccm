@@ -485,6 +485,12 @@ export default function Portal() {
         body: "{}"
       });
       if (r.ok) setRestantes(await r.json());
+      const r2 = await fetch(`${SUPABASE_URL}/rest/v1/rpc/ajustes_disponibles`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${t}`, "Content-Type": "application/json" },
+        body: "{}"
+      });
+      if (r2.ok) setAjustesLibres(await r2.json());
     } catch {}
   };
 
