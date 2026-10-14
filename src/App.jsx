@@ -3706,7 +3706,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   return (
     <>
       {det.length > 0 && <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 12, color: "#aaa", marginTop: 6 }}>{det.map(([l, v]) => <div key={l}><b style={{ color: "#d4af37" }}>{l}:</b> {v}</div>)}</div>}
-      {p.observaciones && <div style={{ fontSize: 12, color: "#999", marginTop: 6, whiteSpace: "pre-wrap" }}><b style={{ color: "#d4af37" }}>Descripción:</b> {String(p.observaciones)}</div>}
+      {(p.descripcion_ia || p.observaciones) && <div style={{ fontSize: 12, color: "#999", marginTop: 6, whiteSpace: "pre-wrap" }}><b style={{ color: "#d4af37" }}>Descripción:</b> {String(p.descripcion_ia || p.observaciones)}</div>}
       {p.comentarios_tecnicos && <div style={{ fontSize: 12, color: "#999", marginTop: 4, whiteSpace: "pre-wrap" }}><b style={{ color: "#d4af37" }}>Notas:</b> {String(p.comentarios_tecnicos)}</div>}
     </>
   );
