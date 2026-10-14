@@ -926,7 +926,7 @@ const guardarEnPerfil = async () => {
                 <span style={{ fontSize:18 }}>✅</span>
                 <div style={{ textAlign:"left" }}>
                   <div style={{ fontSize:13, fontWeight:700, color:"#4caf50" }}>Sesión activa</div>
-                  <div style={{ fontSize:11, color:"#555" }}>Tienes {restantes ?? "…"} render(s) disponibles este mes · Envía una solicitud de cotización y ganas 2 más</div>
+                  <div style={{ fontSize:11, color:"#555" }}>Tienes {restantes ?? "…"} render(s) disponibles este mes · Envía una solicitud de cotización y ganas 1 más (máximo 2 extra al mes)</div>
                 </div>
               </div>
             )}
