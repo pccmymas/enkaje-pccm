@@ -1253,7 +1253,7 @@ const guardarEnPerfil = async () => {
                       </button>
                       {ajusteTexto.trim() && <button onClick={() => setAjusteTexto("")} style={{ background:"transparent", border:"1px solid #333", color:"#555", borderRadius:8, padding:"9px 14px", fontSize:12, cursor:"pointer" }}>Limpiar</button>}
                     </div>
-                    <div style={{ marginTop:10, fontSize:11, color:"#333" }}>💡 Sé específico para mejores resultados.</div>
+                    <div style={{ marginTop:10, fontSize:11, color:"#333" }}>💡 Sé específico para mejores resultados.{ajustesLibres !== null && ajustesLibres < 999 && (ajustesLibres > 0 ? ` Te quedan ${ajustesLibres} ajuste(s) gratis para este render.` : " Ya no tienes ajustes gratis; el siguiente usará uno de tus renders.")}</div>
                   </div>
                 )}
                 <div style={{ display:"flex", gap:8, marginBottom:16 }}>
