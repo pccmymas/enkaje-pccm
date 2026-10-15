@@ -29,12 +29,16 @@ async function claim(clave) {
 }
 
 function plantilla(titulo, cuerpoHtml, boton) {
-  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222;max-width:540px">
-<p style="margin:0 0 14px"><b>${titulo}</b></p>
-${cuerpoHtml}
-${boton ? `<p style="margin:18px 0"><a href="${boton[1]}" style="color:#1a56c4">${esc(boton[0])}</a></p>` : ""}
-<p style="margin:22px 0 0;color:#666;font-size:13px">Si tienes dudas, solo responde este correo.<br>Felipe · EnKaje Pro, Monterrey</p>
-</div>`;
+  return `<div style="font-family:-apple-system,Segoe UI,Arial,sans-serif;background:#f6f3ec;padding:24px">
+  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #eadfc5">
+    <div style="background:#12100a;padding:18px 24px;color:#d4af37;font-size:20px;font-weight:800;letter-spacing:1px">EnKaje <span style="font-size:12px;color:#c8a97a;letter-spacing:3px">PRO</span></div>
+    <div style="padding:24px;color:#222;font-size:15px;line-height:1.6">
+      <h2 style="margin:0 0 12px;font-size:20px;color:#12100a">${titulo}</h2>
+      ${cuerpoHtml}
+      ${boton ? `<p style="margin:24px 0 8px"><a href="${boton[1]}" style="background:#d4af37;color:#000;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px;display:inline-block">${esc(boton[0])}</a></p>` : ""}
+    </div>
+    <div style="padding:14px 24px;background:#faf7ef;color:#888;font-size:12px">EnKaje Pro · Monterrey · ¿Dudas? Solo responde este correo.</div>
+  </div></div>`;
 }
 
 const aTexto = h => String(h)
