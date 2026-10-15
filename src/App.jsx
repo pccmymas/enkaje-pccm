@@ -1663,6 +1663,13 @@ export default function App() {
   const [filtroProyectoEtapa, setFiltroProyectoEtapa] = useState("todos");
   const [filtroOp, setFiltroOp] = useState("porcotizar");
   const [visitaForm, setVisitaForm] = useState({});
+  const [filtroTaller, setFiltroTaller] = useState("todos");
+  const [filtroVerif, setFiltroVerif] = useState("todas");
+  const [filtroMuni, setFiltroMuni] = useState("todos");
+  const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [busquedaTaller, setBusquedaTaller] = useState("");
+  const [verCobertura, setVerCobertura] = useState(false);
+  const [filtroSol, setFiltroSol] = useState("abiertas");
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cotForm, setCotForm] = useState({});
   const [cotMsg, setCotMsg] = useState("");
@@ -1988,6 +1995,7 @@ async function cargarLeads() {
     } else {
       setProyectos(data);
       cargarCotsCliente(data);
+      if (role === "admin") cargarCotizaciones();
     }
 }
 
@@ -2077,7 +2085,7 @@ async function cargarLeads() {
   const esOportunidad = p => role === "taller" && p.etapa_seguimiento === "solicitud" && !p.taller_email && (p.user_email || "").toLowerCase() !== (user?.email || "").toLowerCase();
 
   async function cargarCotizaciones() {
-    if (role !== "taller") return;
+    if (role !== "taller" && role !== "admin") return;
     const data = await sb("cotizaciones?order=created_at.desc", { token });
     if (Array.isArray(data)) setCotizaciones(data);
   }
@@ -2288,8 +2296,8 @@ async function guardarEdicionTaller() {
   
 useEffect(() => {
     if (screen === "app" && role === "admin" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
-    if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos" || tab === "bienvenida")) cargarProyectos();
-    if (screen === "app" && (tab === "membresias" || tab === "mi_perfil" || (tab === "bienvenida" && role === "taller") || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
+    if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos" || tab === "solicitudes" || tab === "membresias" || tab === "bienvenida")) cargarProyectos();
+    if (screen === "app" && (tab === "membresias" || tab === "solicitudes" || tab === "mi_perfil" || (tab === "bienvenida" && (role === "taller" || role === "admin")) || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
   useEffect(() => {
@@ -3035,11 +3043,43 @@ Formato: Caption completo listo para copiar y pegar.`;
 
   // ─── APP ───────────────────────────────────────────────────────────────────
   const tabs = role === "admin"
-    ? [["bienvenida","Inicio"],["formulario","Formulario"],["presupuesto","Presupuesto"],["proyectos","Proyectos"],["leads_portal","Leads"],["membresias","Talleres"],["ia","IA"]]
+    ? [["bienvenida","Inicio"],["membresias","Talleres"],["solicitudes","Solicitudes"],["leads_portal","Leads"],["proyectos","Proyectos"],["formulario","Formulario"],["presupuesto","Presupuesto"],["ia","IA"]]
   : role === "taller"
     ? [["bienvenida","Inicio"],["oportunidades","Oportunidades"],["leads","Proyectos"],["presupuesto","Cotizar"],["formulario","Formulario"],["mi_perfil","Mi Perfil"],["ia","IA"]]
   : [["bienvenida","Inicio"],["mis_proyectos","Mis Proyectos"],["formulario","Formulario detallado"],["estilos","Estilos"],["ia","IA"]]
   const form = getForm();
+
+  // ── Datos del panel admin ──
+  const normT = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const listaT = x => String(x || "").split(",").map(y => normT(y).trim()).filter(Boolean);
+  const mailEq = (a, b) => (a || "").toLowerCase() === (b || "").toLowerCase();
+  const talleresFiltrados = talleresMem.filter(t => {
+    const est = t.estado || "activo";
+    const sinCfg = est === "activo" && (listaT(t.zonas_cobertura || t.municipio).length === 0 || listaT(t.tipos_proyecto).length === 0);
+    if (filtroTaller === "sinconfig") { if (!sinCfg) return false; }
+    else if (filtroTaller !== "todos" && est !== filtroTaller) return false;
+    if (filtroVerif !== "todas" && (t.verificacion_estado || "por_agendar") !== filtroVerif) return false;
+    if (filtroMuni !== "todos" && !listaT(t.zonas_cobertura || t.municipio).includes(normT(filtroMuni))) return false;
+    if (filtroTipo !== "todos" && !listaT(t.tipos_proyecto).includes(filtroTipo)) return false;
+    const q = normT(busquedaTaller).trim();
+    if (q && !normT([t.nombre, t.email, t.representante, t.telefono].join(" ")).includes(q)) return false;
+    return true;
+  });
+  const nTalleres = {
+    todos: talleresMem.length,
+    pendiente: talleresMem.filter(t => t.estado === "pendiente").length,
+    activo: talleresMem.filter(t => (t.estado || "activo") === "activo").length,
+    inactivo: talleresMem.filter(t => t.estado === "inactivo").length,
+    rechazado: talleresMem.filter(t => t.estado === "rechazado").length,
+    sinconfig: talleresMem.filter(t => (t.estado || "activo") === "activo" && (listaT(t.zonas_cobertura || t.municipio).length === 0 || listaT(t.tipos_proyecto).length === 0)).length,
+  };
+  const nombreTallerPor = em => talleresMem.find(t => mailEq(t.email, em))?.nombre || em;
+  const solicitudesAdmin = proyectos.filter(p => (p.etapa_seguimiento === "solicitud" && !p.taller_email) || (p.taller_email && p.user_email && !mailEq(p.taller_email, p.user_email)));
+  const cotsDe = p => cotizaciones.filter(c => String(c.proyecto_enkaje) === String(p.enkaje));
+  const horasDe = p => (Date.now() - new Date(p.created_at).getTime()) / 36e5;
+  const solAbiertas = solicitudesAdmin.filter(p => p.etapa_seguimiento === "solicitud" && !p.taller_email);
+  const solSinCot48 = solAbiertas.filter(p => horasDe(p) >= 48 && cotsDe(p).length === 0);
+  const solElegidas = solicitudesAdmin.filter(p => p.taller_email);
 
   const TIPO_SELECTOR = () => (
     <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: "16px 20px", marginBottom: 20 }}>
@@ -3090,7 +3130,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 {role==="admin"?"Gestionas todos los proyectos de EnKaje Pro.":role==="taller"?"Aqui recibes proyectos y cotizas directamente.":"Diseña y cotiza tu proyecto ideal con nosotros."}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                {role==="admin" && <><BTN onClick={() => setTabWithHistory("formulario")}>Nuevo Levantamiento</BTN><BTN onClick={() => setTabWithHistory("proyectos")} outline color="#d4af37">Ver Proyectos ({proyectos.length})</BTN></>}
+                {role==="admin" && <><BTN onClick={() => { setFiltroTaller(nTalleres.pendiente > 0 ? "pendiente" : "todos"); setTabWithHistory("membresias"); }}>Talleres{nTalleres.pendiente > 0 ? ` · ${nTalleres.pendiente} por aprobar` : ""}</BTN><BTN onClick={() => setTabWithHistory("solicitudes")} outline color="#d4af37">Solicitudes ({solAbiertas.length})</BTN><BTN onClick={() => setTabWithHistory("formulario")} outline color="#888">Nuevo Levantamiento</BTN></>}
                 {role==="taller" && <><BTN onClick={() => setTabWithHistory("oportunidades")}>Ver Oportunidades ({proyectos.filter(esOportunidad).filter(p => !cotizaciones.find(c => String(c.proyecto_enkaje) === String(p.enkaje))).length})</BTN><BTN onClick={() => setTabWithHistory("leads")} outline color="#d4af37">Mis Proyectos</BTN></>}
                 {role==="taller" && talleresMem.find(t=>t.email===user?.email)?.slug && (
                   <BTN onClick={() => window.open(`https://enkajepro.com/taller/${talleresMem.find(t=>t.email===user?.email).slug}`, "_blank")} outline color="#d4af37">🔗 Ver mi link público</BTN>
@@ -3099,12 +3139,34 @@ Formato: Caption completo listo para copiar y pegar.`;
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr 1fr":"repeat(4,1fr)", gap: 12 }}>
-              {role==="admin" && [["Proyectos",proyectos.length,"#d4af37"],["Nuevos",proyectos.filter(p=>p.estado==="nuevo").length,"#00bcd4"],["En proceso",proyectos.filter(p=>p.estado==="proceso").length,"#f0a500"],["Cerrados",proyectos.filter(p=>p.estado==="cerrado").length,"#4caf50"]].map(([l,v,c],i) => (
-                <div key={i} onClick={() => setTabWithHistory("proyectos")} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
-                  <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>{l}</div>
-                  <div style={{ fontSize: isMobile?26:32, fontWeight: 900, color: c }}>{v}</div>
-                </div>
-              ))}
+              {role==="admin" && (() => {
+                const ir = (f, tb) => () => { if (f) f(); setTabWithHistory(tb); };
+                const tarj = ([l, v, c, fn, alerta]) => (
+                  <div key={l} onClick={fn} style={{ background: "#0f0f0a", border: `1px solid ${c}${alerta && v > 0 ? "90" : "25"}`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
+                    <div style={{ fontSize: 9, color: "#666", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>{l}</div>
+                    <div style={{ fontSize: isMobile?26:32, fontWeight: 900, color: c }}>{v}</div>
+                  </div>
+                );
+                const sub = t => <div key={t} style={{ gridColumn: "1 / -1", fontSize: 11, color: "#d4af37", letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginTop: 6 }}>{t}</div>;
+                const citasN = proyectos.filter(p => p.fecha_visita && p.visita_estado !== "rechazada" && new Date(p.fecha_visita) >= new Date(Date.now() - 864e5)).length;
+                return [
+                  sub("Talleres"),
+                  ...[
+                    ["Por aprobar", nTalleres.pendiente, "#f0a500", ir(() => setFiltroTaller("pendiente"), "membresias"), true],
+                    ["Verificación por agendar", talleresMem.filter(t => t.estado === "pendiente" && (t.verificacion_estado || "por_agendar") === "por_agendar").length, "#ff9800", ir(() => { setFiltroTaller("pendiente"); setFiltroVerif("por_agendar"); }, "membresias"), true],
+                    ["Activos", nTalleres.activo, "#4caf50", ir(() => setFiltroTaller("activo"), "membresias")],
+                    ["Sin zonas o especialidad", nTalleres.sinconfig, "#f44336", ir(() => setFiltroTaller("sinconfig"), "membresias"), true],
+                  ].map(tarj),
+                  sub("Marketplace"),
+                  ...[
+                    ["Solicitudes abiertas", solAbiertas.length, "#00bcd4", ir(() => setFiltroSol("abiertas"), "solicitudes")],
+                    ["Sin cotización +48 h", solSinCot48.length, "#f44336", ir(() => setFiltroSol("sincot"), "solicitudes"), true],
+                    ["Cotizaciones enviadas", cotizaciones.length, "#9c27b0", ir(() => setFiltroSol("todas"), "solicitudes")],
+                    ["Talleres elegidos", solElegidas.length, "#4caf50", ir(() => setFiltroSol("elegidas"), "solicitudes")],
+                    ["Citas agendadas", citasN, "#ff9800", ir(() => setFiltroSol("elegidas"), "solicitudes")],
+                  ].map(tarj),
+                ];
+              })()}
               {role==="cliente" && [["Mi Proyecto","Diseña tu render y pide cotizaciones","portal","#d4af37"],["Estilos","Elige tu estilo","estilos","#00bcd4"],["Presupuesto","Ve el costo","presupuesto","#4caf50"],["IA Asesora","Recomendaciones","ia","#f0a500"]].map(([t,d,tab_,c],i) => (
                 <div key={i} onClick={() => { if (tab_ === "portal") window.location.href = "/portal"; else setTab(tab_); }} style={{ background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18, cursor: "pointer" }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: c, marginBottom: 4 }}>{t}</div>
@@ -3447,6 +3509,44 @@ Formato: Caption completo listo para copiar y pegar.`;
        )}
 
         {/* PROYECTOS ADMIN */}
+        {/* SOLICITUDES — admin */}
+        {tab === "solicitudes" && role === "admin" && (() => {
+          const FIL = [["abiertas", "Abiertas", solAbiertas.length, "#00bcd4"], ["sincot", "Sin cotización +48 h", solSinCot48.length, "#f44336"], ["concot", "Con cotizaciones", solAbiertas.filter(p => cotsDe(p).length > 0).length, "#9c27b0"], ["elegidas", "Con taller elegido", solElegidas.length, "#4caf50"], ["todas", "Todas", solicitudesAdmin.length, "#d4af37"]];
+          const lista = (filtroSol === "abiertas" ? solAbiertas : filtroSol === "sincot" ? solSinCot48 : filtroSol === "concot" ? solAbiertas.filter(p => cotsDe(p).length > 0) : filtroSol === "elegidas" ? solElegidas : solicitudesAdmin)
+            .slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          const edad = p => { const h = horasDe(p); return h < 1 ? "hace minutos" : h < 48 ? `hace ${Math.floor(h)} h` : `hace ${Math.floor(h / 24)} días`; };
+          return (
+            <div>
+              <h1 style={{ color: "#d4af37", margin: "0 0 6px", fontSize: isMobile?20:26 }}>Solicitudes</h1>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Solicitudes de clientes y qué talleres cotizaron. Las abiertas caducan a los 7 días.</div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                {FIL.map(([k, l, n, c]) => <button key={k} onClick={() => setFiltroSol(k)} style={{ padding: "6px 14px", borderRadius: 20, border: `1.5px solid ${filtroSol === k ? c : "#2a2a20"}`, background: filtroSol === k ? `${c}20` : "transparent", color: filtroSol === k ? c : "#777", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{l} ({n})</button>)}
+              </div>
+              {lista.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>No hay solicitudes en este filtro.</div>}
+              {lista.map(p => {
+                const cs = cotsDe(p);
+                const elegido = p.taller_email ? nombreTallerPor(p.taller_email) : null;
+                return (
+                  <div key={p.enkaje} style={{ background: "#0f0f0a", border: `1px solid ${elegido ? "#4caf5040" : horasDe(p) >= 48 && cs.length === 0 ? "#f4433640" : "#1a1a12"}`, borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      {p.render_url && <img src={p.render_url} alt="" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 64, height: 64, borderRadius: 8, objectFit: "cover", cursor: "zoom-in" }} />}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{(p.tipo_proyecto || "").toUpperCase()} · {p.zona || "sin zona"} · {p.nombre || "sin nombre"}</div>
+                        <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>{edad(p)} · {elegido ? `✅ Taller elegido: ${elegido}` : `${cs.length} cotización(es)`}{p.fecha_visita ? ` · 📅 visita ${fmtFecha(p.fecha_visita)} (${p.visita_estado || "propuesta"})` : ""}</div>
+                      </div>
+                    </div>
+                    {cs.length > 0 && (
+                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #1a1a12", fontSize: 12, color: "#aaa", lineHeight: 1.8 }}>
+                        {cs.map(c => <div key={c.id}><b style={{ color: "#e8e0d0" }}>{nombreTallerPor(c.taller_email)}</b> · ${Number(c.monto_min).toLocaleString("es-MX")} – ${Number(c.monto_max).toLocaleString("es-MX")} · {c.estado}</div>)}
+                      </div>
+                    )}
+                    {!elegido && cs.length === 0 && horasDe(p) >= 48 && <div style={{ fontSize: 11, color: "#f44336", marginTop: 8 }}>Sin cotizaciones por más de 48 h: revisa si hay talleres activos en esa zona y tipo (Talleres → Mapa de cobertura).</div>}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
         {tab === "proyectos" && role === "admin" && (
           <div>
             <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Todos los Proyectos</h1>
@@ -4038,11 +4138,67 @@ Formato: Caption completo listo para copiar y pegar.`;
             <h1 style={{ color: "#d4af37", margin: "0 0 20px", fontSize: isMobile?20:26 }}>Talleres</h1>
             <BTN onClick={() => setShowNuevoTaller(true)}>+ Agregar Taller</BTN>
             {tallerMsg && <div style={{ marginTop: 12, color: "#4caf50", fontSize: 13 }}>{tallerMsg}</div>}
-        <div style={{ marginTop: 8, marginBottom: 16, fontSize: 13, color: "#888" }}>
-                            {talleresMem.filter(t => t.estado === "activo").length} activos · {talleresMem.length} total
-            </div>
+        {(() => {
+              const chipF = (activo, color) => ({ padding: "6px 12px", borderRadius: 20, border: `1.5px solid ${activo ? color : "#2a2a20"}`, background: activo ? `${color}20` : "transparent", color: activo ? color : "#777", fontSize: 12, fontWeight: activo ? 700 : 400, cursor: "pointer", whiteSpace: "nowrap" });
+              const sel = { background: "#0f0f0a", border: "1px solid #2a2a20", borderRadius: 10, padding: "8px 10px", color: "#e8e0d0", fontSize: 13 };
+              const ESTS = [["todos", "Todos", "#d4af37"], ["pendiente", "Por aprobar", "#f0a500"], ["activo", "Activos", "#4caf50"], ["inactivo", "Inactivos", "#888"], ["rechazado", "Rechazados", "#f44336"], ["sinconfig", "Sin zonas/especialidad", "#f44336"]];
+              const hayFiltros = filtroTaller !== "todos" || filtroVerif !== "todas" || filtroMuni !== "todos" || filtroTipo !== "todos" || busquedaTaller;
+              const activos = talleresMem.filter(t => (t.estado || "activo") === "activo");
+              return (
+                <div style={{ marginTop: 16, marginBottom: 16 }}>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+                    {ESTS.map(([k, l, c]) => <button key={k} onClick={() => setFiltroTaller(k)} style={chipF(filtroTaller === k, c)}>{l} ({nTalleres[k]})</button>)}
+                  </div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 10 }}>
+                    <input value={busquedaTaller} onChange={e => setBusquedaTaller(e.target.value)} placeholder="Buscar por nombre, correo o teléfono" style={{ ...sel, flex: "1 1 220px" }} />
+                    <select value={filtroMuni} onChange={e => setFiltroMuni(e.target.value)} style={sel}>
+                      <option value="todos">Todas las zonas</option>
+                      {ZONAS.map(z => <option key={z} value={z}>{z}</option>)}
+                    </select>
+                    <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} style={sel}>
+                      <option value="todos">Todos los tipos</option>
+                      {TIPOS_PROYECTO.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+                    </select>
+                    <select value={filtroVerif} onChange={e => setFiltroVerif(e.target.value)} style={sel}>
+                      <option value="todas">Toda verificación</option>
+                      <option value="por_agendar">Por agendar</option>
+                      <option value="agendada">Agendada</option>
+                      <option value="completada">Completada</option>
+                    </select>
+                    {hayFiltros && <button onClick={() => { setFiltroTaller("todos"); setFiltroVerif("todas"); setFiltroMuni("todos"); setFiltroTipo("todos"); setBusquedaTaller(""); }} style={{ background: "none", border: "none", color: "#888", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>Limpiar filtros</button>}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#888", marginBottom: 10 }}>Mostrando {talleresFiltrados.length} de {talleresMem.length} talleres</div>
+                  <button onClick={() => setVerCobertura(v => !v)} style={chipF(verCobertura, "#00bcd4")}>🗺️ Mapa de cobertura {verCobertura ? "▲" : "▼"}</button>
+                  {verCobertura && (
+                    <div style={{ marginTop: 10, overflowX: "auto", background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 12 }}>
+                      <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>Talleres activos por zona y tipo de proyecto. En rojo: nadie recibe esas solicitudes.</div>
+                      <table style={{ borderCollapse: "collapse", fontSize: 12, width: "100%" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ textAlign: "left", padding: "6px 8px", color: "#888", fontWeight: 600 }}>Zona</th>
+                            {TIPOS_PROYECTO.map(([k, l]) => <th key={k} style={{ padding: "6px 8px", color: "#888", fontWeight: 600, whiteSpace: "nowrap" }}>{l}</th>)}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {ZONAS.map(z => (
+                            <tr key={z}>
+                              <td style={{ padding: "6px 8px", color: "#ccc", whiteSpace: "nowrap" }}>{z}</td>
+                              {TIPOS_PROYECTO.map(([k]) => {
+                                const n = activos.filter(t => listaT(t.zonas_cobertura || t.municipio).includes(normT(z)) && listaT(t.tipos_proyecto).includes(k)).length;
+                                const c = n === 0 ? "#f44336" : n < 3 ? "#d4af37" : "#4caf50";
+                                return <td key={k} style={{ textAlign: "center", padding: "6px 8px" }}><span style={{ display: "inline-block", minWidth: 28, padding: "3px 6px", borderRadius: 8, background: `${c}20`, border: `1px solid ${c}60`, color: c, fontWeight: 700 }}>{n}</span></td>;
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             {(() => {
-              const pendientes = talleresMem.filter(t => t.estado === "pendiente");
+              const pendientes = talleresFiltrados.filter(t => t.estado === "pendiente");
               if (pendientes.length === 0) return null;
               const CHECK = [
                 ["fotos", "Fotos reales de proyectos revisadas (5 a 8)"],
@@ -4153,12 +4309,17 @@ Formato: Caption completo listo para copiar y pegar.`;
               );
             })()}
             <div style={{ marginTop: 8 }}>
-              {talleresMem.filter(t => t.estado !== "pendiente").map((t,i) => (
+              {talleresFiltrados.filter(t => t.estado !== "pendiente").map((t,i) => (
                 <div key={i} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 16, marginBottom: 10 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ fontWeight: 700 }}>{t.nombre}</div>
                       <div style={{ fontSize: 12, color: "#aaa" }}>{t.email} · {t.plan} · {t.estado || "activo"}</div>
+                      <div style={{ fontSize: 11, color: "#777", marginTop: 3 }}>
+                        {[t.zonas_cobertura || t.municipio, t.tipos_proyecto].filter(Boolean).join(" · ")}
+                        {" · "}{cotizaciones.filter(c => mailEq(c.taller_email, t.email)).length} cotizaciones · elegido {proyectos.filter(p => mailEq(p.taller_email, t.email) && !mailEq(p.user_email, t.email)).length} veces
+                      </div>
+                      {(t.estado || "activo") === "activo" && (listaT(t.zonas_cobertura || t.municipio).length === 0 || listaT(t.tipos_proyecto).length === 0) && <div style={{ fontSize: 11, color: "#f44336", marginTop: 3 }}>⚠️ Sin zonas o especialidades: no recibe solicitudes</div>}
                     </div>
                     <BTN onClick={() => setTallerEdit(tallerEdit?.id === t.id ? null : {...t})} outline style={{ fontSize: 12 }}>
                       {tallerEdit?.id === t.id ? "Cerrar" : "✏️ Editar"}
