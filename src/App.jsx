@@ -2011,6 +2011,39 @@ async function cargarLeads() {
     });
   }
 
+  const metaUsuario = () => { try { return JSON.parse(sessionStorage.getItem("enkaje_user") || "{}").user_metadata || {}; } catch { return {}; } };
+
+  async function solicitarCotizacion(p, z) {
+    const m = metaUsuario();
+    const body = { etapa_seguimiento: "solicitud", zona: z };
+    if (m.telefono && !p.telefono) body.telefono = m.telefono;
+    if (m.nombre && !p.nombre) body.nombre = m.nombre;
+    await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify(body) });
+    try {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, { method: "PUT", headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ data: { zona: z } }) });
+      if (r.ok) { const u = await r.json(); if (u?.email) sessionStorage.setItem("enkaje_user", JSON.stringify(u)); }
+    } catch {}
+    setSolicitandoZona(null);
+    cargarProyectos();
+  }
+
+  function cerrarSolicitud(p) {
+    setConfirmModal({
+      msg: "¿Cerrar esta solicitud? Los talleres dejarán de verla. Tu proyecto se queda guardado y puedes volver a solicitar cotización cuando quieras.",
+      onOk: async () => {
+        await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ etapa_seguimiento: "guardado" }) });
+        cargarProyectos();
+      }
+    });
+  }
+
+  async function reportarProblema() {
+    const msg = window.prompt("¿Qué problema encontraste? Cuéntanos y lo revisamos.");
+    if (!msg || !msg.trim()) return;
+    const r = await sb("reportes", { method: "POST", token, body: JSON.stringify({ user_email: user?.email || null, rol: role, pestana: tab, mensaje: msg.trim().slice(0, 1500) }) });
+    alert(r?.code || r?.message ? "No se pudo enviar el reporte. Escríbenos a hola@enkajepro.com" : "Gracias, recibimos tu reporte.");
+  }
+
   const esOportunidad = p => role === "taller" && p.etapa_seguimiento === "solicitud" && !p.taller_email && (p.user_email || "").toLowerCase() !== (user?.email || "").toLowerCase();
 
   async function cargarCotizaciones() {
@@ -3001,6 +3034,7 @@ Formato: Caption completo listo para copiar y pegar.`;
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {!isMobile && <div style={{ fontSize: 12, color: "#aaa" }}>Hola, {nombreUsuario}</div>}
+            <button onClick={reportarProblema} title="Reportar un problema" style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 10px", fontSize: 12, cursor: "pointer" }}>⚠️{!isMobile && " Reportar"}</button>
             <button onClick={() => { setScreen("login"); setRole(null); setUser(null); setToken(null); sessionStorage.removeItem("enkaje_tab"); history.replaceState({}, "", window.location.pathname); }} style={{ background: "transparent", border: "1px solid #2a2a20", color: "#555", borderRadius: 8, padding: "7px 12px", fontSize: 12, cursor: "pointer" }}>Salir</button>
           </div>
         </div>
@@ -3188,12 +3222,15 @@ Formato: Caption completo listo para copiar y pegar.`;
         {tab === "mis_proyectos" && role === "cliente" && (
           <div>
             <h1 style={{ color: "#d4af37", margin: "0 0 8px", fontSize: isMobile?20:24 }}>Mis Proyectos</h1>
-            <p style={{ color: "#555", margin: "0 0 20px", fontSize: 13 }}>Levantamientos guardados</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap", margin: "0 0 20px" }}>
+              <p style={{ color: "#555", margin: 0, fontSize: 13 }}>Tus proyectos y cotizaciones</p>
+              <BTN onClick={() => { window.location.href = "/portal"; }} style={{ fontSize: 12 }}>➕ Nuevo proyecto</BTN>
+            </div>
             {proyectos.length === 0 && (
               <div style={{ background: "#0f0f0a", border: "1px solid #ffffff08", borderRadius: 12, padding: 32, textAlign: "center", color: "#555" }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
                 <div style={{ fontSize: 14 }}>No tienes proyectos guardados aún</div>
-                <BTN onClick={() => setTabWithHistory("formulario")} style={{ marginTop: 16, fontSize: 13 }}>Crear mi primer proyecto</BTN>
+                <BTN onClick={() => { window.location.href = "/portal"; }} style={{ marginTop: 16, fontSize: 13 }}>Crear mi primer proyecto</BTN>
               </div>
             )}
             {proyectos.map((p, i) => {
@@ -3289,9 +3326,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                                 {ZONAS.map(z => (
                                   <button key={z} onClick={async e => {
                                     e.stopPropagation();
-                                    await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ etapa_seguimiento: "solicitud", zona: z }) });
-                                    setSolicitandoZona(null);
-                                    cargarProyectos();
+                                    await solicitarCotizacion(p, z);
                                   }} style={{ padding: "6px 12px", borderRadius: 20, border: "1px solid #d4af3750", background: "transparent", color: "#d4af37", fontSize: 12, cursor: "pointer" }}>
                                     {z}
                                   </button>
@@ -3299,11 +3334,15 @@ Formato: Caption completo listo para copiar y pegar.`;
                               </div>
                             </div>
                           ) : (
-                            <BTN onClick={e => { e.stopPropagation(); setSolicitandoZona(p); }} style={{ fontSize: 12 }}>📨 Solicitar cotización</BTN>
+                            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                              <BTN onClick={e => { e.stopPropagation(); const z = p.zona || metaUsuario().zona; if (z) solicitarCotizacion(p, z); else setSolicitandoZona(p); }} style={{ fontSize: 12 }}>📨 Solicitar cotización{(p.zona || metaUsuario().zona) ? ` (${p.zona || metaUsuario().zona})` : ""}</BTN>
+                              {(p.zona || metaUsuario().zona) && <button onClick={e => { e.stopPropagation(); setSolicitandoZona(p); }} style={{ background: "none", border: "none", color: "#888", fontSize: 11, cursor: "pointer", textDecoration: "underline" }}>cambiar zona</button>}
+                            </div>
                           )}
                         </div>
                       )}
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {p.etapa_seguimiento === "solicitud" && !(cotsCliente[p.enkaje] || []).some(c => c.estado === "elegida") && <BTN onClick={e => { e.stopPropagation(); cerrarSolicitud(p); }} outline color="#f0a500" style={{ fontSize: 12 }}>⏸️ Cerrar solicitud</BTN>}
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>✏️ Editar</BTN>
                         <BTN
                           onClick={async e => {
