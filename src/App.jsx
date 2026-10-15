@@ -1455,6 +1455,7 @@ function RegistroTaller({ onBack }) {
         const t = await ins.text();
         throw new Error("Tu cuenta se creó pero no se pudo guardar la solicitud. Escríbenos a hola@enkajepro.com. Detalle: " + t.slice(0, 120));
       }
+      try { fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_KEY}` }, body: JSON.stringify({ evento: "taller_registrado", email }) }).catch(() => {}); } catch {}
       setEnviado(true);
       setMsg("");
     } catch (e) {
@@ -2015,9 +2016,9 @@ async function cargarLeads() {
   }
 
   // Avisos por correo (best-effort; el servidor decide a quién se manda)
-  function avisar(evento, enkaje) {
+  function avisar(evento, enkaje, extra = {}) {
     try {
-      fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ evento, enkaje }) }).catch(() => {});
+      fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ evento, enkaje, ...extra }) }).catch(() => {});
     } catch {}
   }
   const fmtFecha = iso => iso ? new Date(iso).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
@@ -4132,11 +4133,11 @@ Formato: Caption completo listo para copiar y pegar.`;
                             </BTN>
                           )}
                           <BTN disabled={!completa} style={{ fontSize: 12 }}
-                            onClick={async () => { await actualizarTaller(t.id, { estado: "activo" }); setTallerMsg(`✅ ${t.nombre} aprobado. Ya puede entrar con su correo y contraseña.`); setTimeout(() => setTallerMsg(""), 8000); }}>
+                            onClick={async () => { await actualizarTaller(t.id, { estado: "activo" }); avisar("taller_aprobado", null, { email: t.email }); setTallerMsg(`✅ ${t.nombre} aprobado. Ya puede entrar con su correo y contraseña.`); setTimeout(() => setTallerMsg(""), 8000); }}>
                             ✅ Aprobar taller
                           </BTN>
                           <BTN outline color="#f44336" style={{ fontSize: 12 }}
-                            onClick={async () => { if (window.confirm(`¿Rechazar la solicitud de ${t.nombre}?`)) { await actualizarTaller(t.id, { estado: "rechazado" }); setTallerMsg("Solicitud rechazada"); setTimeout(() => setTallerMsg(""), 6000); } }}>
+                            onClick={async () => { if (window.confirm(`¿Rechazar la solicitud de ${t.nombre}?`)) { await actualizarTaller(t.id, { estado: "rechazado" }); avisar("taller_rechazado", null, { email: t.email }); setTallerMsg("Solicitud rechazada"); setTimeout(() => setTallerMsg(""), 6000); } }}>
                             ✕ Rechazar
                           </BTN>
                         </div>
