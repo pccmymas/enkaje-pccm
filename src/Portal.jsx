@@ -534,6 +534,7 @@ export default function Portal() {
   const [restaurado, setRestaurado] = useState(false);
   const [errSolicitud, setErrSolicitud] = useState("");
   const draftListo = useRef(false);
+  const autoRender = useRef(false);
 
   const tieneCuenta    = !!sessionStorage.getItem("enkaje_token");
   const sinCuenta      = !tieneCuenta;
@@ -627,6 +628,14 @@ export default function Portal() {
       }));
     } catch {}
   }, [step, tipoProyecto, estilo, colorElegido, acabado, material, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
+
+  // Si se creó la cuenta desde el bloqueo de renders: generar el render solo y mostrarlo
+  useEffect(() => {
+    if (!autoRender.current || !tieneCuenta || step !== 3) return;
+    autoRender.current = false;
+    try { document.getElementById("render-area")?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch {}
+    generarRender();
+  }, [authTick]);
 
   // Tras registrarse / iniciar sesión dentro del portal
   const alAutenticar = ({ token, user }) => {
@@ -1378,7 +1387,7 @@ const guardarEnPerfil = async () => {
 
         {/* PASO 3 — RENDER */}
         {step === 3 && (
-          <div className="portal-step">
+          <div className="portal-step" id="render-area">
             <StepLabel step={3} total={TOTAL_STEPS} label="Tu render" />
             <ProgressBar step={3} total={TOTAL_STEPS} />
             <div style={{ marginTop:28, marginBottom:20 }}>
@@ -1395,7 +1404,7 @@ const guardarEnPerfil = async () => {
     <p style={{ color:"#666", fontSize:13, lineHeight:1.7, marginBottom:20 }}>
       "Se renuevan el próximo mes. Si envías una solicitud de cotización a los talleres desde Mis Proyectos, ganas 1 render más (máximo 2 extra al mes)."
     </p>
-    {sinCuenta && <AuthInline titulo="Crea tu cuenta gratis y sigue con 3 renders al mes" onSuccess={alAutenticar} />}
+    {sinCuenta && <AuthInline titulo="Crea tu cuenta gratis y sigue con 3 renders al mes" onSuccess={ses => { autoRender.current = true; alAutenticar(ses); }} />}
   </div>
 )}
 
