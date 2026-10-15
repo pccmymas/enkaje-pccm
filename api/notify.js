@@ -7,6 +7,7 @@ const SR = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const RESEND = process.env.RESEND_API_KEY;
 const FROM = process.env.MAIL_FROM || "EnKaje Pro <avisos@mail.enkajepro.com>";
 const APP = "https://enkajepro.com/app";
+const ADMIN = String(process.env.ADMIN_EMAIL || "pccmymas@gmail.com").toLowerCase();
 
 // Las llaves nuevas (sb_secret_...) no son JWT: van solo en apikey. Las viejas (eyJ...) van en las dos.
 const H = (SR || "").startsWith("sb_") ? { apikey: SR, "Content-Type": "application/json" } : { apikey: SR, Authorization: `Bearer ${SR}`, "Content-Type": "application/json" };
@@ -77,9 +78,48 @@ export default async function handler(req, res) {
   try {
     let body = req.body; if (typeof body === "string") body = JSON.parse(body);
     const evento = String(body?.evento || "");
+    // ---- Registro de taller (público): solo avisa si ese correo tiene una solicitud pendiente reciente ----
+    if (evento === "taller_registrado") {
+      const correo = String(body?.email || "").trim().toLowerCase();
+      const r = await rest(`talleres_membresia?email=eq.${encodeURIComponent(correo)}&estado=eq.pendiente&select=*&limit=1`);
+      const t = Array.isArray(r) ? r[0] : null;
+      if (!t || Date.now() - new Date(t.created_at).getTime() > 30 * 60 * 1000) return res.status(200).json({ ok: false, motivo: "no aplica" });
+      let n = 0;
+      if (await claim(`reg:${correo}`)) {
+        if (await enviar(correo, "Recibimos tu registro en EnKaje Pro",
+          plantilla("Recibimos tu registro", `<p>Hola ${esc(t.representante || "")}, gracias por registrar <b>${esc(t.nombre)}</b> en EnKaje Pro.</p><p>Tu solicitud está <b>en evaluación</b>. Nos pondremos en contacto contigo por teléfono o WhatsApp para agendar una <b>visita o videollamada</b> de verificación. No necesitas hacer nada más por ahora.</p><p>Cuando quedes aprobado te avisaremos por este mismo medio y podrás entrar con tu correo y contraseña.</p>`, null))) n++;
+        const lineas = [["Taller", t.nombre], ["Representante", t.representante], ["Teléfono", t.telefono], ["Correo", t.email], ["Municipio", t.municipio], ["Zonas", t.zonas_cobertura], ["Especialidades", t.tipos_proyecto], ["Experiencia", t.anos_experiencia]].filter(([, v]) => v);
+        if (await enviar(ADMIN, `Nuevo taller registrado: ${t.nombre}`,
+          plantilla("Se registró un taller", `<p>${lineas.map(([l, v]) => `<b>${esc(l)}:</b> ${esc(v)}`).join("<br>")}</p><p>Quedó en estado <b>pendiente</b>. Agenda su visita o videollamada y apruébalo desde Admin → Talleres.</p>`, ["Abrir panel", APP]))) n++;
+      }
+      return res.status(200).json({ ok: true, enviados: n });
+    }
+
     const token = (req.headers["authorization"] || "").replace(/^Bearer\s+/i, "").trim();
     const yo = token ? await usuario(token) : null;
     if (!yo) return res.status(401).json({ error: "No autorizado" });
+
+    // ---- Aprobación / rechazo de taller (solo admin) ----
+    if (evento === "taller_aprobado" || evento === "taller_rechazado") {
+      let admin = yo.email === ADMIN;
+      if (!admin) { const ad = await rest(`admins?email=eq.${encodeURIComponent(yo.email)}&select=*&limit=1`); admin = Array.isArray(ad) && ad.length > 0; }
+      if (!admin) return res.status(403).json({ error: "Solo admin" });
+      const correo = String(body?.email || "").trim().toLowerCase();
+      const r = await rest(`talleres_membresia?email=eq.${encodeURIComponent(correo)}&select=*&limit=1`);
+      const t = Array.isArray(r) ? r[0] : null;
+      const si = evento === "taller_aprobado";
+      if (!t || t.estado !== (si ? "activo" : "rechazado")) return res.status(200).json({ ok: false, motivo: "el estado no coincide" });
+      let n = 0;
+      if (await claim(`${si ? "apr" : "rech"}:${correo}`)) {
+        const ok = si
+          ? await enviar(correo, "Tu taller fue aprobado en EnKaje Pro",
+              plantilla("¡Felicidades, tu taller fue aprobado!", `<p>Hola ${esc(t.representante || "")}, <b>${esc(t.nombre)}</b> ya forma parte de EnKaje Pro como taller verificado.</p><p>Ya puedes entrar con tu correo y la contraseña que creaste. Para empezar:</p><p>1. Completa <b>Mi Perfil</b>: logo, horario y fotos de tus trabajos.<br>2. Cuando un cliente de tus zonas pida cotización de algo de tu especialidad, te avisaremos por correo.<br>3. Cotiza en rango y, si el cliente te elige, recibirás sus datos de contacto.</p><p>Te pedimos responder las oportunidades en menos de 48 horas. Bienvenido.</p>`, ["Entrar a mi panel", APP]))
+          : await enviar(correo, "Sobre tu solicitud en EnKaje Pro",
+              plantilla("Sobre tu solicitud", `<p>Hola ${esc(t.representante || "")}, gracias por tu interés en EnKaje Pro. Por ahora no pudimos aprobar la solicitud de <b>${esc(t.nombre)}</b>.</p><p>Si quieres saber más o volver a intentarlo, responde este correo y con gusto lo platicamos.</p>`, null));
+        if (ok) n++;
+      }
+      return res.status(200).json({ ok: true, enviados: n });
+    }
 
     // Proyecto (si no mandan enkaje, el más reciente en solicitud del propio usuario)
     let p = null;
