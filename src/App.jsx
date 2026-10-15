@@ -1325,6 +1325,7 @@ const ESTADOS_PROYECTO = [
 ];
 const ETAPAS_SEGUIMIENTO = [
   { key: "solicitud",   label: "Solicitud recibida", emoji: "📝", color: "#607d8b", msg: "Recibimos tu solicitud. Estamos preparando tu cotización." },
+  { key: "visita",      label: "Visita agendada",   emoji: "📅", color: "#ff9800", msg: "Tu visita de medidas está confirmada." },
   { key: "anticipo",    label: "Anticipo recibido", emoji: "💰", color: "#d4af37", msg: "Recibimos tu anticipo. ¡Arrancamos con tu proyecto!" },
   { key: "fabricacion", label: "En fabricación",    emoji: "🪚", color: "#00bcd4", msg: "Tu proyecto ya está en fabricación en el taller." },
   { key: "listo",       label: "Listo en taller",   emoji: "✅", color: "#9c27b0", msg: "¡Tu proyecto está terminado y listo para instalación!" },
@@ -1660,6 +1661,7 @@ export default function App() {
   const [filtroLeadEstado, setFiltroLeadEstado] = useState("todos");
   const [filtroProyectoEtapa, setFiltroProyectoEtapa] = useState("todos");
   const [filtroOp, setFiltroOp] = useState("porcotizar");
+  const [visitaForm, setVisitaForm] = useState({});
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cotForm, setCotForm] = useState({});
   const [cotMsg, setCotMsg] = useState("");
@@ -2006,9 +2008,35 @@ async function cargarLeads() {
       onOk: async () => {
         const r = await sb("rpc/elegir_taller", { method: "POST", token, body: JSON.stringify({ p_cotizacion: cot.id }) });
         if (r?.message) alert(r.message);
+        else { const enk = Object.keys(cotsCliente).find(k => (cotsCliente[k] || []).some(c => c.id === cot.id)); if (enk) avisar("taller_elegido", enk); }
         cargarProyectos();
       }
     });
+  }
+
+  // Avisos por correo (best-effort; el servidor decide a quién se manda)
+  function avisar(evento, enkaje) {
+    try {
+      fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ evento, enkaje }) }).catch(() => {});
+    } catch {}
+  }
+  const fmtFecha = iso => iso ? new Date(iso).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+
+  async function proponerVisita(p) {
+    const v = visitaForm[p.enkaje];
+    if (!v) { alert("Elige la fecha y la hora de la visita"); return; }
+    const r = await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify({ fecha_visita: new Date(v).toISOString(), visita_estado: "propuesta" }) });
+    if (r?.code || r?.message) { alert("No se pudo guardar la visita: " + (r.message || r.code)); return; }
+    avisar("visita_propuesta", p.enkaje);
+    cargarProyectos();
+  }
+
+  async function responderVisita(p, ok) {
+    const body = ok ? { visita_estado: "confirmada", ...(p.etapa_seguimiento === "solicitud" ? { etapa_seguimiento: "visita" } : {}) } : { visita_estado: "rechazada" };
+    const r = await sb(`proyectos?enkaje=eq.${p.enkaje}`, { method: "PATCH", token, body: JSON.stringify(body) });
+    if (r?.code || r?.message) { alert("No se pudo guardar: " + (r.message || r.code)); return; }
+    avisar(ok ? "visita_confirmada" : "visita_rechazada", p.enkaje);
+    cargarProyectos();
   }
 
   const metaUsuario = () => { try { return JSON.parse(sessionStorage.getItem("enkaje_user") || "{}").user_metadata || {}; } catch { return {}; } };
@@ -2023,6 +2051,7 @@ async function cargarLeads() {
       const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, { method: "PUT", headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ data: { zona: z } }) });
       if (r.ok) { const u = await r.json(); if (u?.email) sessionStorage.setItem("enkaje_user", JSON.stringify(u)); }
     } catch {}
+    avisar("solicitud_nueva", p.enkaje);
     setSolicitandoZona(null);
     cargarProyectos();
   }
@@ -2064,6 +2093,7 @@ async function cargarLeads() {
       monto_min: min, monto_max: max, tiempo_estimado: f.tiempo || null, notas: f.notas || null }) });
     if (r?.code || r?.message) { setCotMsg("❌ " + (r.code === "23505" ? "Ya cotizaste este proyecto" : (r.message || "No se pudo enviar"))); return; }
     setCotMsg("✅ Cotización enviada");
+    avisar("cotizacion_nueva", p.enkaje);
     setTimeout(() => setCotMsg(""), 3000);
     cargarCotizaciones();
   }
@@ -3080,7 +3110,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                   <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>{d}</div>
                 </div>
               ))}
-              {role==="taller" && [["Por cotizar",(proyectos||[]).filter(esOportunidad).filter(p=>!cotizaciones.find(c=>String(c.proyecto_enkaje)===String(p.enkaje))).length,"#d4af37","oportunidades"],["Cotizadas",cotizaciones.length,"#00bcd4","oportunidades"],["Te eligieron",(proyectos||[]).filter(p=>!esOportunidad(p)&&(p.taller_email||"").toLowerCase()===(user?.email||"").toLowerCase()&&(p.user_email||"").toLowerCase()!==(user?.email||"").toLowerCase()).length,"#4caf50","leads"]].map(([l,v,c,tb],i) => (
+              {role==="taller" && [["Por cotizar",(proyectos||[]).filter(esOportunidad).filter(p=>!cotizaciones.find(c=>String(c.proyecto_enkaje)===String(p.enkaje))).length,"#d4af37","oportunidades"],["Cotizadas",cotizaciones.length,"#00bcd4","oportunidades"],["Te eligieron",(proyectos||[]).filter(p=>!esOportunidad(p)&&(p.taller_email||"").toLowerCase()===(user?.email||"").toLowerCase()&&(p.user_email||"").toLowerCase()!==(user?.email||"").toLowerCase()).length,"#4caf50","leads"],["Citas",(proyectos||[]).filter(p=>p.fecha_visita&&p.visita_estado!=="rechazada"&&new Date(p.fecha_visita)>=new Date(Date.now()-864e5)).length,"#ff9800","leads"]].map(([l,v,c,tb],i) => (
                 <div key={i} onClick={() => setTabWithHistory(tb)} style={{ cursor: "pointer", background: "#0f0f0a", border: `1px solid ${c}25`, borderRadius: 12, padding: isMobile?14:18 }}>
                   <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>{l}</div>
                   <div style={{ fontSize: 32, fontWeight: 900, color: c }}>{v}</div>
@@ -3288,6 +3318,20 @@ Formato: Caption completo listo para copiar y pegar.`;
                           <div key={j}><b style={{color:"#d4af37"}}>{l}:</b> {v}</div>
                         ))}
                       </div>
+                      {p.fecha_visita && p.taller_email && (
+                        <div style={{ background: "#0a0a08", border: "1px solid #ff980040", borderRadius: 12, padding: 14, marginBottom: 14 }} onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: 11, color: "#ff9800", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>📅 Visita de medidas</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{fmtFecha(p.fecha_visita)}</div>
+                          {p.visita_estado === "propuesta" && (
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                              <BTN onClick={() => responderVisita(p, true)} style={{ fontSize: 12 }}>✅ Confirmar</BTN>
+                              <BTN onClick={() => responderVisita(p, false)} outline color="#f0a500" style={{ fontSize: 12 }}>↩️ Pedir otra fecha</BTN>
+                            </div>
+                          )}
+                          {p.visita_estado === "confirmada" && <div style={{ fontSize: 12, color: "#8bc34a" }}>✅ Visita confirmada</div>}
+                          {p.visita_estado === "rechazada" && <div style={{ fontSize: 12, color: "#aaa" }}>Pediste otra fecha. El taller te propondrá una nueva.</div>}
+                        </div>
+                      )}
                      {p.etapa_seguimiento === "solicitud" && (() => {
                         const cots = cotsCliente[p.enkaje] || [];
                         const elegida = cots.find(c => c.estado === "elegida");
@@ -3805,6 +3849,20 @@ Formato: Caption completo listo para copiar y pegar.`;
     );
   })}
 </div>
+            {(() => {
+              const citas = proyectos.filter(p => p.fecha_visita && p.visita_estado !== "rechazada" && new Date(p.fecha_visita) >= new Date(Date.now() - 864e5)).sort((a, b) => new Date(a.fecha_visita) - new Date(b.fecha_visita));
+              if (citas.length === 0) return null;
+              return (
+                <div style={{ background: "#0f0f0a", border: "1px solid #ff980040", borderRadius: 12, padding: 14, marginBottom: 16 }}>
+                  <div style={{ color: "#ff9800", fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>📅 Citas agendadas ({citas.length})</div>
+                  {citas.map(p => (
+                    <div key={p.enkaje} style={{ fontSize: 13, color: "#ccc", padding: "4px 0" }}>
+                      <b style={{ color: "#e8e0d0" }}>{fmtFecha(p.fecha_visita)}</b> · {p.nombre || "Cliente"} · {(p.tipo_proyecto || "").toUpperCase()} · {p.visita_estado === "confirmada" ? "✅ confirmada" : "⏳ esperando al cliente"}
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
             {proyectos.filter(p => !esOportunidad(p)).length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>Aún no tienes proyectos. Cuando un cliente te elija, aparecerá aquí 🎉</div>}
            {proyectos.filter(p => !esOportunidad(p) && (filtroProyectoEtapa === "todos" || (p.etapa_seguimiento || "anticipo") === filtroProyectoEtapa)).map((p,i) => {
               const sel = proyectoSel?.created_at === p.created_at;
@@ -3862,6 +3920,18 @@ Formato: Caption completo listo para copiar y pegar.`;
                         }} style={{ background:"#25D366", color:"#fff", border:"none", borderRadius:10, padding:"9px 16px", fontWeight:700, fontSize:12, cursor:"pointer", marginBottom:12 }}>
                           💬 Notificar al cliente por WhatsApp
                         </button>
+                      )}
+                      {(p.taller_email || "").toLowerCase() === (user?.email || "").toLowerCase() && (p.user_email || "").toLowerCase() !== (user?.email || "").toLowerCase() && (
+                        <div style={{ background: "#0a0a08", border: "1px solid #ff980030", borderRadius: 10, padding: 12, marginBottom: 12 }} onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: 11, color: "#ff9800", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>📅 Visita de medidas</div>
+                          {p.fecha_visita && <div style={{ fontSize: 13, color: "#e8e0d0", marginBottom: 8 }}>{fmtFecha(p.fecha_visita)} · {p.visita_estado === "confirmada" ? "✅ El cliente confirmó" : p.visita_estado === "rechazada" ? "↩️ El cliente pidió otra fecha" : "⏳ Esperando confirmación del cliente"}</div>}
+                          {p.visita_estado !== "confirmada" && (
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                              <input type="datetime-local" value={visitaForm[p.enkaje] || ""} onChange={e => setVisitaForm(prev => ({ ...prev, [p.enkaje]: e.target.value }))} style={{ background: "#0f0f0a", border: "1px solid #2a2a20", borderRadius: 8, padding: "8px 10px", color: "#e8e0d0", fontSize: 13 }} />
+                              <BTN onClick={() => proponerVisita(p)} style={{ fontSize: 12 }}>{p.fecha_visita ? "Proponer otra fecha" : "Proponer visita"}</BTN>
+                            </div>
+                          )}
+                        </div>
                       )}
                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <BTN onClick={e => { e.stopPropagation(); cargarProyectoEnFormulario(p); setTabWithHistory("formulario"); }} style={{ fontSize: 12 }}>📋 Editar</BTN>
