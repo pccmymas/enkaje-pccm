@@ -19,13 +19,18 @@ async function claim(clave) {
   const r = await rest("avisos_enviados?on_conflict=clave", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=representation" }, body: JSON.stringify({ clave }) });
   return Array.isArray(r) && r.length > 0;
 }
+const aTexto = h => String(h)
+  .replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|h2|li|div)>/gi, "\n")
+  .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/gi, "$2: $1")
+  .replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+  .replace(/\n{3,}/g, "\n\n").trim();
 async function enviar(to, subject, html) {
   if (!RESEND || !to) return false;
-  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${RESEND}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: FROM, to: [to], reply_to: "hola@enkajepro.com", subject, html }) });
+  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${RESEND}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: FROM, to: [to], reply_to: "hola@enkajepro.com", subject, html, text: aTexto(html) }) });
   if (!r.ok) console.error("resend", r.status, await r.text());
   return r.ok;
 }
-const wrap = (t, b, btn) => `<div style="font-family:-apple-system,Segoe UI,Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#222;line-height:1.6"><h2 style="color:#12100a">${t}</h2>${b}${btn ? `<p><a href="https://enkajepro.com/app" style="background:#d4af37;color:#000;text-decoration:none;font-weight:800;padding:12px 22px;border-radius:10px;display:inline-block">${btn}</a></p>` : ""}<p style="color:#888;font-size:12px">EnKaje Pro · hola@enkajepro.com</p></div>`;
+const wrap = (t, b, btn) => `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222;max-width:540px"><p style="margin:0 0 14px"><b>${t}</b></p>${b}${btn ? `<p style="margin:18px 0"><a href="https://enkajepro.com/app" style="color:#1a56c4">${btn}</a></p>` : ""}<p style="margin:22px 0 0;color:#666;font-size:13px">Si tienes dudas, solo responde este correo.<br>Felipe · EnKaje Pro, Monterrey</p></div>`;
 
 export default async function handler(req, res) {
   if (!process.env.CRON_SECRET || req.headers["authorization"] !== `Bearer ${process.env.CRON_SECRET}`) return res.status(401).json({ error: "No autorizado" });
