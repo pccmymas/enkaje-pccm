@@ -735,7 +735,7 @@ export default function Portal() {
   };
 
 const guardarEnPerfil = async () => {
-    if (!tieneCuenta || !renderUrl || guardadoEnPerfil) return;
+    if (!sessionStorage.getItem("enkaje_token") || !renderUrl || guardadoEnPerfil) return;
     setGuardandoPerfil(true);
     const token = sessionStorage.getItem("enkaje_token");
     const user  = JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
@@ -771,7 +771,7 @@ const guardarEnPerfil = async () => {
         body: JSON.stringify(clean)
       });
       const txt = await res.text();
-      if (res.ok) setGuardadoEnPerfil(true);
+      if (res.ok) { setGuardadoEnPerfil(true); localStorage.removeItem("enkaje_render_pendiente"); }
       else alert("Error al guardar: " + res.status + " — " + txt);
     } catch(e) { alert("Error al guardar: " + e.message); }
     setGuardandoPerfil(false);
@@ -1418,6 +1418,7 @@ const guardarEnPerfil = async () => {
                     </div>
                   )}
                 </div>
+             {sinCuenta && <AuthInline titulo="🔓 Crea tu cuenta gratis: descarga sin marca de agua, ajusta tu render y guarda tu proyecto" onSuccess={async ses => { alAutenticar(ses); await guardarEnPerfil(); }} />}
              {tieneCuenta && (
                   <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, padding:20, marginBottom:16 }}>
                     <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:8 }}>🔧 ¿Qué le cambiarías?</div>
