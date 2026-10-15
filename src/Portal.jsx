@@ -698,6 +698,7 @@ export default function Portal() {
       if (ru.ok) { const u2 = await ru.json(); if (u2?.email) sessionStorage.setItem("enkaje_user", JSON.stringify(u2)); }
     } catch {}
     await guardarExpediente({ nombre: nom, correo: user.email });
+    try { fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ evento: "solicitud_nueva" }) }).catch(() => {}); } catch {}
     localStorage.removeItem("enkaje_portal_draft");
     localStorage.removeItem("enkaje_render_pendiente");
     setGuardadoEnPerfil(true);
