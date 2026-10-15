@@ -506,7 +506,7 @@ function FormularioCocina({ form, setF, role, isMobile }) {
           <INPUT label="Direccion" value={form.direccion} onChange={e=>setF("direccion",e.target.value)} placeholder="Calle, Colonia, Ciudad" />
           <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={form.zona||""} onChange={e=>setF("zona",e.target.value)} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
           <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
-          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Tu nombre" />
         </div>
       </SECTION>
       <SECTION title="Tipo de Cocina" icon="🏠" subtitle="Selecciona uno o varios tipos">
@@ -625,7 +625,7 @@ function FormularioCloset({ form, setF, role, isMobile }) {
           <INPUT label="Direccion" value={form.direccion} onChange={e=>setF("direccion",e.target.value)}placeholder="Calle, Colonia, Ciudad" />
           <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={form.zona||""} onChange={e=>setF("zona",e.target.value)} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
           <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
-          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Tu nombre" />
         </div>
       </SECTION>
       <SECTION title="Tipo de Closet" icon="🚪" subtitle="Selecciona el tipo">
@@ -720,7 +720,7 @@ function FormularioPuerta({ form, setF, role, isMobile }) {
           <INPUT label="Direccion" value={form.direccion} onChange={e=>setF("direccion",e.target.value)}placeholder="Calle, Colonia, Ciudad" />
           <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={form.zona||""} onChange={e=>setF("zona",e.target.value)} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
           <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
-          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Tu nombre" />
         </div>
       </SECTION>
       <SECTION title="Tipo de Puerta" icon="🚪" subtitle="Selecciona el tipo">
@@ -782,7 +782,7 @@ function FormularioMueble({ form, setF, role, isMobile }) {
           <INPUT label="Direccion" value={form.direccion} onChange={e=>setF("direccion",e.target.value)}placeholder="Calle, Colonia, Ciudad" />
           <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={form.zona||""} onChange={e=>setF("zona",e.target.value)} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
           <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
-          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+          <INPUT label="Atencion por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Tu nombre" />
         </div>
       </SECTION>
       <SECTION title="Tipo de Mueble" icon="🛋️" subtitle="Selecciona el tipo">
@@ -843,7 +843,7 @@ function FormularioBano({ form, setF, role, isMobile }) {
           <INPUT label="Dirección" value={form.direccion} onChange={e=>setF("direccion",e.target.value)} placeholder="Calle, Colonia, Ciudad" />
           <div><label style={{fontSize:11,color:"#999",display:"block",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Zona *</label><select value={form.zona||""} onChange={e=>setF("zona",e.target.value)} style={{width:"100%",padding:"10px 12px",background:"#0a0a08",border:"1px solid #2a2a20",borderRadius:8,color:"#e8e0d0",fontSize:14}}><option value="">Elige zona…</option>{ZONAS.map(z=><option key={z} value={z}>{z}</option>)}</select></div>
           <INPUT label="Fecha" value={form.fecha} onChange={e=>setF("fecha",e.target.value)} type="date" />
-          <INPUT label="Atención por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Felipe Santiago" />
+          <INPUT label="Atención por" value={form.atencion_por} onChange={e=>setF("atencion_por",e.target.value)} placeholder="Tu nombre" />
         </div>
       </SECTION>
 
@@ -1585,6 +1585,19 @@ function RegistroTaller({ onBack }) {
 }
 
 // ============ MAIN APP ============
+const CHECK_VERIF = [
+  ["fotos", "Fotos reales de proyectos revisadas (5 a 8)"],
+  ["contacto", "Contacto y ubicación confirmados"],
+  ["antecedentes", "Antecedentes verificables"],
+  ["identidad", "Identidad confirmada (INE vista en visita o videollamada, sin guardarla)"],
+  ["referencias", "Referencias de al menos 2 clientes anteriores contactadas"],
+  ["alcance", "Zonas de cobertura y especialidades confirmadas con el taller"],
+  ["terminos", "Términos y condiciones para talleres aceptados"],
+];
+const esVerificado = t => t?.verificacion_estado === "completada" && CHECK_VERIF.every(([k]) => String(t.verificacion_checklist || "").split(",").includes(k));
+const SelloVerif = () => <span style={{ display: "inline-block", background: "#4caf5018", border: "1px solid #4caf5060", color: "#4caf50", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>✅ Verificado con proyectos</span>;
+const textoVisita = t => !t ? "" : t.cobra_visita ? `Visita con costo${t.costo_visita ? ` de $${Number(t.costo_visita).toLocaleString("es-MX")}` : ""}${t.descuenta_visita ? ", se descuenta si contratas" : ""}` : "Visita sin costo";
+
 export default function App() {
   const isMobile = useIsMobile();
   const [screen, setScreen] = useState("login");
@@ -1675,6 +1688,11 @@ export default function App() {
   const [cotMsg, setCotMsg] = useState("");
   const [cotsCliente, setCotsCliente] = useState({});
   useEffect(() => {
+    if (!role || role === "admin") return;
+    const q = f => f.atencion_por === "Felipe Santiago" ? { ...f, atencion_por: "" } : f;
+    setFormCocina(q); setFormCloset(q); setFormPuerta(q); setFormMueble(q); setFormBano(q); setFormPanel(q);
+  }, [role]);
+  useEffect(() => {
   const token = sessionStorage.getItem("enkaje_token");
   const user  = sessionStorage.getItem("enkaje_user");
   const role  = sessionStorage.getItem("enkaje_role");
@@ -1700,7 +1718,7 @@ export default function App() {
       direccion: p.direccion || "",
       zona: p.zona || "",
       observaciones: p.observaciones || "",
-      atencion_por: p.atencion_por || "Felipe Santiago",
+      atencion_por: p.atencion_por || (role === "admin" ? "Felipe Santiago" : ""),
       fecha: p.fecha || new Date().toISOString().split("T")[0],
     };
 
@@ -2240,6 +2258,8 @@ async function guardarEdicionTaller() {
       plan: tallerEdit.plan, estado: tallerEdit.estado, slug: tallerEdit.slug,
       anos_experiencia: tallerEdit.anos_experiencia, horario: tallerEdit.horario,
       representante: tallerEdit.representante,
+      cobra_visita: !!tallerEdit.cobra_visita, descuenta_visita: !!tallerEdit.cobra_visita && !!tallerEdit.descuenta_visita,
+      costo_visita: tallerEdit.cobra_visita && tallerEdit.costo_visita ? Number(tallerEdit.costo_visita) : 0,
       instagram: tallerEdit.instagram, facebook: tallerEdit.facebook, tiktok: tallerEdit.tiktok,
       logo_url: tallerEdit.logo_url, portafolio_urls: tallerEdit.portafolio_urls,
       niveles_precio: tallerEdit.niveles_precio,
@@ -3412,6 +3432,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                                     <div style={{ fontWeight: 700, fontSize: 14 }}>{c.taller_nombre}</div>
                                     <div style={{ fontSize: 16, color: "#d4af37", fontWeight: 700, marginTop: 2 }}>${Number(c.monto_min).toLocaleString("es-MX")} – ${Number(c.monto_max).toLocaleString("es-MX")} MXN</div>
                                   </div>
+                                  {c.visita_info && <div style={{ fontSize: 11, color: "#888", width: "100%" }}>🚗 {c.visita_info}</div>}
                                   {c.estado === "elegida"
                                     ? <span style={{ color: "#8bc34a", fontSize: 12, fontWeight: 700 }}>✅ Elegido</span>
                                     : <BTN onClick={() => elegirTaller(c)} style={{ fontSize: 12 }}>Elegir este taller</BTN>}
@@ -4050,7 +4071,7 @@ Formato: Caption completo listo para copiar y pegar.`;
         {tab === "mi_perfil" && role === "taller" && tallerEdit && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
-              <h1 style={{ color: "#d4af37", margin: 0, fontSize: isMobile?20:26 }}>Mi Perfil</h1>
+              <div><h1 style={{ color: "#d4af37", margin: 0, fontSize: isMobile?20:26 }}>Mi Perfil</h1>{esVerificado(tallerEdit) && <div style={{ marginTop: 6 }}><SelloVerif /></div>}</div>
               <a href={`/taller/${tallerEdit.slug}`} target="_blank" rel="noreferrer">
                 <BTN outline color="#00bcd4" style={{ fontSize: 12 }}>👁️ Ver mi perfil público</BTN>
               </a>
@@ -4072,6 +4093,22 @@ Formato: Caption completo listo para copiar y pegar.`;
                   );
                 })}
               </div>
+            </div>
+<div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
+              <h3 style={{ color: "#d4af37", margin: "0 0 6px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>🚗 Visita de cotización</h3>
+              <p style={{ fontSize: 12, color: "#888", margin: "0 0 14px" }}>El cliente verá esto junto a tu cotización, para que sepa qué esperar antes de agendar.</p>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+                <PILL label="Visita sin costo" checked={!tallerEdit.cobra_visita} onChange={() => setTallerEdit(p => ({ ...p, cobra_visita: false, descuenta_visita: false }))} />
+                <PILL label="Cobro por la visita" checked={!!tallerEdit.cobra_visita} onChange={() => setTallerEdit(p => ({ ...p, cobra_visita: true }))} />
+              </div>
+              {tallerEdit.cobra_visita && (
+                <div style={{ display: "grid", gridTemplateColumns: isMobile?"1fr":"1fr 1fr", gap: 12, alignItems: "end" }}>
+                  <INPUT label="Costo de la visita (MXN)" value={tallerEdit.costo_visita ?? ""} onChange={e => setTallerEdit(p => ({ ...p, costo_visita: e.target.value.replace(/[^0-9]/g, "") }))} placeholder="500" />
+                  <div>
+                    <PILL label="Se descuenta si contratan" checked={!!tallerEdit.descuenta_visita} onChange={() => setTallerEdit(p => ({ ...p, descuenta_visita: !p.descuenta_visita }))} />
+                  </div>
+                </div>
+              )}
             </div>
 <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: isMobile?16:24, marginBottom: 16 }}>
               <h3 style={{ color: "#d4af37", margin: "0 0 16px", fontSize: 13, letterSpacing: 1, textTransform: "uppercase" }}>Datos del Taller</h3>
@@ -4200,12 +4237,7 @@ Formato: Caption completo listo para copiar y pegar.`;
             {(() => {
               const pendientes = talleresFiltrados.filter(t => t.estado === "pendiente");
               if (pendientes.length === 0) return null;
-              const CHECK = [
-                ["fotos", "Fotos reales de proyectos revisadas (5 a 8)"],
-                ["contacto", "Contacto y ubicación confirmados"],
-                ["antecedentes", "Antecedentes verificables"],
-                ["identidad", "Identidad confirmada (INE vista en visita o videollamada, sin guardarla)"],
-              ];
+              const CHECK = CHECK_VERIF;
               const VERIF_ESTADOS = [["por_agendar", "Por agendar"], ["agendada", "Agendada"], ["completada", "Completada"]];
               const chip = (activo, color) => ({ padding: "6px 12px", borderRadius: 20, border: `1.5px solid ${activo ? color : "#2a2a20"}`, background: activo ? `${color}20` : "transparent", color: activo ? color : "#777", fontSize: 12, fontWeight: activo ? 700 : 400, cursor: "pointer" });
               return (
@@ -4299,7 +4331,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         </div>
                         {!completa && (
                           <div style={{ fontSize: 11, color: "#777", marginTop: 8 }}>
-                           Para aprobar: verificación en "Completada" y las 4 casillas de revisión marcadas.
+                           Para aprobar: verificación en "Completada" y las {CHECK.length} casillas de revisión marcadas.
                           </div>
                         )}
                       </div>
@@ -4314,7 +4346,8 @@ Formato: Caption completo listo para copiar y pegar.`;
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ fontWeight: 700 }}>{t.nombre}</div>
-                      <div style={{ fontSize: 12, color: "#aaa" }}>{t.email} · {t.plan} · {t.estado || "activo"}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{t.email} · {t.plan} · {t.estado || "activo"} {esVerificado(t) && <SelloVerif />}</div>
+                      {(t.cobra_visita !== undefined && t.cobra_visita !== null) && <div style={{ fontSize: 11, color: "#777", marginTop: 3 }}>🚗 {textoVisita(t)}</div>}
                       <div style={{ fontSize: 11, color: "#777", marginTop: 3 }}>
                         {[t.zonas_cobertura || t.municipio, t.tipos_proyecto].filter(Boolean).join(" · ")}
                         {" · "}{cotizaciones.filter(c => mailEq(c.taller_email, t.email)).length} cotizaciones · elegido {proyectos.filter(p => mailEq(p.taller_email, t.email) && !mailEq(p.user_email, t.email)).length} veces
