@@ -499,7 +499,339 @@ function AuthInline({ titulo, onSuccess }) {
   );
 }
 
+// ─── Cotización sin render ────────────────────────────────────────────────
+// Para quien ya sabe lo que quiere (o llega desde un anuncio): un solo formulario
+// con fotos del espacio. Crea la solicitud igual que el flujo con render, así que
+// llega a los mismos talleres (zona + especialidad, máximo 4).
+const PRESUPUESTOS = [
+  { key: "bajo",  label: "Hasta $25,000",       min: 0,     max: 25000 },
+  { key: "medio", label: "$25,000 – $60,000",   min: 25000, max: 60000 },
+  { key: "alto",  label: "$60,000 – $120,000",  min: 60000, max: 120000 },
+  { key: "top",   label: "Más de $120,000",     min: 120000, max: 250000 },
+  { key: "nose",  label: "Aún no sé",           min: null,  max: null },
+];
+const NIVELES_MATERIAL = [
+  { key: "basico",  label: "Básico",  desc: "Melamina, buen precio" },
+  { key: "medio",   label: "Medio",   desc: "MDF, mejores herrajes" },
+  { key: "premium", label: "Premium", desc: "Enchapado o madera sólida" },
+];
+const CUANDO = [
+  { key: "urgente",    label: "Lo antes posible" },
+  { key: "decidido",   label: "En 1 a 3 meses" },
+  { key: "evaluando",  label: "Más adelante" },
+  { key: "explorando", label: "Solo estoy cotizando" },
+];
+const MAX_FOTOS = 3;
+const RAPIDA_KEY = "enkaje_cotizacion_rapida";
+
+const comprimirFoto = (file) => new Promise((resolve) => {
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const max = 1600;
+    const esc = Math.min(1, max / Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.width * esc);
+    c.height = Math.round(img.height * esc);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    c.toBlob(b => { URL.revokeObjectURL(url); resolve(b || file); }, "image/jpeg", 0.82);
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+  img.src = url;
+});
+
+function CotizacionRapida({ tipoInicial, onSalir, onAutenticar }) {
+  const leerBorrador = () => {
+    try {
+      const d = JSON.parse(localStorage.getItem(RAPIDA_KEY) || "null");
+      if (d && Date.now() - d.ts < 7 * 24 * 3600 * 1000) return d;
+    } catch {}
+    return {};
+  };
+  const b0 = useRef(leerBorrador()).current;
+  const usr0 = (() => { try { return JSON.parse(sessionStorage.getItem("enkaje_user") || "null"); } catch { return null; } })();
+  const [tipo, setTipo]           = useState(tipoInicial || b0.tipo || "");
+  const [zona, setZona]           = useState(b0.zona || usr0?.user_metadata?.zona || "");
+  const [colonia, setColonia]     = useState(b0.colonia || "");
+  const [medidas, setMedidas]     = useState(b0.medidas || "");
+  const [nivel, setNivel]         = useState(b0.nivel || "");
+  const [presupuesto, setPresup]  = useState(b0.presupuesto || "");
+  const [cuando, setCuando]       = useState(b0.cuando || "");
+  const [descripcion, setDesc]    = useState(b0.descripcion || "");
+  const [telefono, setTelefono]   = useState(b0.telefono || usr0?.user_metadata?.telefono || "");
+  const [fotos, setFotos]         = useState(Array.isArray(b0.fotos) ? b0.fotos : []);
+  const [subiendo, setSubiendo]   = useState(false);
+  const [enviando, setEnviando]   = useState(false);
+  const [err, setErr]             = useState("");
+  const [enviada, setEnviada]     = useState(false);
+  const [sesion, setSesion]       = useState(!!sessionStorage.getItem("enkaje_token"));
+  const fileRef = useRef();
+
+  useEffect(() => {
+    document.title = "Cotiza tu proyecto · EnKaje Pro";
+    try { window.scrollTo(0, 0); } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (enviada) return;
+    try {
+      localStorage.setItem(RAPIDA_KEY, JSON.stringify({ ts: Date.now(), tipo, zona, colonia, medidas, nivel, presupuesto, cuando, descripcion, telefono, fotos }));
+    } catch {}
+  }, [tipo, zona, colonia, medidas, nivel, presupuesto, cuando, descripcion, telefono, fotos, enviada]);
+
+  const subirFotos = async (e) => {
+    const files = Array.from(e.target.files || []).slice(0, MAX_FOTOS - fotos.length);
+    e.target.value = "";
+    if (files.length === 0) return;
+    setSubiendo(true); setErr("");
+    const nuevas = [];
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const blob = await comprimirFoto(files[i]);
+        const fileName = `espacio_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`;
+        const up = await fetch(`${SUPABASE_URL}/storage/v1/object/renders/${fileName}`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "x-upsert": "true", "Content-Type": blob.type || "image/jpeg" },
+          body: blob,
+        });
+        if (up.ok) nuevas.push(`${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`);
+        else setErr("No se pudo subir una foto. Revisa tu conexión e intenta de nuevo.");
+      } catch { setErr("No se pudo subir una foto. Revisa tu conexión e intenta de nuevo."); }
+    }
+    setFotos(f => [...f, ...nuevas].slice(0, MAX_FOTOS));
+    setSubiendo(false);
+  };
+
+  const faltantes = [
+    !tipo && "el tipo de proyecto",
+    !zona && "la zona",
+    fotos.length === 0 && "al menos 1 foto del espacio",
+    !nivel && "el nivel de material",
+    !presupuesto && "el presupuesto",
+    !cuando && "cuándo lo quieres",
+    descripcion.trim().length < 15 && "una descripción corta (mínimo 15 letras)",
+    telefono.replace(/\D/g, "").length < 10 && "tu teléfono (10 dígitos)",
+  ].filter(Boolean);
+  const listo = faltantes.length === 0 && !subiendo;
+
+  const enviar = async (ses) => {
+    const token = ses?.token || sessionStorage.getItem("enkaje_token");
+    const user  = ses?.user  || JSON.parse(sessionStorage.getItem("enkaje_user") || "{}");
+    if (!token || !user?.email) { setErr("Necesitas una cuenta para enviar la solicitud."); return; }
+    if (!listo) { setErr("Te falta: " + faltantes.join(", ") + "."); return; }
+    setEnviando(true); setErr("");
+    const nivelData = NIVELES_MATERIAL.find(n => n.key === nivel);
+    const presData = PRESUPUESTOS.find(p => p.key === presupuesto);
+    const cuandoData = CUANDO.find(c => c.key === cuando);
+    const nom = user.user_metadata?.nombre || "";
+    const notas = [
+      "📷 Solicitud sin render: el cliente mandó fotos de su espacio.",
+      colonia.trim() && `Colonia: ${colonia.trim()}`,
+      medidas.trim() && `Medidas aprox.: ${medidas.trim()}`,
+      nivelData && `Material: ${nivelData.label} (${nivelData.desc})`,
+      presData && `Presupuesto: ${presData.label}`,
+      cuandoData && `Cuándo: ${cuandoData.label}`,
+    ].filter(Boolean).join("\n");
+    const base = {
+      tipo_proyecto: tipo,
+      render_url: fotos[0],
+      fotos_espacio: fotos.join(","),
+      material: nivelData ? `${nivelData.label} (${nivelData.desc})` : null,
+      observaciones: descripcion.trim(),
+      nombre: nom || null,
+      correo: user.email,
+      telefono: telefono || null,
+      zona,
+      comentarios_tecnicos: notas,
+      estado: "nuevo",
+      etapa_seguimiento: "solicitud",
+      user_email: user.email,
+      created_at: new Date().toISOString(),
+    };
+    const clean = Object.fromEntries(Object.entries(base).filter(([, v]) => v !== null && v !== ""));
+    const headers = { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json", "Prefer": "return=minimal" };
+    let ok = false, detalle = "";
+    try {
+      let rp = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, { method: "POST", headers, body: JSON.stringify(clean) });
+      if (!rp.ok) {
+        detalle = await rp.text();
+        // Si todavía no existe la columna fotos_espacio, se envía sin ella (la 1ª foto va en render_url)
+        if (/fotos_espacio/i.test(detalle)) {
+          const { fotos_espacio, ...sinCol } = clean;
+          rp = await fetch(`${SUPABASE_URL}/rest/v1/proyectos`, { method: "POST", headers, body: JSON.stringify(sinCol) });
+          if (!rp.ok) detalle = await rp.text();
+        }
+      }
+      ok = rp.ok;
+    } catch (e) { detalle = e.message; }
+    if (!ok) { setEnviando(false); setErr("No pudimos enviar tu solicitud. Intenta de nuevo. " + String(detalle).slice(0, 120)); return; }
+
+    // Recordar zona y teléfono en la cuenta (best-effort)
+    try {
+      const ru = await fetch(`${SUPABASE_URL}/auth/v1/user`, { method: "PUT", headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ data: { zona, telefono } }) });
+      if (ru.ok) { const u2 = await ru.json(); if (u2?.email) sessionStorage.setItem("enkaje_user", JSON.stringify(u2)); }
+    } catch {}
+    // Expediente para el panel admin (mismo formato que el flujo con render)
+    try {
+      const score = calcularScore({ nivel_decision: cuando, foto_url: fotos[0], medidas, fecha_inicio: cuando !== "explorando" ? cuandoData?.label : "", descripcion });
+      await sb("expedientes", { method: "POST", body: JSON.stringify({
+        tipo_proyecto: tipo,
+        foto_url: fotos[0] || null,
+        render_url: null,
+        estilo_elegido: null,
+        materiales_sugeridos: nivelData ? `Material: ${nivelData.label}` : null,
+        rango_inversion_min: presData?.min ?? null,
+        rango_inversion_max: presData?.max ?? null,
+        tiempo_fabricacion: TIEMPOS[tipo] || null,
+        fecha_inicio_deseada: cuandoData?.label || null,
+        nivel_decision: cuando,
+        medidas_sketch_url: medidas || null,
+        observaciones: `SIN RENDER | Nombre: ${nom} | Tel: ${telefono} | Correo: ${user.email} | Colonia: ${colonia} | Desc: ${descripcion} | Fotos: ${fotos.join(" ")}`,
+        zona,
+        score, score_label: scoreLabel(score), estado_lead: "nuevo", created_at: new Date().toISOString(),
+      }) });
+    } catch {}
+    try { fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ evento: "solicitud_nueva" }) }).catch(() => {}); } catch {}
+    try { localStorage.removeItem(RAPIDA_KEY); } catch {}
+    setEnviando(false);
+    setEnviada(true);
+    try { window.scrollTo(0, 0); } catch {}
+  };
+
+  const lbl = { fontSize:11, color:"#555", display:"block", marginBottom:8, letterSpacing:1, textTransform:"uppercase" };
+  const inp = { width:"100%", background:"#0f0f0a", border:"1px solid #2a2a20", borderRadius:12, padding:"13px 16px", color:"#e8e0d0", fontSize:14 };
+  const pill = (activo) => ({ background: activo ? "#d4af3718" : "#0f0f0a", border:`1.5px solid ${activo ? "#d4af37" : "#1a1a12"}`, color: activo ? "#d4af37" : "#888", borderRadius:50, padding:"9px 14px", fontSize:13, cursor:"pointer", fontWeight: activo ? 700 : 400 });
+  const bloque = { marginBottom:22 };
+
+  if (enviada) {
+    return (
+      <div className="portal-step" style={{ textAlign:"center", paddingTop:32 }}>
+        <div style={{ fontSize:56, marginBottom:20 }}>🎉</div>
+        <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:30, fontWeight:900, color:"#f0e8dc", marginBottom:12 }}>¡Solicitud enviada!</h2>
+        <p style={{ color:"#888", fontSize:15, lineHeight:1.8, maxWidth:440, margin:"0 auto 28px" }}>Los talleres verificados de tu zona ya pueden ver tu proyecto y te enviarán su cotización en rango. Tú eliges con cuál trabajar y solo entonces compartimos tu contacto.</p>
+        <div style={{ display:"flex", gap:8, justifyContent:"center", marginBottom:24 }}>
+          {fotos.map(u => <img key={u} src={u} alt="Tu espacio" style={{ width:90, height:90, objectFit:"cover", borderRadius:10 }} />)}
+        </div>
+        <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
+          <Btn onClick={() => { sessionStorage.setItem("enkaje_tab", "mis_proyectos"); window.location.href = "/app"; }} color="#4caf50" style={{ fontSize:13 }}>Ver mis cotizaciones →</Btn>
+          <Btn onClick={onSalir} outline style={{ fontSize:13 }}>Ver cómo quedaría (render)</Btn>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="portal-step" style={{ textAlign:"left" }}>
+      <button onClick={onSalir} style={{ background:"none", border:"none", color:"#666", fontSize:12, cursor:"pointer", padding:0, marginBottom:18 }}>← Prefiero ver cómo quedaría primero (render gratis)</button>
+      <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:28, fontWeight:900, color:"#f0e8dc", lineHeight:1.2, marginBottom:8 }}>Cotiza tu proyecto</h1>
+      <p style={{ color:"#777", fontSize:14, lineHeight:1.7, marginBottom:26 }}>Cuéntanos qué necesitas y manda fotos de tu espacio. Hasta 4 talleres verificados de tu zona te envían su cotización en rango. Gratis y sin compromiso.</p>
+
+      <div style={bloque}>
+        <label style={lbl}>¿Qué necesitas?</label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {TIPOS_PROYECTO.map(t => <button key={t.key} onClick={() => setTipo(t.key)} style={pill(tipo === t.key)}>{t.emoji} {t.label}</button>)}
+        </div>
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>¿En qué municipio será?</label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:10 }}>
+          {ZONAS.map(z => <button key={z} onClick={() => setZona(z)} style={pill(zona === z)}>{zona === z && "✓ "}{z}</button>)}
+        </div>
+        <input value={colonia} onChange={e => setColonia(e.target.value)} placeholder="Colonia (opcional)" style={inp} />
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>Fotos de tu espacio <span style={{ color:"#333", textTransform:"none", letterSpacing:0 }}>(1 a {MAX_FOTOS})</span></label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {fotos.map(u => (
+            <div key={u} style={{ position:"relative" }}>
+              <img src={u} alt="Tu espacio" style={{ width:96, height:96, objectFit:"cover", borderRadius:10, border:"1px solid #2a2a20" }} />
+              <button onClick={() => setFotos(f => f.filter(x => x !== u))} aria-label="Quitar foto" style={{ position:"absolute", top:4, right:4, background:"#000c", color:"#fff", border:"none", borderRadius:"50%", width:24, height:24, fontSize:13, cursor:"pointer" }}>×</button>
+            </div>
+          ))}
+          {fotos.length < MAX_FOTOS && (
+            <button onClick={() => fileRef.current?.click()} disabled={subiendo} style={{ width:96, height:96, borderRadius:10, border:"1.5px dashed #d4af3760", background:"#0f0f0a", color:"#d4af37", fontSize:12, cursor: subiendo ? "wait" : "pointer" }}>
+              {subiendo ? "Subiendo..." : "📷 Agregar foto"}
+            </button>
+          )}
+        </div>
+        <input ref={fileRef} type="file" accept="image/*" multiple onChange={subirFotos} style={{ display:"none" }} />
+        <div style={{ fontSize:11, color:"#555", marginTop:8 }}>Toma la foto de frente y de lejos, que se vea la pared completa. Con eso el taller te cotiza mejor.</div>
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>Cuéntanos qué quieres</label>
+        <textarea value={descripcion} onChange={e => setDesc(e.target.value)} rows={3}
+          placeholder={tipo === "cocina" ? "Ej: Cocina en L con alacena hasta el techo y espacio para refri de dos puertas" : "Ej: Closet de pared a pared con cajones y zapatera"}
+          style={{ ...inp, resize:"vertical" }} />
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>Medidas aproximadas <span style={{ color:"#333", textTransform:"none", letterSpacing:0 }}>(opcional)</span></label>
+        <input value={medidas} onChange={e => setMedidas(e.target.value)} placeholder="Ej: 3.20 m de largo × 2.40 m de alto" style={inp} />
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>Nivel de material</label>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
+          {NIVELES_MATERIAL.map(n => (
+            <button key={n.key} onClick={() => setNivel(n.key)} style={{ ...pill(nivel === n.key), borderRadius:12, padding:"12px 8px", textAlign:"center" }}>
+              <div style={{ fontWeight:700, fontSize:13 }}>{n.label}</div>
+              <div style={{ fontSize:10, color:"#555", marginTop:3 }}>{n.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>¿Cuánto piensas invertir?</label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {PRESUPUESTOS.map(p => <button key={p.key} onClick={() => setPresup(p.key)} style={pill(presupuesto === p.key)}>{p.label}</button>)}
+        </div>
+      </div>
+
+      <div style={bloque}>
+        <label style={lbl}>¿Para cuándo lo quieres?</label>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {CUANDO.map(c => <button key={c.key} onClick={() => setCuando(c.key)} style={pill(cuando === c.key)}>{c.label}</button>)}
+        </div>
+      </div>
+
+      <div style={bloque}>
+        <label style={{ ...lbl, marginBottom:6 }}>WhatsApp / Teléfono</label>
+        <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="81-1234-5678" style={inp} />
+        <div style={{ fontSize:11, color:"#555", marginTop:6 }}>🔒 Los talleres NO ven tu teléfono ni tu correo. Solo lo compartimos con el taller que tú elijas.</div>
+      </div>
+
+      {err && <div style={{ color:"#ff8a80", fontSize:13, marginBottom:12 }}>{err}</div>}
+
+      {!listo ? (
+        <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:12, padding:14, fontSize:12, color:"#777", lineHeight:1.7 }}>
+          {subiendo ? "Subiendo fotos..." : `Para enviar te falta: ${faltantes.join(", ")}.`}
+        </div>
+      ) : sesion ? (
+        <Btn onClick={() => enviar()} disabled={enviando} style={{ width:"100%" }}>{enviando ? "Enviando..." : "Solicitar cotizaciones →"}</Btn>
+      ) : (
+        <AuthInline titulo="Último paso: crea tu cuenta gratis para enviar tu solicitud y ver las cotizaciones"
+          onSuccess={async ses => { onAutenticar(ses); setSesion(true); await enviar(ses); }} />
+      )}
+    </div>
+  );
+}
+
 export default function Portal() {
+  // Cotización sin render: /portal?cotizar=cocina (para anuncios) o botón en el paso 0
+  const [modoRapido, setModoRapido] = useState(() => {
+    try { return new URLSearchParams(window.location.search).has("cotizar"); } catch { return false; }
+  });
+  const tipoRapido = (() => {
+    try { const t = new URLSearchParams(window.location.search).get("cotizar"); return TIPOS_PROYECTO.some(x => x.key === t) ? t : ""; } catch { return ""; }
+  })();
+  const salirDeRapido = () => {
+    setModoRapido(false);
+    try { window.history.replaceState(null, "", "/portal"); window.scrollTo(0, 0); } catch {}
+  };
   const [zona, setZona] = useState("");
   const TOTAL_STEPS = 8;
   const [step, setStep]               = useState(0);
@@ -568,7 +900,7 @@ export default function Portal() {
     : PREGUNTAS_VIDA_DEFAULT;
 
   useEffect(() => {
-    document.title = "Portal Cliente · EnKaje Pro";
+    if (!modoRapido) document.title = "Portal Cliente · EnKaje Pro";
     try {
       const d = JSON.parse(localStorage.getItem("enkaje_portal_draft") || "null");
       if (d && Date.now() - d.ts < 7*24*3600*1000 && d.tipoProyecto) {
@@ -1103,7 +1435,7 @@ const guardarEnPerfil = async () => {
           <span style={{ fontFamily:"'Playfair Display',serif", fontSize:20, fontWeight:900, color:"#d4af37", letterSpacing:2 }}>EnKaje</span>
           <span style={{ fontFamily:"'Playfair Display',serif", fontSize:13, color:"#c8a97a", marginLeft:4, letterSpacing:3 }}>PRO</span>
         </a>
-        {step > 0 && step < TOTAL_STEPS && (
+        {!modoRapido && step > 0 && step < TOTAL_STEPS && (
           <div style={{ flex:1, maxWidth:300, margin:"0 24px" }}>
             <ProgressBar step={step} total={TOTAL_STEPS} />
           </div>
@@ -1112,6 +1444,9 @@ const guardarEnPerfil = async () => {
       </div>
 
       <div style={{ maxWidth:680, margin:"0 auto", padding:"32px 20px 80px" }}>
+        {modoRapido ? (
+          <CotizacionRapida tipoInicial={tipoRapido} onSalir={salirDeRapido} onAutenticar={alAutenticar} />
+        ) : (<>
         {restaurado && step > 0 && step < TOTAL_STEPS && (
           <div style={{ background:"#0f2a0f", border:"1px solid #4caf5030", borderRadius:12, padding:"10px 14px", marginBottom:16, display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, fontSize:12, color:"#8bc34a" }}>
             <span>↩️ Retomamos tu proyecto donde te quedaste.</span>
@@ -1154,7 +1489,13 @@ const guardarEnPerfil = async () => {
                 </button>
               ))}
             </div>
-            <p style={{ fontSize:11, color:"#333" }}>Sin registro · Sin tarjeta · 100% gratis</p>
+            <p style={{ fontSize:11, color:"#333", marginBottom:28 }}>Sin registro · Sin tarjeta · 100% gratis</p>
+            <div style={{ borderTop:"1px solid #1a1a12", paddingTop:22, maxWidth:480, margin:"0 auto" }}>
+              <p style={{ fontSize:13, color:"#777", marginBottom:12 }}>¿Ya sabes lo que quieres y no necesitas render?</p>
+              <button onClick={() => { setModoRapido(true); try { window.scrollTo(0, 0); } catch {} }} style={{ background:"transparent", border:"1.5px solid #d4af37", color:"#d4af37", borderRadius:12, padding:"12px 22px", fontWeight:700, fontSize:14, cursor:"pointer" }}>
+                📷 Cotizar con fotos de mi espacio →
+              </button>
+            </div>
           </div>
         )}
 
@@ -1745,6 +2086,7 @@ const guardarEnPerfil = async () => {
             </div>
           </div>
         )}
+        </>)}
 
       </div>
     </>
