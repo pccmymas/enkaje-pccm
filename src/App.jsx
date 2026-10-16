@@ -2104,6 +2104,7 @@ async function cargarLeads() {
     alert(r?.code || r?.message ? "No se pudo enviar el reporte. Escríbenos a hola@enkajepro.com" : "Gracias, recibimos tu reporte.");
   }
 
+  const esSinRender = p => !!p.fotos_espacio || /solicitud sin render/i.test(String(p.comentarios_tecnicos || ""));
   const esOportunidad = p => role === "taller" && p.etapa_seguimiento === "solicitud" && !p.taller_email && (p.user_email || "").toLowerCase() !== (user?.email || "").toLowerCase();
 
   async function cargarCotizaciones() {
@@ -3906,9 +3907,23 @@ Formato: Caption completo listo para copiar y pegar.`;
                     return (
                       <div key={p.enkaje} style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 12, padding: 16, marginBottom: 10 }}>
                         <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
-                          {p.render_url && <img src={p.render_url} alt="render" onClick={() => setImagenAmpliada(p.render_url)} style={{ width: 96, height: 96, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />}
+                          {(() => {
+                            const fotosEsp = String(p.fotos_espacio || "").split(",").map(x => x.trim()).filter(Boolean);
+                            const imgs = fotosEsp.length > 0 ? fotosEsp : (p.render_url ? [p.render_url] : []);
+                            if (imgs.length === 0) return null;
+                            return (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4, flexShrink: 0 }}>
+                                <img src={imgs[0]} alt={esSinRender(p) ? "foto del espacio" : "render"} onClick={() => setImagenAmpliada(imgs[0])} style={{ width: 96, height: 96, borderRadius: 10, objectFit: "cover", cursor: "zoom-in" }} />
+                                {imgs.length > 1 && (
+                                  <div style={{ display: "flex", gap: 4 }}>
+                                    {imgs.slice(1).map(u => <img key={u} src={u} alt="foto del espacio" onClick={() => setImagenAmpliada(u)} style={{ width: 46, height: 46, borderRadius: 6, objectFit: "cover", cursor: "zoom-in" }} />)}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
                           <div>
-                            <div style={{ fontWeight: 700, fontSize: 14 }}>{(Date.now() - new Date(p.created_at).getTime()) < 86400000 && <span style={{ background: "#d4af37", color: "#000", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 800, marginRight: 6 }}>NUEVA</span>}{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}{p.nombre ? ` · ${p.nombre}` : ""}</div>
+                            <div style={{ fontWeight: 700, fontSize: 14 }}>{(Date.now() - new Date(p.created_at).getTime()) < 86400000 && <span style={{ background: "#d4af37", color: "#000", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 800, marginRight: 6 }}>NUEVA</span>}{esSinRender(p) && <span style={{ background: "#00bcd425", color: "#00bcd4", border: "1px solid #00bcd460", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 800, marginRight: 6 }}>📷 SIN RENDER · FOTOS DEL ESPACIO</span>}{(p.tipo_proyecto || "").toUpperCase()} · {p.zona}{p.nombre ? ` · ${p.nombre}` : ""}</div>
                             <div style={{ fontSize: 12, color: "#aaa" }}>{[p.estilo, Array.isArray(p.material) ? p.material.join(", ") : p.material, p.color_principal].filter(Boolean).join(" · ")}</div>
                            {(() => {
   const medidas = [p.largo && `largo ${p.largo}`, p.ancho && `ancho ${p.ancho}`, p.alto && `alto ${p.alto}`, p.altura && `altura ${p.altura}`, p.profundidad && `prof. ${p.profundidad}`].filter(Boolean).join(" · ");
