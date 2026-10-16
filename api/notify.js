@@ -147,7 +147,7 @@ export default async function handler(req, res) {
       for (const t of aptos) {
         if (!(await claim(`sol:${enk}:${norm(t.email)}`))) continue;
         const ok = await enviar(t.email, `Nueva oportunidad: ${tipo} en ${p.zona}`,
-          plantilla("Tienes una nueva oportunidad", `<p>Un cliente de <b>${esc(p.zona)}</b> pidió cotización para una <b>${esc(tipo)}</b>${p.estilo ? ` estilo ${esc(p.estilo)}` : ""}.</p><p>Entra para ver el render y las medidas, y envía tu cotización en rango. Las solicitudes llegan a pocos talleres, así que responder rápido ayuda a que te elijan.</p>`, ["Ver oportunidad", APP]));
+          plantilla("Tienes una nueva oportunidad", `<p>Un cliente de <b>${esc(p.zona)}</b> pidió cotización para una <b>${esc(tipo)}</b>${p.estilo ? ` estilo ${esc(p.estilo)}` : ""}.</p><p>Entra para ver ${/solicitud sin render/i.test(String(p.comentarios_tecnicos || "")) ? "las fotos de su espacio" : "el render"} y los detalles del proyecto, y envía tu cotización en rango. Las solicitudes llegan a pocos talleres, así que responder rápido ayuda a que te elijan.</p>`, ["Ver oportunidad", APP]));
         if (ok) enviados++;
       }
     }
