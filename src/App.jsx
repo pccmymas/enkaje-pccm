@@ -1423,6 +1423,10 @@ function colorDeLogo(canvas) {
   } catch { return null; }
 }
 
+// Link de Cal.com para la videollamada de verificación de talleres
+const CAL_VERIF = "https://cal.com/felipe-santiago-enkajepro/verificacion";
+const linkCal = (nombre, correo) => `${CAL_VERIF}?name=${encodeURIComponent(nombre || "")}&email=${encodeURIComponent(correo || "")}`;
+
 const ZONAS = [
   "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
   "Apodaca", "Santa Catarina", "Escobedo", "García", "Juárez", "Cadereyta Jiménez",
@@ -1586,11 +1590,14 @@ function RegistroTaller({ onBack }) {
         <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
         <h2 style={{ color: "#d4af37", margin: "0 0 12px" }}>Solicitud enviada</h2>
         <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.7, margin: "0 0 20px" }}>
-          Gracias por registrar tu taller. Nos pondremos en contacto contigo por teléfono o WhatsApp para
-          agendar una <b style={{ color: "#e8e0d0" }}>visita o videollamada</b> de verificación.
+          Gracias por registrar tu taller. El siguiente paso es una <b style={{ color: "#e8e0d0" }}>videollamada de 15 minutos</b> para
+          verificarlo. Agéndala ahorita en el día y la hora que te acomoden (también te mandamos el link por correo).
           Cuando quedes aprobado, podrás entrar con tu correo y contraseña.
         </p>
-        <BTN onClick={onBack} style={{ width: "100%" }}>Volver al inicio de sesión</BTN>
+        <a href={linkCal(f.representante, f.email.trim().toLowerCase())} target="_blank" rel="noreferrer" style={{ display: "block", textDecoration: "none", marginBottom: 10 }}>
+          <BTN style={{ width: "100%" }}>📅 Agendar mi videollamada</BTN>
+        </a>
+        <BTN onClick={onBack} outline style={{ width: "100%" }}>Volver al inicio de sesión</BTN>
       </div>
     </div>
   );
@@ -4519,7 +4526,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           {tel && (
                             <BTN outline color="#25D366" style={{ fontSize: 12 }}
-                              onClick={() => window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(`Hola ${t.representante || ""}, soy Felipe de EnKaje Pro. Recibimos la solicitud de ${t.nombre}. Para verificar tu taller necesitamos ${metodoTxt}. ¿Qué día y a qué hora te queda bien?`)}`, "_blank")}>
+                              onClick={() => window.open(`https://wa.me/52${tel}?text=${encodeURIComponent(`Hola ${t.representante || ""}, soy Felipe de EnKaje Pro. Recibimos la solicitud de ${t.nombre}. Para verificar tu taller necesitamos ${metodoTxt}. ${t.verificacion_metodo === "visita" ? "¿Qué día y a qué hora te queda bien?" : `Escoge el día y la hora que te acomoden aquí: ${linkCal(t.representante, t.email)}`}`)}`, "_blank")}>
                               💬 Coordinar por WhatsApp
                             </BTN>
                           )}
