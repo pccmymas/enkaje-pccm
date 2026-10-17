@@ -3045,7 +3045,7 @@ IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantid
     try {
       const res = await fetch("/api/common", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 3000, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
@@ -3098,11 +3098,11 @@ IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantid
       ];
       const res = await fetch("/api/common", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 400, system: contexto, messages })
       });
       const data = await res.json();
-      const reply = data.content?.[0]?.text || "No pude responder, intenta de nuevo.";
+      const reply = (data?.data?.content || data?.content)?.[0]?.text || "No pude responder, intenta de nuevo.";
       setChatHistory(prev => [...prev, { role: "assistant", content: reply }]);
     } catch(e) {
       setChatHistory(prev => [...prev, { role: "assistant", content: "❌ Error: " + e.message }]);
@@ -3162,11 +3162,11 @@ Formato: Caption completo listo para copiar y pegar.`;
 
       const res = await fetch("/api/common", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 500, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
-      setSocialCaption(data.content?.[0]?.text || "");
+      setSocialCaption((data?.data?.content || data?.content)?.[0]?.text || "❌ " + (data?.error?.message || "No se pudo generar"));
     } catch(e) {
       setSocialCaption("❌ Error: " + e.message);
     }
@@ -3181,11 +3181,11 @@ Formato: Caption completo listo para copiar y pegar.`;
       const prompt = `Eres experto disenador de carpinteria fina en Monterrey. El cliente quiere un ${tipoTxt}. Especificaciones: Estilo: ${Array.isArray(form.estilo)?form.estilo.join(", "):"sin definir"}, Material: ${Array.isArray(form.material)?form.material.join(", "):"sin definir"}, Color: ${form.color_principal||"sin definir"}, Acabado: ${Array.isArray(form.tipo_acabado)?form.tipo_acabado.join(", "):"sin definir"}. Da: 1) Combinacion ideal materiales/colores 2) Accesorios que recomiendas 3) Rango de precio en Monterrey MXN 4) 3 tips profesionales. Usa emojis. Maximo 280 palabras.`;
       const res = await fetch("/api/common", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
         body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 800, messages: [{ role: "user", content: prompt }] })
       });
       const data = await res.json();
-      setAiResult(data.content?.[0]?.text || "Configura tu API key de Anthropic en Vercel.");
+      setAiResult((data?.data?.content || data?.content)?.[0]?.text || "❌ " + (data?.error?.message || "No se pudo generar"));
     } catch { setAiResult("Configura tu API key en Vercel > Settings > Environment Variables."); }
     setAiLoading(false);
   }
