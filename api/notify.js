@@ -7,6 +7,9 @@ const SR = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const RESEND = process.env.RESEND_API_KEY;
 const FROM = process.env.MAIL_FROM || "EnKaje Pro <avisos@mail.enkajepro.com>";
 const APP = "https://enkajepro.com/app";
+// Link de Cal.com para que el taller agende su videollamada de verificación
+const CAL_VERIF = process.env.CAL_VERIF_URL || "https://cal.com/felipe-santiago-enkajepro/verificacion";
+const linkCal = (nombre, correo) => `${CAL_VERIF}?name=${encodeURIComponent(nombre || "")}&email=${encodeURIComponent(correo || "")}`;
 const ADMIN = String(process.env.ADMIN_EMAIL || "pccmymas@gmail.com").toLowerCase();
 
 // Las llaves nuevas (sb_secret_...) no son JWT: van solo en apikey. Las viejas (eyJ...) van en las dos.
@@ -87,10 +90,10 @@ export default async function handler(req, res) {
       let n = 0;
       if (await claim(`reg:${correo}`)) {
         if (await enviar(correo, "Recibimos tu registro en EnKaje Pro",
-          plantilla("Recibimos tu registro", `<p>Hola ${esc(t.representante || "")}, gracias por registrar <b>${esc(t.nombre)}</b> en EnKaje Pro.</p><p>Tu solicitud está <b>en evaluación</b>. Nos pondremos en contacto contigo por teléfono o WhatsApp para agendar una <b>visita o videollamada</b> de verificación. No necesitas hacer nada más por ahora.</p><p>Cuando quedes aprobado te avisaremos por este mismo medio y podrás entrar con tu correo y contraseña.</p>`, null))) n++;
+          plantilla("Recibimos tu registro", `<p>Hola ${esc(t.representante || "")}, gracias por registrar <b>${esc(t.nombre)}</b> en EnKaje Pro.</p><p>Tu solicitud está <b>en evaluación</b>. El siguiente paso es una <b>videollamada rápida de 15 minutos</b> para verificar tu taller. Escoge el día y la hora que te acomoden con el botón de abajo.</p><p>Para la llamada ten a la mano tu INE (solo la vemos, no la guardamos) y tu taller listo para mostrarlo con la cámara del celular.</p><p>Cuando quedes aprobado te avisaremos por este mismo medio y podrás entrar con tu correo y contraseña.</p>`, ["Agendar mi videollamada", linkCal(t.representante, correo)]))) n++;
         const lineas = [["Taller", t.nombre], ["Representante", t.representante], ["Teléfono", t.telefono], ["Correo", t.email], ["Municipio", t.municipio], ["Zonas", t.zonas_cobertura], ["Especialidades", t.tipos_proyecto], ["Experiencia", t.anos_experiencia]].filter(([, v]) => v);
         if (await enviar(ADMIN, `Nuevo taller registrado: ${t.nombre}`,
-          plantilla("Se registró un taller", `<p>${lineas.map(([l, v]) => `<b>${esc(l)}:</b> ${esc(v)}`).join("<br>")}</p><p>Quedó en estado <b>pendiente</b>. Agenda su visita o videollamada y apruébalo desde Admin → Talleres.</p>`, ["Abrir panel", APP]))) n++;
+          plantilla("Se registró un taller", `<p>${lineas.map(([l, v]) => `<b>${esc(l)}:</b> ${esc(v)}`).join("<br>")}</p><p>Quedó en estado <b>pendiente</b>. Le mandamos el link para agendar su videollamada; cuando la agende te llegará la cita a tu calendario. Después de verificarlo, apruébalo desde Admin → Talleres.</p>`, ["Abrir panel", APP]))) n++;
       }
       return res.status(200).json({ ok: true, enviados: n });
     }
