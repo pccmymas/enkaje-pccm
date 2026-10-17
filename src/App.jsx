@@ -4356,20 +4356,18 @@ Formato: Caption completo listo para copiar y pegar.`;
                            </div>
               <div style={{ marginTop: 16 }}>
                 <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>
-                  Zonas de cobertura <span style={{ color: "#444", fontWeight: 400 }}>(donde recibes solicitudes)</span>
+                  Zonas de cobertura <span style={{ color: "#444", fontWeight: 400 }}>(donde recibes solicitudes · para cambiarlas escríbenos a hola@enkajepro.com)</span>
                 </label>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {ZONAS.map(z => {
                     const actuales = tallerEdit.zonas_cobertura ? tallerEdit.zonas_cobertura.split(",").map(s => s.trim()) : [];
                     const sel = actuales.includes(z);
+                    if (!sel) return null;
                     return (
-                      <button key={z} onClick={() => {
-                        const nuevas = sel ? actuales.filter(x => x !== z) : [...actuales, z];
-                        setTallerEdit(p => ({ ...p, zonas_cobertura: nuevas.join(", ") }));
-                      }} style={{
+                      <button key={z} disabled style={{
                         padding: "8px 14px", borderRadius: 50, border: `1.5px solid ${sel ? "#d4af37" : "#2a2a20"}`,
                         background: sel ? "#d4af3720" : "#0d0d0a", color: sel ? "#d4af37" : "#aaa",
-                        fontSize: 13, cursor: "pointer", fontWeight: sel ? 700 : 400,
+                        fontSize: 13, cursor: "default", fontWeight: sel ? 700 : 400,
                       }}>{sel && "✓ "}{z}</button>
                     );
                   })}
@@ -4625,6 +4623,25 @@ Formato: Caption completo listo para copiar y pegar.`;
                               );
                             })}
                           </div>
+                        </div>
+                        <div style={{ marginBottom: 16 }}>
+                          <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>
+                            Zonas de cobertura (donde recibe solicitudes) <span style={{ color: "#555", textTransform: "none", letterSpacing: 0 }}>· en el registro el máximo es {MAX_ZONAS_REGISTRO}; aquí tú decides</span>
+                          </label>
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            {ZONAS.map(z => {
+                              const actuales = (tallerEdit.zonas_cobertura || "").split(",").map(s => s.trim()).filter(Boolean);
+                              const sel = actuales.includes(z);
+                              return (
+                                <PILL key={z} label={z} checked={sel} onChange={() => {
+                                  if (sel && actuales.length === 1) return;
+                                  const nuevas = sel ? actuales.filter(x => x !== z) : [...actuales, z];
+                                  setTallerEdit(p => ({ ...p, zonas_cobertura: nuevas.join(", ") }));
+                                }} />
+                              );
+                            })}
+                          </div>
+                          {tallerEdit.municipio && <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>Su taller está en: {tallerEdit.municipio}</div>}
                         </div>
                         <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
