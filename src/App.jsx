@@ -1001,8 +1001,8 @@ function FormularioBano({ form, setF, role, isMobile }) {
   const total = [form.precio_fabricacion, form.precio_instalacion, form.precio_cubierta, form.precio_herrajes, form.precio_otros]
     .reduce((a, v) => a + (parseFloat(v) || 0), 0);
 
-  const tipoLabel = tipoProyecto === "cocina" ? "Cocina Integral" : tipoProyecto === "closet" ? "Closet" : tipoProyecto === "puerta" ? "Puerta" : "Mueble";
-  const tipoIcon  = tipoProyecto === "cocina" ? "🍳" : tipoProyecto === "closet" ? "👔" : tipoProyecto === "puerta" ? "🚪" : "🛋️";
+  const tipoLabel = TIPO_LABEL[tipoProyecto] || "Mueble";
+  const tipoIcon  = TIPO_ICON[tipoProyecto] || "🛋️";
 
   function getDetallesProyecto() {
     const f = [];
@@ -1312,6 +1312,12 @@ function FormularioBano({ form, setF, role, isMobile }) {
   );
 }
 
+// Nombre e icono de cada tipo de proyecto (incluye baño y panel)
+const TIPO_LABEL = { cocina: "Cocina Integral", closet: "Closet", puerta: "Puerta", mueble: "Mueble", bano: "Mueble de Baño", panel: "Panel Decorativo" };
+const TIPO_ICON  = { cocina: "🍳", closet: "👔", puerta: "🚪", mueble: "🛋️", bano: "🚿", panel: "🪵" };
+// El logo ya se guarda como URL completa; solo se completa si es una ruta relativa
+const urlLogo = u => !u ? "" : /^https?:\/\//i.test(u) ? u : window.location.origin + (u.startsWith("/") ? u : "/" + u);
+
 const ZONAS = [
   "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
   "Apodaca", "Santa Catarina", "Escobedo", "García", "Juárez", "Cadereyta Jiménez",
@@ -1615,6 +1621,7 @@ export default function App() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [tallerEdit, setTallerEdit] = useState(null);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const [subiendoLogo, setSubiendoLogo] = useState(false);
   const [tab, setTab] = useState(() => {
     // Restaurar tab del historial si existe
     const saved = sessionStorage.getItem("enkaje_tab");
@@ -1730,6 +1737,7 @@ export default function App() {
     else if (tipo === "closet") setFormCloset(prev => ({...prev, ...datos}));
     else if (tipo === "puerta") setFormPuerta(prev => ({...prev, ...datos}));
     else if (tipo === "panel") setFormPanel(prev => ({...prev, ...datos}));
+    else if (tipo === "bano") setFormBano(prev => ({...prev, ...datos}));
     else setFormMueble(prev => ({...prev, ...datos}));
   }
 
@@ -1748,6 +1756,7 @@ export default function App() {
     else if (tipo === "closet") setFormCloset(prev => ({...prev, ...datos}));
     else if (tipo === "puerta") setFormPuerta(prev => ({...prev, ...datos}));
     else if (tipo === "panel") setFormPanel(prev => ({...prev, ...datos}));
+    else if (tipo === "bano") setFormBano(prev => ({...prev, ...datos}));
     else setFormMueble(prev => ({...prev, ...datos}));
   }
 
@@ -2276,11 +2285,47 @@ async function guardarEdicionTaller() {
       ["especialidad","municipio","zona","zonas_cobertura","tipos_proyecto","plan","estado","slug","email","niveles_precio"].forEach(k => delete campos[k]);
     }
     const limpio = Object.fromEntries(Object.entries(campos).filter(([,v]) => v !== undefined && v !== null && v !== ""));
+    if (tallerEdit.logo_url === "") limpio.logo_url = null;
     await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
     setTallerMsg("✅ Taller actualizado");
     setTallerEdit(null);
     cargarTalleres();
     setTimeout(() => setTallerMsg(""), 4000);
+  }
+
+  async function subirLogo(file) {
+    if (!file || !tallerEdit) return;
+    if (!file.type.startsWith("image/")) { setTallerMsg("❌ El logo debe ser una imagen (PNG o JPG)"); return; }
+    setSubiendoLogo(true);
+    try {
+      const blob = await new Promise(resolve => {
+        const img = new Image();
+        const u = URL.createObjectURL(file);
+        img.onload = () => {
+          const esc = Math.min(1, 600 / Math.max(img.width, img.height));
+          const c = document.createElement("canvas");
+          c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
+          c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+          c.toBlob(b => { URL.revokeObjectURL(u); resolve(b || file); }, "image/png");
+        };
+        img.onerror = () => { URL.revokeObjectURL(u); resolve(file); };
+        img.src = u;
+      });
+      const fileName = `logo_${tallerEdit.id}_${Date.now()}.png`;
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/renders/${fileName}`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "x-upsert": "true", "Content-Type": "image/png" },
+        body: blob
+      });
+      if (up.ok) {
+        setTallerEdit(p => ({ ...p, logo_url: `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}` }));
+        setTallerMsg("✅ Logo listo. Dale Guardar para que quede en tu perfil.");
+        setTimeout(() => setTallerMsg(""), 5000);
+      } else {
+        setTallerMsg("❌ No se pudo subir el logo. Intenta de nuevo.");
+      }
+    } catch (e) { setTallerMsg("❌ " + e.message); }
+    setSubiendoLogo(false);
   }
 
   async function subirFotoPortafolio(file) {
@@ -2335,7 +2380,7 @@ useEffect(() => {
   function compartirFormulario(canal) {
     const f = getForm();
     const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v || "");
-    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":tipoForm==="bano"?"Baño":"Mueble";
+    const tipo = TIPO_LABEL[tipoForm] || "Mueble";
     const sep = "━".repeat(26);
     const lineas = [
       `LEVANTAMIENTO ${tipo.toUpperCase()} - EnKaje Pro`,
@@ -2376,8 +2421,8 @@ useEffect(() => {
     const planBasicoForm = !tallerDataForm || tallerDataForm?.plan === "basico";
     const arr = v => Array.isArray(v) && v.length ? v.join(", ") : (v||"");
     const has  = v => Array.isArray(v) ? v.length > 0 : (v && String(v).trim() !== "");
-    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
-    const icon = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
+    const tipo = TIPO_LABEL[tipoForm] || "Mueble";
+    const icon = TIPO_ICON[tipoForm] || "🛋️";
     const folio = `LV-${Date.now().toString().slice(-6)}`;
 
     // Solo filas con valor
@@ -2397,6 +2442,14 @@ useEffect(() => {
     } else if(tipoForm==="puerta"){
       add("Tipo de puerta",f.tipo_puerta); add("Ancho",f.ancho); add("Alto",f.alto);
       add("Grosor",f.grosor_puerta); add("Cantidad",f.cantidad); add("Marco",f.tipo_marco); add("Herrajes",f.herrajes_puerta);
+    } else if(tipoForm==="bano"){
+      add("Tipo de mueble",f.tipo_mueble_bano); add("Otro tipo",f.tipo_mueble_bano_otro); add("Ancho",f.ancho); add("Alto",f.alto);
+      add("Profundidad",f.profundidad); add("Cantidad",f.cantidad); add("Instalación",f.instalacion);
+      add("Tarja / lavabo",f.tipo_tarja); add("Color tarja",f.color_tarja); add("Grifería",f.griferia);
+      add("Espejo",f.espejo); add("Iluminación",f.iluminacion_bano); add("Accesorios",f.accesorios_bano);
+    } else if(tipoForm==="panel"){
+      add("Tipo de panel",f.tipo_panel); add("Ubicación",f.ubicacion_panel); add("Largo / Ancho",f.largo); add("Alto",f.alto);
+      add("Cantidad",f.cantidad); add("Acabado del panel",f.acabado_panel); add("Patrón",f.patron_panel); add("Instalación",f.instalacion_panel);
     } else {
       add("Tipo de mueble",f.tipo_mueble); add("Largo / Ancho",f.largo); add("Alto",f.alto);
       add("Profundidad",f.profundidad); add("Cantidad",f.cantidad); add("Accesorios",f.accesorios_mueble);
@@ -2518,8 +2571,8 @@ ${tallerHTML}
   function imprimirHojaProfesional() {
     const tallerDataPresup = role === "taller" ? (talleresMem.find(t => t.email === user?.email) || tallerSel) : tallerSel;
     const f = getForm();
-    const tipoLabel = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
-    const tipoIcon  = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
+    const tipoLabel = TIPO_LABEL[tipoForm] || "Mueble";
+    const tipoIcon  = TIPO_ICON[tipoForm] || "🛋️";
     const total = [f.precio_fabricacion,f.precio_instalacion,f.precio_cubierta,f.precio_herrajes,f.precio_otros].reduce((a,v)=>a+(parseFloat(v)||0),0);
     // Generar detalles del proyecto inline (usando tipoForm de App)
     const detalles = [];
@@ -2527,6 +2580,8 @@ ${tallerHTML}
     if(tipoForm==="cocina"){ addD("Tipo de cocina",f.tipo_cocina); addD("Largo",f.largo); addD("Altura",f.altura); addD("Profundidad",f.profundidad); addD("Área",f.area); addD("Cubierta",f.material_cubierta); addD("Tarja",f.tarja); addD("Electrodomésticos",f.electrodomesticos); addD("Accesorios",f.accesorios); }
     else if(tipoForm==="closet"){ addD("Tipo closet",f.tipo_closet); addD("Largo",f.largo); addD("Altura",f.altura); addD("Profundidad",f.profundidad); addD("Accesorios",f.accesorios_closet); }
     else if(tipoForm==="puerta"){ addD("Tipo puerta",f.tipo_puerta); addD("Ancho",f.ancho); addD("Alto",f.alto); addD("Cantidad",f.cantidad); addD("Marco",f.tipo_marco); addD("Herrajes",f.herrajes_puerta); }
+    else if(tipoForm==="bano"){ addD("Tipo de mueble",f.tipo_mueble_bano); addD("Ancho",f.ancho); addD("Alto",f.alto); addD("Profundidad",f.profundidad); addD("Cantidad",f.cantidad); addD("Instalación",f.instalacion); addD("Tarja / lavabo",f.tipo_tarja); addD("Grifería",f.griferia); addD("Espejo",f.espejo); addD("Iluminación",f.iluminacion_bano); addD("Accesorios",f.accesorios_bano); }
+    else if(tipoForm==="panel"){ addD("Tipo de panel",f.tipo_panel); addD("Ubicación",f.ubicacion_panel); addD("Largo / Ancho",f.largo); addD("Alto",f.alto); addD("Cantidad",f.cantidad); addD("Acabado del panel",f.acabado_panel); addD("Patrón",f.patron_panel); addD("Instalación",f.instalacion_panel); }
     else { addD("Tipo mueble",f.tipo_mueble); addD("Largo",f.largo); addD("Alto",f.alto); addD("Profundidad",f.profundidad); addD("Cantidad",f.cantidad); addD("Accesorios",f.accesorios_mueble); }
     addD("Estilo",f.estilo); addD("Material",f.material); addD("Color",f.color_principal); addD("Acabado",f.tipo_acabado); addD("Jaladeras",f.jaladeras); addD("Bisagras",f.bisagras);
     const folio = `EP-${Date.now().toString().slice(-6)}`;
@@ -2536,7 +2591,7 @@ ${tallerHTML}
     const noIncluyeItems = (f.no_incluye||"Plomería\nElectricidad\nAlbañilería\nElectrodomésticos\nCambios post-aprobación").split("\n").filter(Boolean).map(i=>`<li>${i}</li>`).join("");
     const preciosRows = [["Fabricación",f.precio_fabricacion],["Instalación",f.precio_instalacion],["Acabados / Cubierta",f.precio_cubierta],["Herrajes",f.precio_herrajes],["Otros",f.precio_otros]].filter(([,v])=>v&&parseFloat(v)>0).map(([l,v])=>`<tr><td>${l}</td><td>$${parseFloat(v).toLocaleString("es-MX")} MXN</td></tr>`).join("");
     const detallesHTML = detalles.map(([l,v])=>`<div class="di"><span class="dl">${l}</span><span class="dv">${v}</span></div>`).join("");
-    const logoHTML = tallerDataPresup?.logo_url && tallerDataPresup?.plan!=="basico" ? `<img src="${window.location.origin}${tallerDataPresup.logo_url}" style="height:60px;width:60px;object-fit:cover;border-radius:50%;margin-bottom:4px" alt="logo" onerror="this.style.display='none'"/>` : "";
+    const logoHTML = tallerDataPresup?.logo_url && tallerDataPresup?.plan!=="basico" ? `<img src="${urlLogo(tallerDataPresup.logo_url)}" style="height:64px;max-width:200px;object-fit:contain;display:block;margin-bottom:6px" alt="logo" onerror="this.style.display='none'"/>` : "";
     const nombreTaller = tallerDataPresup?.nombre || "EnKaje Pro";
     const subTaller = tallerDataPresup?.nombre ? "Carpintería · Ebanistería" : "Intermediación · Carpintería · Monterrey";
     const repPresup = tallerDataPresup?.representante || tallerDataPresup?.atencion_por || tallerDataPresup?.nombre || "Representante del taller";
@@ -2561,8 +2616,8 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
 
   function generarContrato(tallerData) {
     const f = getForm();
-    const tipo = tipoForm==="cocina"?"Cocina Integral":tipoForm==="closet"?"Closet":tipoForm==="puerta"?"Puerta":"Mueble";
-    const icon = tipoForm==="cocina"?"🍳":tipoForm==="closet"?"👔":tipoForm==="puerta"?"🚪":"🛋️";
+    const tipo = TIPO_LABEL[tipoForm] || "Mueble";
+    const icon = TIPO_ICON[tipoForm] || "🛋️";
     const folio = `CT-${Date.now().toString().slice(-6)}`;
     const fecha = new Date().toLocaleDateString("es-MX", {day:"2-digit", month:"long", year:"numeric"});
     const arr = v => Array.isArray(v)&&v.length ? v.join(", ") : (v||"");
@@ -2588,6 +2643,8 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
     if(tipoForm==="cocina"){ addE("Tipo de cocina",f.tipo_cocina); addE("Largo",f.largo); addE("Altura",f.altura); addE("Profundidad",f.profundidad); addE("Cubierta",f.material_cubierta); addE("Tarja",f.tarja); addE("Electrodomésticos",f.electrodomesticos); addE("Accesorios",f.accesorios); }
     else if(tipoForm==="closet"){ addE("Tipo de closet",f.tipo_closet); addE("Largo",f.largo); addE("Altura",f.altura); addE("Profundidad",f.profundidad); addE("Accesorios",f.accesorios_closet); }
     else if(tipoForm==="puerta"){ addE("Tipo de puerta",f.tipo_puerta); addE("Medidas",`${f.ancho||"?"} x ${f.alto||"?"}`); addE("Cantidad",f.cantidad); addE("Marco",f.tipo_marco); addE("Herrajes",f.herrajes_puerta); }
+    else if(tipoForm==="bano"){ addE("Tipo de mueble",f.tipo_mueble_bano); addE("Medidas",`${f.ancho||"?"} x ${f.alto||"?"} x ${f.profundidad||"?"}`); addE("Cantidad",f.cantidad); addE("Instalación",f.instalacion); addE("Tarja / lavabo",f.tipo_tarja); addE("Grifería",f.griferia); addE("Espejo",f.espejo); addE("Accesorios",f.accesorios_bano); }
+    else if(tipoForm==="panel"){ addE("Tipo de panel",f.tipo_panel); addE("Ubicación",f.ubicacion_panel); addE("Medidas",`${f.largo||"?"} x ${f.alto||"?"}`); addE("Cantidad",f.cantidad); addE("Acabado del panel",f.acabado_panel); addE("Patrón",f.patron_panel); addE("Instalación",f.instalacion_panel); }
     else { addE("Tipo de mueble",f.tipo_mueble); addE("Medidas",`${f.largo||"?"} x ${f.alto||"?"} x ${f.profundidad||"?"}`); addE("Cantidad",f.cantidad); addE("Accesorios",f.accesorios_mueble); }
     addE("Estilo",f.estilo); addE("Material",f.material); addE("Grosor",f.grosor);
     addE("Color principal",f.color_principal); addE("Color secundario",f.color_secundario);
@@ -2650,7 +2707,7 @@ table{width:100%;border-collapse:collapse;border:1px solid #e8e0d0;border-radius
     ${planBasico 
       ? `<div class="logo">EnKaje Pro</div><div class="logo-s">Intermediación · Carpintería</div>` 
       : tallerData?.logo_url 
-        ? `<img src="${window.location.origin}${tallerData.logo_url}" style="height:70px;width:70px;object-fit:cover;border-radius:50%;border:2px solid ${colorTaller}" alt="${tallerNombre}" onerror="this.style.display='none'"/><div class="logo" style="margin-top:6px">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`
+        ? `<img src="${urlLogo(tallerData.logo_url)}" style="height:70px;max-width:220px;object-fit:contain;display:block" alt="${tallerNombre}" onerror="this.style.display='none'"/><div class="logo" style="margin-top:6px">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`
         : `<div class="logo">${tallerNombre}</div><div class="logo-s">${tallerDir}</div>`
     }
   </div>
@@ -3105,6 +3162,27 @@ Formato: Caption completo listo para copiar y pegar.`;
   const solAbiertas = solicitudesAdmin.filter(p => p.etapa_seguimiento === "solicitud" && !p.taller_email);
   const solSinCot48 = solAbiertas.filter(p => horasDe(p) >= 48 && cotsDe(p).length === 0);
   const solElegidas = solicitudesAdmin.filter(p => p.taller_email);
+
+  const LOGO_UPLOADER = () => (
+    <div style={{ gridColumn: "1 / -1", marginBottom: 14 }}>
+      <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Logo del taller</label>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+        <div style={{ width: 110, height: 70, borderRadius: 10, background: "#fff", border: "1px solid #2a2a20", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+          {tallerEdit?.logo_url
+            ? <img src={urlLogo(tallerEdit.logo_url)} alt="logo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            : <span style={{ fontSize: 11, color: "#999" }}>Sin logo</span>}
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <label style={{ display: "inline-block", background: "#1a1a12", border: "1px dashed #d4af3760", borderRadius: 10, padding: "10px 16px", fontSize: 12, color: "#d4af37", cursor: subiendoLogo ? "wait" : "pointer", fontWeight: 700 }}>
+            {subiendoLogo ? "⏳ Subiendo..." : tallerEdit?.logo_url ? "Cambiar logo" : "+ Subir logo"}
+            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e => { const fl = e.target.files[0]; e.target.value = ""; if (fl) subirLogo(fl); }} style={{ display: "none" }} disabled={subiendoLogo} />
+          </label>
+          {tallerEdit?.logo_url && <button onClick={() => setTallerEdit(p => ({ ...p, logo_url: "" }))} style={{ background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "10px 14px", fontSize: 12, cursor: "pointer" }}>Quitar</button>}
+        </div>
+      </div>
+      <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>De preferencia PNG con fondo transparente. Sale en tus presupuestos y contratos con el plan Pro.</div>
+    </div>
+  );
 
   const TIPO_SELECTOR = () => (
     <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: "16px 20px", marginBottom: 20 }}>
@@ -4139,7 +4217,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                 <INPUT label="Zona / Colonia (la cambia EnKaje Pro)" value={tallerEdit.zona||""} onChange={()=>{}} style={{ opacity: 0.5, pointerEvents: "none" }} />
                 <INPUT label="Años de experiencia" value={tallerEdit.anos_experiencia||""} onChange={e=>setTallerEdit(p=>({...p,anos_experiencia:e.target.value}))} placeholder="10" />
                 <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} placeholder="Lun-Vie 9am-6pm" />
-               <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} placeholder="https://..." />
+               {LOGO_UPLOADER()}
                            </div>
               <div style={{ marginTop: 16 }}>
                 <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>
@@ -4391,7 +4469,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         <INPUT label="Años experiencia" value={tallerEdit.anos_experiencia||""} onChange={e=>setTallerEdit(p=>({...p,anos_experiencia:e.target.value}))} />
                         <INPUT label="Instagram" value={tallerEdit.instagram||""} onChange={e=>setTallerEdit(p=>({...p,instagram:e.target.value}))} />
                         <INPUT label="Facebook" value={tallerEdit.facebook||""} onChange={e=>setTallerEdit(p=>({...p,facebook:e.target.value}))} />
-                        <INPUT label="Logo URL" value={tallerEdit.logo_url||""} onChange={e=>setTallerEdit(p=>({...p,logo_url:e.target.value}))} />
+                        {LOGO_UPLOADER()}
                         <INPUT label="Horario" value={tallerEdit.horario||""} onChange={e=>setTallerEdit(p=>({...p,horario:e.target.value}))} />
                       </div>
 
