@@ -1487,6 +1487,7 @@ function RegistroTaller({ onBack }) {
   const [tipos, setTipos] = useState([]);
   const [fotos, setFotos] = useState([]);
   const [acepto, setAcepto] = useState(false);
+  const [autorizaPromo, setAutorizaPromo] = useState(false);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -1560,6 +1561,8 @@ function RegistroTaller({ onBack }) {
         zonas_cobertura: zonas.join(", "),
         tipos_proyecto: tipos.join(","),
         portafolio_urls: urls.join(","),
+        autoriza_promocion: autorizaPromo,
+        autoriza_promocion_fecha: autorizaPromo ? new Date().toISOString() : null,
         slug, plan: "basico", estado: "pendiente", verificacion_estado: "por_agendar",
         leads_recibidos: 0, proyectos_cerrados: 0, visitas: 0,
         created_at: new Date().toISOString(),
@@ -1672,6 +1675,14 @@ function RegistroTaller({ onBack }) {
               <input type="file" accept="image/*" multiple onChange={agregarFotos} style={{ display: "none" }} />
             </label>
           )}
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 16, background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 10, padding: 12 }}>
+            <button onClick={() => setAutorizaPromo(a => !a)} style={{ width: 22, height: 22, borderRadius: 6, border: `1.5px solid ${autorizaPromo ? "#d4af37" : "#444"}`, background: autorizaPromo ? "#d4af37" : "transparent", color: "#000", fontWeight: 900, cursor: "pointer", flexShrink: 0, marginTop: 1 }}>{autorizaPromo ? "✓" : ""}</button>
+            <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.6 }}>
+              <b style={{ color: "#e8e0d0" }}>Autorizo a EnKaje Pro a usar las fotos de mis trabajos para promocionar mi taller</b> en la página,
+              redes sociales y anuncios de EnKaje Pro, mencionando el nombre de mi taller. Puedo retirar este permiso cuando quiera escribiendo a hola@enkajepro.com.
+              <div style={{ color: "#666", marginTop: 4 }}>Es opcional: si no lo marcas, tus fotos solo se usan para tu verificación y tu perfil.</div>
+            </div>
+          </div>
         </SECTION>
 
         <SECTION title="Tu cuenta" icon="🔐">
@@ -4473,6 +4484,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                           {t.especialidad && <div><b style={{ color: "#d4af37" }}>Especialidad:</b> {t.especialidad}</div>}
                           {t.anos_experiencia && <div><b style={{ color: "#d4af37" }}>Experiencia:</b> {t.anos_experiencia} años</div>}
                           {(t.instagram || t.facebook) && <div><b style={{ color: "#d4af37" }}>Redes:</b> {[t.instagram, t.facebook].filter(Boolean).join(" · ")}</div>}
+                          <div><b style={{ color: "#d4af37" }}>Fotos para promoción:</b> {t.autoriza_promocion ? <span style={{ color: "#4caf50" }}>✅ Autorizó</span> : <span style={{ color: "#f0a500" }}>No autorizó (pídeselo por WhatsApp)</span>}</div>
                         </div>
 
                         {fotosT.length > 0 && (
