@@ -1077,7 +1077,7 @@ function FormularioBano({ form, setF, role, isMobile }) {
             fontWeight:900, fontSize:13, cursor:"pointer",
             display:"flex", alignItems:"center", gap:8,
             boxShadow:"0 4px 20px #d4af3740"
-          }}>🖨️ Imprimir / PDF Profesional</button>
+          }}>📤 Enviar o imprimir PDF</button>
           {(role === "admin" || role === "taller") && (
             <button onClick={() => generarContrato(tallerData)} style={{
               background:"transparent", color:"#d4af37",
@@ -1087,10 +1087,6 @@ function FormularioBano({ form, setF, role, isMobile }) {
             }}>📄 Generar Contrato</button>
           )}
         </div>
-        <ShareMenu
-          onShare={key => compartir(key, textoPresupuesto(), `Presupuesto ${tipoLabel} - EnKaje Pro`)}
-          label="Compartir presupuesto"
-        />
       </div>
 
       <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr":"1fr 1fr", gap:20 }}>
@@ -1317,6 +1313,61 @@ const TIPO_LABEL = { cocina: "Cocina Integral", closet: "Closet", puerta: "Puert
 const TIPO_ICON  = { cocina: "🍳", closet: "👔", puerta: "🚪", mueble: "🛋️", bano: "🚿", panel: "🪵" };
 // El logo ya se guarda como URL completa; solo se completa si es una ruta relativa
 const urlLogo = u => !u ? "" : /^https?:\/\//i.test(u) ? u : window.location.origin + (u.startsWith("/") ? u : "/" + u);
+
+// Barra para el PDF: en celular genera el archivo y lo comparte (WhatsApp, correo...);
+// en compu abre la impresión como antes. Se esconde al imprimir.
+const nombreArchivo = (tipo, cliente, folio) =>
+  `${tipo}-${String(cliente || "cliente").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-zA-Z0-9 ]/g, "").trim().replace(/\s+/g, "-") || "cliente"}-${folio}.pdf`;
+const barraPDF = (nombre) => `
+<div id="ep-bar" style="position:fixed;left:0;right:0;bottom:0;z-index:50;box-shadow:0 -4px 20px #00000040;background:#1a1208;padding:10px 12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <button id="ep-share" disabled style="background:#25D366;color:#fff;border:none;border-radius:10px;padding:12px 18px;font-weight:700;font-size:15px;cursor:pointer">⏳ Preparando PDF...</button>
+  <button id="ep-print" style="background:transparent;color:#d4af37;border:1.5px solid #d4af37;border-radius:10px;padding:12px 18px;font-weight:700;font-size:15px;cursor:pointer">🖨️ Imprimir</button>
+</div>
+<style>body{padding-bottom:90px}@media print{#ep-bar{display:none!important}body{padding-bottom:0}}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+(function(){
+  var nombre = ${JSON.stringify(nombre)};
+  var btn = document.getElementById("ep-share");
+  var archivo = null;
+  document.getElementById("ep-print").onclick = function(){ window.print(); };
+  function listo(){
+    var puede = false;
+    try { puede = !!(navigator.canShare && navigator.canShare({ files: [archivo] })); } catch (e) {}
+    btn.disabled = false;
+    btn.textContent = puede ? "📤 Enviar PDF (WhatsApp)" : "⬇️ Descargar PDF";
+    btn.onclick = function(){
+      if (puede) { navigator.share({ files: [archivo], title: nombre }).catch(function(){}); }
+      else { var a = document.createElement("a"); a.href = URL.createObjectURL(archivo); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); }
+    };
+  }
+  function fallo(){ btn.disabled = true; btn.textContent = "No se pudo preparar el PDF. Usa Imprimir."; }
+  function generar(){
+    if (!window.html2pdf) { fallo(); return; }
+    var el = document.querySelector(".page");
+    html2pdf().set({
+      margin: [8, 6, 8, 6], filename: nombre,
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+      jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"], avoid: [".clausula", ".fir", ".pagos", ".pg", "tr", ".ir", ".di", ".banner"] }
+    }).from(el).outputPdf("blob").then(function(b){
+      archivo = new File([b], nombre, { type: "application/pdf" });
+      listo();
+    }).catch(fallo);
+  }
+  var esCel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // La hoja no tiene ajuste para celular; agrandamos la barra para que se pueda tocar
+  if (esCel && screen.width && window.innerWidth > screen.width * 1.3) {
+    document.getElementById("ep-bar").style.zoom = (window.innerWidth / screen.width).toFixed(2);
+  }
+  window.addEventListener("load", function(){
+    var fuentes = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    fuentes.then(function(){ setTimeout(generar, 200); });
+    if (!esCel) setTimeout(function(){ window.print(); }, 400);
+  });
+})();
+</script>`;
 
 const ZONAS = [
   "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
@@ -2466,8 +2517,8 @@ useEffect(() => {
     ).join("");
 
     const tallerHTML = (f.materiales_solicitados||f.nivel_calidad||f.comentarios_tecnicos) ? `
-      <div class="card" style="margin-top:18px;border-color:#00bcd430">
-        <div class="ch" style="background:#0a1a20;color:#00bcd4">🏭 NOTAS DEL TALLER</div>
+      <div class="card" style="margin-top:18px;border-color:#b2ebf2">
+        <div class="ch" style="background:#e0f7fa;color:#00838f">🏭 NOTAS DEL TALLER</div>
         <div class="cb">
           ${f.nivel_calidad?`<p class="row"><b>Nivel:</b> ${f.nivel_calidad}</p>`:""}
           ${f.materiales_solicitados?`<p class="row"><b>Materiales:</b> ${f.materiales_solicitados}</p>`:""}
@@ -2481,56 +2532,43 @@ useEffect(() => {
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#070708;color:#e8e0d0;line-height:1.6}
+body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;line-height:1.6}
 .page{max-width:780px;margin:0 auto;padding:40px}
-.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:2px solid #d4af37;margin-bottom:24px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #d4af37;margin-bottom:24px}
 .logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:#d4af37;letter-spacing:3px}
-.logo-s{font-size:9px;color:#555;letter-spacing:5px;text-transform:uppercase;margin-top:4px}
+.logo-s{font-size:9px;color:#999;letter-spacing:5px;text-transform:uppercase;margin-top:4px}
 .doc-r{text-align:right}
 .doc-t{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#8B6914;text-transform:uppercase;letter-spacing:2px}
-.folio{font-size:11px;color:#555;margin-top:3px}
+.folio{font-size:11px;color:#999;margin-top:3px}
 .banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid #d4af37;border-radius:0 12px 12px 0;padding:16px 22px;margin-bottom:20px}
-.bt{font-size:10px;color:#d4af3780;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
+.bt{font-size:10px;color:#d4af3799;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
 .bn{font-family:'Playfair Display',serif;font-size:22px;color:#d4af37;font-weight:700}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
-.card{border:1px solid #1a1a12;border-radius:12px;overflow:hidden;margin-bottom:18px}
-.ch{background:#0f0f0a;border-bottom:1px solid #1a1a12;padding:10px 16px;font-size:10px;font-weight:700;color:#d4af37;letter-spacing:3px;text-transform:uppercase}
+.card{border:1px solid #e8e0d0;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.ch{background:#f8f4ed;border-bottom:1px solid #e8e0d0;padding:10px 16px;font-size:10px;font-weight:700;color:#8B6914;letter-spacing:3px;text-transform:uppercase}
 .cb{padding:14px 16px}
-.row{font-size:12px;color:#aaa;padding:3px 0;line-height:1.6}
-.row b{color:#e8e0d0}
+.row{font-size:12px;color:#555;padding:3px 0;line-height:1.6}
+.row b{color:#1a1a1a}
 table{width:100%;border-collapse:collapse}
-.td-l{padding:8px 14px;color:#666;font-size:12px;border-bottom:1px solid #1a1a12;width:42%;font-weight:500}
-.td-r-head{background:#0f0f0a}
-.td-v{padding:8px 14px;color:#e8e0d0;font-size:12px;border-bottom:1px solid #1a1a12;font-weight:600}
+.td-l{padding:8px 14px;color:#888;font-size:12px;border-bottom:1px solid #f0ece4;width:42%;font-weight:500}
+.td-v{padding:8px 14px;color:#1a1a1a;font-size:12px;border-bottom:1px solid #f0ece4;font-weight:600}
 tr:last-child .td-l, tr:last-child .td-v{border-bottom:none}
-tr:nth-child(even){background:#0a0a08}
-.obs{background:#0f0f0a;border:1px solid #1a1a12;border-radius:10px;padding:12px 16px;font-size:12px;color:#888;font-style:italic;margin-top:16px;line-height:1.7}
-.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;padding-top:20px;border-top:1px solid #1a1a12}
+tr:nth-child(even){background:#f9f7f3}
+.obs{background:#f8f8f8;border:1px solid #e8e0d0;border-radius:10px;padding:12px 16px;font-size:12px;color:#444;font-style:italic;margin-top:16px;line-height:1.7}
+.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;padding-top:20px;border-top:1px solid #e8e0d0}
 .fi{text-align:center}
-.fl{height:1px;background:#d4af3740;margin-bottom:8px}
-.fn{font-size:13px;font-weight:700;color:#e8e0d0}
-.fc{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
-.ftr{margin-top:24px;padding-top:14px;border-top:1px solid #1a1a12;display:flex;justify-content:space-between;align-items:center}
+.fl{height:1px;background:#333;margin-bottom:8px}
+.fn{font-size:13px;font-weight:700;color:#1a1a1a}
+.fc{font-size:10px;color:#999;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.ftr{margin-top:24px;padding-top:14px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between;align-items:center}
 .flogo{font-family:'Playfair Display',serif;font-size:14px;color:#d4af37;font-weight:700;letter-spacing:2px}
-.finfo{font-size:10px;color:#333;text-align:right;line-height:1.6}
-@media print{
-  body{background:#fff;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .page{padding:28px}
-  .banner{background:#1a1208!important}
-  .ch{background:#f8f4ed!important;color:#8B6914!important;border-color:#e8e0d0!important}
-  .card{border-color:#e8e0d0!important}
-  .td-l{color:#666!important;border-color:#e8e0d0!important}
-  .td-v{color:#1a1a1a!important;border-color:#e8e0d0!important}
-  tr:nth-child(even){background:#f9f7f3!important}
-  .obs{background:#f8f8f8!important;border-color:#e8e0d0!important;color:#444!important}
-  .ftr{border-color:#e8e0d0!important}
-  .fl{background:#333!important}
-  .fn{color:#1a1a1a!important}
-}
+.finfo{font-size:10px;color:#bbb;text-align:right;line-height:1.6}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:28px}}
 </style></head><body><div class="page">
 <div class="hdr">
   <div><div class="logo">${nombreTallerForm}</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
-  <div class="doc-r"><div class="doc-t">Levantamiento</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Atendido por: ${repForm}</div>
+  <div class="doc-r"><div class="doc-t">Levantamiento</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Atendido por: ${repForm}</div></div>
+</div>
 <div class="banner">
   <div class="bt">${icon} Tipo de proyecto</div>
   <div class="bn">${tipo.toUpperCase()}</div>
@@ -2563,7 +2601,7 @@ ${tallerHTML}
   <div class="flogo">${nombreTallerForm}</div>
   <div class="finfo">${planBasicoForm ? "enkajepro.com · " : ""}Monterrey, Nuevo León, México</div>
 </div>
-</div><script>window.onload=function(){window.print()}</script></body></html>`);
+</div>${barraPDF(nombreArchivo("Levantamiento", f.nombre, folio))}</body></html>`);
     w.document.close();
   }
 
@@ -2610,7 +2648,7 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
 <div class="nota"><b>NOTA:</b> Este presupuesto tiene vigencia de 15 días.${planBasicoPresup ? " EnKaje Pro actúa como intermediario; la ejecución es responsabilidad del taller." : ""}</div>
 <div class="fir"><div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${repPresup}</div><div class="fc">${nombreTaller} · Prestador</div></div><div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Aprobación</div></div></div>
 <div class="ftr"><div class="flogo">${nombreTaller}</div><div class="finfo">${planBasicoPresup ? "enkajepro.com · " : ""}Monterrey, NL<br>Folio: ${folio}</div></div>
-</div><script>window.onload=function(){window.print()}</script></body></html>`);
+</div>${barraPDF(nombreArchivo("Presupuesto", f.nombre, folio))}</body></html>`);
     w.document.close();
   }
 
@@ -2837,7 +2875,7 @@ ${total>0 ? `
   <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México<br>Contrato generado digitalmente · ${folio}</div>
 </div>
 
-</div><script>window.onload=function(){window.print()}</script></body></html>`);
+</div>${barraPDF(nombreArchivo("Contrato", f.nombre, folio))}</body></html>`);
     w.document.close();
   }
 
@@ -3394,12 +3432,8 @@ Formato: Caption completo listo para copiar y pegar.`;
               {savedMsg && <div style={{ background: savedMsg.includes("❌")?"#1a0a0a":"#0a2a0a", border: `1px solid ${savedMsg.includes("❌")?"#f4433640":"#4caf5040"}`, color: savedMsg.includes("❌")?"#f44336":"#4caf50", borderRadius: 8, padding: "10px 14px", fontSize: 13, marginBottom: 14, textAlign: "center" }}>{savedMsg}</div>}
               <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom: 14 }}>
                 <BTN onClick={guardarFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, padding:"13px 20px", fontSize:14, letterSpacing:.5 }}>💾 Guardar Levantamiento</BTN>
-                <button onClick={imprimirFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"13px 20px", fontWeight:900, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>🖨️ Imprimir / PDF Formulario</button>
+                <button onClick={imprimirFormulario} style={{ flex:1, minWidth: isMobile?"100%":160, background:"linear-gradient(135deg,#d4af37,#f0c84a)", color:"#000", border:"none", borderRadius:10, padding:"13px 20px", fontWeight:900, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>📤 Enviar o imprimir PDF</button>
               </div>
-             <ShareMenu
-                onShare={key => compartirFormulario(key)}
-                label="Compartir levantamiento"
-              />
               {role !== "cliente" && (
               <div style={{ borderTop: "2px solid #d4af3730", marginTop: 32, paddingTop: 32 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
