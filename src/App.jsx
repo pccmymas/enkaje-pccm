@@ -1369,6 +1369,60 @@ const barraPDF = (nombre) => `
 })();
 </script>`;
 
+// ===== Color de marca del taller (plan Pro) =====
+const hexARgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const rgbAHex = a => "#" + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+const mezclar = (h, con, t) => { const a = hexARgb(h), b = hexARgb(con); return rgbAHex(a.map((v, i) => v + (b[i] - v) * t)); };
+// Ajusta el color para que se lea bien sobre blanco y sobre la franja oscura
+function ajustarColor(h) {
+  let [r, g, b] = hexARgb(h).map(v => v / 255);
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let hh = 0, ss = 0, l = (mx + mn) / 2;
+  if (d) {
+    ss = d / (1 - Math.abs(2 * l - 1));
+    hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    hh *= 60; if (hh < 0) hh += 360;
+  }
+  l = Math.min(0.6, Math.max(0.42, l));
+  const c = (1 - Math.abs(2 * l - 1)) * ss, x = c * (1 - Math.abs((hh / 60) % 2 - 1)), m = l - c / 2;
+  const [r1, g1, b1] = hh < 60 ? [c, x, 0] : hh < 120 ? [x, c, 0] : hh < 180 ? [0, c, x] : hh < 240 ? [0, x, c] : hh < 300 ? [x, 0, c] : [c, 0, x];
+  let out = rgbAHex([r1 + m, g1 + m, b1 + m].map(v => v * 255));
+  // Colores muy claros (amarillo, verde limón) se oscurecen para que se lean sobre blanco
+  const lum = h2 => hexARgb(h2).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce((t, v, i) => t + v * [0.2126, 0.7152, 0.0722][i], 0);
+  for (let i = 0; i < 12 && lum(out) > 0.5; i++) out = mezclar(out, "#000000", 0.08);
+  return out;
+}
+const colorValido = c => /^#[0-9a-f]{6}$/i.test(String(c || ""));
+// Cambia el dorado de EnKaje por el color del taller en sus documentos (solo plan Pro)
+const pintarDoc = (html, taller) => {
+  if (!taller || taller.plan === "basico" || !colorValido(taller.color_marca)) return html;
+  const base = ajustarColor(taller.color_marca.toLowerCase());
+  return html.split("#d4af37").join(base)
+    .split("#8B6914").join(mezclar(base, "#000000", 0.45))
+    .split("#f8f4ed").join(mezclar(base, "#ffffff", 0.92))
+    .split("#1a1208").join(mezclar(base, "#000000", 0.85))
+    .split("#2a1f08").join(mezclar(base, "#000000", 0.75));
+};
+// Saca el color principal de un logo (ignora blanco, negro, grises y transparente)
+function colorDeLogo(canvas) {
+  try {
+    const { data } = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+    const cubetas = {};
+    const paso = Math.max(4, Math.floor(data.length / 4 / 40000)) * 4;
+    for (let i = 0; i < data.length; i += paso) {
+      const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]];
+      if (a < 128) continue;
+      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      if (mx - mn < 35 || mx < 40 || mn > 225) continue;
+      const k = [r, g, b].map(v => v >> 4).join(",");
+      const cb = cubetas[k] || (cubetas[k] = { n: 0, r: 0, g: 0, b: 0 });
+      cb.n++; cb.r += r; cb.g += g; cb.b += b;
+    }
+    const mejor = Object.values(cubetas).sort((x, y) => y.n - x.n)[0];
+    return mejor ? rgbAHex([mejor.r / mejor.n, mejor.g / mejor.n, mejor.b / mejor.n]) : null;
+  } catch { return null; }
+}
+
 const ZONAS = [
   "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
   "Apodaca", "Santa Catarina", "Escobedo", "García", "Juárez", "Cadereyta Jiménez",
@@ -2326,7 +2380,7 @@ async function guardarEdicionTaller() {
       cobra_visita: !!tallerEdit.cobra_visita, descuenta_visita: !!tallerEdit.cobra_visita && !!tallerEdit.descuenta_visita,
       costo_visita: tallerEdit.cobra_visita && tallerEdit.costo_visita ? Number(tallerEdit.costo_visita) : 0,
       instagram: tallerEdit.instagram, facebook: tallerEdit.facebook, tiktok: tallerEdit.tiktok,
-      logo_url: tallerEdit.logo_url, portafolio_urls: tallerEdit.portafolio_urls,
+      logo_url: tallerEdit.logo_url, color_marca: tallerEdit.color_marca, portafolio_urls: tallerEdit.portafolio_urls,
       niveles_precio: tallerEdit.niveles_precio,
       zonas_cobertura: tallerEdit.zonas_cobertura,
       tipos_proyecto: tallerEdit.tipos_proyecto,
@@ -2337,7 +2391,13 @@ async function guardarEdicionTaller() {
     }
     const limpio = Object.fromEntries(Object.entries(campos).filter(([,v]) => v !== undefined && v !== null && v !== ""));
     if (tallerEdit.logo_url === "") limpio.logo_url = null;
-    await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
+    if (tallerEdit.color_marca === "") limpio.color_marca = null;
+    const resG = await sb(`talleres_membresia?id=eq.${tallerEdit.id}`, { method: "PATCH", token, body: JSON.stringify(limpio) });
+    if (resG && !Array.isArray(resG) && (resG.code || resG.message)) {
+      setTallerMsg("❌ No se pudo guardar: " + (resG.message || resG.code));
+      setTimeout(() => setTallerMsg(""), 8000);
+      return;
+    }
     setTallerMsg("✅ Taller actualizado");
     setTallerEdit(null);
     cargarTalleres();
@@ -2348,6 +2408,7 @@ async function guardarEdicionTaller() {
     if (!file || !tallerEdit) return;
     if (!file.type.startsWith("image/")) { setTallerMsg("❌ El logo debe ser una imagen (PNG o JPG)"); return; }
     setSubiendoLogo(true);
+    let colorSacado = null;
     try {
       const blob = await new Promise(resolve => {
         const img = new Image();
@@ -2357,6 +2418,7 @@ async function guardarEdicionTaller() {
           const c = document.createElement("canvas");
           c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
           c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+          colorSacado = colorDeLogo(c);
           c.toBlob(b => { URL.revokeObjectURL(u); resolve(b || file); }, "image/png");
         };
         img.onerror = () => { URL.revokeObjectURL(u); resolve(file); };
@@ -2369,8 +2431,8 @@ async function guardarEdicionTaller() {
         body: blob
       });
       if (up.ok) {
-        setTallerEdit(p => ({ ...p, logo_url: `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}` }));
-        setTallerMsg("✅ Logo listo. Dale Guardar para que quede en tu perfil.");
+        setTallerEdit(p => ({ ...p, logo_url: `${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`, ...(colorSacado ? { color_marca: colorSacado } : {}) }));
+        setTallerMsg(colorSacado ? "✅ Logo listo y tomamos el color de tu logo. Dale Guardar para que quede en tu perfil." : "✅ Logo listo. Dale Guardar para que quede en tu perfil.");
         setTimeout(() => setTallerMsg(""), 5000);
       } else {
         setTallerMsg("❌ No se pudo subir el logo. Intenta de nuevo.");
@@ -2527,7 +2589,7 @@ useEffect(() => {
       </div>` : "";
 
     const w = window.open("","_blank");
-    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+    w.document.write(pintarDoc(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <title>Levantamiento ${tipo} · EnKaje Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2566,7 +2628,7 @@ tr:nth-child(even){background:#f9f7f3}
 @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:28px}}
 </style></head><body><div class="page">
 <div class="hdr">
-  <div><div class="logo">${nombreTallerForm}</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
+  <div>${!planBasicoForm && tallerDataForm?.logo_url ? `<img src="${urlLogo(tallerDataForm.logo_url)}" style="height:64px;max-width:200px;object-fit:contain;display:block;margin-bottom:6px" alt="logo" onerror="this.style.display='none'"/>` : ""}<div class="logo">${nombreTallerForm}</div><div class="logo-s">Levantamiento de Proyecto · Monterrey</div></div>
   <div class="doc-r"><div class="doc-t">Levantamiento</div><div class="folio">Folio: ${folio}</div><div class="folio">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div><div class="folio">Atendido por: ${repForm}</div></div>
 </div>
 <div class="banner">
@@ -2601,7 +2663,7 @@ ${tallerHTML}
   <div class="flogo">${nombreTallerForm}</div>
   <div class="finfo">${planBasicoForm ? "enkajepro.com · " : ""}Monterrey, Nuevo León, México</div>
 </div>
-</div>${barraPDF(nombreArchivo("Levantamiento", f.nombre, folio))}</body></html>`);
+</div>${barraPDF(nombreArchivo("Levantamiento", f.nombre, folio))}</body></html>`, tallerDataForm));
     w.document.close();
   }
 
@@ -2634,7 +2696,7 @@ ${tallerHTML}
     const subTaller = tallerDataPresup?.nombre ? "Carpintería · Ebanistería" : "Intermediación · Carpintería · Monterrey";
     const repPresup = tallerDataPresup?.representante || tallerDataPresup?.atencion_por || tallerDataPresup?.nombre || "Representante del taller";
     const planBasicoPresup = !tallerDataPresup || tallerDataPresup?.plan === "basico";
-    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Presupuesto EnKaje Pro - ${tipoLabel}</title>
+    w.document.write(pintarDoc(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Presupuesto EnKaje Pro - ${tipoLabel}</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;line-height:1.6}.page{max-width:800px;margin:0 auto;padding:48px}.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:24px;border-bottom:3px solid #d4af37;margin-bottom:28px}.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#d4af37;letter-spacing:3px}.logo-s{font-size:9px;color:#999;letter-spacing:4px;text-transform:uppercase;margin-top:4px}.di-r{text-align:right}.dt{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#8B6914;text-transform:uppercase;letter-spacing:2px}.dn{font-size:11px;color:#999;margin-top:3px}.banner{background:linear-gradient(135deg,#1a1208,#2a1f08);border-left:5px solid #d4af37;border-radius:0 12px 12px 0;padding:18px 24px;margin-bottom:24px}.bt{font-size:10px;color:#d4af3799;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}.bn{font-family:'Playfair Display',serif;font-size:22px;color:#d4af37;font-weight:700}.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}.card{border:1px solid #e8e0d0;border-radius:10px;overflow:hidden;margin-bottom:20px}.ch{background:#f8f4ed;border-bottom:1px solid #e8e0d0;padding:10px 16px;font-size:10px;font-weight:700;color:#8B6914;letter-spacing:3px;text-transform:uppercase}.cb{padding:14px 16px}.ir{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0ece4;font-size:12px}.ir:last-child{border-bottom:none}.il{color:#999}.iv{color:#1a1a1a;font-weight:600}.dg{display:grid;grid-template-columns:1fr 1fr;gap:6px}.di{display:flex;flex-direction:column;padding:6px 0;font-size:11.5px}.dl{color:#999;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}.dv{color:#1a1a1a;font-weight:500}table{width:100%;border-collapse:collapse}table td{padding:9px 14px;font-size:13px;border-bottom:1px solid #f0ece4}table td:last-child{text-align:right;font-weight:600}.tr{background:#1a1208!important}.tr td{color:#d4af37!important;font-size:15px!important;font-weight:900!important;padding:14px!important;border-bottom:none!important}.pg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.pi{background:#f8f4ed;border-radius:8px;padding:12px;text-align:center}.pp{font-size:22px;font-weight:900;color:#8B6914;line-height:1}.pl{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:4px}.pm{font-size:12px;font-weight:700;color:#1a1a1a;margin-top:4px}ul{list-style:none;padding:0}ul li{padding:4px 0;font-size:12px;color:#444;display:flex;gap:6px}ul li::before{content:"✓";color:#4caf50;font-weight:900}.no li::before{content:"✕";color:#f44336}.nota{background:#fff8f0;border:1px solid #f0c070;border-radius:8px;padding:12px 16px;font-size:11px;color:#7a5a20;line-height:1.7;margin-bottom:20px}.fir{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:48px;padding-top:24px;border-top:1px solid #e8e0d0}.fi{text-align:center}.fl{height:1px;background:#333;margin-bottom:8px}.fn{font-size:13px;font-weight:700}.fc{font-size:10px;color:#999;text-transform:uppercase;margin-top:3px}.ftr{margin-top:28px;padding-top:16px;border-top:1px solid #e8e0d0;display:flex;justify-content:space-between}.flogo{font-family:'Playfair Display',serif;font-size:14px;color:#d4af37;font-weight:700}.finfo{font-size:10px;color:#bbb;text-align:right}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:32px}}</style></head><body><div class="page">
 <div class="hdr"><div>${logoHTML}<div class="logo">${nombreTaller}</div><div class="logo-s">${subTaller}</div></div><div class="di-r"><div class="dt">Presupuesto Profesional</div><div class="dn">Folio: ${folio}</div><div class="dn">Fecha: ${f.fecha||new Date().toLocaleDateString("es-MX")}</div></div></div>
@@ -2648,7 +2710,7 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
 <div class="nota"><b>NOTA:</b> Este presupuesto tiene vigencia de 15 días.${planBasicoPresup ? " EnKaje Pro actúa como intermediario; la ejecución es responsabilidad del taller." : ""}</div>
 <div class="fir"><div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${repPresup}</div><div class="fc">${nombreTaller} · Prestador</div></div><div class="fi"><div style="height:50px"></div><div class="fl"></div><div class="fn">${f.nombre||"Cliente"}</div><div class="fc">Firma de Aprobación</div></div></div>
 <div class="ftr"><div class="flogo">${nombreTaller}</div><div class="finfo">${planBasicoPresup ? "enkajepro.com · " : ""}Monterrey, NL<br>Folio: ${folio}</div></div>
-</div>${barraPDF(nombreArchivo("Presupuesto", f.nombre, folio))}</body></html>`);
+</div>${barraPDF(nombreArchivo("Presupuesto", f.nombre, folio))}</body></html>`, tallerDataPresup));
     w.document.close();
   }
 
@@ -2674,7 +2736,7 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
     const tallerCorreo = tallerData?.correo_legal || tallerData?.email || "";
     const garantia = tallerData?.garantia_default || f.garantia || "6 meses en instalación y herrajes";
     const termExtra = tallerData?.terminos_extra || "";
-    const colorTaller = (tallerData?.plan==="premium" && tallerData?.color_marca) ? tallerData.color_marca : "#d4af37";
+    const colorTaller = "#d4af37"; // pintarDoc lo cambia por el color del taller si es Pro
 
     const especificaciones = [];
     const addE = (l,v) => { if(v&&String(v).trim()) especificaciones.push([l,Array.isArray(v)?v.join(", "):v]); };
@@ -2692,7 +2754,7 @@ ${f.observaciones?`<div class="card"><div class="ch">📝 Observaciones</div><di
     const especHTML = especificaciones.map(([l,v],i)=>`<tr style="background:${i%2===0?"#fff":"#f9f7f3"}"><td style="padding:7px 14px;font-size:12px;color:#666;border-bottom:1px solid #ede9e0;width:38%">${l}</td><td style="padding:7px 14px;font-size:12px;font-weight:600;border-bottom:1px solid #ede9e0">${v}</td></tr>`).join("");
 
     const w = window.open("","_blank");
-    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+    w.document.write(pintarDoc(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <title>Contrato ${tipo} · ${folio}</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -2875,7 +2937,7 @@ ${total>0 ? `
   <div class="finfo">enkajepro.com · Monterrey, Nuevo León, México<br>Contrato generado digitalmente · ${folio}</div>
 </div>
 
-</div>${barraPDF(nombreArchivo("Contrato", f.nombre, folio))}</body></html>`);
+</div>${barraPDF(nombreArchivo("Contrato", f.nombre, folio))}</body></html>`, tallerData));
     w.document.close();
   }
 
@@ -3219,6 +3281,16 @@ Formato: Caption completo listo para copiar y pegar.`;
         </div>
       </div>
       <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>De preferencia PNG con fondo transparente. Sale en tus presupuestos y contratos con el plan Pro.</div>
+      <label style={{ fontSize: 11, color: "#999", display: "block", margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>Color de tus documentos</label>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <input type="color" value={colorValido(tallerEdit?.color_marca) ? tallerEdit.color_marca : "#d4af37"} onChange={e => setTallerEdit(p => ({ ...p, color_marca: e.target.value }))}
+          style={{ width: 52, height: 40, border: "1px solid #2a2a20", borderRadius: 8, background: "transparent", padding: 2, cursor: "pointer" }} />
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 8, padding: "8px 12px", fontSize: 12, fontWeight: 700, color: colorValido(tallerEdit?.color_marca) ? ajustarColor(tallerEdit.color_marca) : "#d4af37", borderBottom: `3px solid ${colorValido(tallerEdit?.color_marca) ? ajustarColor(tallerEdit.color_marca) : "#d4af37"}` }}>
+          Así se verá tu nombre
+        </span>
+        {colorValido(tallerEdit?.color_marca) && <button onClick={() => setTallerEdit(p => ({ ...p, color_marca: "" }))} style={{ background: "transparent", border: "1px solid #333", color: "#888", borderRadius: 10, padding: "8px 12px", fontSize: 12, cursor: "pointer" }}>Usar dorado</button>}
+      </div>
+      <div style={{ fontSize: 11, color: "#666", marginTop: 6 }}>Se toma del logo al subirlo; puedes cambiarlo. Si el color es muy claro u oscuro lo ajustamos para que se lea.</div>
     </div>
   );
 
@@ -4526,7 +4598,7 @@ Formato: Caption completo listo para copiar y pegar.`;
                         </div>
                         <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Plan</label>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                          {["basico","pro","premium"].map(pl => (
+                          {["basico","pro"].map(pl => (
                             <button key={pl} onClick={() => setTallerEdit(p=>({...p,plan:pl}))} style={{ padding:"8px 16px", borderRadius:10, border:`1.5px solid ${tallerEdit.plan===pl?"#d4af37":"#2a2a20"}`, background:tallerEdit.plan===pl?"#d4af3720":"transparent", color:tallerEdit.plan===pl?"#d4af37":"#888", fontSize:12, fontWeight:700, cursor:"pointer", textTransform:"capitalize" }}>{pl}</button>
                           ))}
                         </div>
