@@ -1431,6 +1431,7 @@ const ZONAS = [
   "Monterrey", "San Pedro Garza García", "San Nicolás de los Garza", "Guadalupe",
   "Apodaca", "Santa Catarina", "Escobedo", "García", "Juárez", "Cadereyta Jiménez",
 ];
+const MAX_ZONAS_REGISTRO = 4; // zonas que un taller puede elegir al registrarse (el admin puede asignar más)
 const TIPOS_PROYECTO = [
   ["cocina", "🍳 Cocinas"], ["closet", "👔 Closets"], ["puerta", "🚪 Puertas"],
   ["mueble", "🛋️ Muebles"], ["panel", "🪵 Paneles"], ["bano", "🚿 Baños"],
@@ -1513,6 +1514,7 @@ function RegistroTaller({ onBack }) {
     if (!f.zona.trim()) return setMsg("❌ Escribe la colonia donde está tu taller");
     if (!f.direccion_taller.trim()) return setMsg("❌ Escribe la dirección del taller (la necesitamos para la verificación)");
     if (zonas.length === 0) return setMsg("❌ Elige al menos una zona donde das servicio");
+    if (zonas.length > MAX_ZONAS_REGISTRO) return setMsg(`❌ Elige máximo ${MAX_ZONAS_REGISTRO} zonas donde das servicio`);
     if (tipos.length === 0) return setMsg("❌ Elige al menos un tipo de proyecto en el que te especializas");
     if (fotos.length < 5) return setMsg(`❌ Sube mínimo 5 fotos de trabajos reales (llevas ${fotos.length})`);
     if (!acepto) return setMsg("❌ Debes aceptar los Términos y el Aviso de Privacidad");
@@ -1640,13 +1642,22 @@ function RegistroTaller({ onBack }) {
           </div>
           <INPUT label="Dirección del taller *" value={f.direccion_taller} onChange={e => set("direccion_taller", e.target.value)} placeholder="Calle, número, colonia" />
           <label style={{ fontSize: 11, color: "#999", display: "block", margin: "6px 0 8px", textTransform: "uppercase", letterSpacing: 1 }}>
-            Zonas donde das servicio * <span style={{ color: "#444", textTransform: "none", letterSpacing: 0 }}>(recibes solicitudes de estas zonas)</span>
+            Zonas donde das servicio * <span style={{ color: "#444", textTransform: "none", letterSpacing: 0 }}>(máximo {MAX_ZONAS_REGISTRO}; recibes solicitudes de estas zonas)</span>
           </label>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {ZONAS.map(z => (
               <PILL key={z} label={z} checked={zonas.includes(z)}
-                onChange={() => setZonas(p => p.includes(z) ? p.filter(x => x !== z) : [...p, z])} />
+                onChange={() => {
+                  if (zonas.includes(z)) return setZonas(p => p.filter(x => x !== z));
+                  if (zonas.length >= MAX_ZONAS_REGISTRO) return;
+                  setZonas(p => [...p, z]);
+                }} />
             ))}
+          </div>
+          <div style={{ fontSize: 11, color: zonas.length >= MAX_ZONAS_REGISTRO ? "#f0a500" : "#666", marginTop: 6 }}>
+            {zonas.length >= MAX_ZONAS_REGISTRO
+              ? `Llegaste al máximo (${MAX_ZONAS_REGISTRO}). Para cambiar una zona, primero quita otra.`
+              : `Elige tu municipio y los más cercanos a donde sí vas a instalar (${zonas.length}/${MAX_ZONAS_REGISTRO}).`}
           </div>
         </SECTION>
 
