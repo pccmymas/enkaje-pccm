@@ -3165,7 +3165,10 @@ IMPORTANTE: El campo "notas" debe explicar brevemente cómo calculaste la cantid
        headers: { "Content-Type": "application/json", ...(token ? { "Authorization": `Bearer ${token}` } : {}) },
        body: JSON.stringify({ prompt: `Professional photorealistic interior design render of a ${renderPrompt}. High quality, detailed, realistic materials, professional lighting, modern Mexican home, 4K quality, architectural visualization.` })
       });
-      const data = await res.json();
+      const texto = await res.text();
+      let data;
+      try { data = JSON.parse(texto); }
+      catch { data = { error: { message: res.status === 504 || /timeout|timed out|An error occurred/i.test(texto) ? "El render tardó demasiado. Dale Reintentar, normalmente sale a la segunda." : "No se pudo generar el render. Intenta de nuevo." } }; }
       // gpt-image-1 devuelve b64_json
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl = imgData?.url;
