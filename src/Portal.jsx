@@ -1324,7 +1324,10 @@ const guardarEnPerfil = async () => {
         headers: { "Content-Type": "application/json", ...(sessionStorage.getItem("enkaje_token") ? { "Authorization": `Bearer ${sessionStorage.getItem("enkaje_token")}` } : {}) },
         body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, acabadoData, material, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64, ajuste: !!promptAdicional })
       });
-      const data = await res.json();
+      const texto = await res.text();
+      let data;
+      try { data = JSON.parse(texto); }
+      catch { data = { error: { message: res.status === 504 || /timeout|timed out|An error occurred/i.test(texto) ? "El render tardó demasiado. Dale Reintentar, normalmente sale a la segunda." : "No se pudo generar el render. Intenta de nuevo." } }; }
       console.log("IMAGE RESPONSE:", JSON.stringify(data));
       const imgData = data.data?.data?.[0] || data.data?.[0];
       const imgUrl  = imgData?.url;
