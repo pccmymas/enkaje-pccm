@@ -8,9 +8,9 @@ const CSS = `
   h1,h2,h3 { font-family: 'Playfair Display', serif; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-thumb { background: #d4af3740; border-radius: 2px; }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp { from { transform:translateY(24px); } to { transform:translateY(0); } }
   @keyframes float { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-10px); } }
-  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes fadeIn { from { opacity:0.4; } to { opacity:1; } }
   .fade-up { animation: fadeUp 0.7s ease forwards; }
   .fade-up-d2 { animation: fadeUp 0.7s 0.2s ease both; }
   .float { animation: float 5s ease-in-out infinite; }
@@ -52,20 +52,20 @@ const FOTOS = [
   { label: "Closet Premium",             img: "/tipo-closet.png",      tag: "Tendencia 2026",  emoji: "👔", desc: "Closets y vestidores" },
   { label: "Baño a Medida",              img: "/tipo-bano.png",        tag: "Alta demanda",    emoji: "🚿", desc: "Vanity y muebles de baño" },
   { label: "Centro de Entretenimiento",  img: "/tipo-entretenimiento.png", tag: "Nuevo",       emoji: "📺", desc: "Muebles TV y lambrin" },
-  { label: "Puertas y Cancelería",       img: "/tipo-puerta.png",      tag: "Especialidad",   emoji: "🚪", desc: "Puertas interiores y exteriores" },
+  { label: "Puertas de Madera",          img: "/tipo-puerta.png",      tag: "Especialidad",   emoji: "🚪", desc: "Puertas interiores y exteriores" },
 ];
 
 const PASOS_CLIENTE = [
   { num:"01", emoji:"📸", titulo:"Sube tu foto", desc:"Del espacio actual. Así como está, sin preparar nada." },
   { num:"02", emoji:"🎨", titulo:"Elige el estilo", desc:"Moderno, rústico, nórdico, industrial y más." },
-  { num:"03", emoji:"🤖", titulo:"IA genera el render", desc:"En segundos ves cómo quedaría tu proyecto terminado." },
-  { num:"04", emoji:"💬", titulo:"Recibe cotizaciones", desc:"Talleres verificados te contactan con precios reales." },
+  { num:"03", emoji:"🖼️", titulo:"Ves cómo quedaría", desc:"En segundos, una imagen de referencia de tu proyecto terminado." },
+  { num:"04", emoji:"💬", titulo:"Recibe cotizaciones", desc:"Talleres verificados de tu zona te mandan su cotización." },
 ];
 
 const PASOS_TALLER = [
   { num:"01", emoji:"📋", titulo:"Levantamiento digital", desc:"Formulario profesional de cocina, closet, puerta, mueble o panel decorativo con todas las especificaciones." },
   { num:"02", emoji:"💰", titulo:"Presupuesto en PDF", desc:"Genera cotización profesional con desglose, formas de pago y tiempo de entrega. Lista para compartir por WhatsApp." },
-  { num:"03", emoji:"📄", titulo:"Contrato digital", desc:"Contrato de fabricación con cláusulas, penalizaciones y pagos. Sin papel, sin riesgos." },
+  { num:"03", emoji:"📄", titulo:"Contrato digital", desc:"Contrato de fabricación con cláusulas, penalizaciones y pagos. Sin papel y todo por escrito." },
   { num:"04", emoji:"⭐", titulo:"Leads calificados", desc:"Recibes clientes con foto, medidas, estilo y nivel de decisión declarado. Tú decides a quién atender primero." },
 ];
 
@@ -73,11 +73,11 @@ const FUNCIONES_TALLER = [
   { icon:"📋", titulo:"Levantamiento digital", desc:"5 formularios especializados: cocina, closet, puerta, mueble y panel/lambrin. Checkboxes de materiales, acabados, herrajes y accesorios.", color:"#d4af37" },
   { icon:"🖨️", titulo:"Presupuesto profesional", desc:"PDF con logo, desglose de precios, incluye/no incluye, formas de pago y firma. Comparte por WhatsApp, email o descarga.", color:"#00bcd4" },
   { icon:"📄", titulo:"Contratos digitales", desc:"Contrato de fabricación con cláusulas de garantía, penalizaciones, pagos escalonados y firma del cliente.", color:"#4caf50" },
-  { icon:"🤖", titulo:"IA cotizadora de materiales", desc:"Describe el proyecto y la IA genera lista de materiales con cantidades y precios actualizados en Monterrey.", color:"#f0a500" },
+  { icon:"📅", titulo:"Agenda de visitas", desc:"Propón la fecha para tomar medidas y el cliente la confirma. Ves todas tus citas en un solo lugar.", color:"#f0a500" },
   { icon:"🎨", titulo:"Renders de diseño", desc:"Genera renders fotorrealistas para mostrarle al cliente cómo quedaría su proyecto antes de fabricarlo.", color:"#e91e63" },
-  { icon:"📊", titulo:"Pipeline de proyectos", desc:"Kanban visual: Nuevo → Revisando → Cotizado → Cerrado. Seguimiento de cada proyecto desde tu celular.", color:"#9c27b0" },
-  { icon:"⭐", titulo:"Leads con scoring IA", desc:"Cada lead llega con foto, medidas, estilo y puntuación 0–100 de intención de compra. Atiende primero a los urgentes.", color:"#d4af37" },
-  { icon:"📱", titulo:"Contenido para redes", desc:"IA genera captions e hashtags para Instagram, Facebook y TikTok en segundos. Nunca más pantalla en blanco.", color:"#00bcd4" },
+  { icon:"📊", titulo:"Seguimiento por etapas", desc:"Solicitud, cotizado, visita, anticipo, fabricación, instalación y entrega. Tú y el cliente saben en qué va cada proyecto.", color:"#9c27b0" },
+  { icon:"⭐", titulo:"Solicitudes completas", desc:"Cada solicitud llega con imagen, medidas aproximadas, estilo, presupuesto y fecha de inicio. Tú decides si cotizas.", color:"#d4af37" },
+  { icon:"📱", titulo:"Textos para redes", desc:"Textos y hashtags listos para Instagram, Facebook y TikTok en segundos. Nunca más pantalla en blanco.", color:"#00bcd4" },
 ];
 
 const ZONAS = ["San Pedro Garza García","Monterrey Centro","San Nicolás de los Garza","Guadalupe","Santa Catarina","Apodaca","Escobedo","García"];
@@ -98,6 +98,14 @@ export default function Landing() {
   const [fotoIdx, setFotoIdx] = useState(0);
   const [filtro, setFiltro] = useState("Todos");
   const intervalRef = useRef(null);
+
+  useEffect(() => {
+    document.documentElement.lang = "es";
+    document.title = "EnKaje Pro · Cocinas, closets y muebles a la medida en Monterrey";
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) { meta = document.createElement("meta"); meta.setAttribute("name", "description"); document.head.appendChild(meta); }
+    meta.setAttribute("content", "Ve cómo quedaría tu cocina, closet o mueble a la medida y recibe cotizaciones gratis de talleres de carpintería verificados en Monterrey y su área metropolitana.");
+  }, []);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50);
@@ -151,7 +159,7 @@ export default function Landing() {
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", padding:"120px 24px 80px", position:"relative", overflow:"hidden" }}>
+      <section style={{ minHeight:"min(100vh, 900px)", display:"flex", alignItems:"center", justifyContent:"center", padding:"120px 24px 80px", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", top:"15%", left:"50%", transform:"translateX(-50%)", width:700, height:700, background:"radial-gradient(circle, #d4af3712 0%, transparent 65%)", pointerEvents:"none" }} />
         <div style={{ position:"absolute", inset:0, backgroundImage:"linear-gradient(#d4af3706 1px, transparent 1px), linear-gradient(90deg, #d4af3706 1px, transparent 1px)", backgroundSize:"48px 48px", pointerEvents:"none" }} />
 
@@ -178,8 +186,8 @@ export default function Landing() {
               </h1>
               <p style={{ fontSize:16, color:"#666", lineHeight:1.8, marginBottom:32 }}>
                 {audiencia==="cliente"
-                  ? "Sube una foto de tu espacio, elige el estilo que te gusta y en segundos tienes un render de cómo quedaría. Gratis, sin registro, sin compromiso."
-                  : "Formularios de levantamiento, presupuestos PDF, contratos digitales, IA de materiales, renders y leads calificados. Todo en una sola plataforma, desde tu celular."}
+                  ? "Sube una foto de tu espacio, elige el estilo que te gusta y en segundos ves cómo quedaría. Después, talleres verificados de tu zona te cotizan. Gratis y sin compromiso."
+                  : "Recibe solicitudes de clientes de tu zona y de lo que tú haces. Además: levantamientos, presupuestos en PDF, contratos y agenda de visitas. Todo desde tu celular."}
               </p>
               <div className="hero-btns" style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:28 }}>
                 {audiencia==="cliente" ? (
@@ -196,7 +204,7 @@ export default function Landing() {
               </div>
               <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
                {(audiencia==="cliente"
-               ? ["✓ Gratis","✓ Sin registro","✓ Render en segundos"]
+               ? ["✓ Gratis","✓ Sin compromiso","✓ Talleres verificados"]
                : ["✓ Registro gratis","✓ Sin mensualidad","✓ Leads calificados"]
                ).map((t,i) => <span key={i} style={{ fontSize:13, color:"#444", fontWeight:500 }}>{t}</span>)}
               </div>
@@ -249,22 +257,18 @@ export default function Landing() {
                     </div>
 
                     <div style={{ padding:"14px 20px" }}>
-                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
-                        {[["$35K–$120K","Inversión est."],["15–35 días","Tiempo típico"],["6 meses","Garantía"]].map(([v,l],i) => (
-                          <div key={i} style={{ background:"#0a0a08", borderRadius:8, padding:"8px 10px", textAlign:"center" }}>
-                            <div style={{ fontSize:12, fontWeight:700, color:"#d4af37" }}>{v}</div>
-                            <div style={{ fontSize:9, color:"#444", marginTop:2 }}>{l}</div>
-                          </div>
-                        ))}
+                      <div style={{ background:"#0a0a08", borderRadius:8, padding:"10px 12px", textAlign:"center" }}>
+                        <div style={{ fontSize:13, fontWeight:700, color:"#d4af37" }}>Cotiza gratis con talleres de tu zona</div>
+                        <div style={{ fontSize:10, color:"#555", marginTop:3 }}>Talleres verificados en Monterrey y área metropolitana</div>
                       </div>
                     </div>
                   </div>
-                  <div style={{ position:"absolute", bottom:-16, right:-16, background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:14, padding:"10px 16px", fontSize:12, color:"#d4af37", fontWeight:700, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>🤖 IA en 20 segundos</div>
+                  <div style={{ position:"absolute", bottom:-16, right:-16, background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:14, padding:"10px 16px", fontSize:12, color:"#d4af37", fontWeight:700, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>📸 Ve tu proyecto en segundos</div>
                 </div>
               ) : (
                 <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:20, padding:24 }}>
                   <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, marginBottom:16 }}>🛠️ PLATAFORMA COMPLETA</div>
-                  {[["📋","Levantamiento digital","Cocina, closet, puerta, mueble, panel"],["💰","Presupuesto PDF","Desglose + forma de pago + firma"],["📄","Contrato digital","Cláusulas y protección para ambas partes"],["🤖","IA cotizadora","Lista de materiales con precios MTY"],["🎨","Renders de diseño","Fotorrealistas para mostrar al cliente"],["⭐","Leads calificados","Con foto, medidas, estilo y scoring"]].map(([e,l,d],i) => (
+                  {[["📋","Levantamiento digital","Cocina, closet, puerta, mueble, panel"],["💰","Presupuesto PDF","Desglose + forma de pago + firma"],["📄","Contrato digital","Cláusulas y protección para ambas partes"],["📅","Agenda de visitas","El cliente confirma la fecha"],["🎨","Renders de diseño","Fotorrealistas para mostrar al cliente"],["⭐","Solicitudes completas","Con imagen, medidas y estilo"]].map(([e,l,d],i) => (
                     <div key={i} style={{ display:"flex", gap:12, padding:"9px 0", borderBottom:i<5?"1px solid #1a1a12":"none", alignItems:"center" }}>
                       <span style={{ fontSize:18, flexShrink:0 }}>{e}</span>
                       <div style={{ flex:1 }}>
@@ -287,12 +291,12 @@ export default function Landing() {
         <section style={{ padding:"80px 24px", background:"linear-gradient(180deg,#0f0f0a 0%,#070708 100%)" }}>
           <div style={{ maxWidth:1100, margin:"0 auto" }}>
             <div style={{ textAlign:"center", marginBottom:48 }}>
-              <div className="pill" style={{ marginBottom:16 }}>EJEMPLO REAL</div>
+              <div className="pill" style={{ marginBottom:16 }}>EJEMPLO</div>
               <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:38, fontWeight:900, color:"#f0e8dc", marginBottom:12 }}>
-                Así trabaja la <span style={{ color:"#d4af37" }}>IA de EnKaje Pro</span>
+                Así se ve tu proyecto <span style={{ color:"#d4af37" }}>antes de construirlo</span>
               </h2>
               <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto" }}>
-                No es solo una imagen — es una descripción personalizada basada en tu estilo de vida.
+                No es solo una imagen: también recibes una descripción pensada para tu forma de vivir.
               </p>
             </div>
 
@@ -301,7 +305,7 @@ export default function Landing() {
               <div style={{ position:"relative", borderRadius:20, overflow:"hidden", border:"1px solid #d4af3730" }}>
                 <img
                   src={RENDER_EJEMPLO.img}
-                  alt="Ejemplo render IA"
+                  alt="Ejemplo de cocina de lujo en madera oscura con isla de mármol"
                   style={{ width:"100%", height:380, objectFit:"cover", objectPosition:"center", display:"block" }}
                   onError={e => { e.target.style.background="#1a1a12"; e.target.style.height="380px"; }}
                 />
@@ -311,7 +315,7 @@ export default function Landing() {
                 </div>
                 {/* Badge */}
                 <div style={{ position:"absolute", bottom:16, left:16, background:"rgba(7,7,8,0.92)", border:"1px solid #d4af3740", borderRadius:12, padding:"8px 14px", display:"flex", gap:10, alignItems:"center" }}>
-                  <span style={{ fontSize:11, color:"#d4af37", fontWeight:700 }}>🤖 Generado con IA</span>
+                  <span style={{ fontSize:11, color:"#d4af37", fontWeight:700 }}>Imagen ilustrativa hecha con IA</span>
                   <span style={{ fontSize:10, color:"#444" }}>Estilo: {RENDER_EJEMPLO.estilo}</span>
                 </div>
               </div>
@@ -319,7 +323,7 @@ export default function Landing() {
               {/* Descripción IA */}
               <div>
                 <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>
-                  Descripción generada por IA
+                  Descripción de tu proyecto
                 </div>
                 <div style={{ background:"#0f0f0a", border:"1px solid #d4af3720", borderRadius:16, padding:24, marginBottom:20, position:"relative" }}>
                   {/* Icono quote */}
@@ -345,7 +349,7 @@ export default function Landing() {
                     ["Estilo", RENDER_EJEMPLO.estilo],
                     ["Color", RENDER_EJEMPLO.color],
                     ["Acabado", RENDER_EJEMPLO.acabado],
-                    ["Inversión", "$80K–$120K MXN"],
+                    ["Ideal para", "Recibir visitas"],
                   ].map(([l,v],i) => (
                     <div key={i} style={{ background:"#0a0a08", borderRadius:10, padding:"10px 14px" }}>
                       <div style={{ fontSize:10, color:"#444", textTransform:"uppercase", letterSpacing:1, marginBottom:3 }}>{l}</div>
@@ -369,7 +373,7 @@ export default function Landing() {
           <div style={{ textAlign:"center", marginBottom:48 }}>
             <div className="pill" style={{ marginBottom:16 }}>ASÍ FUNCIONA</div>
             <h2 className="section-title" style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>
-              {audiencia==="cliente" ? "De la foto a la cotización en minutos" : "4 herramientas que cambian tu operación"}
+              {audiencia==="cliente" ? "De la foto a la cotización, sin batallar" : "4 herramientas que cambian tu operación"}
             </h2>
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:16 }} className="grid-mobile-1">
@@ -445,13 +449,7 @@ export default function Landing() {
                     <div style={{ background:"#d4af3720", border:"1px solid #d4af3740", borderRadius:20, padding:"3px 10px", fontSize:11, color:"#d4af37", fontWeight:700 }}>⭐ Prioritario</div>
                   </div>
                   {[["📸 Foto","Subida ✓"],["🎨 Estilo","Moderno"],["📐 Medidas","3.2×2.4m"],["📅 Inicio","Lo antes posible 🔥"],["🎯 Decisión","Listo para cotizar"]].map(([l,v],i) => (<div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0", borderBottom:i<4?"1px solid #1a1a12":"none", fontSize:12 }}><span style={{ color:"#555" }}>{l}</span><span style={{ color:"#e8e0d0", fontWeight:500 }}>{v}</span></div>))}
-                  <div style={{ marginTop:12, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                    <div style={{ fontSize:10, color:"#555" }}>Score de compra</div>
-                    <div style={{ fontSize:22, fontWeight:900, color:"#4caf50" }}>87/100</div>
-                  </div>
-                  <div style={{ height:4, background:"#1a1a12", borderRadius:2, marginTop:6, overflow:"hidden" }}>
-                    <div style={{ width:"87%", height:"100%", background:"linear-gradient(90deg,#4caf50,#d4af37)", borderRadius:2 }} />
-                  </div>
+                  <div style={{ marginTop:12, background:"#d4af37", borderRadius:8, padding:"8px", textAlign:"center", fontSize:11, fontWeight:700, color:"#000" }}>Enviar mi cotización</div>
                 </div>
               </div>
             </div>
@@ -469,11 +467,11 @@ export default function Landing() {
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }} className="grid-mobile-1">
               <div style={{ background:"#0f0f0a", border:"1px solid #f4433620", borderRadius:16, padding:24 }}>
                 <div style={{ fontSize:13, color:"#f44336", fontWeight:700, letterSpacing:1, marginBottom:16 }}>❌ SIN ENKAJE PRO</div>
-                {["Mensajes de WhatsApp sin información","El cliente no sabe qué quiere","Cotizas sin ver el espacio","Tiempo perdido en visitas que no cierran","Sin contrato, sin protección","Sin seguimiento del proyecto"].map((t,i) => (<div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a1a12":"none", fontSize:13, color:"#555" }}><span style={{ color:"#f44336", flexShrink:0 }}>✕</span>{t}</div>))}
+                {["Mensajes de WhatsApp sin información","El cliente no sabe qué quiere","Cotizas sin ver el espacio","Tiempo perdido en visitas que no cierran","Todo de palabra, nada por escrito","Sin seguimiento del proyecto"].map((t,i) => (<div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a1a12":"none", fontSize:13, color:"#555" }}><span style={{ color:"#f44336", flexShrink:0 }}>✕</span>{t}</div>))}
               </div>
               <div style={{ background:"#0a2a0a", border:"1px solid #4caf5030", borderRadius:16, padding:24 }}>
                 <div style={{ fontSize:13, color:"#4caf50", fontWeight:700, letterSpacing:1, marginBottom:16 }}>✅ CON ENKAJE PRO</div>
-                {["Lead con foto, medidas y estilo elegido","El cliente ya sabe lo que quiere","Cotizas con toda la información","Solo atiendes a los que van en serio","Contrato digital que te protege","Dashboard completo de proyectos"].map((t,i) => (<div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a2a12":"none", fontSize:13, color:"#aaa" }}><span style={{ color:"#4caf50", flexShrink:0 }}>✓</span>{t}</div>))}
+                {["Lead con foto, medidas y estilo elegido","El cliente ya sabe lo que quiere","Cotizas con toda la información","Tú decides a quién cotizar","Presupuesto y contrato por escrito","Dashboard completo de proyectos"].map((t,i) => (<div key={i} style={{ display:"flex", gap:10, padding:"7px 0", borderBottom:i<5?"1px solid #1a2a12":"none", fontSize:13, color:"#aaa" }}><span style={{ color:"#4caf50", flexShrink:0 }}>✓</span>{t}</div>))}
               </div>
             </div>
             <div style={{ textAlign:"center", marginTop:32, display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
@@ -492,9 +490,9 @@ export default function Landing() {
               <div>
                 <div className="pill" style={{ marginBottom:16 }}>LO QUE PUEDES VISUALIZAR</div>
                 <h2 style={{ fontSize:38, fontWeight:900, lineHeight:1.2, marginBottom:20, color:"#f0e8dc" }}>Cualquier proyecto<br /><span style={{ color:"#d4af37" }}>en segundos</span></h2>
-                <p style={{ fontSize:15, color:"#666", lineHeight:1.8, marginBottom:28 }}>No importa si es una cocina completa o un mueble de televisión. La IA genera la propuesta visual y tú decides si te gusta antes de contratar a alguien.</p>
+                <p style={{ fontSize:15, color:"#666", lineHeight:1.8, marginBottom:28 }}>No importa si es una cocina completa o un mueble de televisión. Ves una propuesta visual y decides si te gusta antes de contratar a alguien.</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:14, marginBottom:32 }}>
-                  {[["🍳","Cocinas integrales — modernas, rústicas, de lujo"],["👔","Closets y walk-ins — con iluminación LED y accesorios"],["📺","Centros de entretenimiento — lambrin, panel TV, estantes"],["🛋️","Muebles a medida — mesa, librero, tocador, bar"],["🚪","Puertas y cancelería — madera sólida o aluminio"],["🚿","Baños a medida — vanity, mueble flotante, espejo"]].map(([icon,text],i) => (
+                  {[["🍳","Cocinas integrales — modernas, rústicas, de lujo"],["👔","Closets y walk-ins — con iluminación LED y accesorios"],["📺","Centros de entretenimiento — lambrin, panel TV, estantes"],["🛋️","Muebles a medida — mesa, librero, tocador, bar"],["🚪","Puertas de madera — interiores y exteriores"],["🚿","Baños a medida — vanity, mueble flotante, espejo"]].map(([icon,text],i) => (
                     <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
                       <span style={{ fontSize:20, flexShrink:0, marginTop:2 }}>{icon}</span>
                       <span style={{ fontSize:14, color:"#aaa", lineHeight:1.6 }}>{text}</span>
@@ -504,14 +502,14 @@ export default function Landing() {
                 <button onClick={goPortal} className="btn-gold" style={{ fontSize:15, padding:"14px 32px" }}>Visualizar mi proyecto →</button>
               </div>
               <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                {[{step:"1",label:"Subes tu foto",desc:"Así como está el espacio ahora",highlight:false},{step:"2",label:"Eliges el estilo",desc:"Moderno, rústico, nórdico, industrial...",highlight:false},{step:"3",label:"IA genera el render",desc:"Fotorrealista en 20 segundos",highlight:true},{step:"4",label:"IA describe tu proyecto",desc:"Materiales, mantenimiento y recomendaciones personalizadas",highlight:false},{step:"5",label:"Recibes cotizaciones reales",desc:"De talleres verificados en tu zona",highlight:false}].map((s,i) => (
+                {[{step:"1",label:"Subes tu foto",desc:"Así como está el espacio ahora",highlight:false},{step:"2",label:"Eliges el estilo",desc:"Moderno, rústico, nórdico, industrial...",highlight:false},{step:"3",label:"Ves cómo quedaría",desc:"Una imagen realista en segundos",highlight:true},{step:"4",label:"Recibes la descripción",desc:"Materiales, mantenimiento y recomendaciones para tu proyecto",highlight:false},{step:"5",label:"Recibes cotizaciones reales",desc:"De talleres verificados en tu zona",highlight:false}].map((s,i) => (
                   <div key={i} style={{ background:s.highlight?"#1a1208":"#0f0f0a", border:`1px solid ${s.highlight?"#d4af3740":"#1a1a12"}`, borderRadius:14, padding:"14px 18px", display:"flex", gap:14, alignItems:"center", boxShadow:s.highlight?"0 0 24px #d4af3818":"none" }}>
                     <div style={{ width:36, height:36, borderRadius:"50%", background:s.highlight?"#d4af3720":"#1a1a12", border:`1.5px solid ${s.highlight?"#d4af37":"#333"}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:900, color:s.highlight?"#d4af37":"#555", flexShrink:0 }}>{s.step}</div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontWeight:700, fontSize:14, color:"#e8e0d0", marginBottom:2 }}>{s.label}</div>
                       <div style={{ fontSize:12, color:"#555" }}>{s.desc}</div>
                     </div>
-                    {s.highlight && <span style={{ fontSize:11, color:"#d4af37", fontWeight:700, background:"#d4af3715", borderRadius:20, padding:"3px 10px", whiteSpace:"nowrap" }}>IA ✨</span>}
+                    {s.highlight && <span style={{ fontSize:11, color:"#d4af37", fontWeight:700, background:"#d4af3715", borderRadius:20, padding:"3px 10px", whiteSpace:"nowrap" }}>Gratis</span>}
                   </div>
                 ))}
               </div>
@@ -529,7 +527,7 @@ export default function Landing() {
               <h2 style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>¿Por qué confiar en<br /><span style={{ color:"#d4af37" }}>los talleres de EnKaje Pro?</span></h2>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }} className="grid-mobile-1">
-              {[{icon:"🔍",titulo:"Verificados manualmente",desc:"Cada taller pasa por una verificación en persona o por videollamada, con revisión de identidad, ubicación y portafolio de trabajos reales, antes de activar su cuenta.",color:"#d4af37"},{icon:"⭐",titulo:"Reseñas reales, muy pronto",desc:"Próximamente, solo los clientes que contraten a un taller podrán dejarle reseña. Sin reseñas falsas ni perfiles inflados.",color:"#4caf50"},{icon:"⭐",titulo:"Reseñas verificadas",desc:"Solo clientes que contrataron pueden dejar reseña. Sin reseñas falsas ni perfiles inflados.",color:"#4caf50"},{icon:"📄",titulo:"Contrato que te protege",desc:"Todos los proyectos pueden formalizarse con contrato digital que incluye garantías, penalizaciones y pagos escalonados.",color:"#f0a500"},{icon:"🗺️",titulo:"Talleres en tu zona",desc:"Conectamos con talleres de San Pedro, Monterrey, San Nicolás, Guadalupe, Santa Catarina y toda el área metro.",color:"#e91e63"},{icon:"💬",titulo:"Sin costo para ti",desc:"Usar EnKaje Pro es gratis para el cliente. El pago de tu proyecto va directo al taller, sin comisiones.",color:"#9c27b0"}].map((f,i) => (<div key={i} className="card"><div style={{ fontSize:32, marginBottom:14 }}>{f.icon}</div><div style={{ fontWeight:700, fontSize:15, color:f.color, marginBottom:8 }}>{f.titulo}</div><div style={{ fontSize:13, color:"#555", lineHeight:1.7 }}>{f.desc}</div></div>))}
+              {[{icon:"🔍",titulo:"Verificados manualmente",desc:"Cada taller pasa por una verificación en persona o por videollamada, con revisión de identidad, ubicación y portafolio de trabajos reales, antes de activar su cuenta.",color:"#d4af37"},{icon:"⭐",titulo:"Reseñas reales, muy pronto",desc:"Próximamente, solo los clientes que contraten a un taller podrán dejarle reseña. Sin reseñas falsas ni perfiles inflados.",color:"#4caf50"},{icon:"📍",titulo:"Sabes en qué va",desc:"Sigue cada etapa de tu proyecto, de la visita de medidas a la entrega, sin perseguir a nadie por WhatsApp.",color:"#4caf50"},{icon:"📄",titulo:"Todo por escrito",desc:"El taller puede formalizar tu proyecto con presupuesto y contrato por escrito, con pagos por etapas.",color:"#f0a500"},{icon:"🗺️",titulo:"Talleres cerca de ti",desc:"Te conectamos con talleres verificados que trabajan en tu zona del área metropolitana de Monterrey.",color:"#e91e63"},{icon:"💬",titulo:"Sin costo para ti",desc:"Usar EnKaje Pro es gratis para el cliente. El pago de tu proyecto va directo al taller, sin comisiones.",color:"#9c27b0"}].map((f,i) => (<div key={i} className="card"><div style={{ fontSize:32, marginBottom:14 }}>{f.icon}</div><div style={{ fontWeight:700, fontSize:15, color:f.color, marginBottom:8 }}>{f.titulo}</div><div style={{ fontSize:13, color:"#555", lineHeight:1.7 }}>{f.desc}</div></div>))}
             </div>
           </div>
         </section>
@@ -541,7 +539,7 @@ export default function Landing() {
           <div style={{ textAlign:"center", marginBottom:48 }}>
             <div className="pill" style={{ marginBottom:16 }}>DIRECTORIO</div>
             <h2 style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>Talleres verificados<br /><span style={{ color:"#d4af37" }}>en Monterrey y área metropolitana</span></h2>
-            <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto 12px" }}>Así se verá el directorio cuando los talleres completen su verificación. Cada semana se incorporan nuevos.</p>
+            <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto 12px" }}>Así se verá el directorio cuando los talleres completen su verificación. Estamos verificando talleres de la zona.</p>
             <div style={{ display:"inline-block", background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"6px 16px", fontSize:12, color:"#d4af37", fontWeight:600, marginBottom:32 }}>🔄 Directorio en construcción · Incorporando talleres verificados</div>
             <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
               {["Todos","Cocinas","Closets","Puertas","Muebles","Entretenimiento"].map(f => (<button key={f} onClick={()=>setFiltro(f)} className={`filter-btn ${filtro===f?"active":""}`}>{f}</button>))}
@@ -556,7 +554,7 @@ export default function Landing() {
                   <div><div style={{ fontWeight:700, fontSize:14, color:"#e8e0d0" }}>{t.nombre}</div><div style={{ fontSize:12, color:"#d4af37" }}>{t.especialidad}</div></div>
                 </div>
                 <div style={{ fontSize:12, color:"#555", marginBottom:10 }}>📍 {t.zona}</div>
-                <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}><span>⏱️ {t.anos} de experiencia</span><span style={{ color:t.plan==="premium"?"#d4af37":"#00bcd4", fontWeight:700, textTransform:"uppercase", fontSize:10 }}>{t.plan}</span></div>
+                <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}><span>⏱️ {t.anos} de experiencia</span></div>
               <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:11, color:"#d4af37", fontWeight:700 }}>
   <span>✓</span><span>Verificado por EnKaje Pro</span></div>
               </div>
@@ -567,7 +565,7 @@ export default function Landing() {
             <button onClick={goRegistro} className="btn-gold" style={{ fontSize:14, padding:"12px 24px", whiteSpace:"nowrap" }}>Unirme al directorio →</button>
           </div>
           <div style={{ marginTop:24, background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:24 }}>
-            <div style={{ fontSize:12, color:"#555", letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>Zonas de cobertura</div>
+            <div style={{ fontSize:12, color:"#555", letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>Zonas donde estamos sumando talleres</div>
             <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
               {ZONAS.map(z => (<span key={z} style={{ background:"#1a1a12", border:"1px solid #2a2a20", borderRadius:20, padding:"6px 14px", fontSize:13, color:"#aaa" }}>📍 {z}</span>))}
             </div>
@@ -586,13 +584,13 @@ export default function Landing() {
             <>
               <div className="pill" style={{ marginBottom:20 }}>EMPIEZA GRATIS HOY</div>
               <h2 style={{ fontSize:44, fontWeight:900, lineHeight:1.15, marginBottom:20, color:"#f0e8dc" }}>Tu proyecto merece<br /><span style={{ color:"#d4af37" }}>un render antes de una decisión</span></h2>
-              <p style={{ fontSize:16, color:"#555", marginBottom:40, lineHeight:1.7 }}>Visualiza tu cocina, closet, baño, centro de entretenimiento o mueble con IA antes de contratar. En segundos, gratis, sin registro.</p>
+              <p style={{ fontSize:16, color:"#555", marginBottom:40, lineHeight:1.7 }}>Visualiza tu cocina, closet, baño, centro de entretenimiento o mueble antes de contratar. En segundos y gratis.</p>
               <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:24 }}>
                 <button onClick={goPortal} className="btn-gold" style={{ fontSize:16, padding:"16px 36px" }}>📸 Visualizar mi proyecto gratis</button>
                 <a href="https://wa.me/528127176786" target="_blank" rel="noreferrer" className="btn-wa" style={{ fontSize:16, padding:"16px 28px" }}>💬 Hablar con un asesor</a>
               </div>
               <div style={{ display:"flex", gap:24, justifyContent:"center", flexWrap:"wrap" }}>
-                {["✓ 100% gratis","✓ Sin registro","✓ Render en segundos","✓ Talleres verificados"].map((t,i) => <span key={i} style={{ fontSize:13, color:"#444" }}>{t}</span>)}
+                {["✓ 100% gratis","✓ Sin compromiso","✓ Lo ves en segundos","✓ Talleres verificados"].map((t,i) => <span key={i} style={{ fontSize:13, color:"#444" }}>{t}</span>)}
               </div>
             </>
           ) : (
