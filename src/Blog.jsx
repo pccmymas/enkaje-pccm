@@ -440,6 +440,20 @@ function ArticuloMateriales() {
         ]}
       />
       <p>Precios solo como referencia: el costo final depende de medidas, herrajes, cubierta e instalación.</p>
+
+      <h2>Cuánto cuesta cada material (referencia)</h2>
+      <p>Precios aproximados <strong>solo del material</strong>, no del mueble terminado. Cambian según la marca, el color y la maderería.</p>
+      <Tabla
+        cols={["Material", "Se vende por", "Precio aproximado"]}
+        rows={[
+          ["Melamina blanca de 16 mm", "Hoja de 1.22 × 2.44 m", "Alrededor de $700"],
+          ["Melamina de color o con veta", "Hoja de 1.22 × 2.44 m", "Más que la blanca, según el diseño"],
+          ["MDF natural de 15 mm (sin pintar)", "Hoja de 1.22 × 2.44 m", "Entre $400 y $600"],
+          ["Pino", "Pie tabla", "Entre $25 y $40"],
+          ["Maderas finas (cedro, encino, parota)", "Pie tabla", "Entre $70 y $90"],
+        ]}
+      />
+      <p>El material es solo una parte del precio. También cuentan los cantos, herrajes, pintura o barniz, la mano de obra y la instalación. Por eso el MDF, aunque la hoja sea barata, sale más caro ya pintado.</p>
       <figure>
         <img
           src="/blog/mdf-melamina-madera.webp"
