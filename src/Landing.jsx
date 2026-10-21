@@ -101,7 +101,7 @@ export default function Landing() {
 
   useEffect(() => {
     document.documentElement.lang = "es";
-    document.title = "EnKaje Pro · Cocinas, closets y muebles a la medida en Monterrey";
+    document.title = "EnKaje Pro · Talleres de carpintería verificados en Monterrey";
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) { meta = document.createElement("meta"); meta.setAttribute("name", "description"); document.head.appendChild(meta); }
     meta.setAttribute("content", "Ve cómo quedaría tu cocina, closet o mueble a la medida y recibe cotizaciones gratis de talleres de carpintería verificados en Monterrey y su área metropolitana.");
@@ -263,7 +263,7 @@ export default function Landing() {
                       </div>
                     </div>
                   </div>
-                 <div className="hide-mobile" style={{ position:"absolute", bottom:-16, right:-16, background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:14, padding:"10px 16px", fontSize:12, color:"#d4af37", fontWeight:700, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>📸 Ve tu proyecto en segundos</div>
+                  <div className="hide-mobile" style={{ position:"absolute", bottom:-16, right:-16, background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:14, padding:"10px 16px", fontSize:12, color:"#d4af37", fontWeight:700, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>📸 Ve tu proyecto en segundos</div>
                 </div>
               ) : (
                 <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:20, padding:24 }}>
