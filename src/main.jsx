@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Analytics } from '@vercel/analytics/react'
 import './index.css'
 import App from './App.jsx'
 import Landing from './Landing.jsx'
@@ -15,6 +14,5 @@ const isPortal = path.startsWith('/portal');
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {isApp ? <App /> : isTaller ? <PerfilTaller /> : isPortal ? <Portal /> : <Landing />}
-    <Analytics />
   </StrictMode>,
 )
