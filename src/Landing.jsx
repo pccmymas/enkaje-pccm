@@ -263,7 +263,7 @@ export default function Landing() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ position:"absolute", bottom:-16, right:-16, background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:14, padding:"10px 16px", fontSize:12, color:"#d4af37", fontWeight:700, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>📸 Ve tu proyecto en segundos</div>
+                 <div className="hide-mobile" style={{ position:"absolute", bottom:-16, right:-16, background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:14, padding:"10px 16px", fontSize:12, color:"#d4af37", fontWeight:700, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>📸 Ve tu proyecto en segundos</div>
                 </div>
               ) : (
                 <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:20, padding:24 }}>
