@@ -618,6 +618,7 @@ export default function Landing() {
             <div style={{ fontSize:11, color:"#333", letterSpacing:2, marginTop:6 }}>MONTERREY, MÉXICO · 2026</div>
           </div>
           <div style={{ display:"flex", gap:20, flexWrap:"wrap", alignItems:"center" }}>
+            <a href="/blog" style={{ fontSize:13, color:"#555", textDecoration:"none", fontFamily:"'DM Sans',sans-serif" }} onMouseEnter={e=>e.target.style.color="#d4af37"} onMouseLeave={e=>e.target.style.color="#555"}>Blog</a>
             <button className="legal-link" onClick={()=>goLegal("privacidad")}>Privacidad</button>
             <button className="legal-link" onClick={()=>goLegal("terminos")}>Términos</button>
             <button className="legal-link" onClick={()=>goLegal("cookies")}>Cookies</button>

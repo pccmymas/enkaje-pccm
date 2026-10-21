@@ -8,7 +8,7 @@ export default defineConfig({
     sitemap({
       hostname: 'https://enkajepro.com',
       generateRobotsTxt: false,
-      routes: ['/', '/app', '/legal/privacidad', '/legal/terminos', '/legal/cookies'],
+      dynamicRoutes: ['/portal', '/blog', '/blog/carpintero-en-monterrey'],
     })
   ],
 })
