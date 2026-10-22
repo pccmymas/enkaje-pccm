@@ -5,6 +5,8 @@ const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
 
 const GOLD = "#d4af37";
+const TIPO_LBL = { cocina: "🍳 Cocina", closet: "👔 Closet", puerta: "🚪 Puerta", mueble: "🛋️ Mueble", panel: "🪵 Panel", bano: "🚿 Baño" };
+const fechaCorta = iso => iso ? new Date(iso).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }) : "";
 
 const CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,6 +31,8 @@ export default function PerfilTaller() {
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ nombre: "", telefono: "", correo: "", proyecto: "", mensaje: "" });
   const [sending, setSending] = useState(false);
+  const [pubs, setPubs] = useState([]);
+  const [ampliada, setAmpliada] = useState(null);
 
   // Extraer slug y ref del URL
   const parts = window.location.pathname.split("/");
@@ -47,6 +51,10 @@ export default function PerfilTaller() {
         const data = await r.json();
         if (Array.isArray(data) && data.length > 0) {
           setTaller(data[0]);
+          // Publicaciones de trabajos del taller (vista pública, sin datos de contacto)
+          fetch(`${SUPABASE_URL}/rest/v1/publicaciones_publicas?taller_slug=eq.${encodeURIComponent(slug)}&order=created_at.desc&limit=30&apikey=${SUPABASE_KEY}`,
+            { headers: { "Authorization": `Bearer ${SUPABASE_KEY}` } })
+            .then(x => x.json()).then(d => { if (Array.isArray(d)) setPubs(d); }).catch(() => {});
           // Registrar visita
           fetch(`${SUPABASE_URL}/rest/v1/rpc/registrar_visita`, {
             method: "POST",
@@ -168,6 +176,36 @@ export default function PerfilTaller() {
           </button>
         </div>
 
+        {/* PUBLICACIONES DE TRABAJOS */}
+        {pubs.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ fontSize: 13, color: GOLD, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", margin: "8px 0 14px" }}>📷 Trabajos recientes</h3>
+            {pubs.map(pub => {
+              const fotos = String(pub.fotos || "").split(",").filter(Boolean);
+              return (
+                <div key={pub.id} className="fade-up" style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, overflow: "hidden", marginBottom: 14 }}>
+                  <div style={{ padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#e8e0d0" }}>{TIPO_LBL[pub.tipo_proyecto] || pub.tipo_proyecto} · <span style={{ color: "#aaa", fontWeight: 400 }}>{pub.municipio}</span></div>
+                    <div style={{ fontSize: 11, color: "#777" }}>{fechaCorta(pub.created_at)}</div>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: fotos.length === 1 ? "1fr" : "1fr 1fr", gap: 2 }}>
+                    {fotos.slice(0, 4).map((u, i) => (
+                      <div key={u} onClick={() => setAmpliada(u)} style={{ position: "relative", aspectRatio: fotos.length === 1 ? "4/3" : "1", cursor: "zoom-in", background: "#1a1a12" }}>
+                        <img src={u} alt={`${TIPO_LBL[pub.tipo_proyecto] || "Trabajo"} en ${pub.municipio}`} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        {i === 3 && fotos.length > 4 && <div style={{ position: "absolute", inset: 0, background: "#000000a0", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 22, fontWeight: 900 }}>+{fotos.length - 4}</div>}
+                      </div>
+                    ))}
+                  </div>
+                  {pub.descripcion && <div style={{ padding: "14px 18px", fontSize: 14, color: "#ccc", lineHeight: 1.6 }}>{pub.descripcion}</div>}
+                  <div style={{ padding: "0 18px 16px", paddingTop: pub.descripcion ? 0 : 14 }}>
+                    <button className="btn-primary" style={{ padding: "9px 18px", fontSize: 13 }} onClick={() => { setFormStep(true); setTimeout(() => document.getElementById("cotizar-form")?.scrollIntoView({behavior:"smooth"}), 100); }}>Quiero algo así →</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* ESPECIALIDADES */}
         {taller.especialidad && (
           <div style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 16, padding: 24, marginBottom: 20 }}>
@@ -285,6 +323,14 @@ export default function PerfilTaller() {
         )}
 
       </div>
+
+      {/* FOTO AMPLIADA */}
+      {ampliada && (
+        <div onClick={() => setAmpliada(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out", padding: 16 }}>
+          <img src={ampliada} alt="Trabajo ampliado" style={{ maxWidth: "100%", maxHeight: "90vh", borderRadius: 12 }} />
+          <button onClick={() => setAmpliada(null)} style={{ position: "absolute", top: 16, right: 16, background: GOLD, color: "#000", border: "none", borderRadius: "50%", width: 40, height: 40, fontSize: 18, fontWeight: 900, cursor: "pointer" }}>✕</button>
+        </div>
+      )}
 
       {/* FOOTER */}
       <footer style={{ borderTop: "1px solid #1a1a12", padding: "20px 24px", textAlign: "center" }}>
