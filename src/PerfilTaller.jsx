@@ -124,7 +124,7 @@ export default function PerfilTaller() {
         <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
         <h2 style={{ color: "#e8e0d0", marginBottom: 8 }}>Taller no encontrado</h2>
         <p style={{ color: "#666", marginBottom: 24 }}>El enlace puede estar desactivado o ser incorrecto.</p>
-        <button className="btn-primary" onClick={() => window.location.href = "/"}>Ver todos los talleres</button>
+        <button className="btn-primary" onClick={() => window.location.href = "/talleres"}>Ver todos los talleres</button>
       </div>
     </div>
   );
@@ -322,6 +322,13 @@ export default function PerfilTaller() {
           </div>
         )}
 
+      </div>
+
+      {/* MÁS TALLERES */}
+      <div style={{ maxWidth: 900, margin: "-56px auto 40px", padding: "0 24px", textAlign: "center" }}>
+        <a href={`/talleres${taller.municipio ? `?zona=${encodeURIComponent(taller.municipio)}` : ""}`} style={{ display: "inline-block", border: "1.5px solid #333", color: "#ccc", borderRadius: 12, padding: "11px 22px", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+          Ver más talleres{taller.municipio ? ` en ${taller.municipio}` : ""} →
+        </a>
       </div>
 
       {/* FOTO AMPLIADA */}
