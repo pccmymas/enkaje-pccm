@@ -77,8 +77,14 @@ const FUNCIONES_TALLER = [
   { icon:"🎨", titulo:"Renders de diseño", desc:"Genera renders fotorrealistas para mostrarle al cliente cómo quedaría su proyecto antes de fabricarlo.", color:"#e91e63" },
   { icon:"📊", titulo:"Seguimiento por etapas", desc:"Solicitud, cotizado, visita, anticipo, fabricación, instalación y entrega. Tú y el cliente saben en qué va cada proyecto.", color:"#9c27b0" },
   { icon:"⭐", titulo:"Solicitudes completas", desc:"Cada solicitud llega con imagen, medidas aproximadas, estilo, presupuesto y fecha de inicio. Tú decides si cotizas.", color:"#d4af37" },
+  { icon:"🖼️", titulo:"Tu página de trabajos", desc:"Publica fotos de tus trabajos terminados. Salen en tu perfil para que los clientes vean lo que haces y te pidan cotización.", color:"#e91e63" },
   { icon:"📱", titulo:"Textos para redes", desc:"Textos y hashtags listos para Instagram, Facebook y TikTok en segundos. Nunca más pantalla en blanco.", color:"#00bcd4" },
 ];
+
+const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
+const MIN_PUBS_LANDING = 3; // la sección de trabajos reales aparece sola desde este número de publicaciones
+const TIPO_LBL = { cocina: "Cocina", closet: "Closet", puerta: "Puerta", mueble: "Mueble", panel: "Panel", bano: "Baño" };
 
 const ZONAS = ["San Pedro Garza García","Monterrey Centro","San Nicolás de los Garza","Guadalupe","Santa Catarina","Apodaca","Escobedo","García"];
 
@@ -97,6 +103,8 @@ export default function Landing() {
   const [audiencia, setAudiencia] = useState("cliente");
   const [fotoIdx, setFotoIdx] = useState(0);
   const [filtro, setFiltro] = useState("Todos");
+  const [pubs, setPubs] = useState([]);
+  const [pubSel, setPubSel] = useState(null);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -105,6 +113,13 @@ export default function Landing() {
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) { meta = document.createElement("meta"); meta.setAttribute("name", "description"); document.head.appendChild(meta); }
     meta.setAttribute("content", "Ve cómo quedaría tu cocina, closet o mueble a la medida y recibe cotizaciones gratis de talleres de carpintería verificados en Monterrey y su área metropolitana.");
+  }, []);
+
+  // Trabajos reales publicados por talleres verificados (vista pública, sin contacto)
+  useEffect(() => {
+    fetch(`${SUPABASE_URL}/rest/v1/publicaciones_publicas?order=created_at.desc&limit=9&apikey=${SUPABASE_KEY}`,
+      { headers: { "Authorization": `Bearer ${SUPABASE_KEY}` } })
+      .then(r => r.json()).then(d => { if (Array.isArray(d)) setPubs(d); }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -367,6 +382,35 @@ export default function Landing() {
         </section>
       )}
 
+      {/* TRABAJOS REALES (solo cliente, aparece sola cuando hay publicaciones) */}
+      {audiencia === "cliente" && pubs.length >= MIN_PUBS_LANDING && (
+        <section id="trabajos" style={{ padding:"80px 24px" }}>
+          <div style={{ maxWidth:1100, margin:"0 auto" }}>
+            <div style={{ textAlign:"center", marginBottom:40 }}>
+              <div className="pill" style={{ marginBottom:16 }}>TRABAJOS REALES</div>
+              <h2 className="section-title" style={{ fontSize:38, fontWeight:900, marginBottom:12, color:"#f0e8dc" }}>Hechos por talleres <span style={{ color:"#d4af37" }}>verificados</span></h2>
+              <p style={{ fontSize:15, color:"#555", maxWidth:520, margin:"0 auto" }}>Fotos de proyectos terminados que los talleres de EnKaje Pro publicaron. Toca uno para ver más.</p>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14 }} className="grid-mobile-1">
+              {pubs.map(p => {
+                const foto = String(p.fotos || "").split(",").filter(Boolean)[0];
+                return (
+                  <div key={p.id} className="card" onClick={() => setPubSel(p)} style={{ padding:0, overflow:"hidden", cursor:"pointer" }}>
+                    <div style={{ aspectRatio:"4/3", background:"#1a1a12" }}>
+                      {foto && <img src={foto} alt={`${TIPO_LBL[p.tipo_proyecto] || "Trabajo"} en ${p.municipio}`} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />}
+                    </div>
+                    <div style={{ padding:"12px 16px" }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:"#e8e0d0" }}>{TIPO_LBL[p.tipo_proyecto] || p.tipo_proyecto} · <span style={{ color:"#888", fontWeight:400 }}>{p.municipio}</span></div>
+                      <div style={{ fontSize:12, color:"#d4af37", marginTop:4 }}>✓ {p.taller_nombre}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* COMO FUNCIONA */}
       <section id="como-funciona" style={{ padding:"80px 24px", background:"#0f0f0a" }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
@@ -453,8 +497,46 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:16 }} className="grid-mobile-1">
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }} className="grid-mobile-1">
               {FUNCIONES_TALLER.map((f,i) => (<div key={i} className="card"><div style={{ fontSize:28, marginBottom:12 }}>{f.icon}</div><div style={{ fontWeight:700, fontSize:14, color:f.color, marginBottom:8 }}>{f.titulo}</div><div style={{ fontSize:12, color:"#555", lineHeight:1.7 }}>{f.desc}</div></div>))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* PÁGINA DE TRABAJOS (taller) — ejemplo de la herramienta */}
+      {audiencia==="taller" && (
+        <section style={{ padding:"0 24px 80px" }}>
+          <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:48, alignItems:"center" }} className="grid-mobile-1">
+            <div>
+              <div className="pill" style={{ marginBottom:16 }}>NUEVO</div>
+              <h2 className="section-title" style={{ fontSize:34, fontWeight:900, lineHeight:1.2, marginBottom:16, color:"#f0e8dc" }}>Tu propia página<br /><span style={{ color:"#d4af37" }}>de trabajos</span></h2>
+              <p style={{ fontSize:15, color:"#666", lineHeight:1.8, marginBottom:20 }}>Como tu página de Facebook, pero aquí la ven clientes que están buscando carpintero. Subes fotos de tus trabajos terminados y aparecen en tu perfil, con un botón para que te pidan cotización.</p>
+              {["Sube de 1 a 6 fotos por trabajo, desde tu celular","Tu perfil se ve activo y con trabajos reales","El cliente ve lo que haces antes de pedirte cotización"].map((t,i) => (
+                <div key={i} style={{ display:"flex", gap:10, padding:"6px 0", fontSize:14, color:"#aaa" }}><span style={{ color:"#4caf50" }}>✓</span>{t}</div>
+              ))}
+              <button onClick={goRegistro} className="btn-gold" style={{ fontSize:14, padding:"13px 28px", marginTop:20 }}>Registrar mi taller →</button>
+            </div>
+            <div style={{ position:"relative" }}>
+              <div style={{ position:"absolute", top:12, right:12, zIndex:2, background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"3px 10px", fontSize:10, color:"#d4af37", fontWeight:700 }}>Ejemplo</div>
+              <div style={{ background:"#0f0f0a", border:"1px solid #d4af3730", borderRadius:16, overflow:"hidden" }}>
+                <div style={{ padding:"14px 18px", display:"flex", gap:12, alignItems:"center" }}>
+                  <div style={{ width:40, height:40, borderRadius:"50%", background:"#d4af3720", border:"1.5px solid #d4af37", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18 }}>🏭</div>
+                  <div>
+                    <div style={{ fontSize:14, fontWeight:700, color:"#e8e0d0" }}>Tu taller</div>
+                    <div style={{ fontSize:11, color:"#777" }}>🍳 Cocina · Apodaca</div>
+                  </div>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:2 }}>
+                  {["/tipo-cocina.png","/lujo.png"].map(u => (
+                    <div key={u} style={{ aspectRatio:"1", background:"#1a1a12" }}><img src={u} alt="Ejemplo de trabajo" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} onError={e => { e.target.style.display="none"; }} /></div>
+                  ))}
+                </div>
+                <div style={{ padding:"14px 18px", fontSize:13, color:"#aaa", lineHeight:1.6 }}>Cocina en L de melamina con isla y cubierta de cuarzo. Bisagras de cierre lento.</div>
+                <div style={{ padding:"0 18px 16px" }}>
+                  <span style={{ display:"inline-block", background:"#d4af37", color:"#000", borderRadius:10, padding:"8px 16px", fontSize:12, fontWeight:700 }}>Quiero algo así →</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -609,6 +691,27 @@ export default function Landing() {
           )}
         </div>
       </section>
+
+      {/* PUBLICACIÓN AMPLIADA */}
+      {pubSel && (
+        <div onClick={() => setPubSel(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.9)", zIndex:999, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:"#0f0f0a", border:"1px solid #d4af3740", borderRadius:18, maxWidth:620, width:"100%", maxHeight:"90vh", overflowY:"auto", position:"relative" }}>
+            <button onClick={() => setPubSel(null)} style={{ position:"absolute", top:10, right:10, zIndex:2, background:"#d4af37", color:"#000", border:"none", borderRadius:"50%", width:36, height:36, fontSize:16, fontWeight:900, cursor:"pointer" }}>✕</button>
+            <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
+              {String(pubSel.fotos || "").split(",").filter(Boolean).map(u => <img key={u} src={u} alt={`${TIPO_LBL[pubSel.tipo_proyecto] || "Trabajo"} en ${pubSel.municipio}`} style={{ width:"100%", display:"block" }} />)}
+            </div>
+            <div style={{ padding:20 }}>
+              <div style={{ fontSize:16, fontWeight:700, color:"#e8e0d0" }}>{TIPO_LBL[pubSel.tipo_proyecto] || pubSel.tipo_proyecto} · <span style={{ color:"#888", fontWeight:400 }}>{pubSel.municipio}</span></div>
+              <div style={{ fontSize:13, color:"#d4af37", margin:"4px 0 12px" }}>✓ {pubSel.taller_nombre} · Verificado por EnKaje Pro</div>
+              {pubSel.descripcion && <p style={{ fontSize:14, color:"#aaa", lineHeight:1.7, marginBottom:16 }}>{pubSel.descripcion}</p>}
+              <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+                <a href={`/taller/${pubSel.taller_slug}`} className="btn-outline" style={{ fontSize:14, padding:"11px 20px", textDecoration:"none" }}>Ver taller</a>
+                <button onClick={goPortal} className="btn-gold" style={{ fontSize:14, padding:"11px 20px" }}>Pedir cotización →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER */}
       <footer style={{ background:"#0f0f0a", borderTop:"1px solid #1a1a12", padding:"40px 24px" }}>
