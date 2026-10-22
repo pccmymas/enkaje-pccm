@@ -8,7 +8,7 @@ export default defineConfig({
     sitemap({
       hostname: 'https://enkajepro.com',
       generateRobotsTxt: false,
-      dynamicRoutes: ['/portal', '/blog', '/blog/carpintero-en-monterrey', '/blog/cuanto-anticipo-dar-carpintero', '/blog/mdf-vs-melamina-vs-madera'],
+      dynamicRoutes: ['/portal', '/talleres', '/trabajos', '/blog', '/blog/carpintero-en-monterrey', '/blog/cuanto-anticipo-dar-carpintero', '/blog/mdf-vs-melamina-vs-madera'],
     })
   ],
 })
