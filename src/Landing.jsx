@@ -86,7 +86,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const MIN_PUBS_LANDING = 3; // la sección de trabajos reales aparece sola desde este número de publicaciones
 const TIPO_LBL = { cocina: "Cocina", closet: "Closet", puerta: "Puerta", mueble: "Mueble", panel: "Panel", bano: "Baño" };
 
-const ZONAS = ["San Pedro Garza García","Monterrey Centro","San Nicolás de los Garza","Guadalupe","Santa Catarina","Apodaca","Escobedo","García"];
+const ZONAS = ["Monterrey","San Pedro Garza García","San Nicolás de los Garza","Guadalupe","Santa Catarina","Apodaca","Escobedo","García"];
 
 // ── Ejemplo de render para sección IA ─────────────────────────────────────
 const RENDER_EJEMPLO = {
@@ -105,6 +105,7 @@ export default function Landing() {
   const [filtro, setFiltro] = useState("Todos");
   const [pubs, setPubs] = useState([]);
   const [pubSel, setPubSel] = useState(null);
+  const [talleresReales, setTalleresReales] = useState([]);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -120,6 +121,10 @@ export default function Landing() {
     fetch(`${SUPABASE_URL}/rest/v1/publicaciones_publicas?order=created_at.desc&limit=9&apikey=${SUPABASE_KEY}`,
       { headers: { "Authorization": `Bearer ${SUPABASE_KEY}` } })
       .then(r => r.json()).then(d => { if (Array.isArray(d)) setPubs(d); }).catch(() => {});
+    // Talleres reales del directorio (solo activos, sin contacto)
+    fetch(`${SUPABASE_URL}/rest/v1/directorio_talleres?apikey=${SUPABASE_KEY}`,
+      { headers: { "Authorization": `Bearer ${SUPABASE_KEY}` } })
+      .then(r => r.json()).then(d => { if (Array.isArray(d)) setTalleresReales(d); }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -163,7 +168,8 @@ export default function Landing() {
           </div>
           <div className="nav-links" style={{ display:"flex", gap:32, alignItems:"center" }}>
             <a href="#como-funciona" className="nav-link">Cómo funciona</a>
-            <a href="#directorio" className="nav-link">Talleres</a>
+            <a href="/talleres" className="nav-link">Talleres</a>
+            <a href="/trabajos" className="nav-link">Trabajos</a>
           
           </div>
           <div style={{ display:"flex", gap:8, alignItems:"center" }}>
@@ -407,6 +413,9 @@ export default function Landing() {
                 );
               })}
             </div>
+            <div style={{ textAlign:"center", marginTop:28 }}>
+              <a href="/trabajos" className="btn-outline" style={{ fontSize:14, padding:"12px 26px", textDecoration:"none" }}>Ver todos los trabajos →</a>
+            </div>
           </div>
         </section>
       )}
@@ -621,27 +630,56 @@ export default function Landing() {
           <div style={{ textAlign:"center", marginBottom:48 }}>
             <div className="pill" style={{ marginBottom:16 }}>DIRECTORIO</div>
             <h2 style={{ fontSize:38, fontWeight:900, marginBottom:16, color:"#f0e8dc" }}>Talleres verificados<br /><span style={{ color:"#d4af37" }}>en Monterrey y área metropolitana</span></h2>
-            <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto 12px" }}>Así se verá el directorio cuando los talleres completen su verificación. Estamos verificando talleres de la zona.</p>
-            <div style={{ display:"inline-block", background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"6px 16px", fontSize:12, color:"#d4af37", fontWeight:600, marginBottom:32 }}>🔄 Directorio en construcción · Incorporando talleres verificados</div>
-            <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
-              {["Todos","Cocinas","Closets","Puertas","Muebles","Entretenimiento"].map(f => (<button key={f} onClick={()=>setFiltro(f)} className={`filter-btn ${filtro===f?"active":""}`}>{f}</button>))}
-            </div>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, opacity:0.7 }} className="grid-mobile-1">
-            {[{emoji:"🍳",nombre:"Taller de Cocinas",especialidad:"Cocinas integrales",zona:"San Pedro Garza García",plan:"premium",anos:"+10 años",badge:"⭐ Destacado"},{emoji:"👔",nombre:"Closets a Medida",especialidad:"Closets y vestidores",zona:"Monterrey Centro",plan:"pro",anos:"+8 años",badge:null},{emoji:"📺",nombre:"Muebles y Lambrin",especialidad:"Paneles y entretenimiento",zona:"San Nicolás de los Garza",plan:"pro",anos:"+5 años",badge:null},{emoji:"🚪",nombre:"Puertas Premium",especialidad:"Puertas y cancelería",zona:"Guadalupe",plan:"premium",anos:"+15 años",badge:"⭐ Destacado"},{emoji:"🛋️",nombre:"Carpintería Fina",especialidad:"Muebles a medida",zona:"Santa Catarina",plan:"pro",anos:"+6 años",badge:null},{emoji:"🍳",nombre:"Ebanistería MTY",especialidad:"Cocinas y muebles",zona:"Apodaca",plan:"pro",anos:"+12 años",badge:null}].map((t,i) => (
-              <div key={i} style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:20, position:"relative" }}>
-                <div style={{ position:"absolute", top:12, right:12, background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"3px 10px", fontSize:10, color:"#d4af37", fontWeight:700 }}>Ejemplo</div>
-                <div style={{ display:"flex", gap:14, alignItems:"center", marginBottom:14 }}>
-                  <div style={{ width:44, height:44, borderRadius:"50%", background:"#d4af3715", border:"1px solid #d4af3730", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{t.emoji}</div>
-                  <div><div style={{ fontWeight:700, fontSize:14, color:"#e8e0d0" }}>{t.nombre}</div><div style={{ fontSize:12, color:"#d4af37" }}>{t.especialidad}</div></div>
-                </div>
-                <div style={{ fontSize:12, color:"#555", marginBottom:10 }}>📍 {t.zona}</div>
-                <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}><span>⏱️ {t.anos} de experiencia</span></div>
-              <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:11, color:"#d4af37", fontWeight:700 }}>
-  <span>✓</span><span>Verificado por EnKaje Pro</span></div>
+            {talleresReales.length >= MIN_PUBS_LANDING ? (
+              <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto" }}>Cada taller pasó una verificación por videollamada o visita antes de aparecer aquí.</p>
+            ) : (
+              <>
+              <p style={{ fontSize:15, color:"#555", maxWidth:500, margin:"0 auto 12px" }}>Así se verá el directorio cuando los talleres completen su verificación. Estamos verificando talleres de la zona.</p>
+              <div style={{ display:"inline-block", background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"6px 16px", fontSize:12, color:"#d4af37", fontWeight:600, marginBottom:32 }}>🔄 Directorio en construcción · Incorporando talleres verificados</div>
+              <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
+                {["Todos","Cocinas","Closets","Puertas","Muebles","Entretenimiento"].map(f => (<button key={f} onClick={()=>setFiltro(f)} className={`filter-btn ${filtro===f?"active":""}`}>{f}</button>))}
               </div>
-            ))}
+              </>
+            )}
           </div>
+          {talleresReales.length >= MIN_PUBS_LANDING ? (
+            <>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }} className="grid-mobile-1">
+                {talleresReales.slice().sort((a,b) => new Date(b.ultima_publicacion||0) - new Date(a.ultima_publicacion||0)).slice(0,6).map(t => (
+                  <a key={t.slug} href={`/taller/${t.slug}`} className="card" style={{ padding:0, overflow:"hidden", textDecoration:"none", color:"inherit" }}>
+                    <div style={{ aspectRatio:"16/10", background:"#1a1a12" }}>
+                      {t.foto_portada ? <img src={t.foto_portada} alt={`Trabajo de ${t.nombre}`} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} /> : <div style={{ height:"100%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:36 }}>🏭</div>}
+                    </div>
+                    <div style={{ padding:16 }}>
+                      <div style={{ fontWeight:700, fontSize:15, color:"#e8e0d0", marginBottom:4 }}>{t.nombre}</div>
+                      <div style={{ fontSize:12, color:"#d4af37", marginBottom:6 }}>{String(t.tipos_proyecto||"").split(",").map(k => TIPO_LBL[k.trim()]).filter(Boolean).join(" · ")}</div>
+                      <div style={{ fontSize:12, color:"#555", marginBottom:8 }}>📍 {t.municipio}</div>
+                      <div style={{ fontSize:11, color:"#4caf50", fontWeight:700 }}>✓ Verificado por EnKaje Pro</div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+              <div style={{ textAlign:"center", marginTop:24 }}>
+                <a href="/talleres" className="btn-outline" style={{ fontSize:14, padding:"12px 26px", textDecoration:"none" }}>Ver todos los talleres →</a>
+              </div>
+            </>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, opacity:0.7 }} className="grid-mobile-1">
+              {[{emoji:"🍳",nombre:"Taller de Cocinas",especialidad:"Cocinas integrales",zona:"San Pedro Garza García",plan:"premium",anos:"+10 años",badge:"⭐ Destacado"},{emoji:"👔",nombre:"Closets a Medida",especialidad:"Closets y vestidores",zona:"Monterrey Centro",plan:"pro",anos:"+8 años",badge:null},{emoji:"📺",nombre:"Muebles y Lambrin",especialidad:"Paneles y entretenimiento",zona:"San Nicolás de los Garza",plan:"pro",anos:"+5 años",badge:null},{emoji:"🚪",nombre:"Puertas Premium",especialidad:"Puertas y cancelería",zona:"Guadalupe",plan:"premium",anos:"+15 años",badge:"⭐ Destacado"},{emoji:"🛋️",nombre:"Carpintería Fina",especialidad:"Muebles a medida",zona:"Santa Catarina",plan:"pro",anos:"+6 años",badge:null},{emoji:"🍳",nombre:"Ebanistería MTY",especialidad:"Cocinas y muebles",zona:"Apodaca",plan:"pro",anos:"+12 años",badge:null}].map((t,i) => (
+                <div key={i} style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:20, position:"relative" }}>
+                  <div style={{ position:"absolute", top:12, right:12, background:"#1a1208", border:"1px solid #d4af3730", borderRadius:20, padding:"3px 10px", fontSize:10, color:"#d4af37", fontWeight:700 }}>Ejemplo</div>
+                  <div style={{ display:"flex", gap:14, alignItems:"center", marginBottom:14 }}>
+                    <div style={{ width:44, height:44, borderRadius:"50%", background:"#d4af3715", border:"1px solid #d4af3730", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>{t.emoji}</div>
+                    <div><div style={{ fontWeight:700, fontSize:14, color:"#e8e0d0" }}>{t.nombre}</div><div style={{ fontSize:12, color:"#d4af37" }}>{t.especialidad}</div></div>
+                  </div>
+                  <div style={{ fontSize:12, color:"#555", marginBottom:10 }}>📍 {t.zona}</div>
+                  <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"#444", marginBottom:10 }}><span>⏱️ {t.anos} de experiencia</span></div>
+                <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:11, color:"#d4af37", fontWeight:700 }}>
+    <span>✓</span><span>Verificado por EnKaje Pro</span></div>
+                </div>
+              ))}
+            </div>
+          )}
           <div style={{ marginTop:32, background:"linear-gradient(135deg,#1a1208,#0f0f0a)", border:"1px solid #d4af3730", borderRadius:16, padding:"28px 32px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
            <div><div style={{ fontWeight:700, fontSize:16, color:"#f0e8dc", marginBottom:6 }}>¿Tienes un taller en Monterrey?</div><div style={{ fontSize:13, color:"#666" }}>Sé parte de los talleres fundadores. Registro gratuito y sin mensualidad.</div></div>
             <button onClick={goRegistro} className="btn-gold" style={{ fontSize:14, padding:"12px 24px", whiteSpace:"nowrap" }}>Unirme al directorio →</button>
@@ -649,7 +687,7 @@ export default function Landing() {
           <div style={{ marginTop:24, background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:24 }}>
             <div style={{ fontSize:12, color:"#555", letterSpacing:2, textTransform:"uppercase", marginBottom:16 }}>Zonas donde estamos sumando talleres</div>
             <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-              {ZONAS.map(z => (<span key={z} style={{ background:"#1a1a12", border:"1px solid #2a2a20", borderRadius:20, padding:"6px 14px", fontSize:13, color:"#aaa" }}>📍 {z}</span>))}
+              {ZONAS.map(z => (<a key={z} href={`/talleres?zona=${encodeURIComponent(z)}`} style={{ background:"#1a1a12", border:"1px solid #2a2a20", borderRadius:20, padding:"6px 14px", fontSize:13, color:"#aaa", textDecoration:"none" }}>📍 {z}</a>))}
             </div>
           </div>
           <div style={{ textAlign:"center", marginTop:32 }}>
