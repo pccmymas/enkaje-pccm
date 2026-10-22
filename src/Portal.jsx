@@ -1069,6 +1069,12 @@ export default function Portal() {
     } catch {}
   }, [step, tipoProyecto, estilo, colorElegido, colorInterior, canto, acabado, material, gama, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
 
+  // Cada paso empieza arriba de la página (y al recargar no se queda a media página)
+  useEffect(() => {
+    try { if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual"; } catch {}
+    try { window.scrollTo({ top: 0, left: 0, behavior: "instant" }); } catch { try { window.scrollTo(0, 0); } catch {} }
+  }, [step]);
+
   // Si se creó la cuenta desde el bloqueo de renders: generar el render solo y mostrarlo
   useEffect(() => {
     if (!autoRender.current || !tieneCuenta || step !== 3) return;
