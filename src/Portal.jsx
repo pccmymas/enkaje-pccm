@@ -58,12 +58,12 @@ const COLORES = [
 ];
 
 const ACABADOS = [
-  { key: "mate",        label: "Mate",        desc: "Sin brillo, antihuella", foto: "/acabados.png", pos: "0% 0%",     prompt: "matte finish, no gloss, fingerprint resistant surface" },
-  { key: "alto_brillo", label: "Alto brillo", desc: "Brillante, moderno",     foto: "/acabados.png", pos: "50% 0%",   prompt: "high gloss finish, reflective shiny surface, lacquered" },
-  { key: "satinado",    label: "Satinado",    desc: "Suave, intermedio",      foto: "/acabados.png", pos: "100% 0%",  prompt: "satin finish, soft sheen, semi-gloss" },
-  { key: "tipo_madera", label: "Tipo madera", desc: "Veta natural visible",   foto: "/acabados.png", pos: "0% 100%",  prompt: "wood grain texture finish, natural veneer look, visible wood grain pattern" },
-  { key: "lacado",      label: "Lacado",      desc: "Color sólido, premium",  foto: "/acabados.png", pos: "50% 100%", prompt: "lacquered finish, solid color, premium painted surface" },
-  { key: "texturizado", label: "Texturizado", desc: "Relieves táctiles",      foto: "/acabados.png", pos: "100% 100%", prompt: "textured finish, embossed surface, tactile relief pattern" },
+  { key: "mate",        label: "Mate",        desc: "Sin brillo, disimula huellas", consejo: "Disimula huellas y rayones mejor que el brillo. Si es súper mate antihuella, casi no marca dedos.", foto: "/acabados.png", pos: "0% 0%",     prompt: "matte finish, no gloss, fingerprint resistant surface" },
+  { key: "alto_brillo", label: "Alto brillo", desc: "Brilla, marca huellas", consejo: "Se ve moderno y refleja la luz, pero es el que más marca huellas, manchas y rayones. Se limpia fácil con trapo suave, pero hay que hacerlo seguido.",     foto: "/acabados.png", pos: "50% 0%",   prompt: "high gloss finish, reflective shiny surface, lacquered" },
+  { key: "satinado",    label: "Satinado",    desc: "Intermedio, fácil de cuidar", consejo: "Un brillo suave: marca menos que el alto brillo y se limpia fácil. Buen punto medio para cocina.",      foto: "/acabados.png", pos: "100% 0%",  prompt: "satin finish, soft sheen, semi-gloss" },
+  { key: "tipo_madera", label: "Tipo madera", desc: "Veta visible, disimula", consejo: "La veta disimula huellas, polvo y rayones pequeños. Muy práctico para uso diario.",   foto: "/acabados.png", pos: "0% 100%",  prompt: "wood grain texture finish, natural veneer look, visible wood grain pattern" },
+  { key: "lacado",      label: "Lacado",      desc: "Color parejo, cuida golpes", consejo: "Es MDF pintado: color muy parejo y elegante, pero se puede despostillar con golpes y cuesta más retocarlo.",  foto: "/acabados.png", pos: "50% 100%", prompt: "lacquered finish, solid color, premium painted surface" },
+  { key: "texturizado", label: "Texturizado", desc: "Con relieve, cuesta limpiar", consejo: "Se siente y se ve como madera real, pero el relieve junta polvo y grasa. En cocina se limpia con más trabajo.",      foto: "/acabados.png", pos: "100% 100%", prompt: "textured finish, embossed surface, tactile relief pattern" },
 ];
 
 const MATERIALES = [
@@ -269,6 +269,28 @@ const PREGUNTAS_VIDA_POR_TIPO = {
     },
   ],
 };
+// Por qué hacemos cada pregunta (se muestra debajo de la pregunta)
+const POR_QUE_PREGUNTA = {
+  ninos_mascotas:        "Así elegimos esquinas sin filo, bisagras que cierran suave y acabados que aguantan rayones y manitas (el alto brillo los marca más).",
+  cocina_uso:            "Si cocinan seguido conviene un acabado liso que se limpie fácil de grasa (el texturizado la guarda en el relieve), y cubierta y campana resistentes; si es para recibir, una isla o barra.",
+  limpieza:              "El mate y las vetas de madera disimulan huellas; el alto brillo las marca y el texturizado junta polvo y grasa en el relieve.",
+  usuario:               "Cambia la altura de los tubos y cómo se reparte el espacio.",
+  organizacion:          "Define cuánto espacio va para colgar y cuánto para repisas y cajones.",
+  estilo_vida:           "Nos dice cuánto espacio necesitas, por ejemplo para zapatos y accesorios.",
+  estilo_bano:           "Define los materiales y la luz que van con el ambiente que buscas.",
+  uso_bano:              "Ayuda a decidir si lleva uno o dos lavabos y cuánto espacio para guardar.",
+  almacenamiento_bano:   "Así sabemos si lleva torre, cajones o solo una repisa.",
+  uso_puerta:            "Una puerta de entrada necesita más resistencia y seguridad; la de baño, aguantar la humedad.",
+  seguridad:             "Cambia el tipo de puerta, el marco y la chapa.",
+  mantenimiento_puerta:  "La madera natural se ve muy bien, pero hay que barnizarla cada cierto tiempo; el MDF pintado casi no pide mantenimiento.",
+  uso_mueble:            "Un mueble se diseña distinto si va en la sala, en la recámara o en una oficina.",
+  almacenamiento_mueble: "Define cuántas puertas y cajones lleva y cuánto queda abierto para decorar.",
+  uso_diario:            "Si el uso es intenso, conviene un material y un acabado más resistentes.",
+  ambiente_panel:        "Define el tono y la textura del panel.",
+  ubicacion_uso:         "La altura, la luz y el diseño cambian según el lugar.",
+  iluminacion_panel:     "La luz LED se planea desde el principio, porque lleva cableado.",
+};
+
 const PREGUNTAS_VIDA_DEFAULT = [
   {
     key: "ninos_mascotas", pregunta: "¿Hay niños o mascotas en casa?",
@@ -470,6 +492,22 @@ function SelectorColor({ value, onChange, quitar }) {
       )}
     </div>
   );
+}
+
+// Avisos según el acabado/material y lo que contestó el cliente
+function avisosAcabado({ tipo, acabado, material, vida }) {
+  const v = vida || {};
+  const conNinos = ["si_ninos", "si_mascotas", "ambos"].includes(v.ninos_mascotas);
+  const limpiaPoco = v.limpieza === "minimo";
+  const cocinaMucho = tipo === "cocina" && v.cocina_uso === "cocino_mucho";
+  const a = [];
+  if (acabado === "texturizado" && cocinaMucho) a.push("Cocinas seguido: el texturizado guarda grasa en el relieve y cuesta más limpiarlo. Para la cocina conviene mate, satinado o tipo madera liso.");
+  if (acabado === "texturizado" && limpiaPoco && !cocinaMucho) a.push("Quieres limpiar poco: el relieve del texturizado junta polvo. Un acabado liso se limpia más rápido.");
+  if (acabado === "alto_brillo" && limpiaPoco) a.push("Quieres limpiar poco: el alto brillo marca huellas y se nota todo. El mate o el tipo madera disimulan mucho más.");
+  if (acabado === "alto_brillo" && conNinos) a.push("Con niños o mascotas, el alto brillo marca rayones y manitas. El mate o el tipo madera aguantan mejor la vista.");
+  if ((acabado === "lacado" || material === "mdf") && conNinos) a.push("El MDF pintado se puede despostillar con golpes. Con niños o mascotas, la melamina aguanta más.");
+  if (material === "madera_solida" && limpiaPoco) a.push("La madera sólida necesita barniz o sellador cada cierto tiempo. Si quieres cero mantenimiento, la melamina es más práctica.");
+  return a;
 }
 
 const ProgressBar = ({ step, total }) => (
@@ -1608,10 +1646,13 @@ const guardarEnPerfil = async () => {
             )}
             <div style={{ marginBottom:20 }}>
               <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:4 }}>3 preguntas rápidas</div>
-              <p style={{ fontSize:12, color:"#555", marginBottom:16 }}>La IA ajusta los materiales y diseño según tus respuestas.</p>
+              <p style={{ fontSize:12, color:"#555", marginBottom:16 }}>Con tus respuestas ajustamos el diseño y los materiales a tu casa.</p>
               {preguntasVida.map((pregunta) => (
                 <div key={pregunta.key} style={{ marginBottom:18 }}>
-                  <p style={{ fontSize:14, fontWeight:600, color:"#e8e0d0", marginBottom:10 }}>{pregunta.pregunta}</p>
+                  <p style={{ fontSize:14, fontWeight:600, color:"#e8e0d0", marginBottom: POR_QUE_PREGUNTA[pregunta.key] ? 3 : 10 }}>{pregunta.pregunta}</p>
+                  {POR_QUE_PREGUNTA[pregunta.key] && (
+                    <p style={{ fontSize:12, color:"#6f6a60", lineHeight:1.45, marginBottom:10 }}>{POR_QUE_PREGUNTA[pregunta.key]}</p>
+                  )}
                   <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
                     {pregunta.opciones.map(op => {
                       const sel = vidaResp[pregunta.key] === op.value;
@@ -1815,6 +1856,16 @@ const guardarEnPerfil = async () => {
                   );
                 })}
               </div>
+              {acabado && ACABADOS.find(a => a.key === acabado)?.consejo && (
+                <div style={{ marginTop:10, background:"#0f0f0a", border:"1px solid #2a2618", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#888", lineHeight:1.5 }}>
+                  💡 {ACABADOS.find(a => a.key === acabado).consejo}
+                </div>
+              )}
+              {avisosAcabado({ tipo: tipoProyecto, acabado, material, vida: vidaResp }).map((t, i) => (
+                <div key={i} style={{ marginTop:8, background:"#1a1208", border:"1px solid #d4af3740", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#d9c38a", lineHeight:1.5 }}>
+                  ⚠️ {t}
+                </div>
+              ))}
             </div>
 
             <div style={{ display:"flex", gap:10 }}>
