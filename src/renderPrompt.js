@@ -367,6 +367,40 @@ const VARIANTES = {
   },
 };
 
+// Nivel de gama que eligió el cliente (económico / medio / alta gama).
+// Manda sobre el estilo: un estilo "Lujo" en gama económica sale sencillo.
+const GAMA = {
+  eco: {
+    casa: "an ordinary middle-class Mexican home in Monterrey (typical Infonavit-type house or apartment), modest size, simple finishes, not a showroom",
+    regla: "BUDGET LEVEL: ECONOMY (económico). This MUST look like an affordable, well-made custom piece that a typical Monterrey family buys: flat doors, simple standard handles (plain bar or edge pulls), standard hinges and drawer slides, plain white or light interior, laminate (formica) countertop for kitchens, standard sink and faucet. NO LED strips, NO glass doors, NO marble or stone slabs, NO brass or gold, NO decorative moldings, NO chandeliers, NO island and NO walk-in unless the client explicitly asked for it. Keep the piece compact and practical. This budget level overrides any premium detail mentioned in the design direction or style; only an explicit client request can add something.",
+    luz: "Bright, even natural daylight and an ordinary ceiling light. No LED strips.",
+  },
+  medio: {
+    casa: "a comfortable middle-class Mexican home in Monterrey, realistic size, tidy and well kept",
+    regla: "BUDGET LEVEL: MID-RANGE (medio). A good-quality custom piece with a few nice details: good standard hardware, at most one simple LED strip or one open shelf section, quartz-look or laminate countertop for kitchens. NO marble slabs, NO brass or gold trims, NO chandeliers, NO glass display cabinets. Nice but not luxurious. This budget level overrides any luxury detail in the design direction or style unless the client explicitly asked for it.",
+    luz: null,
+  },
+  premium: {
+    casa: "a realistic upscale Mexican home in Monterrey",
+    regla: "BUDGET LEVEL: HIGH-END (alta gama). Premium materials and details are welcome: stone countertops, integrated LED lighting, designer hardware, glass fronts where they fit the style.",
+    luz: null,
+  },
+};
+
+// Diseño base sencillo para gama económica (el estilo solo cambia colores y jaladeras).
+const DISENO_ECO = {
+  cocina: "Linear or L-shaped kitchen along the walls, no island. Flat doors with simple bar pulls, laminate (formica) countertop, standard ceramic tile backsplash, standard stainless sink, freestanding stove and fridge.",
+  closet: "Built-in reach-in wardrobe on one wall (not a walk-in), with flat sliding or hinged doors. Simple interior: one or two hanging rails, plain shelves and a small bank of 2-3 drawers.",
+  puerta: "Simple flat or lightly grooved interior door with a standard lever handle and a plain frame.",
+  mueble: "Low TV console with closed doors and one or two open shelves, plus a simple floating shelf on one side. Compact and practical.",
+  panel: "Simple vertical slat panel or a half-height flat lambrin on one wall, clean and modest.",
+  bano: "Simple vanity with one sink, two doors or drawers, laminate or simple ceramic top, plain mirror above.",
+};
+
+const sinLed = (t) => t
+  .replace(/,?\s*(?:a subtle )?(?:internal |integrated )?LED lighting(?: detail)?/gi, "")
+  .replace(/,\s*,/g, ",");
+
 // Memoria de variante: misma combinación -> mismo diseño (para que "ajustar" no cambie la base).
 const variantMemo = new Map();
 
@@ -381,15 +415,19 @@ function elegirVariante(tipo, estilo, firma, forzada) {
 export function buildRenderPrompt(o) {
   const {
     tipo, estilo, color, acabadoData, material, vidaHints, descripcion,
-    promptAdicional, foto, variante,
+    promptAdicional, foto, variante, gama,
   } = o;
+  const G = GAMA[gama] || GAMA.medio;
+  const esEco = (gama || "medio") === "eco";
+  // Estilo "Lujo" con gama económica o media: se usa el diseño moderno (elegante pero sin mármol ni latón).
+  const estiloBase = estilo === "lujo" && gama && gama !== "premium" ? "moderno" : estilo;
   const T = TIPOS[tipo] || TIPOS.cocina;
   const tipoKey = TIPOS[tipo] ? tipo : "cocina";
-  const estiloTxt = ESTILO_EN[estilo] || "Modern";
+  const estiloTxt = estiloBase !== estilo ? "Elegant modern" : (ESTILO_EN[estilo] || "Modern");
   const colorTxt = color ? COLOR_EN[color] : "";
   const esMadera = COLORES_MADERA.includes(color);
-  const firma = [tipoKey, estilo, color, material, acabadoData?.key, descripcion].join("|");
-  const diseno = elegirVariante(tipoKey, estilo, firma, variante);
+  const firma = [tipoKey, estilo, color, material, acabadoData?.key, descripcion, gama].join("|");
+  const diseno = esEco && gama ? DISENO_ECO[tipoKey] : elegirVariante(tipoKey, estiloBase, firma, variante);
 
   const materialTxt = {
     melamina: `The ${T.target} are melamine boards: flat panel construction with thin ABS edge banding. Solid colors are uniform; wood tones are printed wood grain.`,
@@ -400,7 +438,7 @@ export function buildRenderPrompt(o) {
 
   const colorReglaBase = colorTxt
     ? `Color: apply ${colorTxt} ONLY to the ${T.target}. Walls, floor, ceiling, countertops, tiles and appliances keep their own natural colors.`
-    : `Palette: ${ESTILO_PALETA[estilo] || ESTILO_PALETA.moderno}.`;
+    : `Palette: ${ESTILO_PALETA[estiloBase] || ESTILO_PALETA.moderno}.`;
 
   let colorNota = "";
   if (colorTxt && material === "mdf" && esMadera) {
@@ -415,7 +453,7 @@ export function buildRenderPrompt(o) {
 
   const modo = foto
     ? `Edit the attached photo of the real room. Keep the room exactly as it is: same walls, floor, ceiling, windows, doors, perspective angle and light direction. Only install the new ${T.subject} where it belongs in this room, scaled to the real proportions. Do not invent extra rooms or add furniture that was not requested.`
-    : `The attached image is only a loose reference for the type of space and the camera angle. Design a brand-new ${T.subject} in a realistic upscale Mexican home, you may change anything in the reference to match the specification below.`;
+    : `The attached image is only a loose reference for the type of space and the camera angle. Design a brand-new ${T.subject} in ${G.casa}, you may change anything in the reference to match the specification below.`;
 
   const reglaMueble = tipoKey === "mueble"
     ? "The default piece is a TV entertainment center. Only if the client request or household requirements clearly name a different piece (bookshelf, bar, dining sideboard, desk), build that piece instead and use the style only as design language."
@@ -424,7 +462,8 @@ export function buildRenderPrompt(o) {
   return [
     modo,
     `Subject: ${T.subject}. Design direction: ${diseno}`,
-    `Elements: ${T.elements}.`,
+    `Elements: ${esEco ? sinLed(T.elements) : T.elements}.`,
+    G.regla,
     `Dimensions: ${T.dims}`,
     `Style: ${estiloTxt}.`,
     materialTxt,
@@ -437,7 +476,7 @@ export function buildRenderPrompt(o) {
     descripcion && `Client request: ${descripcion}.`,
     promptAdicional && `Client adjustment, apply exactly and keep everything else the same: "${promptAdicional}".`,
     `Camera: ${T.camera} Sharp focus throughout.`,
-    `Lighting: ${T.lighting}`,
+    `Lighting: ${G.luz || T.lighting}`,
     `Quality: photorealistic architectural interior photography, real materials, believable reflections and shadows, straight vertical and horizontal lines, correct perspective.`,
     `Avoid: ${T.avoid} Consistent finish across all matching doors and drawers. No text, letters, logos, watermarks or people. No warped, melted or duplicated parts.`,
   ].filter(Boolean).join(" ");
