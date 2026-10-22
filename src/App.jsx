@@ -1493,6 +1493,10 @@ const ESTADOS_LEAD = [
   { key: "descartado",  label: "Descartado",  emoji: "🚫", color: "#666" },
   { key: "recontactar", label: "Recontactar", emoji: "🔄", color: "#f0a500" },
 ];
+// Detecta teléfonos, correos, redes o links en un texto (para que el cliente no se brinque la plataforma)
+const TIENE_CONTACTO = /(\d[\s.\-()]*){8,}|@|wa\.me|whats|http|www\.|\.com|facebook|instagram|tiktok/i;
+const MAX_FOTOS_PUB = 6;
+
 // Reduce las fotos del celular (de ~6 MB a ~300 KB) antes de subirlas
 const comprimirFoto = (file) => new Promise((resolve) => {
   const img = new Image();
@@ -1865,6 +1869,10 @@ export default function App() {
   const [cotForm, setCotForm] = useState({});
   const [cotMsg, setCotMsg] = useState("");
   const [cotsCliente, setCotsCliente] = useState({});
+  const [pubs, setPubs] = useState([]);
+  const [pubForm, setPubForm] = useState({ fotos: [], tipo: "", municipio: "", descripcion: "" });
+  const [pubMsg, setPubMsg] = useState("");
+  const [publicando, setPublicando] = useState(false);
   useEffect(() => {
     if (!role || role === "admin") return;
     const q = f => f.atencion_por === "Felipe Santiago" ? { ...f, atencion_por: "" } : f;
@@ -2306,6 +2314,58 @@ async function cargarLeads() {
     cargarCotizaciones();
   }
 
+  // ===== Publicaciones de trabajos (tipo página de Facebook del taller) =====
+  async function cargarPublicaciones() {
+    const data = await sb(`publicaciones?taller_email=eq.${encodeURIComponent((user?.email || "").toLowerCase())}&order=created_at.desc`, { token });
+    if (Array.isArray(data)) setPubs(data);
+  }
+
+  async function publicarTrabajo() {
+    setPubMsg("");
+    const f = pubForm;
+    const desc = f.descripcion.trim();
+    if (f.fotos.length === 0) return setPubMsg("❌ Agrega al menos una foto");
+    if (!f.tipo) return setPubMsg("❌ Elige qué tipo de trabajo es");
+    if (!f.municipio) return setPubMsg("❌ Elige el municipio donde quedó el trabajo");
+    if (TIENE_CONTACTO.test(desc)) return setPubMsg("❌ Quita teléfonos, correos, redes o links de la descripción. Los clientes te contactan por la plataforma.");
+    setPublicando(true);
+    try {
+      const urls = [];
+      for (let i = 0; i < f.fotos.length; i++) {
+        setPubMsg(`Subiendo foto ${i + 1} de ${f.fotos.length}...`);
+        const blob = await comprimirFoto(f.fotos[i]);
+        // Si no se pudo procesar, no la subimos: así nunca se sube con la ubicación GPS del celular
+        if (blob === f.fotos[i]) throw new Error("Una de las fotos no se pudo procesar. Usa fotos JPG o PNG.");
+        const fileName = `pub_${Date.now()}_${i}.jpg`;
+        const up = await fetch(`${SUPABASE_URL}/storage/v1/object/renders/${fileName}`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "x-upsert": "true", "Content-Type": "image/jpeg" },
+          body: blob,
+        });
+        if (!up.ok) throw new Error("No se pudo subir una foto. Revisa tu conexión e intenta de nuevo.");
+        urls.push(`${SUPABASE_URL}/storage/v1/object/public/renders/${fileName}`);
+      }
+      setPubMsg("Publicando...");
+      const r = await sb("publicaciones", { method: "POST", token, body: JSON.stringify({
+        taller_email: (user?.email || "").toLowerCase(), fotos: urls.join(","),
+        descripcion: desc || null, tipo_proyecto: f.tipo, municipio: f.municipio,
+      }) });
+      if (r && !Array.isArray(r) && (r.code || r.message)) throw new Error(r.code === "23514" ? "La descripción tiene datos de contacto. Quítalos e intenta de nuevo." : (r.message || "No se pudo publicar"));
+      setPubForm(p => ({ fotos: [], tipo: "", municipio: p.municipio, descripcion: "" }));
+      setPubMsg("✅ Publicado. Ya aparece en tu perfil público.");
+      setTimeout(() => setPubMsg(""), 5000);
+      cargarPublicaciones();
+    } catch (e) { setPubMsg("❌ " + e.message); }
+    setPublicando(false);
+  }
+
+  function borrarPublicacion(pub) {
+    setConfirmModal({
+      msg: "¿Borrar esta publicación? Ya no aparecerá en tu perfil.",
+      onOk: async () => { await sb(`publicaciones?id=eq.${pub.id}`, { method: "DELETE", token }); cargarPublicaciones(); }
+    });
+  }
+
  async function cargarTalleres() {
     const data = await sb("talleres_membresia?order=created_at.desc", { token });
     if (Array.isArray(data)) {
@@ -2542,7 +2602,8 @@ async function guardarEdicionTaller() {
 useEffect(() => {
     if (screen === "app" && role === "admin" && (tab === "leads_portal" || tab === "bienvenida")) cargarLeads();
     if (screen === "app" && (tab === "mis_proyectos" || tab === "leads" || tab === "proyectos" || tab === "solicitudes" || tab === "membresias" || tab === "bienvenida")) cargarProyectos();
-    if (screen === "app" && (tab === "membresias" || tab === "solicitudes" || tab === "mi_perfil" || (tab === "bienvenida" && (role === "taller" || role === "admin")) || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
+    if (screen === "app" && tab === "trabajos" && role === "taller") cargarPublicaciones();
+    if (screen === "app" && (tab === "membresias" || tab === "solicitudes" || tab === "mi_perfil" || tab === "trabajos" || (tab === "bienvenida" && (role === "taller" || role === "admin")) || (tab === "presupuesto" && role === "taller"))) cargarTalleres();
   }, [tab, screen]);
 
   useEffect(() => {
@@ -3292,7 +3353,7 @@ Formato: Caption completo listo para copiar y pegar.`;
   const tabs = role === "admin"
     ? [["bienvenida","Inicio"],["membresias","Talleres"],["solicitudes","Solicitudes"],["leads_portal","Leads"],["proyectos","Proyectos"],["formulario","Formulario"],["presupuesto","Presupuesto"],["ia","IA"]]
   : role === "taller"
-    ? [["bienvenida","Inicio"],["oportunidades","Oportunidades"],["leads","Proyectos"],["presupuesto","Cotizar"],["formulario","Formulario"],["mi_perfil","Mi Perfil"],["ia","IA"]]
+    ? [["bienvenida","Inicio"],["oportunidades","Oportunidades"],["leads","Proyectos"],["presupuesto","Cotizar"],["formulario","Formulario"],["trabajos","Mis trabajos"],["mi_perfil","Mi Perfil"],["ia","IA"]]
   : [["bienvenida","Inicio"],["mis_proyectos","Mis Proyectos"],["formulario","Formulario detallado"],["estilos","Estilos"],["ia","IA"]]
   const form = getForm();
 
@@ -4335,6 +4396,84 @@ Formato: Caption completo listo para copiar y pegar.`;
             })}
           </div>
         )}
+        {/* MIS TRABAJOS — taller */}
+        {tab === "trabajos" && role === "taller" && (() => {
+          const miT = talleresMem.find(t => (t.email || "").toLowerCase() === (user?.email || "").toLowerCase());
+          const municipioDef = pubForm.municipio || (ZONAS.includes(miT?.municipio) ? miT.municipio : "");
+          const f = { ...pubForm, municipio: municipioDef };
+          const setP = (k, v) => setPubForm(p => ({ ...p, municipio: municipioDef, [k]: v }));
+          const tipoLbl = k => (TIPOS_PROYECTO.find(([x]) => x === k) || [k, k])[1];
+          return (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexWrap: "wrap", gap: 10 }}>
+                <h1 style={{ color: "#d4af37", margin: 0, fontSize: isMobile?20:26 }}>Mis trabajos</h1>
+                {miT?.slug && <a href={`/taller/${miT.slug}`} target="_blank" rel="noreferrer"><BTN outline color="#00bcd4" style={{ fontSize: 12 }}>👁️ Ver mi perfil público</BTN></a>}
+              </div>
+              <p style={{ fontSize: 13, color: "#888", margin: "0 0 18px", lineHeight: 1.6 }}>Publica fotos de tus trabajos terminados. Salen en tu perfil público para que los clientes vean lo que haces.</p>
+
+              <div style={{ background: "#0f0f0a", border: "1px solid #d4af3730", borderRadius: 16, padding: isMobile?16:22, marginBottom: 24 }}>
+                <div style={{ fontSize: 12, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>📷 Nueva publicación</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px,1fr))", gap: 8, marginBottom: 10 }}>
+                  {f.fotos.map((file, i) => (
+                    <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 8, overflow: "hidden", border: "1px solid #1a1a12" }}>
+                      <img src={URL.createObjectURL(file)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <button onClick={() => setP("fotos", f.fotos.filter((_, j) => j !== i))} style={{ position: "absolute", top: 4, right: 4, background: "#f44336", color: "#fff", border: "none", borderRadius: "50%", width: 22, height: 22, fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✕</button>
+                    </div>
+                  ))}
+                </div>
+                {f.fotos.length < MAX_FOTOS_PUB && (
+                  <label style={{ display: "inline-block", background: "#1a1a12", border: "1px dashed #d4af3760", borderRadius: 10, padding: "10px 16px", fontSize: 12, color: "#d4af37", cursor: "pointer", fontWeight: 700, marginBottom: 6 }}>
+                    + Agregar fotos ({f.fotos.length}/{MAX_FOTOS_PUB})
+                    <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={e => { const n = Array.from(e.target.files || []); e.target.value = ""; setP("fotos", [...f.fotos, ...n].slice(0, MAX_FOTOS_PUB)); }} />
+                  </label>
+                )}
+                <div style={{ fontSize: 11, color: "#666", marginBottom: 14 }}>Solo trabajos tuyos. Que en las fotos no se vean teléfonos, direcciones ni caras de clientes.</div>
+
+                <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>Tipo de trabajo *</label>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+                  {TIPOS_PROYECTO.map(([k, l]) => <PILL_SINGLE key={k} label={l} checked={f.tipo === k} onChange={() => setP("tipo", f.tipo === k ? "" : k)} />)}
+                </div>
+
+                <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>Municipio donde quedó el trabajo *</label>
+                <select value={f.municipio} onChange={e => setP("municipio", e.target.value)} style={{ width: "100%", maxWidth: 320, padding: "10px 12px", background: "#0a0a08", border: "1px solid #2a2a20", borderRadius: 8, color: "#e8e0d0", fontSize: 14, marginBottom: 14 }}>
+                  <option value="">Elige municipio…</option>
+                  {ZONAS.map(z => <option key={z} value={z}>{z}</option>)}
+                </select>
+
+                <label style={{ fontSize: 11, color: "#999", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 1 }}>Descripción (opcional)</label>
+                <textarea value={f.descripcion} maxLength={300} rows={3} onChange={e => setP("descripcion", e.target.value)}
+                  placeholder="Cocina en L de melamina blanca con cubierta de cuarzo y bisagras de cierre lento."
+                  style={{ width: "100%", background: "#0d0d0a", border: `1px solid ${TIENE_CONTACTO.test(f.descripcion) ? "#f44336" : "#2a2a20"}`, borderRadius: 10, padding: "12px 14px", color: "#e8e0d0", fontSize: 14, boxSizing: "border-box", resize: "vertical" }} />
+                <div style={{ fontSize: 11, color: TIENE_CONTACTO.test(f.descripcion) ? "#f44336" : "#666", margin: "4px 0 14px" }}>
+                  {TIENE_CONTACTO.test(f.descripcion) ? "Sin teléfonos, correos, redes ni links: los clientes te contactan por la plataforma." : `${f.descripcion.length}/300`}
+                </div>
+
+                {pubMsg && <div style={{ background: pubMsg.startsWith("❌") ? "#1a0a0a" : "#0a1a0a", border: `1px solid ${pubMsg.startsWith("❌") ? "#f4433640" : "#4caf5040"}`, color: pubMsg.startsWith("❌") ? "#f44336" : "#4caf50", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>{pubMsg}</div>}
+                <BTN onClick={publicarTrabajo} disabled={publicando} style={{ width: "100%", padding: 14, fontSize: 14 }}>{publicando ? "Publicando..." : "📤 Publicar"}</BTN>
+              </div>
+
+              <div style={{ fontSize: 12, color: "#d4af37", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10 }}>Mis publicaciones ({pubs.length})</div>
+              {pubs.length === 0 && <div style={{ color: "#555", fontSize: 14, padding: 20 }}>Todavía no publicas nada. Sube tu primer trabajo arriba.</div>}
+              {pubs.map(pub => {
+                const fotos = String(pub.fotos || "").split(",").filter(Boolean);
+                return (
+                  <div key={pub.id} style={{ background: "#0f0f0a", border: "1px solid #1a1a12", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px,1fr))", gap: 6, marginBottom: 10 }}>
+                      {fotos.map(u => <img key={u} src={u} alt="" onClick={() => setImagenAmpliada(u)} style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: 8, cursor: "zoom-in" }} />)}
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700 }}>{tipoLbl(pub.tipo_proyecto)} · {pub.municipio}</div>
+                    {pub.descripcion && <div style={{ fontSize: 13, color: "#aaa", marginTop: 4, lineHeight: 1.6 }}>{pub.descripcion}</div>}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                      <span style={{ fontSize: 11, color: "#666" }}>{pub.created_at?.split("T")[0]}</span>
+                      <BTN onClick={() => borrarPublicacion(pub)} outline color="#f44336" style={{ fontSize: 12, padding: "7px 14px" }}>🗑️ Borrar</BTN>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+
         {/* MI PERFIL — taller */}
         {tab === "mi_perfil" && role === "taller" && tallerEdit && (
           <div>
@@ -4825,4 +4964,3 @@ Formato: Caption completo listo para copiar y pegar.`;
     </div>
   );
 }
-            
