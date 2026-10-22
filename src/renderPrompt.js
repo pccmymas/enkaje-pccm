@@ -373,12 +373,12 @@ const VARIANTES = {
 const GAMA = {
   eco: {
     casa: "an ordinary middle-class Mexican home in Monterrey (typical Infonavit-type house or apartment), modest size, simple finishes, not a showroom",
-    regla: "BUDGET LEVEL: ECONOMY (económico). This MUST look like an affordable, well-made custom piece that a typical Monterrey family buys: flat doors, simple standard handles (plain bar or edge pulls), standard hinges and drawer slides, plain white or light interior, laminate (formica) countertop for kitchens, standard sink and faucet. NO LED strips, NO glass doors, NO marble or stone slabs, NO brass or gold, NO decorative moldings, NO chandeliers, NO island and NO walk-in unless the client explicitly asked for it. Keep the piece compact and practical. This budget level overrides any premium detail mentioned in the design direction or style; only an explicit client request can add something.",
+    regla: "BUDGET LEVEL: ECONOMY (económico). This MUST look like an affordable, well-made custom piece that a typical Monterrey family buys: flat doors, simple standard handles (plain bar or edge pulls), standard hinges and drawer slides, plain white or light interior. NO LED strips, NO glass doors, NO marble or stone slabs, NO brass or gold, NO decorative moldings, NO chandeliers, NO island and NO walk-in unless the client explicitly asked for it. Keep the piece compact and practical. This budget level overrides any premium detail mentioned in the design direction or style; only an explicit client request can add something.",
     luz: "Bright, even natural daylight and an ordinary ceiling light. No LED strips.",
   },
   medio: {
     casa: "a comfortable middle-class Mexican home in Monterrey, realistic size, tidy and well kept",
-    regla: "BUDGET LEVEL: MID-RANGE (medio). A good-quality custom piece with a few nice details: good standard hardware, at most one simple LED strip or one open shelf section, quartz-look or laminate countertop for kitchens. NO marble slabs, NO brass or gold trims, NO chandeliers, NO glass display cabinets. Nice but not luxurious. This budget level overrides any luxury detail in the design direction or style unless the client explicitly asked for it.",
+    regla: "BUDGET LEVEL: MID-RANGE (medio). A good-quality custom piece with a few nice details: good standard hardware, at most one simple LED strip or one open shelf section. NO marble slabs, NO brass or gold trims, NO chandeliers, NO glass display cabinets. Nice but not luxurious. This budget level overrides any luxury detail in the design direction or style unless the client explicitly asked for it.",
     luz: null,
   },
   premium: {
@@ -396,6 +396,21 @@ const DISENO_ECO = {
   mueble: "Low TV console with closed doors and one or two open shelves, plus a simple floating shelf on one side. Compact and practical.",
   panel: "Simple vertical slat panel or a half-height flat lambrin on one wall, clean and modest.",
   bano: "Simple vanity with one sink, two doors or drawers, laminate or simple ceramic top, plain mirror above.",
+};
+
+// Reglas que solo aplican a un tipo de mueble (para que no aparezcan tarjas en un closet, etc.)
+const SOLO_TIPO = {
+  cocina: {
+    eco: "Kitchen details: laminate (formica) countertop, standard stainless sink and faucet, freestanding stove.",
+    medio: "Kitchen details: quartz-look or laminate countertop.",
+  },
+  bano: {
+    eco: "Bathroom details: simple ceramic or laminate top with one standard sink and faucet.",
+  },
+  closet:  { todos: "This is a bedroom closet only: NO sink, NO countertop, NO kitchen or bathroom elements, NO wall tiles. Bedroom walls and floor." },
+  puerta:  { todos: "Only the door: NO kitchen, bathroom or closet furniture in the scene." },
+  mueble:  { todos: "Living or bedroom furniture only: NO sink, NO countertop, NO kitchen or bathroom elements." },
+  panel:   { todos: "Only the wall paneling and minimal furniture: NO sink, NO countertop, NO kitchen or bathroom elements." },
 };
 
 const sinLed = (t) => t
@@ -477,6 +492,8 @@ export function buildRenderPrompt(o) {
     `Subject: ${T.subject}. Design direction: ${diseno}`,
     `Elements: ${esEco ? sinLed(T.elements) : T.elements}.`,
     G.regla,
+    SOLO_TIPO[tipoKey]?.[gama || "medio"],
+    SOLO_TIPO[tipoKey]?.todos,
     `Dimensions: ${T.dims}`,
     `Style: ${estiloTxt}.`,
     materialTxt,
