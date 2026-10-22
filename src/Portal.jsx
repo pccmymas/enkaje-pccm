@@ -92,6 +92,13 @@ const MATERIALES = [
   },
 ];
 
+// Nivel de gama que elige el cliente. La clave coincide con RANGOS_BASE (eco / medio / premium).
+const GAMAS = [
+  { key: "eco",     label: "Económico", desc: "Sencillo y bien hecho" },
+  { key: "medio",   label: "Medio",     desc: "Buen equilibrio" },
+  { key: "premium", label: "Alta gama", desc: "Acabados de lujo" },
+];
+
 const BASE_POR_TIPO = {
   cocina: "/moderno.png", closet: "/tipo-closet.png", puerta: "/tipo-puerta.png",
   mueble: "/tipo-entretenimiento.png", panel: "/tipo-entretenimiento.png", bano: "/tipo-bano.png",
@@ -310,8 +317,8 @@ const FACTOR_MATERIAL = {
   melamina: 1.0, mdf: 1.2, enchapado: 1.5, madera_solida: 2.0,
 };
 
-function calcularRango(tipo, estilo, mat) {
-  const nivel = NIVEL_ESTILO[estilo] || "eco";
+function calcularRango(tipo, estilo, mat, gama) {
+  const nivel = gama || NIVEL_ESTILO[estilo] || "eco";
   const base  = RANGOS_BASE[tipo]?.[nivel] || RANGOS_BASE.cocina.eco;
   const factor = FACTOR_MATERIAL[mat] || 1.0;
   return {
@@ -358,7 +365,8 @@ function scoreLabel(score) {
   return "en_exploracion";
 }
 
-async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion, preguntasVida }) {
+async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion, preguntasVida, gama }) {
+  const gamaData     = GAMAS.find(g => g.key === gama);
   const estiloData   = ESTILOS.find(e => e.key === estilo);
   const colorData    = COLORES.find(c => c.key === color);
   const acabadoData  = ACABADOS.find(a => a.key === acabado);
@@ -373,7 +381,7 @@ async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, mate
   const prompt = `Eres un diseñador de interiores experto en carpintería residencial en Monterrey, México. 
 Escribe una descripción de 3-4 oraciones en español, en segunda persona (tú), sobre este proyecto de carpintería.
 Sé específico, cálido y práctico. Menciona cómo el diseño se adapta a su estilo de vida.
-Datos: Tipo: ${tipoData?.label}, Estilo: ${estiloData?.label} (${estiloData?.desc}), Color: ${colorData?.label || "no especificado"}, Acabado: ${acabadoData?.label || "no especificado"}, Material: ${materialData?.label || "no especificado"} — ${materialData?.info || ""}, Perfil del hogar: ${vidaResumen || "no especificado"}, Notas: ${descripcion || "ninguna"}
+Datos: Tipo: ${tipoData?.label}, Nivel: ${gamaData?.label || "no especificado"} (no lo describas como más lujoso de lo que es), Estilo: ${estiloData?.label} (${estiloData?.desc}), Color: ${colorData?.label || "no especificado"}, Acabado: ${acabadoData?.label || "no especificado"}, Material: ${materialData?.label || "no especificado"} — ${materialData?.info || ""}, Perfil del hogar: ${vidaResumen || "no especificado"}, Notas: ${descripcion || "ninguna"}
 Responde SOLO la descripción, sin títulos ni listas. Máximo 4 oraciones.`;
 
   try {
@@ -843,6 +851,7 @@ export default function Portal() {
   const [colorElegido, setColor]      = useState("");
   const [acabado, setAcabado]         = useState("");
   const [material, setMaterial]       = useState("");
+  const [gama, setGama]               = useState("");
   const [vidaResp, setVidaResp]       = useState({});
   const [renderUrl, setRenderUrl]     = useState(null);
   const [renderLoading, setRenderLoading] = useState(false);
@@ -894,7 +903,7 @@ export default function Portal() {
   };
 
   // Rango dinámico — se recalcula cuando cambian tipo, estilo o material
-   const rango = calcularRango(tipoProyecto, estilo, material);
+   const rango = calcularRango(tipoProyecto, estilo, material, gama);
    const preguntasVida = tipoProyecto
     ? (PREGUNTAS_VIDA_POR_TIPO[tipoProyecto] || PREGUNTAS_VIDA_DEFAULT)
     : PREGUNTAS_VIDA_DEFAULT;
@@ -905,7 +914,7 @@ export default function Portal() {
       const d = JSON.parse(localStorage.getItem("enkaje_portal_draft") || "null");
       if (d && Date.now() - d.ts < 7*24*3600*1000 && d.tipoProyecto) {
         setTipo(d.tipoProyecto); setEstilo(d.estilo || ""); setColor(d.colorElegido || ""); setAcabado(d.acabado || "");
-        setMaterial(d.material || ""); setVidaResp(d.vidaResp || {}); setDescripcion(d.descripcion || "");
+        setMaterial(d.material || ""); setGama(d.gama || ""); setVidaResp(d.vidaResp || {}); setDescripcion(d.descripcion || "");
         setRenderUrl(d.renderUrl || null); setDescripcionIA(d.descripcionIA || null);
         setFechaInicio(d.fechaInicio || ""); setNivelDecision(d.nivelDecision || ""); setMedidas(d.medidas || "");
         setZona(d.zona || ""); setTelefono(d.telefono || "");
@@ -954,12 +963,12 @@ export default function Portal() {
     if (!draftListo.current || !tipoProyecto || step >= TOTAL_STEPS) return;
     try {
       localStorage.setItem("enkaje_portal_draft", JSON.stringify({
-        ts: Date.now(), step, tipoProyecto, estilo, colorElegido, acabado, material, vidaResp, descripcion,
+        ts: Date.now(), step, tipoProyecto, estilo, colorElegido, acabado, material, gama, vidaResp, descripcion,
         renderUrl: renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
         descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono,
       }));
     } catch {}
-  }, [step, tipoProyecto, estilo, colorElegido, acabado, material, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
+  }, [step, tipoProyecto, estilo, colorElegido, acabado, material, gama, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
 
   // Si se creó la cuenta desde el bloqueo de renders: generar el render solo y mostrarlo
   useEffect(() => {
@@ -1322,7 +1331,7 @@ const guardarEnPerfil = async () => {
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(sessionStorage.getItem("enkaje_token") ? { "Authorization": `Bearer ${sessionStorage.getItem("enkaje_token")}` } : {}) },
-        body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, acabadoData, material, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64, ajuste: !!promptAdicional })
+        body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, acabadoData, material, gama, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64, ajuste: !!promptAdicional })
       });
       const texto = await res.text();
       let data;
@@ -1368,7 +1377,7 @@ const guardarEnPerfil = async () => {
     setRenderLoading(false);
 
     setDescripcionLoading(true);
-    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion, preguntasVida });
+    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion, preguntasVida, gama });
     setDescripcionIA(desc);
     setDescripcionLoading(false);
   };
@@ -1399,7 +1408,7 @@ const guardarEnPerfil = async () => {
         foto_url:             fotoUrl || null,
         render_url:           (renderUrl && !renderUrl.startsWith("data:")) ? renderUrl : null,
         estilo_elegido:       estilo,
-        materiales_sugeridos: [MATERIALES_SUGERIDOS[estilo], colorElegido && `Color: ${colorElegido}`, acabadoData && `Acabado: ${acabadoData.label}`, materialData && `Material: ${materialData.label}`].filter(Boolean).join(" | "),
+        materiales_sugeridos: [GAMAS.find(g => g.key === gama) && `Nivel: ${GAMAS.find(g => g.key === gama).label}`, MATERIALES_SUGERIDOS[estilo], colorElegido && `Color: ${colorElegido}`, acabadoData && `Acabado: ${acabadoData.label}`, materialData && `Material: ${materialData.label}`].filter(Boolean).join(" | "),
         rango_inversion_min:  rango.min,
         rango_inversion_max:  rango.max,
         tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
@@ -1418,7 +1427,7 @@ const guardarEnPerfil = async () => {
   const back  = () => setStep(s => Math.max(s-1, 0));
   const reset = () => {
     setStep(0); setTipo(""); setFoto(null); setFotoUrl(null); setDescripcion("");
-    setEstilo(""); setColor(""); setAcabado(""); setMaterial(""); setVidaResp({});
+    setEstilo(""); setColor(""); setAcabado(""); setMaterial(""); setGama(""); setVidaResp({});
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
     setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision(""); setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
@@ -1591,6 +1600,25 @@ const guardarEnPerfil = async () => {
               <p style={{ color:"#666", fontSize:14 }}>Elige por las fotos — no tienes que saber los nombres.</p>
             </div>
 
+            {/* Nivel de gama */}
+            <div style={{ marginBottom:24 }}>
+              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>¿Qué nivel buscas?</label>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
+                {GAMAS.map(g => {
+                  const sel = gama === g.key;
+                  return (
+                    <button key={g.key} onClick={() => setGama(g.key)} style={{
+                      background:sel?"#d4af3712":"#0f0f0a", border:`1.5px solid ${sel?"#d4af37":"#1a1a12"}`,
+                      borderRadius:12, padding:"12px 8px", cursor:"pointer", textAlign:"center", transition:"all .2s"
+                    }}>
+                      <div style={{ fontWeight:700, fontSize:13, color:sel?"#d4af37":"#e8e0d0" }}>{g.label}</div>
+                      <div style={{ fontSize:10, color:"#555", marginTop:3 }}>{g.desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Estilos */}
             <div style={{ marginBottom:24 }}>
               <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>Estilo de diseño</label>
@@ -1652,7 +1680,7 @@ const guardarEnPerfil = async () => {
             </div>
 
             {/* Preview rango dinámico */}
-            {estilo && (
+            {estilo && gama && (
               <div style={{ background:"#1a1208", border:"1px solid #d4af3730", borderRadius:12, padding:"12px 16px", marginBottom:20, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                 <div style={{ fontSize:12, color:"#888" }}>Inversión estimada para tu selección</div>
                 <div style={{ fontSize:16, fontWeight:900, color:"#d4af37" }}>
@@ -1722,7 +1750,7 @@ const guardarEnPerfil = async () => {
 
             <div style={{ display:"flex", gap:10 }}>
               <Btn onClick={back} outline style={{ flex:1 }}>← Atrás</Btn>
-              <Btn onClick={async () => { next(); await generarRender(); }} disabled={!estilo} style={{ flex:2 }}>
+              <Btn onClick={async () => { next(); await generarRender(); }} disabled={!estilo || !gama} style={{ flex:2 }}>
                 🤖 Generar render con IA →
               </Btn>
             </div>
