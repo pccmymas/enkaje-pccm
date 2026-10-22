@@ -1,4 +1,5 @@
 // src/renderPrompt.js
+import { colorPorKey } from "./colores.js";
 // Constructor del prompt de render de EnKaje Pro.
 // 6 tipos (cocina, closet, puerta, mueble, panel, bano) x 8 estilos x 3 variantes de diseño.
 // La variante se elige al azar la primera vez y se conserva al ajustar (para no cambiar el diseño).
@@ -415,7 +416,7 @@ function elegirVariante(tipo, estilo, firma, forzada) {
 export function buildRenderPrompt(o) {
   const {
     tipo, estilo, color, acabadoData, material, vidaHints, descripcion,
-    promptAdicional, foto, variante, gama,
+    promptAdicional, foto, variante, gama, colorInterior, canto,
   } = o;
   const G = GAMA[gama] || GAMA.medio;
   const esEco = (gama || "medio") === "eco";
@@ -424,9 +425,21 @@ export function buildRenderPrompt(o) {
   const T = TIPOS[tipo] || TIPOS.cocina;
   const tipoKey = TIPOS[tipo] ? tipo : "cocina";
   const estiloTxt = estiloBase !== estilo ? "Elegant modern" : (ESTILO_EN[estilo] || "Modern");
-  const colorTxt = color ? COLOR_EN[color] : "";
-  const esMadera = COLORES_MADERA.includes(color);
-  const firma = [tipoKey, estilo, color, material, acabadoData?.key, descripcion, gama].join("|");
+  const cat = colorPorKey(color);
+  const colorTxt = cat ? `${cat.en} melamine (color "${cat.nombre}")` : (color ? COLOR_EN[color] : "");
+  const esMadera = cat ? cat.tipo === "madera" : COLORES_MADERA.includes(color);
+  const tieneInterior = ["cocina", "closet", "mueble", "bano"].includes(tipoKey);
+  const intCat = colorInterior === "igual" ? cat : colorPorKey(colorInterior || "blanco");
+  const interiorTxt = tieneInterior && colorTxt && intCat
+    ? `Interior surfaces (inside of the cabinets, shelves, drawer boxes): ${intCat.en}. Open shelves and any visible interior use this color, not the exterior color.`
+    : "";
+  const cantoTxt = colorTxt ? ({
+    igual: "Edge banding on doors, fronts and shelves matches the exterior color exactly.",
+    interior: `Edge banding on doors, fronts and shelves matches the interior color (${intCat?.en || "white"}).`,
+    negro: "Thin black edge banding on doors, fronts and shelves, visible as a crisp black outline.",
+    aluminio: "Thin brushed aluminium-look edge banding on doors, fronts and shelves.",
+  }[canto || "igual"] || "") : "";
+  const firma = [tipoKey, estilo, color, colorInterior, canto, material, acabadoData?.key, descripcion, gama].join("|");
   const diseno = esEco && gama ? DISENO_ECO[tipoKey] : elegirVariante(tipoKey, estiloBase, firma, variante);
 
   const materialTxt = {
@@ -469,6 +482,8 @@ export function buildRenderPrompt(o) {
     materialTxt,
     colorReglaBase,
     colorNota,
+    interiorTxt,
+    cantoTxt,
     acabadoData && `Finish of the ${T.target}: ${acabadoData.prompt}. Applies only to those surfaces.`,
     `Apply the ${estiloTxt} style to proportions, hardware, door or panel profile and layout. It must not override the material or color above.`,
     vidaHints && `Household requirements: ${vidaHints}.`,

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { buildRenderPrompt } from "./renderPrompt.js";
+import { COLORES_MELAMINA, TIPOS_COLOR, CANTOS, colorPorKey, fotoColor } from "./colores.js";
 const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
 
@@ -365,10 +366,10 @@ function scoreLabel(score) {
   return "en_exploracion";
 }
 
-async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion, preguntasVida, gama }) {
+async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, material, vidaResp, descripcion, preguntasVida, gama, colorInterior, canto }) {
   const gamaData     = GAMAS.find(g => g.key === gama);
   const estiloData   = ESTILOS.find(e => e.key === estilo);
-  const colorData    = COLORES.find(c => c.key === color);
+  const colorTexto   = resumenColores(color, colorInterior, canto);
   const acabadoData  = ACABADOS.find(a => a.key === acabado);
   const materialData = MATERIALES.find(m => m.key === material);
   const tipoData     = TIPOS_PROYECTO.find(t => t.key === tipoProyecto);
@@ -381,7 +382,7 @@ async function generarDescripcionIA({ tipoProyecto, estilo, color, acabado, mate
   const prompt = `Eres un diseñador de interiores experto en carpintería residencial en Monterrey, México. 
 Escribe una descripción de 3-4 oraciones en español, en segunda persona (tú), sobre este proyecto de carpintería.
 Sé específico, cálido y práctico. Menciona cómo el diseño se adapta a su estilo de vida.
-Datos: Tipo: ${tipoData?.label}, Nivel: ${gamaData?.label || "no especificado"} (no lo describas como más lujoso de lo que es), Estilo: ${estiloData?.label} (${estiloData?.desc}), Color: ${colorData?.label || "no especificado"}, Acabado: ${acabadoData?.label || "no especificado"}, Material: ${materialData?.label || "no especificado"} — ${materialData?.info || ""}, Perfil del hogar: ${vidaResumen || "no especificado"}, Notas: ${descripcion || "ninguna"}
+Datos: Tipo: ${tipoData?.label}, Nivel: ${gamaData?.label || "no especificado"} (no lo describas como más lujoso de lo que es), Estilo: ${estiloData?.label} (${estiloData?.desc}), Colores: ${colorTexto || "no especificado"}, Acabado: ${acabadoData?.label || "no especificado"}, Material: ${materialData?.label || "no especificado"} — ${materialData?.info || ""}, Perfil del hogar: ${vidaResumen || "no especificado"}, Notas: ${descripcion || "ninguna"}
 Responde SOLO la descripción, sin títulos ni listas. Máximo 4 oraciones.`;
 
   try {
@@ -413,6 +414,63 @@ const CSS = `
   .vida-btn:hover { border-color: #d4af3780 !important; }
   .mat-card:hover { border-color: #d4af3780 !important; transform: translateY(-2px); }
 `;
+
+// Nombre del color (catálogo nuevo o los 8 colores anteriores, para borradores viejos)
+const nombreColor = (key) => colorPorKey(key)?.nombre || COLORES.find(c => c.key === key)?.label || key || "";
+
+// "Exterior: Nogal · Interior: Blanco · Canto: igual al exterior"
+const resumenColores = (ext, int, canto) => {
+  if (!ext) return null;
+  const interior = int === "igual" ? nombreColor(ext) : nombreColor(int || "blanco");
+  const cantoTxt = (CANTOS.find(c => c.key === (canto || "igual"))?.label || "").toLowerCase();
+  return `Exterior: ${nombreColor(ext)} · Interior: ${interior} · Canto: ${cantoTxt}`;
+};
+
+// Selector compacto: pestañas Lisos / Maderas / Especiales, cuadritos con foto, "Ver más"
+function SelectorColor({ value, onChange, quitar }) {
+  const [tab, setTab] = useState(() => colorPorKey(value)?.tipo || "liso");
+  const [todos, setTodos] = useState(false);
+  const lista = COLORES_MELAMINA.filter(c => c.tipo === tab);
+  const idxSel = lista.findIndex(c => c.key === value);
+  const visibles = todos || idxSel >= 8 ? lista : lista.slice(0, 8);
+  return (
+    <div>
+      <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+        {TIPOS_COLOR.map(t => (
+          <button key={t.key} onClick={() => { setTab(t.key); setTodos(false); }} style={{
+            background: tab === t.key ? "#d4af37" : "transparent", color: tab === t.key ? "#000" : "#888",
+            border: `1px solid ${tab === t.key ? "#d4af37" : "#2a2a20"}`, borderRadius: 50,
+            padding: "5px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer"
+          }}>{t.label}</button>
+        ))}
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:8 }}>
+        {visibles.map(c => {
+          const sel = value === c.key;
+          return (
+            <button key={c.key} onClick={() => onChange(sel && quitar ? "" : c.key)} title={c.nombre} style={{
+              background:"transparent", border:"none", padding:0, cursor:"pointer", textAlign:"center"
+            }}>
+              <div style={{
+                position:"relative", aspectRatio:"1", borderRadius:10, overflow:"hidden", background:c.hex,
+                border:`2px solid ${sel ? "#d4af37" : "#1a1a12"}`, boxShadow: sel ? "0 0 12px #d4af3750" : "none"
+              }}>
+                <img src={fotoColor(c.key)} alt={c.nombre} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} onError={ev => { ev.target.style.display = "none"; }} />
+                {sel && <div style={{ position:"absolute", top:4, right:4, background:"#d4af37", borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:900, color:"#000" }}>✓</div>}
+              </div>
+              <div style={{ fontSize:10, marginTop:4, lineHeight:1.2, color: sel ? "#d4af37" : "#888", fontWeight: sel ? 700 : 400 }}>{c.nombre}</div>
+            </button>
+          );
+        })}
+      </div>
+      {!todos && idxSel < 8 && lista.length > 8 && (
+        <button onClick={() => setTodos(true)} style={{ marginTop:10, background:"none", border:"none", color:"#d4af37", fontSize:12, fontWeight:600, cursor:"pointer", padding:0 }}>
+          Ver más colores ({lista.length - 8}) ▾
+        </button>
+      )}
+    </div>
+  );
+}
 
 const ProgressBar = ({ step, total }) => (
   <div style={{ width:"100%", height:3, background:"#1a1a12", borderRadius:2, overflow:"hidden", marginBottom:8 }}>
@@ -849,6 +907,9 @@ export default function Portal() {
   const [descripcion, setDescripcion] = useState("");
   const [estilo, setEstilo]           = useState("");
   const [colorElegido, setColor]      = useState("");
+  const [colorInterior, setColorInterior] = useState("blanco");
+  const [canto, setCanto]             = useState("igual");
+  const [verInteriorOtro, setVerInteriorOtro] = useState(false);
   const [acabado, setAcabado]         = useState("");
   const [material, setMaterial]       = useState("");
   const [gama, setGama]               = useState("");
@@ -913,7 +974,7 @@ export default function Portal() {
     try {
       const d = JSON.parse(localStorage.getItem("enkaje_portal_draft") || "null");
       if (d && Date.now() - d.ts < 7*24*3600*1000 && d.tipoProyecto) {
-        setTipo(d.tipoProyecto); setEstilo(d.estilo || ""); setColor(d.colorElegido || ""); setAcabado(d.acabado || "");
+        setTipo(d.tipoProyecto); setEstilo(d.estilo || ""); setColor(d.colorElegido || ""); setColorInterior(d.colorInterior || "blanco"); setCanto(d.canto || "igual"); setAcabado(d.acabado || "");
         setMaterial(d.material || ""); setGama(d.gama || ""); setVidaResp(d.vidaResp || {}); setDescripcion(d.descripcion || "");
         setRenderUrl(d.renderUrl || null); setDescripcionIA(d.descripcionIA || null);
         setFechaInicio(d.fechaInicio || ""); setNivelDecision(d.nivelDecision || ""); setMedidas(d.medidas || "");
@@ -949,7 +1010,7 @@ export default function Portal() {
         tipo_proyecto: tipoProyecto,
         estilo: estilo,
         material: MATERIALES.find(m => m.key === material)?.label || material || null,
-        color_principal: colorElegido || null,
+        color_principal: resumenColores(colorElegido, colorInterior, canto),
         tipo_acabado: ACABADOS.find(a => a.key === acabado)?.label || acabado || null,
         observaciones: descripcion || null,
         descripcion_ia: descripcionIA || null,
@@ -963,12 +1024,12 @@ export default function Portal() {
     if (!draftListo.current || !tipoProyecto || step >= TOTAL_STEPS) return;
     try {
       localStorage.setItem("enkaje_portal_draft", JSON.stringify({
-        ts: Date.now(), step, tipoProyecto, estilo, colorElegido, acabado, material, gama, vidaResp, descripcion,
+        ts: Date.now(), step, tipoProyecto, estilo, colorElegido, colorInterior, canto, acabado, material, gama, vidaResp, descripcion,
         renderUrl: renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
         descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono,
       }));
     } catch {}
-  }, [step, tipoProyecto, estilo, colorElegido, acabado, material, gama, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
+  }, [step, tipoProyecto, estilo, colorElegido, colorInterior, canto, acabado, material, gama, vidaResp, descripcion, renderUrl, descripcionIA, fechaInicio, nivelDecision, medidas, zona, telefono]);
 
   // Si se creó la cuenta desde el bloqueo de renders: generar el render solo y mostrarlo
   useEffect(() => {
@@ -1010,7 +1071,7 @@ export default function Portal() {
       render_url: renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
       estilo,
       material: materialData?.label || material || null,
-      color_principal: colorElegido || null,
+      color_principal: resumenColores(colorElegido, colorInterior, canto),
       tipo_acabado: acabadoData?.label || acabado || null,
       observaciones: descripcion || null,
       descripcion_ia: descripcionIA || null,
@@ -1098,7 +1159,7 @@ const guardarEnPerfil = async () => {
         render_url:     renderUrl && !renderUrl.startsWith("data:") ? renderUrl : null,
         estilo:         estilo,
         material:       materialData?.label || material || null,
-        color_principal: colorElegido || null,
+        color_principal: resumenColores(colorElegido, colorInterior, canto),
         tipo_acabado:   acabadoData?.label || acabado || null,
         observaciones:  descripcion || null,
         descripcion_ia: descripcionIA || null,
@@ -1331,7 +1392,7 @@ const guardarEnPerfil = async () => {
       const res = await fetch("/api/image", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(sessionStorage.getItem("enkaje_token") ? { "Authorization": `Bearer ${sessionStorage.getItem("enkaje_token")}` } : {}) },
-        body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, acabadoData, material, gama, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64, ajuste: !!promptAdicional })
+        body: JSON.stringify({ prompt: buildRenderPrompt({ tipo: tipoProyecto, estilo, color: colorElegido, colorInterior, canto, acabadoData, material, gama, vidaHints, descripcion, promptAdicional, foto }), image: fotoBase64, ajuste: !!promptAdicional })
       });
       const texto = await res.text();
       let data;
@@ -1377,7 +1438,7 @@ const guardarEnPerfil = async () => {
     setRenderLoading(false);
 
     setDescripcionLoading(true);
-    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, acabado, material, vidaResp, descripcion, preguntasVida, gama });
+    const desc = await generarDescripcionIA({ tipoProyecto, estilo, color: colorElegido, colorInterior, canto, acabado, material, vidaResp, descripcion, preguntasVida, gama });
     setDescripcionIA(desc);
     setDescripcionLoading(false);
   };
@@ -1408,7 +1469,7 @@ const guardarEnPerfil = async () => {
         foto_url:             fotoUrl || null,
         render_url:           (renderUrl && !renderUrl.startsWith("data:")) ? renderUrl : null,
         estilo_elegido:       estilo,
-        materiales_sugeridos: [GAMAS.find(g => g.key === gama) && `Nivel: ${GAMAS.find(g => g.key === gama).label}`, MATERIALES_SUGERIDOS[estilo], colorElegido && `Color: ${colorElegido}`, acabadoData && `Acabado: ${acabadoData.label}`, materialData && `Material: ${materialData.label}`].filter(Boolean).join(" | "),
+        materiales_sugeridos: [GAMAS.find(g => g.key === gama) && `Nivel: ${GAMAS.find(g => g.key === gama).label}`, MATERIALES_SUGERIDOS[estilo], resumenColores(colorElegido, colorInterior, canto), acabadoData && `Acabado: ${acabadoData.label}`, materialData && `Material: ${materialData.label}`].filter(Boolean).join(" | "),
         rango_inversion_min:  rango.min,
         rango_inversion_max:  rango.max,
         tiempo_fabricacion:   TIEMPOS[tipoProyecto] || null,
@@ -1427,7 +1488,7 @@ const guardarEnPerfil = async () => {
   const back  = () => setStep(s => Math.max(s-1, 0));
   const reset = () => {
     setStep(0); setTipo(""); setFoto(null); setFotoUrl(null); setDescripcion("");
-    setEstilo(""); setColor(""); setAcabado(""); setMaterial(""); setGama(""); setVidaResp({});
+    setEstilo(""); setColor(""); setColorInterior("blanco"); setCanto("igual"); setVerInteriorOtro(false); setAcabado(""); setMaterial(""); setGama(""); setVidaResp({});
     setRenderUrl(null); setRenderMsg(""); setDescripcionIA(null);
     setGuardadoEnPerfil(false); setGuardandoPerfil(false);
     setFechaInicio(""); setNivelDecision(""); setMedidas(""); setNombre(""); setTelefono(""); setCorreo("");
@@ -1691,28 +1752,36 @@ const guardarEnPerfil = async () => {
 
             {/* Colores */}
             <div style={{ marginBottom:20 }}>
-              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:12 }}>
-                Color principal <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
+              <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:4 }}>
+                Color exterior <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
               </label>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-                {COLORES.map(c => {
-                  const sel = colorElegido === c.key;
-                  return (
-                    <button key={c.key} className="color-chip" onClick={() => setColor(colorElegido===c.key?"":c.key)} style={{
-                      display:"flex", alignItems:"center", gap:12,
-                      background:sel?"#d4af3712":"#0f0f0a", border:`1.5px solid ${sel?"#d4af37":"#1a1a12"}`,
-                      borderRadius:12, padding:"10px 14px", cursor:"pointer", transition:"all .2s", textAlign:"left"
-                    }}>
-                      <div style={{ width:36, height:36, borderRadius:8, background:c.hex, flexShrink:0, border:"1px solid rgba(255,255,255,0.12)", boxShadow:sel?`0 0 10px ${c.hex}60`:"none" }} />
-                      <div>
-                        <div style={{ fontSize:13, fontWeight:sel?700:500, color:sel?"#d4af37":"#e8e0d0" }}>{c.label}</div>
-                        <div style={{ fontSize:11, color:"#555" }}>{c.desc}</div>
+              <p style={{ fontSize:11, color:"#555", marginBottom:10 }}>Puertas y frentes. Colores de melamina; el render muestra un tono aproximado.</p>
+              <SelectorColor value={colorElegido} onChange={setColor} quitar />
+
+              {colorElegido && (() => {
+                const chipStyle = (sel) => ({ background: sel ? "#d4af3712" : "#0f0f0a", border: `1.5px solid ${sel ? "#d4af37" : "#1a1a12"}`, color: sel ? "#d4af37" : "#e8e0d0", borderRadius: 50, padding: "7px 12px", fontSize: 12, fontWeight: sel ? 700 : 500, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 });
+                const mini = (key) => <span style={{ width:14, height:14, borderRadius:4, background:colorPorKey(key)?.hex || "#fff", border:"1px solid #333", display:"inline-block" }} />;
+                const intEsOtro = colorInterior !== "blanco" && colorInterior !== "igual";
+                return (
+                  <div style={{ marginTop:16, background:"#0b0b08", border:"1px solid #1a1a12", borderRadius:12, padding:"12px 12px 4px" }}>
+                    <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:1.5, textTransform:"uppercase", marginBottom:8 }}>Color interior</div>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
+                      <button onClick={() => { setColorInterior("blanco"); setVerInteriorOtro(false); }} style={chipStyle(colorInterior === "blanco")}>{mini("blanco")} Blanco</button>
+                      <button onClick={() => { setColorInterior("igual"); setVerInteriorOtro(false); }} style={chipStyle(colorInterior === "igual")}>{mini(colorElegido)} Igual al exterior</button>
+                      <button onClick={() => setVerInteriorOtro(v => !v)} style={chipStyle(intEsOtro)}>{intEsOtro ? <>{mini(colorInterior)} {nombreColor(colorInterior)}</> : "Otro color"}</button>
+                    </div>
+                    {verInteriorOtro && (
+                      <div style={{ marginBottom:12 }}>
+                        <SelectorColor value={intEsOtro ? colorInterior : ""} onChange={(k) => { setColorInterior(k); setVerInteriorOtro(false); }} />
                       </div>
-                      {sel && <span style={{ marginLeft:"auto", color:"#d4af37", fontSize:14 }}>✓</span>}
-                    </button>
-                  );
-                })}
-              </div>
+                    )}
+                    <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:1.5, textTransform:"uppercase", marginBottom:8 }}>Canto <span style={{ color:"#555", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(la orilla de puertas y repisas)</span></div>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
+                      {CANTOS.map(c => <button key={c.key} onClick={() => setCanto(c.key)} style={chipStyle(canto === c.key)}>{c.label}</button>)}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Acabados */}
@@ -1844,7 +1913,7 @@ const guardarEnPerfil = async () => {
                 <div style={{ background:"#0f0f0a", border:"1px solid #1a1a12", borderRadius:16, padding:20, marginBottom:16 }}>
                   <div style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", marginBottom:14 }}>
                     Detalles · {ESTILOS.find(e=>e.key===estilo)?.label}
-                    {colorElegido && ` · ${COLORES.find(c=>c.key===colorElegido)?.label}`}
+                    {colorElegido && ` · ${nombreColor(colorElegido)}`}
                     {acabado && ` · ${ACABADOS.find(a=>a.key===acabado)?.label}`}
                     {material && ` · ${MATERIALES.find(m=>m.key===material)?.label}`}
                   </div>
