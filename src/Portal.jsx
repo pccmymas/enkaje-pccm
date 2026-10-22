@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { buildRenderPrompt } from "./renderPrompt.js";
-import { COLORES_MELAMINA, TIPOS_COLOR, CANTOS, colorPorKey, fotoColor } from "./colores.js";
+import { COLORES_MELAMINA, TIPOS_COLOR, CANTOS, NOTA_LINEA, ACABADO_LINEA, colorPorKey, fotoColor } from "./colores.js";
 const SUPABASE_URL = "https://iucoggyualkyojmmgael.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Y29nZ3l1YWxreW9qbW1nYWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMTMxOTMsImV4cCI6MjA5NTU4OTE5M30.QNU604KcLaSxXxoZaxmVbt-sf-aFDTjrVoTR4K-wy5c";
 
@@ -450,14 +450,14 @@ const resumenColores = (ext, int, canto) => {
 
 // Selector compacto: pestañas Lisos / Maderas / Especiales, cuadritos con foto, "Ver más"
 function SelectorColor({ value, onChange, quitar }) {
-  const [tab, setTab] = useState(() => colorPorKey(value)?.tipo || "liso");
+  const [tab, setTab] = useState(() => colorPorKey(value)?.grupo || "madera");
   const [todos, setTodos] = useState(false);
-  const lista = COLORES_MELAMINA.filter(c => c.tipo === tab);
+  const lista = COLORES_MELAMINA.filter(c => c.grupo === tab);
   const idxSel = lista.findIndex(c => c.key === value);
   const visibles = todos || idxSel >= 8 ? lista : lista.slice(0, 8);
   return (
     <div>
-      <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:10 }}>
         {TIPOS_COLOR.map(t => (
           <button key={t.key} onClick={() => { setTab(t.key); setTodos(false); }} style={{
             background: tab === t.key ? "#d4af37" : "transparent", color: tab === t.key ? "#000" : "#888",
@@ -480,7 +480,7 @@ function SelectorColor({ value, onChange, quitar }) {
                 <img src={fotoColor(c.key)} alt={c.nombre} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} onError={ev => { ev.target.style.display = "none"; }} />
                 {sel && <div style={{ position:"absolute", top:4, right:4, background:"#d4af37", borderRadius:"50%", width:18, height:18, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:900, color:"#000" }}>✓</div>}
               </div>
-              <div style={{ fontSize:10, marginTop:4, lineHeight:1.2, color: sel ? "#d4af37" : "#888", fontWeight: sel ? 700 : 400 }}>{c.nombre}</div>
+              <div style={{ fontSize:10, marginTop:4, lineHeight:1.2, color: sel ? "#d4af37" : "#888", fontWeight: sel ? 700 : 400 }}>{c.corto || c.nombre}</div>
             </button>
           );
         })}
@@ -1802,8 +1802,17 @@ const guardarEnPerfil = async () => {
               <label style={{ fontSize:11, color:"#d4af37", fontWeight:700, letterSpacing:2, textTransform:"uppercase", display:"block", marginBottom:4 }}>
                 Color exterior <span style={{ color:"#333", fontWeight:400 }}>(opcional)</span>
               </label>
-              <p style={{ fontSize:11, color:"#555", marginBottom:10 }}>Puertas y frentes. Colores de melamina; el render muestra un tono aproximado.</p>
-              <SelectorColor value={colorElegido} onChange={setColor} quitar />
+              <p style={{ fontSize:11, color:"#555", marginBottom:10 }}>Puertas y frentes. Colores de melamina que se consiguen en Monterrey; el render muestra un tono aproximado.</p>
+              <SelectorColor value={colorElegido} quitar onChange={(k) => {
+                setColor(k);
+                const lin = colorPorKey(k)?.linea;
+                if (ACABADO_LINEA[lin]) setAcabado(ACABADO_LINEA[lin]);
+              }} />
+              {NOTA_LINEA[colorPorKey(colorElegido)?.linea] && (
+                <div style={{ marginTop:10, background:"#0f0f0a", border:"1px solid #2a2618", borderRadius:10, padding:"10px 14px", fontSize:12, color:"#888", lineHeight:1.5 }}>
+                  💡 {NOTA_LINEA[colorPorKey(colorElegido).linea]} El acabado se marcó solo abajo.
+                </div>
+              )}
 
               {colorElegido && (() => {
                 const chipStyle = (sel) => ({ background: sel ? "#d4af3712" : "#0f0f0a", border: `1.5px solid ${sel ? "#d4af37" : "#1a1a12"}`, color: sel ? "#d4af37" : "#e8e0d0", borderRadius: 50, padding: "7px 12px", fontSize: 12, fontWeight: sel ? 700 : 500, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 });
