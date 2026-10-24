@@ -27,6 +27,9 @@ const CSS = `
   .nav-link:hover { color: #d4af37; }
   .legal-link { font-size: 13px; color: #444; background: transparent; border: none; cursor: pointer; transition: color .2s; text-decoration: underline; font-family: 'DM Sans', sans-serif; }
   .legal-link:hover { color: #d4af37; }
+  .menu-btn { display: none; background: transparent; border: 1.5px solid #333; border-radius: 10px; width: 42px; height: 40px; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .menu-movil a, .menu-movil button { display: block; width: 100%; text-align: left; padding: 15px 4px; font-size: 16px; font-weight: 600; color: #e8e0d0; text-decoration: none; background: none; border: none; border-bottom: 1px solid #1a1a12; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+  .menu-movil a:hover, .menu-movil button:hover { color: #d4af37; }
   .tab-btn { background: transparent; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
   .filter-btn { background: transparent; border: 1px solid #1a1a12; border-radius: 50px; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; color: #555; }
   .filter-btn.active, .filter-btn:hover { background: #d4af3715; border-color: #d4af37; color: #d4af37; }
@@ -41,6 +44,7 @@ const CSS = `
     .section-title { font-size: 26px !important; }
     .container { padding: 0 16px !important; }
     .nav-links { display: none !important; }
+    .menu-btn { display: flex !important; }
     .hero-btns { flex-direction: column !important; align-items: stretch !important; }
     .hero-btns button, .hero-btns a { justify-content: center; }
   }
@@ -100,6 +104,7 @@ const RENDER_EJEMPLO = {
 
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const [audiencia, setAudiencia] = useState("cliente");
   const [fotoIdx, setFotoIdx] = useState(0);
   const [filtro, setFiltro] = useState("Todos");
@@ -161,7 +166,7 @@ export default function Landing() {
       <style>{CSS}</style>
 
       {/* NAV */}
-      <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:100, background:scrolled?"rgba(7,7,8,0.96)":"transparent", backdropFilter:scrolled?"blur(12px)":"none", borderBottom:scrolled?"1px solid #1a1a12":"none", transition:"all .3s", padding:"0 24px" }}>
+      <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:100, background:(scrolled||menuAbierto)?"rgba(7,7,8,0.98)":"transparent", backdropFilter:(scrolled||menuAbierto)?"blur(12px)":"none", borderBottom:(scrolled||menuAbierto)?"1px solid #1a1a12":"none", transition:"all .3s", padding:"0 24px" }}>
         <div className="container" style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 0" }}>
           <div style={{ cursor:"pointer" }} onClick={() => window.scrollTo({top:0,behavior:"smooth"})}>
             <LogoInline size="nav" />
@@ -173,10 +178,25 @@ export default function Landing() {
           
           </div>
           <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-            <button onClick={goApp} className="btn-outline" style={{ padding:"9px 18px", fontSize:13 }}>Iniciar sesión</button>
-            <button onClick={goPortal} className="btn-gold" style={{ padding:"9px 18px", fontSize:13 }}>Visualizar gratis →</button>
+            <button onClick={goApp} className="btn-outline hide-mobile" style={{ padding:"9px 18px", fontSize:13 }}>Iniciar sesión</button>
+            <button onClick={goPortal} className="btn-gold" style={{ padding:"9px 16px", fontSize:13, whiteSpace:"nowrap" }}>Visualizar gratis</button>
+            <button className="menu-btn" onClick={() => setMenuAbierto(m => !m)} aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"} aria-expanded={menuAbierto}>
+              {menuAbierto
+                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8e0d0" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>}
+            </button>
           </div>
         </div>
+        {menuAbierto && (
+          <div className="menu-movil" style={{ maxWidth:1100, margin:"0 auto", paddingBottom:16 }}>
+            <a href="/talleres">Talleres</a>
+            <a href="/trabajos">Trabajos</a>
+            <a href="#como-funciona" onClick={() => setMenuAbierto(false)}>Cómo funciona</a>
+            <a href="/blog">Blog</a>
+            <button onClick={goApp}>Iniciar sesión</button>
+            <button onClick={goRegistro} style={{ color:"#d4af37", borderBottom:"none" }}>¿Tienes taller? Regístralo gratis</button>
+          </div>
+        )}
       </nav>
 
       {/* HERO */}
