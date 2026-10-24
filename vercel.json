@@ -1,7 +1,16 @@
 {
-"crons": [
-  { "path": "/api/cron-avisos", "schedule": "0 15 * * *" }
-],"rewrites": [
+  "crons": [
+    { "path": "/api/cron-avisos", "schedule": "0 15 * * *" }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "enkaje-pccm.vercel.app" }],
+      "destination": "https://enkajepro.com/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
     { "source": "/taller/(.*)", "destination": "/index.html" },
     { "source": "/app", "destination": "/index.html" },
     { "source": "/app/(.*)", "destination": "/index.html" },
